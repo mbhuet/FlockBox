@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114795357090310694}
   - component: {fileID: 212032912268903974}
   m_Layer: 0
-  m_Name: Boid
+  m_Name: TrailBoid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +36,7 @@ Transform:
   m_GameObject: {fileID: 1143379499884764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -52,7 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 2
+  maxSpeed: 40
+  primaryColor: {r: 0.2794118, g: 0.13354239, b: 0.13354239, a: 1}
 --- !u!212 &212032912268903974
 SpriteRenderer:
   m_ObjectHideFlags: 1

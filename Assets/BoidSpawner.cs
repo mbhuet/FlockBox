@@ -13,12 +13,19 @@ public class BoidSpawner : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
+        if (Input.GetMouseButtonDown(0))
+        {
+            Spawn(1, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
     }
 
     void Spawn(int numBoids)
     {
-        Spawn(numBoids, Vector2.zero);
+        float randomSpawnRadius = Camera.main.orthographicSize / 2f;
+        for (int i = 0; i < numBoids; i++)
+        {
+            Spawn(1, Random.insideUnitCircle * randomSpawnRadius);
+        }
     }
 
     void Spawn(int numBoids, Vector2 pos)

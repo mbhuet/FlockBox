@@ -137,7 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114795357090310694, guid: 1c8654586a152c347b442898352293da,
     type: 2}
-  numStartSpawns: 150
+  numStartSpawns: 1000
 --- !u!4 &1430168317
 Transform:
   m_ObjectHideFlags: 0
@@ -199,7 +199,7 @@ Camera:
   m_GameObject: {fileID: 2050990554}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.209, g: 0.209, b: 0.209, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -211,7 +211,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 25
+  orthographic size: 200
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
