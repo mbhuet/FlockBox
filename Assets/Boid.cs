@@ -6,22 +6,38 @@ using UnityEngine;
 class Neighborhood
 {
     LinkedList<Boid> neighbors;
+    LinkedList<Obstacle> obstacles;
     public Vector2 neighborhoodCenter;
     public Neighborhood()
     {
         neighbors = new LinkedList<Boid>();
+        obstacles = new LinkedList<Obstacle>();
     }
-    public Neighborhood(Vector2 pos)
+    public Neighborhood(Vector2 pos) : this()
     {
-        neighbors = new LinkedList<Boid>();
         neighborhoodCenter = pos;
     }
     public void AddNeighbor(Boid occupant) {neighbors.AddLast(occupant);}
     public void RemoveNeighbor(Boid neighbor) {neighbors.Remove(neighbor);}
     public void ClearNeighbors(){neighbors.Clear();}
-    public bool IsOccupied() { return neighbors.First != null; }
+    public bool IsOccupied() { return neighbors.First != null && obstacles.First != null; }
     public LinkedList<Boid> GetNeighbors() { return neighbors; }
+    public void AddObstacle(Obstacle obs) { obstacles.AddLast(obs); }
+    public LinkedList<Obstacle> GetObstacles() { return obstacles; }
 
+}
+
+public struct SurroundingsInfo
+{
+    public SurroundingsInfo(LinkedList<Boid> boids, LinkedList<Obstacle> obs) { neighbors = boids; obstacles = obs; }
+    public LinkedList<Boid> neighbors;
+    public LinkedList<Obstacle> obstacles;
+}
+
+public struct Coordinates
+{
+    public Coordinates(int r, int c){ row = r; col = c;}
+    public int col, row;
 }
 
 public class Boid : MonoBehaviour
@@ -39,8 +55,7 @@ public class Boid : MonoBehaviour
     static bool drawVectors = false;
     static bool drawNeighborhoods = false;
 
-    int lastNeighborhood_row = 0;
-    int lastNeighborhood_col = 0;
+    Coordinates lastNeighborhood = new Coordinates(0,0);
 
     Vector3 position;
     Vector3 velocity;
@@ -54,8 +69,14 @@ public class Boid : MonoBehaviour
     float cohesionRadius = 10.0f; //seek midpoint of all neighbors within this radius
     float alignmentRadius = 10f; //align with neighbors within this radius
 
+    public float separationWeight = (1.5f);
+    public float alignmentWeight = (0.7f);
+    public float cohesionWeight = (1.1f);
+    public float avoidanceWeight = 1.0f;
+
     SpriteRenderer sprite;
     public Color primaryColor;
+    public bool colorBySpeed = false;
 
 
     void Awake()
@@ -69,7 +90,7 @@ public class Boid : MonoBehaviour
 
         // Leaving the code temporarily this way so that this example runs in JS
         float angle = Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
+        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * maxSpeed;
 
         position = transform.position;
     }
@@ -82,17 +103,17 @@ public class Boid : MonoBehaviour
 
     void Update()
     {
-        flock(SurroundingNeighbors(1));
+        flock(GetSurroundings(1));
         // Update velocity
         velocity += (acceleration) * Time.deltaTime;
-        // Limit speed
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, maxSpeed * Time.deltaTime);
-        if(drawVectors) Debug.DrawLine(position, position + velocity, Color.yellow);
+        // Limit speed 
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, maxSpeed);
+        if(drawVectors) Debug.DrawLine(position, position + velocity * Time.deltaTime, Color.yellow);
 
-        position += (velocity);
+        position += (velocity * Time.deltaTime );
 
         // Reset accelertion to 0 each cycle
-        //ColorBasedOnSpeed();
+        ColorBasedOnSpeed();
 
         acceleration *= 0;
 
@@ -148,26 +169,35 @@ public class Boid : MonoBehaviour
         neighborhoodsInitialized = true;
     }
 
+    static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
+    {
+        Coordinates coords = new Coordinates();
+        coords.col = Mathf.FloorToInt((position.x + neighborhoodCols / 2f * neighborhoodSize.x) / neighborhoodSize.x);
+        coords.row = Mathf.FloorToInt((position.y + neighborhoodRows / 2f * neighborhoodSize.y) / neighborhoodSize.y);
+        return coords;
+    }
+
     void FindNeighborhood()
     {
-        int newNeighborhood_row = Mathf.FloorToInt((position.y + neighborhoodRows /2f * neighborhoodSize.y)/ neighborhoodSize.y);
-        int newNeighborhood_col = Mathf.FloorToInt((position.x + neighborhoodCols /2f * neighborhoodSize.x)/ neighborhoodSize.x);
+        Coordinates newNeighborhood = WorldPosToNeighborhoodCoordinates(position);
 //        Debug.Log(newNeighborhood_row + ", " + newNeighborhood_col);
-        if (newNeighborhood_row != lastNeighborhood_row || newNeighborhood_col != lastNeighborhood_col)
+        if (newNeighborhood.row != lastNeighborhood.row || newNeighborhood.col != lastNeighborhood.col)
         {
-            neighborhoods[lastNeighborhood_row, lastNeighborhood_col].RemoveNeighbor(this);
-            neighborhoods[newNeighborhood_row, newNeighborhood_col].AddNeighbor(this);
-            lastNeighborhood_row = newNeighborhood_row;
-            lastNeighborhood_col = newNeighborhood_col;
+            neighborhoods[lastNeighborhood.row, lastNeighborhood.col].RemoveNeighbor(this);
+            neighborhoods[newNeighborhood.row, newNeighborhood.col].AddNeighbor(this);
+            lastNeighborhood.row = newNeighborhood.row;
+            lastNeighborhood.col = newNeighborhood.col;
         }
     }
 
-    LinkedList<Boid> SurroundingNeighbors(int radius)
+    SurroundingsInfo GetSurroundings(int radius)
     {
         LinkedList<Boid> allNeighbors = new LinkedList<Boid>();
-        for(int r = lastNeighborhood_row - radius; r <= lastNeighborhood_row +radius; r++)
+        LinkedList<Obstacle> allObstacles = new LinkedList<Obstacle>();
+
+        for (int r = lastNeighborhood.row - radius; r <= lastNeighborhood.row +radius; r++)
         {
-            for(int c = lastNeighborhood_col - radius; c<= lastNeighborhood_col +radius; c++)
+            for(int c = lastNeighborhood.col - radius; c<= lastNeighborhood.col +radius; c++)
             {
                 if (r >= 0 && r < neighborhoodRows && c >= 0 && c < neighborhoodCols)
                 {
@@ -175,12 +205,19 @@ public class Boid : MonoBehaviour
                     {
                         allNeighbors.AddLast(neighbor);
                     }
+                    foreach (Obstacle obstacle in neighborhoods[r, c].GetObstacles())
+                    {
+                        if (!allObstacles.Contains(obstacle))
+                            allObstacles.AddLast(obstacle);
+                    }
                 }
             }
         }
-        return allNeighbors;
+        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles);
+        return data;
     }
 
+   
     private void OnDrawGizmos()
     {
         if (drawNeighborhoods)
@@ -189,6 +226,7 @@ public class Boid : MonoBehaviour
 
     void ColorBasedOnSpeed()
     {
+        if (!colorBySpeed) return;
         sprite.color = Color.Lerp(Color.white, primaryColor, (acceleration.magnitude / .5f));
     }
 
@@ -200,15 +238,48 @@ public class Boid : MonoBehaviour
             {
                 Gizmos.color = Color.red;
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
-                if (neighborhoods[r, c].IsOccupied())
-                {
-                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
-                }
-                else
+                if (neighborhoods[r, c].GetObstacles().First != null)
                 {
                     Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
                 }
+                else
+                {
+                    //Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
+                }
                 
+            }
+        }
+    }
+
+    public static void AddObstacleToNeighborhoods(Obstacle obs)
+    {
+        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(obs.center);
+        int radius = 1 + Mathf.FloorToInt((obs.radius + Obstacle.forceFieldDistance )/ neighborhoodSize.x);
+//        Debug.Log((obs.radius + Obstacle.forceFieldDistance) + " " + radius);
+        for(int r = centerCoords.row - radius; r<= centerCoords.row + radius; r++)
+        {
+            for(int c = centerCoords.col -radius; c <= centerCoords.col + radius; c++)
+            {
+                if (r >= 0 && r < neighborhoodRows && c >= 0 && c < neighborhoodCols)
+                {
+                    Neighborhood checkNeighborhood = neighborhoods[r, c];
+                    // Find the closest point to the circle within the rectangle
+                    float closestX = Mathf.Clamp(obs.center.x,
+                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize.x / 2f,
+                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize.x / 2f);
+                    float closestY = Mathf.Clamp(obs.center.y,
+                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize.y / 2f,
+                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize.y / 2f);
+
+                    // Calculate the distance between the circle's center and this closest point
+                    float distanceX = obs.center.x - closestX;
+                    float distanceY = obs.center.y - closestY;
+
+                    // If the distance is less than the circle's radius, an intersection occurs
+                    float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+                    if (distanceSquared < ((obs.radius + Obstacle.forceFieldDistance) * (obs.radius + Obstacle.forceFieldDistance)))
+                        neighborhoods[r, c].AddObstacle(obs);
+                }
             }
         }
     }
@@ -220,27 +291,32 @@ public class Boid : MonoBehaviour
     }
 
     // We accumulate a new acceleration each time based on three rules
-    void flock(LinkedList<Boid> boids)
+    void flock(SurroundingsInfo surroundings)
     {
-        Vector3 sep = separate(boids);   // Separation
-        Vector3 ali = align(boids);      // Alignment
-        Vector3 coh = cohesion(boids);   // Cohesion
+        Vector3 sep = separate(surroundings.neighbors);   // Separation
+        Vector3 ali = align(surroundings.neighbors);      // Alignment
+        Vector3 coh = cohesion(surroundings.neighbors);   // Cohesion
+        Vector3 avd = avoidance(surroundings.obstacles); // Avoidance
+
                                          // Arbitrarily weight these forces
-        sep *= (1.5f);
-        ali *= (0.7f);
-        coh *= (1.1f);
+        sep *= (separationWeight);
+        ali *= (alignmentWeight);
+        coh *= (cohesionWeight);
+        avd *= (avoidanceWeight);
 
         if (drawVectors)
         {
-            Debug.DrawRay(position, sep, Color.red);
+            Debug.DrawRay(position, avd, Color.red);
             Debug.DrawRay(position, ali, Color.green);
             Debug.DrawRay(position, coh, Color.blue);
+            Debug.DrawRay(position, sep, Color.black);
         }
 
         // Add the force vectors to acceleration
         applyForce(sep);
         applyForce(ali);
         applyForce(coh);
+        applyForce(avd);
     }
 
     // Method to update position
@@ -257,7 +333,7 @@ public class Boid : MonoBehaviour
 
         // Steering = Desired minus Velocity
         Vector3 steer = desired - velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce * Time.deltaTime);
+        steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce);
          // Limit to maximum steering force
         return steer;
     }
@@ -301,7 +377,7 @@ public class Boid : MonoBehaviour
     // Method checks for nearby boids and steers away
     Vector3 separate(LinkedList<Boid> boids)
     {
-        Vector3 steer = new Vector3(0, 0, 0);
+        Vector3 steer = Vector3.zero;
         int count = 0;
         // For every boid in the system, check if it's too close
         foreach (Boid other in boids)
@@ -332,9 +408,9 @@ public class Boid : MonoBehaviour
             // steer.setMag(maxspeed);
 
             // Implement Reynolds: Steering = Desired - Velocity
-            steer = steer.normalized * (maxSpeed * Time.deltaTime);
+            steer = steer.normalized * (maxSpeed);
             steer -= (velocity);
-            steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce * Time.deltaTime);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce);
         }
         return steer;
     }
@@ -343,7 +419,7 @@ public class Boid : MonoBehaviour
     // For every nearby boid in the system, calculate the average velocity
     Vector3 align(LinkedList<Boid> boids)
     {
-        Vector3 sum = new Vector3(0, 0);
+        Vector3 sum = Vector3.zero;
         int count = 0;
         foreach (Boid other in boids)
         {
@@ -363,9 +439,9 @@ public class Boid : MonoBehaviour
 
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
-            sum *= (maxSpeed * Time.deltaTime);
+            sum *= (maxSpeed);
             Vector3 steer = sum - velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce * Time.deltaTime);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce);
             return steer;
         }
         else
@@ -378,7 +454,7 @@ public class Boid : MonoBehaviour
     // For the average position (i.e. center) of all nearby boids, calculate steering vector towards that position
     Vector3 cohesion(LinkedList<Boid> boids)
     {
-        Vector3 sum = new Vector3(0, 0);   // Start with empty vector to accumulate all positions
+        Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         int count = 0;
         foreach (Boid other in boids)
         {
@@ -391,12 +467,51 @@ public class Boid : MonoBehaviour
         }
         if (count > 0)
         {
-            sum /= (count);
+            sum /= ((float)count);
             return seek(sum);  // Steer towards the position
         }
         else
         {
             return new Vector3(0, 0);
         }
+    }
+
+    Vector3 avoidance(LinkedList<Obstacle> obstacles)
+    {
+        Vector3 steer = Vector3.zero;
+        int count = 0;
+        foreach (Obstacle obstacle in obstacles)
+        {
+            float dist = Vector3.Distance(position, obstacle.center);
+            if (dist < obstacle.radius + Obstacle.forceFieldDistance)
+            {
+                Vector3 away = (position - obstacle.center).normalized;
+                float force = Mathf.Clamp01( 1 - (dist - obstacle.radius) / Obstacle.forceFieldDistance);
+                force = force * force;
+                //Debug.Log(force);
+
+                steer += (away * force);
+                count++;
+            }
+        }
+
+        if (count > 0)
+        {
+            steer /= ((float)count);
+        }
+
+        // As long as the vector is greater than 0
+        if (steer.magnitude > 0)
+        {
+            // First two lines of code below could be condensed with new Vector3 setMag() method
+            // Not using this method until Processing.js catches up
+            // steer.setMag(maxspeed);
+
+            // Implement Reynolds: Steering = Desired - Velocity
+            steer = steer.normalized * (maxSpeed);
+            steer -= (velocity);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce);
+        }
+        return steer;
     }
 }

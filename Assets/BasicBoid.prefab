@@ -54,7 +54,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualRadius: 4
   maxSpeed: 40
+  separationWeight: 1.5
+  alignmentWeight: 1
+  cohesionWeight: 1.1
+  avoidanceWeight: 3
   primaryColor: {r: 1, g: 1, b: 1, a: 1}
+  colorBySpeed: 0
 --- !u!212 &212032912268903974
 SpriteRenderer:
   m_ObjectHideFlags: 1
