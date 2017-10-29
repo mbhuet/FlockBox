@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e14ae125ebd474e91cac66f70b5d47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidPrefab: {fileID: 114795357090310694, guid: 1c8654586a152c347b442898352293da,
+  boidPrefab: {fileID: 114795357090310694, guid: bdfec0776803da34283702bddef1844e,
     type: 2}
   numStartSpawns: 1000
 --- !u!4 &1430168317
