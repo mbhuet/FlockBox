@@ -227,7 +227,7 @@ public class Boid : MonoBehaviour
     void ColorBasedOnSpeed()
     {
         if (!colorBySpeed) return;
-        sprite.color = Color.Lerp(Color.white, primaryColor, (acceleration.magnitude / .5f));
+        sprite.color = Color.Lerp(Color.white, primaryColor, (velocity.magnitude / maxSpeed));
     }
 
     void DrawNeighborHoods()

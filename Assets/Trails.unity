@@ -137,6 +137,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114795357090310694, guid: bdfec0776803da34283702bddef1844e,
     type: 2}
+  obstaclePrefab: {fileID: 114468748862160914, guid: bbc7684eb09d7c64ca733279798825d6,
+    type: 2}
   numStartSpawns: 1000
 --- !u!4 &1430168317
 Transform:

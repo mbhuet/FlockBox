@@ -168,7 +168,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 150
+  orthographic size: 120
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 2079507319}
   - component: {fileID: 2079507318}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -226,7 +226,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114795357090310694, guid: 1c8654586a152c347b442898352293da,
     type: 2}
-  numStartSpawns: 1000
+  obstaclePrefab: {fileID: 114468748862160914, guid: bb88c6274a934b3448243917f5be9dad,
+    type: 2}
+  numStartSpawns: 800
 --- !u!4 &2079507319
 Transform:
   m_ObjectHideFlags: 0
