@@ -66,7 +66,7 @@ public class Boid : MonoBehaviour
 
 
     float desiredseparationDist = 10f; //move away from neighbors within this radius, vector scales with proximity
-    float cohesionRadius = 20.0f; //seek midpoint of all neighbors within this radius
+    float cohesionRadius = 10.0f; //seek midpoint of all neighbors within this radius
     float alignmentRadius = 10f; //align with neighbors within this radius
 
     public float separationWeight = (1.5f);
