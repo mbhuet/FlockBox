@@ -76,12 +76,11 @@ public class Boid : MonoBehaviour
 
     public SpriteRenderer sprite { get; private set; }
 
-    [SerializeField]
-    public List<Type> types;
-    [SerializeField]
     private List<BoidModule> modules = new List<BoidModule>();
     private Dictionary<Type, BoidModule> moduleDict = new Dictionary<Type, BoidModule>();
-
+    [SerializeField]
+    private string[] selectedModuleTypeNames = { };
+    
 
     protected void Awake()
     {
@@ -100,10 +99,13 @@ public class Boid : MonoBehaviour
 
     protected void Start()
     {
-        InitializeModule<SocialModule>();
         position = transform.position;
         transform.localScale = new Vector3(.5f, 1, 0) * visualRadius;
         //sprite.color = Color.Lerp(Color.white, primaryColor, Random.Range(0f, 1f));
+        foreach (Type modType in GetSelectedModuleTypes())
+        {
+            LoadModule(modType);
+        }
     }
 
     protected void Update()
@@ -193,7 +195,15 @@ public class Boid : MonoBehaviour
         }
     }
 
-    protected void InitializeModule<T>() where T : BoidModule, new()
+    public void LoadModule(Type modType)
+    {
+        BoidModule mod = (BoidModule)Activator.CreateInstance(modType);
+        mod.SetOwner(this);
+        modules.Add(mod);
+        moduleDict.Add(modType, mod);
+    }
+
+    public void LoadModule<T>() where T : BoidModule, new()
     {
         BoidModule mod = new T();
         mod.SetOwner(this);
@@ -201,7 +211,12 @@ public class Boid : MonoBehaviour
         moduleDict.Add(typeof(T), mod);
     }
 
-    public bool HasModuleOfType<T>() where T : BoidModule
+    public bool HasModuleOfType(Type modType)
+    {
+        return moduleDict.ContainsKey(modType);
+    }
+
+    public bool HasModuleOfType<T>()
     {
         return moduleDict.ContainsKey(typeof(T));
     }
@@ -209,6 +224,45 @@ public class Boid : MonoBehaviour
     public T GetModuleOfType<T>() where T : BoidModule
     {
         return (T)moduleDict[typeof(T)];
+    }
+
+    public BoidModule GetModuleOfType(Type modType)
+    {
+        return moduleDict[modType];
+    }
+
+    public List<Type> GetSelectedModuleTypes()
+    {
+        List<Type> selectedModuleTypes = new List<Type>();
+        foreach(string name in selectedModuleTypeNames)
+        {
+          selectedModuleTypes.Add(Type.GetType(name));
+        }
+        return selectedModuleTypes;
+    }
+
+    public void AddModuleSelection(Type modType)
+    {
+        string[] expandedSelection = new string[selectedModuleTypeNames.Length + 1];
+        selectedModuleTypeNames.CopyTo(expandedSelection, 0);
+        expandedSelection[expandedSelection.Length - 1] = modType.ToString();
+        selectedModuleTypeNames = expandedSelection;
+    }
+
+    public void RemoveModuleSelection(Type modType)
+    {
+        string[] reducedSelection = new string[selectedModuleTypeNames.Length - 1];
+        string remName = modType.ToString();
+        int modCount = 0;
+        foreach (string name in selectedModuleTypeNames)
+        {
+            if (name != remName)
+            {
+                if(modCount < reducedSelection.Length) reducedSelection[modCount] = name;
+                modCount++;
+            }
+        }
+        if (modCount == reducedSelection.Length) selectedModuleTypeNames = reducedSelection;
     }
 
     SurroundingsInfo GetSurroundings(int radius)

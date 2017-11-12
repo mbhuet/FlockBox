@@ -11,22 +11,21 @@ public class BoidEditor : Editor
 {
     Boid myBoid;
     bool weightsFoldout = true;
-    string[] moduleStrings;
-    List<Type> moduleTypes;
-    List<Type> addedModules = new List<Type>();
+    int moduleSelection = 0;
+
+    List<Type> allModuleTypes;
 
     void OnEnable()
     {
         myBoid = (Boid)target;
-        moduleStrings = GetNamesOfBoidModuleSubclasses();
+        FindBoidModuleImplementations();
     }
+
 
     public override void OnInspectorGUI()
     {
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Max Speed", GUILayout.MaxWidth(100));
-        myBoid.maxSpeed = EditorGUILayout.FloatField(myBoid.maxSpeed);
-        EditorGUILayout.EndHorizontal();
+
+        myBoid.maxSpeed = EditorGUILayout.FloatField("Max Speed", myBoid.maxSpeed);
         weightsFoldout = EditorGUILayout.Foldout(weightsFoldout, "Base Weights");
         if (weightsFoldout) {
             EditorGUILayout.BeginVertical() ;
@@ -38,49 +37,64 @@ public class BoidEditor : Editor
         }
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Modules");
-        foreach (Type modType in addedModules)
+        List<Type> addedModuleTypes = myBoid.GetSelectedModuleTypes();
+
+        List<Type> toRemove = new List<Type>();
+        foreach (Type modType in addedModuleTypes)
         {
+            if (!allModuleTypes.Contains(modType))
+            {
+                toRemove.Add(modType);
+                continue;
+            }
             EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("-"))
+            {
+                toRemove.Add(modType);
+            }
             EditorGUILayout.LabelField(modType.ToString());
             EditorGUILayout.EndHorizontal();
         }
-        EditorGUILayout.DropdownButton(new GUIContent("Dropdown", "Tooltip"), FocusType.Keyboard);
-        for(int i = 0; i< moduleStrings.Length; i++)
+        foreach(Type remType in toRemove) { myBoid.RemoveModuleSelection(remType); }
+
+        List<Type> unaddedModuleTypes = new List<Type>();
+        string[] addModOptions = new string[allModuleTypes.Count - myBoid.GetSelectedModuleTypes().Count];
+        int optIndex = 0;
+        foreach (Type modType in allModuleTypes)
         {
-            EditorGUILayout.LabelField(moduleStrings[i]);
+            if (!addedModuleTypes.Contains(modType))
+            {
+                unaddedModuleTypes.Add(modType);
+                addModOptions[optIndex] = modType.ToString();
+                optIndex++;
+            }
+        }
+        if (addModOptions.Length > 0)
+        {
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                myBoid.AddModuleSelection(unaddedModuleTypes[moduleSelection]);
+            }
+
+            moduleSelection = Mathf.Clamp(EditorGUILayout.Popup(moduleSelection, addModOptions), 0, addModOptions.Length - 1);
+            EditorGUILayout.EndHorizontal();
         }
     }
 
-    string[] GetNamesOfBoidModuleSubclasses()
+    void FindBoidModuleImplementations()
     {
-        List<Type> moduleTypes = new List<Type>();
+        allModuleTypes = new List<Type>();
         foreach (Type type in
             Assembly.GetAssembly(typeof(BoidModule)).GetTypes()
             .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(BoidModule))))
         {
-            moduleTypes.Add(type);
+            allModuleTypes.Add(type);
         }
-        string[] names = new string[moduleTypes.Count];
-        for(int i = 0; i< names.Length; i++)
-        {
-            names[i] = moduleTypes[i].ToString();
-        }
-
-        return names;
-
     }
 
-    public static IEnumerable<T> GetEnumerableOfType<T>(params object[] constructorArgs) where T : BoidModule
+    void UnaddedModules()
     {
-        List<T> objects = new List<T>();
-        foreach (Type type in
-            Assembly.GetAssembly(typeof(T)).GetTypes()
-            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
-        {
-            objects.Add((T)Activator.CreateInstance(type, constructorArgs));
-        }
-        objects.Sort();
-        return objects;
     }
 
 
