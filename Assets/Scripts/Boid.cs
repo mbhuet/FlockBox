@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,7 +54,6 @@ public class Boid : MonoBehaviour
     static int neighborhoodRows;
 
     static bool drawVectors = false;
-    static bool drawNeighborhoods = false;
 
     Coordinates lastNeighborhood = new Coordinates(0,0);
 
@@ -74,12 +74,15 @@ public class Boid : MonoBehaviour
     public float cohesionWeight = (1.1f);
     public float avoidanceWeight = 1.0f;
 
-    SpriteRenderer sprite;
-    public Color primaryColor;
-    public bool colorBySpeed = false;
+    public SpriteRenderer sprite { get; private set; }
 
+    private List<BoidModule> modules = new List<BoidModule>();
+    private Dictionary<Type, BoidModule> moduleDict = new Dictionary<Type, BoidModule>();
+    [SerializeField]
+    private string[] selectedModuleTypeNames = { };
+    
 
-    void Awake()
+    protected void Awake()
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
         sprite = GetComponent<SpriteRenderer>();
@@ -89,19 +92,23 @@ public class Boid : MonoBehaviour
         // velocity = Vector3.random2D();
 
         // Leaving the code temporarily this way so that this example runs in JS
-        float angle = Random.Range(0, Mathf.PI * 2);
+        float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
         velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * maxSpeed;
 
-        position = transform.position;
     }
 
-    private void Start()
+    protected void Start()
     {
+        position = transform.position;
         transform.localScale = new Vector3(.5f, 1, 0) * visualRadius;
         //sprite.color = Color.Lerp(Color.white, primaryColor, Random.Range(0f, 1f));
+        foreach (Type modType in GetSelectedModuleTypes())
+        {
+            LoadModule(modType);
+        }
     }
 
-    void Update()
+    protected void Update()
     {
         flock(GetSurroundings(1));
         // Update velocity
@@ -113,15 +120,13 @@ public class Boid : MonoBehaviour
         position += (velocity * Time.deltaTime );
 
         // Reset accelertion to 0 each cycle
-        ColorBasedOnSpeed();
-
         acceleration *= 0;
 
         move();
         borders();
     }
 
-    private void LateUpdate()
+    protected void LateUpdate()
     {
         FindNeighborhood();
     }
@@ -169,7 +174,7 @@ public class Boid : MonoBehaviour
         neighborhoodsInitialized = true;
     }
 
-    static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
+    protected static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
     {
         Coordinates coords = new Coordinates();
         coords.col = Mathf.FloorToInt((position.x + neighborhoodCols / 2f * neighborhoodSize.x) / neighborhoodSize.x);
@@ -177,7 +182,7 @@ public class Boid : MonoBehaviour
         return coords;
     }
 
-    void FindNeighborhood()
+    protected void FindNeighborhood()
     {
         Coordinates newNeighborhood = WorldPosToNeighborhoodCoordinates(position);
 //        Debug.Log(newNeighborhood_row + ", " + newNeighborhood_col);
@@ -188,6 +193,76 @@ public class Boid : MonoBehaviour
             lastNeighborhood.row = newNeighborhood.row;
             lastNeighborhood.col = newNeighborhood.col;
         }
+    }
+
+    public void LoadModule(Type modType)
+    {
+        BoidModule mod = (BoidModule)Activator.CreateInstance(modType);
+        mod.SetOwner(this);
+        modules.Add(mod);
+        moduleDict.Add(modType, mod);
+    }
+
+    public void LoadModule<T>() where T : BoidModule, new()
+    {
+        BoidModule mod = new T();
+        mod.SetOwner(this);
+        modules.Add(mod);
+        moduleDict.Add(typeof(T), mod);
+    }
+
+    public bool HasModuleOfType(Type modType)
+    {
+        return moduleDict.ContainsKey(modType);
+    }
+
+    public bool HasModuleOfType<T>()
+    {
+        return moduleDict.ContainsKey(typeof(T));
+    }
+
+    public T GetModuleOfType<T>() where T : BoidModule
+    {
+        return (T)moduleDict[typeof(T)];
+    }
+
+    public BoidModule GetModuleOfType(Type modType)
+    {
+        return moduleDict[modType];
+    }
+
+    public List<Type> GetSelectedModuleTypes()
+    {
+        List<Type> selectedModuleTypes = new List<Type>();
+        foreach(string name in selectedModuleTypeNames)
+        {
+          selectedModuleTypes.Add(Type.GetType(name));
+        }
+        return selectedModuleTypes;
+    }
+
+    public void AddModuleSelection(Type modType)
+    {
+        string[] expandedSelection = new string[selectedModuleTypeNames.Length + 1];
+        selectedModuleTypeNames.CopyTo(expandedSelection, 0);
+        expandedSelection[expandedSelection.Length - 1] = modType.ToString();
+        selectedModuleTypeNames = expandedSelection;
+    }
+
+    public void RemoveModuleSelection(Type modType)
+    {
+        string[] reducedSelection = new string[selectedModuleTypeNames.Length - 1];
+        string remName = modType.ToString();
+        int modCount = 0;
+        foreach (string name in selectedModuleTypeNames)
+        {
+            if (name != remName)
+            {
+                if(modCount < reducedSelection.Length) reducedSelection[modCount] = name;
+                modCount++;
+            }
+        }
+        if (modCount == reducedSelection.Length) selectedModuleTypeNames = reducedSelection;
     }
 
     SurroundingsInfo GetSurroundings(int radius)
@@ -220,14 +295,8 @@ public class Boid : MonoBehaviour
    
     private void OnDrawGizmos()
     {
-        if (drawNeighborhoods)
-            DrawNeighborHoods();
-    }
-
-    void ColorBasedOnSpeed()
-    {
-        if (!colorBySpeed) return;
-        sprite.color = Color.Lerp(Color.white, primaryColor, (velocity.magnitude / maxSpeed));
+        //TODO find a way for this to only call once
+       //DrawNeighborHoods();
     }
 
     void DrawNeighborHoods()
@@ -340,26 +409,8 @@ public class Boid : MonoBehaviour
 
     void move()
     {
-        // Draw a triangle rotated in the direction of velocity
-        //float theta = velocity.heading2D() + radians(90);
-        // heading2D() above is now heading() but leaving old syntax until Processing.js catches up
-
         this.transform.position = position;
-        this.transform.rotation = Quaternion.EulerRotation(0, 0, Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f);
-
-        /*
-        fill(200, 100);
-        stroke(255);
-        pushMatrix();
-        translate(position.x, position.y);
-        rotate(theta);
-        beginShape(TRIANGLES);
-        vertex(0, -r * 2);
-        vertex(-r, r * 2);
-        vertex(r, r * 2);
-        endShape();
-        popMatrix();
-        */
+        this.transform.rotation = Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg);
     }
 
     // Wraparound
@@ -382,14 +433,18 @@ public class Boid : MonoBehaviour
         // For every boid in the system, check if it's too close
         foreach (Boid other in boids)
         {
+            
             float d = Vector3.Distance(position, other.position);
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
             if ((d > 0) && (d < desiredseparationDist))
             {
+                float modFactor = 1;
+                foreach (BoidModule mod in modules) { modFactor *= mod.GetModFactor(this, other, BoidVector.SEPARATE); }
                 // Calculate vector pointing away from neighbor
                 Vector3 diff = position - other.position;
                 diff.Normalize();
                 diff /= (d);        // Weight by distance
+                diff *= modFactor;  // Weight by Modules
                 steer += (diff);
                 count++;            // Keep track of how many
             }
@@ -423,10 +478,13 @@ public class Boid : MonoBehaviour
         int count = 0;
         foreach (Boid other in boids)
         {
+            
             float d = Vector3.Distance(position, other.position);
             if ((d > 0) && (d < alignmentRadius))
             {
-                sum += (other.velocity);
+                float modFactor = 1;
+                foreach (BoidModule mod in modules) { modFactor *= mod.GetModFactor(this, other, BoidVector.ALIGN); }
+                sum += (other.velocity) * modFactor;
                 count++;
             }
         }
@@ -455,19 +513,22 @@ public class Boid : MonoBehaviour
     Vector3 cohesion(LinkedList<Boid> boids)
     {
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
-        int count = 0;
+        float count = 0;
         foreach (Boid other in boids)
         {
+            
             float d = Vector3.Distance(position, other.position);
             if ((d > 0) && (d < cohesionRadius))
             {
-                sum+=(other.position); // Add position
-                count++;
+                float modFactor = 1;
+                foreach (BoidModule mod in modules){ modFactor *= mod.GetModFactor(this, other, BoidVector.COHESION);}
+                sum +=(other.position) * modFactor; // Add position
+                count+=modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
             }
         }
         if (count > 0)
         {
-            sum /= ((float)count);
+            sum /= (count);
             return seek(sum);  // Steer towards the position
         }
         else
@@ -482,22 +543,28 @@ public class Boid : MonoBehaviour
         int count = 0;
         foreach (Obstacle obstacle in obstacles)
         {
+            
             float dist = Vector3.Distance(position, obstacle.center);
             if (dist < obstacle.radius + Obstacle.forceFieldDistance)
             {
+                float modFactor = 1;
+                foreach (BoidModule mod in modules)
+                {
+                    modFactor *= mod.GetModFactor(this, obstacle, BoidVector.AVOID);
+                }
                 Vector3 away = (position - obstacle.center).normalized;
                 float force = Mathf.Clamp01( 1 - (dist - obstacle.radius) / Obstacle.forceFieldDistance);
                 force = force * force;
                 //Debug.Log(force);
 
-                steer += (away * force);
+                steer += (away * force) * modFactor;
                 count++;
             }
         }
 
         if (count > 0)
         {
-            steer /= ((float)count);
+            steer /= (count);
         }
 
         // As long as the vector is greater than 0
