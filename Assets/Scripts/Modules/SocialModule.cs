@@ -10,6 +10,7 @@ public class SocialModule : BoidModule {
     static Color highStatusColor = Color.red;
 
     const float maxCohesionFactor = 100;
+    const float maxAlignmentFactor = 5;
 
     public SocialModule() : base()
     {
@@ -38,11 +39,18 @@ public class SocialModule : BoidModule {
         //attract to higher status, 
         if (other.HasModuleOfType<SocialModule>())
         {
-            return Mathf.Clamp(other.GetModuleOfType<SocialModule>().status / this.status, 0, maxCohesionFactor) ;
+            float theirsMineStatusRatio = other.GetModuleOfType<SocialModule>().status / this.status;
+            return Mathf.Clamp(theirsMineStatusRatio, 0, maxCohesionFactor) ;
         }
         return 1;
     }
     protected override float AlignmentFactor(Boid other) {
+        //attract to higher status, 
+        if (other.HasModuleOfType<SocialModule>())
+        {
+            float theirsMineStatusRatio = other.GetModuleOfType<SocialModule>().status / this.status;
+            return Mathf.Clamp(theirsMineStatusRatio, 0, maxAlignmentFactor);
+        }
         return 1;
     }
 }

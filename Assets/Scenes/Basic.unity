@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualRadius: 12
   maxSpeed: 2
-  separationWeight: 1.5
+  separationWeight: 1
   alignmentWeight: 0.7
   cohesionWeight: 1.1
   avoidanceWeight: 1
