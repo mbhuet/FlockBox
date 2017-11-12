@@ -29,10 +29,23 @@ public class BoidEditor : Editor
         weightsFoldout = EditorGUILayout.Foldout(weightsFoldout, "Base Weights");
         if (weightsFoldout) {
             EditorGUILayout.BeginVertical() ;
+
+            float old_separation = myBoid.separationWeight;
             myBoid.separationWeight = EditorGUILayout.Slider("Separation", myBoid.separationWeight, 0, 10);
+            if(myBoid.separationWeight != old_separation) EditorUtility.SetDirty(target);
+
+            float old_alignment = myBoid.alignmentWeight;
             myBoid.alignmentWeight = EditorGUILayout.Slider("Alignment",myBoid.alignmentWeight, 0, 10);
+            if(myBoid.alignmentWeight != old_alignment) EditorUtility.SetDirty(target);
+
+            float old_cohesion = myBoid.cohesionWeight;
             myBoid.cohesionWeight = EditorGUILayout.Slider("Cohesion", myBoid.cohesionWeight, 0, 10);
+            if(myBoid.cohesionWeight != old_cohesion) EditorUtility.SetDirty(target);
+
+            float old_avoid = myBoid.avoidanceWeight;
             myBoid.avoidanceWeight = EditorGUILayout.Slider("Avoidance", myBoid.avoidanceWeight, 0, 10);
+            if(myBoid.avoidanceWeight != old_avoid) EditorUtility.SetDirty(target);
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.Space();
@@ -55,7 +68,9 @@ public class BoidEditor : Editor
             EditorGUILayout.LabelField(modType.ToString());
             EditorGUILayout.EndHorizontal();
         }
-        foreach(Type remType in toRemove) { myBoid.RemoveModuleSelection(remType); }
+        foreach(Type remType in toRemove) { myBoid.RemoveModuleSelection(remType);
+            EditorUtility.SetDirty(target);
+        }
 
         List<Type> unaddedModuleTypes = new List<Type>();
         string[] addModOptions = new string[allModuleTypes.Count - myBoid.GetSelectedModuleTypes().Count];
@@ -75,6 +90,7 @@ public class BoidEditor : Editor
             if (GUILayout.Button("+"))
             {
                 myBoid.AddModuleSelection(unaddedModuleTypes[moduleSelection]);
+                EditorUtility.SetDirty(target);
             }
 
             moduleSelection = Mathf.Clamp(EditorGUILayout.Popup(moduleSelection, addModOptions), 0, addModOptions.Length - 1);

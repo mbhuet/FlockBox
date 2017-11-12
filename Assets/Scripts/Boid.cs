@@ -41,6 +41,15 @@ public struct Coordinates
     public int col, row;
 }
 
+public class BoidWeights : ScriptableObject
+{
+    public float separationWeight = (1.5f);
+    public float alignmentWeight = (0.7f);
+    public float cohesionWeight = (1.1f);
+    public float avoidanceWeight = 1.0f;
+}
+
+[System.Serializable]
 public class Boid : MonoBehaviour
 {
 
@@ -68,6 +77,9 @@ public class Boid : MonoBehaviour
     float desiredseparationDist = 10f; //move away from neighbors within this radius, vector scales with proximity
     float cohesionRadius = 10.0f; //seek midpoint of all neighbors within this radius
     float alignmentRadius = 10f; //align with neighbors within this radius
+
+    [SerializeField]
+    public BoidWeights baseWeights;
 
     public float separationWeight = (1.5f);
     public float alignmentWeight = (0.7f);
@@ -233,9 +245,11 @@ public class Boid : MonoBehaviour
 
     public List<Type> GetSelectedModuleTypes()
     {
+        Debug.Log("GetSelectedModuleTypes");
         List<Type> selectedModuleTypes = new List<Type>();
         foreach(string name in selectedModuleTypeNames)
         {
+            Debug.Log(name);
           selectedModuleTypes.Add(Type.GetType(name));
         }
         return selectedModuleTypes;

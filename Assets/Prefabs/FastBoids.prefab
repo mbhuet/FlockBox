@@ -54,10 +54,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualRadius: 4
   maxSpeed: 500
-  separationWeight: 2.1
+  baseWeights: {fileID: 0}
+  separationWeight: 3
   alignmentWeight: 1.1
   cohesionWeight: 1.6
   avoidanceWeight: 10
+  selectedModuleTypeNames:
+  - BasicModule
+  - SocialStatusModule
 --- !u!212 &212032912268903974
 SpriteRenderer:
   m_ObjectHideFlags: 1
