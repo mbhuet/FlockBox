@@ -69,7 +69,7 @@ public class Boid : MonoBehaviour
     Vector3 position;
     Vector3 velocity;
     Vector3 acceleration;
-    public float visualRadius = 12.0f;
+    float visualRadius = 12.0f;
     float maxforce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
 
@@ -97,7 +97,7 @@ public class Boid : MonoBehaviour
     protected void Awake()
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        sprite = GetComponent<SpriteRenderer>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
         acceleration = new Vector3(0, 0);
 
         // This is a new Vector3 method not yet implemented in JS
@@ -112,7 +112,8 @@ public class Boid : MonoBehaviour
     protected void Start()
     {
         position = transform.position;
-        transform.localScale = new Vector3(.5f, 1, 0) * visualRadius;
+        visualRadius = Mathf.Max(sprite.bounds.extents.x, sprite.bounds.extents.y);
+        //transform.localScale = new Vector3(.5f, 1, 0) * visualRadius;
         //sprite.color = Color.Lerp(Color.white, primaryColor, Random.Range(0f, 1f));
         foreach (Type modType in GetSelectedModuleTypes())
         {
@@ -423,8 +424,8 @@ public class Boid : MonoBehaviour
 
     void move()
     {
-        this.transform.position = position;
-        this.transform.rotation = Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg);
+        this.transform.position = new Vector3(position.x, position.y, position.y);
+        //this.transform.rotation = Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg);
     }
 
     // Wraparound
