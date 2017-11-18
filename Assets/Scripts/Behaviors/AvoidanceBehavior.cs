@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class AvoidanceBehavior : SteeringBehavior {
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings, float effectiveDistance)
@@ -44,3 +45,4 @@ public class AvoidanceBehavior : SteeringBehavior {
         return steer;
     }
 }
+*/

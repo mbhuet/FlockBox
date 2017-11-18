@@ -4,19 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Every behavior needs to have a weight, an effective distance
-
+//Want to be able to have multipe implementations of SteeringAgent present in the same simulation
 
 [System.Serializable]
 public class SteeringAgent : MonoBehaviour
 {
-    static Neighborhood[,] neighborhoods;
-    static bool neighborhoodsInitialized = false;
-    static List<SteeringAgent> allBoids;
-    static Vector2 viewExtents;
-    static Vector2 camPos;
-    static Vector2 neighborhoodSize;
-    static int neighborhoodCols;
-    static int neighborhoodRows;
+
 
     static bool drawVectors = false;
 
@@ -33,14 +26,15 @@ public class SteeringAgent : MonoBehaviour
     public static List<SteeringBehavior> behaviors;
     static bool behaviorsInitialized = false;
 
-
+    [SerializeField]
+    private string[] selectedModuleTypeNames = { };
+    static Dictionary<Type, SteeringBehavior> behaviorDict = new Dictionary<Type, SteeringBehavior>();
     protected Dictionary<string, float> attributes;
 
     float[] effectiveDistances = { 10f };
 
     protected void Awake()
     {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         if (!behaviorsInitialized) InitializeBehaviors();
         acceleration = new Vector3(0, 0);
 
@@ -60,7 +54,7 @@ public class SteeringAgent : MonoBehaviour
 
     protected void Update()
     {
-        flock(GetSurroundings(1));
+        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
         // Update velocity
         velocity += (acceleration) * Time.deltaTime;
         // Limit speed 
@@ -80,136 +74,92 @@ public class SteeringAgent : MonoBehaviour
     {
         FindNeighborhood();
     }
-
-    void Register()
-    {
-        if (allBoids == null) allBoids = new List<SteeringAgent>();
-        
-        allBoids.Add(this);
-    }
-    void Unregister()
-    {
-        allBoids.Remove(this);
-    }
-
-    private void OnEnable()
-    {
-        Register();
-    }
-
-    private void OnDisable()
-    {
-        Unregister();
-    }
-
-    void InitializeNeighborhoods()
-    {
-        viewExtents = new Vector2(Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize);
-        camPos = Camera.main.transform.position;
-
-        neighborhoodSize = Vector2.one * Mathf.Max(effectiveDistances);
-        neighborhoodCols = Mathf.FloorToInt((viewExtents.x + visualRadius) * 2 / neighborhoodSize.x) + 1;
-        neighborhoodRows = Mathf.FloorToInt((viewExtents.y + visualRadius) * 2 / neighborhoodSize.y) + 1;
-        neighborhoods = new Neighborhood[neighborhoodRows, neighborhoodCols];
-        for (int r = 0; r < neighborhoodRows; r++)
-        {
-            for(int c = 0; c< neighborhoodCols; c++)
-            {
-                Vector2 neighborhoodPos = camPos + new Vector2(((c - neighborhoodCols / 2f) + .5f) * neighborhoodSize.x, ((r - neighborhoodRows / 2f) + .5f) * neighborhoodSize.y);
-                neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
-
-            }
-        }
-
-        neighborhoodsInitialized = true;
-    }
-
-    protected static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
-    {
-        Coordinates coords = new Coordinates();
-        coords.col = Mathf.FloorToInt((position.x + neighborhoodCols / 2f * neighborhoodSize.x) / neighborhoodSize.x);
-        coords.row = Mathf.FloorToInt((position.y + neighborhoodRows / 2f * neighborhoodSize.y) / neighborhoodSize.y);
-        return coords;
-    }
+    
 
     protected void FindNeighborhood()
     {
-        Coordinates newNeighborhood = WorldPosToNeighborhoodCoordinates(position);
-//        Debug.Log(newNeighborhood_row + ", " + newNeighborhood_col);
-        if (newNeighborhood.row != lastNeighborhood.row || newNeighborhood.col != lastNeighborhood.col)
+        Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
+        if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
         {
-            neighborhoods[lastNeighborhood.row, lastNeighborhood.col].RemoveNeighbor(this);
-            neighborhoods[newNeighborhood.row, newNeighborhood.col].AddNeighbor(this);
-            lastNeighborhood.row = newNeighborhood.row;
-            lastNeighborhood.col = newNeighborhood.col;
+            NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
+            NeighborhoodCoordinator.AddNeighbor(this, currentNeighborhood);
+            lastNeighborhood.row = currentNeighborhood.row;
+            lastNeighborhood.col = currentNeighborhood.col;
         }
-    }   
+    }
+    
 
-    SurroundingsInfo GetSurroundings(int neighborhoodRadius)
+    public void LoadBehavior(Type behaviorType)
     {
-        LinkedList<SteeringAgent> allNeighbors = new LinkedList<SteeringAgent>();
-        LinkedList<Obstacle> allObstacles = new LinkedList<Obstacle>();
-
-        for (int r = lastNeighborhood.row - neighborhoodRadius; r <= lastNeighborhood.row +neighborhoodRadius; r++)
-        {
-            for(int c = lastNeighborhood.col - neighborhoodRadius; c<= lastNeighborhood.col +neighborhoodRadius; c++)
-            {
-                if (r >= 0 && r < neighborhoodRows && c >= 0 && c < neighborhoodCols)
-                {
-                    foreach(SteeringAgent neighbor in neighborhoods[r, c].GetNeighbors())
-                    {
-                        allNeighbors.AddLast(neighbor);
-                    }
-                    foreach (Obstacle obstacle in neighborhoods[r, c].GetObstacles())
-                    {
-                        if (!allObstacles.Contains(obstacle))
-                            allObstacles.AddLast(obstacle);
-                    }
-                }
-            }
-        }
-        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles);
-        return data;
+        SteeringBehavior behavior = (SteeringBehavior)Activator.CreateInstance(behaviorType);
+        behaviors.Add(behavior);
     }
 
-
-    public static void AddObstacleToNeighborhoods(Obstacle obs)
+    public void LoadBehavior<T>() where T : SteeringBehavior, new()
     {
-        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(obs.center);
-        int radius = 1 + Mathf.FloorToInt((obs.radius + Obstacle.forceFieldDistance )/ neighborhoodSize.x);
-//        Debug.Log((obs.radius + Obstacle.forceFieldDistance) + " " + radius);
-        for(int r = centerCoords.row - radius; r<= centerCoords.row + radius; r++)
+        SteeringBehavior behavior = new T();
+        behaviors.Add(behavior);
+    }
+
+    public bool HasModuleOfType(Type behaviorType)
+    {
+        return behaviorDict.ContainsKey(behaviorType);
+    }
+
+    public bool HasModuleOfType<T>()
+    {
+        return behaviorDict.ContainsKey(typeof(T));
+    }
+
+    public T GetModuleOfType<T>() where T : SteeringBehavior
+    {
+        return (T)behaviorDict[typeof(T)];
+    }
+
+    public SteeringBehavior GetModuleOfType(Type behaviorType)
+    {
+        return behaviorDict[behaviorType];
+    }
+
+    public List<Type> GetSelectedBehaviorTypes()
+    {
+        Debug.Log("GetSelectedModuleTypes");
+        List<Type> selectedModuleTypes = new List<Type>();
+        foreach (string name in selectedModuleTypeNames)
         {
-            for(int c = centerCoords.col -radius; c <= centerCoords.col + radius; c++)
+            Debug.Log(name);
+            selectedModuleTypes.Add(Type.GetType(name));
+        }
+        return selectedModuleTypes;
+    }
+
+    public void AddModuleSelection(Type modType)
+    {
+        string[] expandedSelection = new string[selectedModuleTypeNames.Length + 1];
+        selectedModuleTypeNames.CopyTo(expandedSelection, 0);
+        expandedSelection[expandedSelection.Length - 1] = modType.ToString();
+        selectedModuleTypeNames = expandedSelection;
+    }
+
+    public void RemoveModuleSelection(Type modType)
+    {
+        string[] reducedSelection = new string[selectedModuleTypeNames.Length - 1];
+        string remName = modType.ToString();
+        int modCount = 0;
+        foreach (string name in selectedModuleTypeNames)
+        {
+            if (name != remName)
             {
-                if (r >= 0 && r < neighborhoodRows && c >= 0 && c < neighborhoodCols)
-                {
-                    Neighborhood checkNeighborhood = neighborhoods[r, c];
-                    // Find the closest point to the circle within the rectangle
-                    float closestX = Mathf.Clamp(obs.center.x,
-                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize.x / 2f,
-                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize.x / 2f);
-                    float closestY = Mathf.Clamp(obs.center.y,
-                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize.y / 2f,
-                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize.y / 2f);
-
-                    // Calculate the distance between the circle's center and this closest point
-                    float distanceX = obs.center.x - closestX;
-                    float distanceY = obs.center.y - closestY;
-
-                    // If the distance is less than the circle's radius, an intersection occurs
-                    float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
-                    if (distanceSquared < ((obs.radius + Obstacle.forceFieldDistance) * (obs.radius + Obstacle.forceFieldDistance)))
-                        neighborhoods[r, c].AddObstacle(obs);
-                }
+                if (modCount < reducedSelection.Length) reducedSelection[modCount] = name;
+                modCount++;
             }
         }
+        if (modCount == reducedSelection.Length) selectedModuleTypeNames = reducedSelection;
     }
 
     static void InitializeBehaviors()
     {
         behaviors = new List<SteeringBehavior>();
-        foreach()
         behaviorsInitialized = true;
     }
 
@@ -250,9 +200,9 @@ public class SteeringAgent : MonoBehaviour
     // We accumulate a new acceleration each time based on three rules
     void flock(SurroundingsInfo surroundings)
     {
-        foreach (BehaviorDelegate behavior in behaviors)
+        foreach (SteeringBehavior behavior in behaviors)
         {
-            Vector3 steer = behavior(this, surroundings, 10);
+            Vector3 steer = behavior.GetSteeringBehaviorVector(this, surroundings, 10);
         }
     }
 
@@ -281,10 +231,13 @@ public class SteeringAgent : MonoBehaviour
     
     void borders()
     {
-        if (position.x < camPos.x - viewExtents.x - visualRadius) position.x = camPos.x + viewExtents.x + visualRadius;
-        if (position.y < camPos.y - viewExtents.y - visualRadius) position.y = camPos.y + viewExtents.y + visualRadius;
-        if (position.x > camPos.x + viewExtents.x + visualRadius) position.x = camPos.x - viewExtents.x - visualRadius;
-        if (position.y > camPos.y + viewExtents.y + visualRadius) position.y = camPos.y - viewExtents.y - visualRadius;
+        bool wrap = false;
+        Vector3 wrappedPosition = position;
+        if (position.x < NeighborhoodCoordinator.min.x) { wrappedPosition.x = NeighborhoodCoordinator.max.x + (position.x - NeighborhoodCoordinator.min.x); wrap = true; }
+        if (position.y < NeighborhoodCoordinator.min.y) { wrappedPosition.y = NeighborhoodCoordinator.max.y + (position.y - NeighborhoodCoordinator.min.y); wrap = true; }
+        if (position.x > NeighborhoodCoordinator.max.x) { wrappedPosition.x = NeighborhoodCoordinator.min.x + (position.x - NeighborhoodCoordinator.max.x); wrap = true; }
+        if (position.y > NeighborhoodCoordinator.max.y) { wrappedPosition.y = NeighborhoodCoordinator.min.y + (position.y - NeighborhoodCoordinator.max.y); wrap = true; }
+        if(wrap) position = wrappedPosition;
     }
    
 

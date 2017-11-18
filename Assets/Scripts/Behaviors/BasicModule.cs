@@ -2,7 +2,3 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicModule : SteeringBehavior{
-
-    
-}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoidSpawner : MonoBehaviour {
+public class AgentSpawner : MonoBehaviour {
     public SteeringAgent boidPrefab;
     public Obstacle obstaclePrefab;
     public int numStartSpawns;

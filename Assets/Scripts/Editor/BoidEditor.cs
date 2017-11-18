@@ -6,10 +6,11 @@ using System.Reflection;
 using System.Linq;
 using System;
 
+/*
 [CustomEditor(typeof(SteeringAgent))]
-public class BoidEditor : Editor
+public class SteeringAgentEditor : Editor
 {
-    SteeringAgent myBoid;
+    SteeringAgent myAgent;
     bool weightsFoldout = true;
     int moduleSelection = 0;
 
@@ -17,7 +18,7 @@ public class BoidEditor : Editor
 
     void OnEnable()
     {
-        myBoid = (SteeringAgent)target;
+        myAgent = (SteeringAgent)target;
         FindBehaviorImplementations();
     }
 
@@ -25,59 +26,38 @@ public class BoidEditor : Editor
     public override void OnInspectorGUI()
     {
 
-        myBoid.maxSpeed = EditorGUILayout.FloatField("Max Speed", myBoid.maxSpeed);
-        weightsFoldout = EditorGUILayout.Foldout(weightsFoldout, "Base Weights");
-        if (weightsFoldout) {
-            EditorGUILayout.BeginVertical() ;
-
-            float old_separation = myBoid.separationWeight;
-            myBoid.separationWeight = EditorGUILayout.Slider("Separation", myBoid.separationWeight, 0, 10);
-            if(myBoid.separationWeight != old_separation) EditorUtility.SetDirty(target);
-
-            float old_alignment = myBoid.alignmentWeight;
-            myBoid.alignmentWeight = EditorGUILayout.Slider("Alignment",myBoid.alignmentWeight, 0, 10);
-            if(myBoid.alignmentWeight != old_alignment) EditorUtility.SetDirty(target);
-
-            float old_cohesion = myBoid.cohesionWeight;
-            myBoid.cohesionWeight = EditorGUILayout.Slider("Cohesion", myBoid.cohesionWeight, 0, 10);
-            if(myBoid.cohesionWeight != old_cohesion) EditorUtility.SetDirty(target);
-
-            float old_avoid = myBoid.avoidanceWeight;
-            myBoid.avoidanceWeight = EditorGUILayout.Slider("Avoidance", myBoid.avoidanceWeight, 0, 10);
-            if(myBoid.avoidanceWeight != old_avoid) EditorUtility.SetDirty(target);
-
-            EditorGUILayout.EndVertical();
-        }
+        myAgent.maxSpeed = EditorGUILayout.FloatField("Max Speed", myAgent.maxSpeed);
+        
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Modules");
-        List<Type> addedModuleTypes = myBoid.GetSelectedModuleTypes();
+        List<Type> addedBehaviorTypes = myAgent.GetSelectedBehaviorTypes();
 
         List<Type> toRemove = new List<Type>();
-        foreach (Type modType in addedModuleTypes)
+        foreach (Type behaviorType in addedBehaviorTypes)
         {
-            if (!allBehaviorTypes.Contains(modType))
+            if (!allBehaviorTypes.Contains(behaviorType))
             {
-                toRemove.Add(modType);
+                toRemove.Add(behaviorType);
                 continue;
             }
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("-"))
             {
-                toRemove.Add(modType);
+                toRemove.Add(behaviorType);
             }
-            EditorGUILayout.LabelField(modType.ToString());
+            EditorGUILayout.LabelField(behaviorType.ToString());
             EditorGUILayout.EndHorizontal();
         }
-        foreach(Type remType in toRemove) { myBoid.RemoveModuleSelection(remType);
+        foreach(Type remType in toRemove) { myAgent.RemoveModuleSelection(remType);
             EditorUtility.SetDirty(target);
         }
 
         List<Type> unaddedModuleTypes = new List<Type>();
-        string[] addModOptions = new string[allBehaviorTypes.Count - myBoid.GetSelectedModuleTypes().Count];
+        string[] addModOptions = new string[allBehaviorTypes.Count - myAgent.GetSelectedBehaviorTypes().Count];
         int optIndex = 0;
         foreach (Type modType in allBehaviorTypes)
         {
-            if (!addedModuleTypes.Contains(modType))
+            if (!addedBehaviorTypes.Contains(modType))
             {
                 unaddedModuleTypes.Add(modType);
                 addModOptions[optIndex] = modType.ToString();
@@ -89,7 +69,7 @@ public class BoidEditor : Editor
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("+"))
             {
-                myBoid.AddModuleSelection(unaddedModuleTypes[moduleSelection]);
+                myAgent.AddModuleSelection(unaddedModuleTypes[moduleSelection]);
                 EditorUtility.SetDirty(target);
             }
 
@@ -109,5 +89,6 @@ public class BoidEditor : Editor
         }
     }
 
-
+    
 }
+*/

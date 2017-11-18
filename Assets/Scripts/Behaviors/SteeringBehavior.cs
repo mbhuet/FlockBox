@@ -13,5 +13,5 @@ public struct SteeringAgentAttribute
 public abstract class SteeringBehavior {
 
     public abstract Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings, float effectiveDistance);
-    public abstract void CreatRequiredAttributes();
+    //public abstract void CreatRequiredAttributes();
 }
