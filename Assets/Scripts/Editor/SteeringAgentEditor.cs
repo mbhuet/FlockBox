@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Linq;
 using System;
 
-/*
+
 [CustomEditor(typeof(SteeringAgent))]
 public class SteeringAgentEditor : Editor
 {
@@ -25,7 +25,6 @@ public class SteeringAgentEditor : Editor
 
     public override void OnInspectorGUI()
     {
-
         myAgent.maxSpeed = EditorGUILayout.FloatField("Max Speed", myAgent.maxSpeed);
         
         EditorGUILayout.Space();
@@ -88,7 +87,5 @@ public class SteeringAgentEditor : Editor
             allBehaviorTypes.Add(type);
         }
     }
-
-    
 }
-*/
+

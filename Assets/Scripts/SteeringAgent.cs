@@ -6,6 +6,7 @@ using UnityEngine;
 //Every behavior needs to have a weight, an effective distance
 //Want to be able to have multipe implementations of SteeringAgent present in the same simulation
 
+[RequireComponent(typeof(SteeringAgentVisual))]
 [System.Serializable]
 public class SteeringAgent : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class SteeringAgent : MonoBehaviour
     float visualRadius = 12.0f;
     public float maxforce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
-    public bool z_layering; //will set position z values based on y value;
+    public bool z_layering = true; //will set position z values based on y value;
 
     public static List<SteeringBehavior> behaviors;
     static bool behaviorsInitialized = false;
@@ -33,9 +34,12 @@ public class SteeringAgent : MonoBehaviour
 
     float[] effectiveDistances = { 10f };
 
+    SteeringAgentVisual visual;
+
     protected void Awake()
     {
         if (!behaviorsInitialized) InitializeBehaviors();
+        visual = GetComponent<SteeringAgentVisual>();
         acceleration = new Vector3(0, 0);
 
         // This is a new Vector3 method not yet implemented in JS
@@ -116,18 +120,17 @@ public class SteeringAgent : MonoBehaviour
         return (T)behaviorDict[typeof(T)];
     }
 
-    public SteeringBehavior GetModuleOfType(Type behaviorType)
+    public SteeringBehavior GetBehaviorOfType(Type behaviorType)
     {
         return behaviorDict[behaviorType];
     }
 
     public List<Type> GetSelectedBehaviorTypes()
     {
-        Debug.Log("GetSelectedModuleTypes");
+//        Debug.Log("GetSelectedModuleTypes");
         List<Type> selectedModuleTypes = new List<Type>();
         foreach (string name in selectedModuleTypeNames)
         {
-            Debug.Log(name);
             selectedModuleTypes.Add(Type.GetType(name));
         }
         return selectedModuleTypes;
@@ -157,9 +160,13 @@ public class SteeringAgent : MonoBehaviour
         if (modCount == reducedSelection.Length) selectedModuleTypeNames = reducedSelection;
     }
 
-    static void InitializeBehaviors()
+    void InitializeBehaviors()
     {
         behaviors = new List<SteeringBehavior>();
+        foreach (Type behaviorType in GetSelectedBehaviorTypes())
+        {
+            LoadBehavior(behaviorType);
+        }
         behaviorsInitialized = true;
     }
 
@@ -202,7 +209,7 @@ public class SteeringAgent : MonoBehaviour
     {
         foreach (SteeringBehavior behavior in behaviors)
         {
-            Vector3 steer = behavior.GetSteeringBehaviorVector(this, surroundings, 10);
+            applyForce(behavior.GetSteeringBehaviorVector(this, surroundings, 10));
         }
     }
 
@@ -224,7 +231,7 @@ public class SteeringAgent : MonoBehaviour
     void move()
     {
         this.transform.position = new Vector3(position.x, position.y, (z_layering? position.y : 0));
-        //this.transform.rotation = Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg);
+        visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
     }
 
     // Wraparound

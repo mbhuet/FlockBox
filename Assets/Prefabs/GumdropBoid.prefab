@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4580682949008232}
   - component: {fileID: 114795357090310694}
+  - component: {fileID: 114487736467919828}
   m_Layer: 0
   m_Name: GumdropBoid
   m_TagString: Untagged
@@ -37,7 +38,7 @@ GameObject:
   - component: {fileID: 4139644795513656}
   - component: {fileID: 212869075194222196}
   m_Layer: 0
-  m_Name: New Sprite
+  m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +54,7 @@ GameObject:
   - component: {fileID: 4257344352815708}
   - component: {fileID: 212462267914161580}
   m_Layer: 0
-  m_Name: New Sprite (1)
+  m_Name: eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,13 +94,27 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1143379499884764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 395.9139, y: 35.24254, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4139644795513656}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114487736467919828
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1143379499884764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afd8ae53b69c5c34ca13aed917a59efe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 212869075194222196}
+  eyes: {fileID: 212462267914161580}
+  nose: {fileID: 0}
 --- !u!114 &114795357090310694
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -111,14 +126,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 20
-  baseWeights: {fileID: 0}
-  separationWeight: 10
-  alignmentWeight: 6
-  cohesionWeight: 8
-  avoidanceWeight: 3
+  maxforce: 10
+  maxSpeed: 30
+  z_layering: 0
   selectedModuleTypeNames:
-  - SocialStatusModule
+  - AlignmentBehavior
+  - CohesionBehavior
+  - SeparationBehavior
 --- !u!212 &212462267914161580
 SpriteRenderer:
   m_ObjectHideFlags: 1

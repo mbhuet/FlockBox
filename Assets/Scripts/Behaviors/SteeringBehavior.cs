@@ -6,9 +6,6 @@ using UnityEngine;
 //Each SteeringBehavior will be instantiated ONCE
 //That instance will be used by all SteeringAgents
 
-public struct SteeringAgentAttribute
-{
-}
 
 public abstract class SteeringBehavior {
 
