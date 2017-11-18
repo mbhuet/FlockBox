@@ -6,19 +6,19 @@ using System.Reflection;
 using System.Linq;
 using System;
 
-[CustomEditor(typeof(Boid))]
+[CustomEditor(typeof(SteeringAgent))]
 public class BoidEditor : Editor
 {
-    Boid myBoid;
+    SteeringAgent myBoid;
     bool weightsFoldout = true;
     int moduleSelection = 0;
 
-    List<Type> allModuleTypes;
+    List<Type> allBehaviorTypes;
 
     void OnEnable()
     {
-        myBoid = (Boid)target;
-        FindBoidModuleImplementations();
+        myBoid = (SteeringAgent)target;
+        FindBehaviorImplementations();
     }
 
 
@@ -55,7 +55,7 @@ public class BoidEditor : Editor
         List<Type> toRemove = new List<Type>();
         foreach (Type modType in addedModuleTypes)
         {
-            if (!allModuleTypes.Contains(modType))
+            if (!allBehaviorTypes.Contains(modType))
             {
                 toRemove.Add(modType);
                 continue;
@@ -73,9 +73,9 @@ public class BoidEditor : Editor
         }
 
         List<Type> unaddedModuleTypes = new List<Type>();
-        string[] addModOptions = new string[allModuleTypes.Count - myBoid.GetSelectedModuleTypes().Count];
+        string[] addModOptions = new string[allBehaviorTypes.Count - myBoid.GetSelectedModuleTypes().Count];
         int optIndex = 0;
-        foreach (Type modType in allModuleTypes)
+        foreach (Type modType in allBehaviorTypes)
         {
             if (!addedModuleTypes.Contains(modType))
             {
@@ -98,19 +98,15 @@ public class BoidEditor : Editor
         }
     }
 
-    void FindBoidModuleImplementations()
+    void FindBehaviorImplementations()
     {
-        allModuleTypes = new List<Type>();
+        allBehaviorTypes = new List<Type>();
         foreach (Type type in
-            Assembly.GetAssembly(typeof(BoidModule)).GetTypes()
-            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(BoidModule))))
+            Assembly.GetAssembly(typeof(SteeringBehavior)).GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(SteeringBehavior))))
         {
-            allModuleTypes.Add(type);
+            allBehaviorTypes.Add(type);
         }
-    }
-
-    void UnaddedModules()
-    {
     }
 
 

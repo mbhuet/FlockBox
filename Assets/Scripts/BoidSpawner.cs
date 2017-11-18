@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BoidSpawner : MonoBehaviour {
-    public Boid boidPrefab;
+    public SteeringAgent boidPrefab;
     public Obstacle obstaclePrefab;
     public int numStartSpawns;
 
@@ -37,7 +37,7 @@ public class BoidSpawner : MonoBehaviour {
     {
         for (int i = 0; i < numBoids; i++)
         {
-            GameObject.Instantiate<Boid>(boidPrefab, pos, Quaternion.identity);
+            GameObject.Instantiate<SteeringAgent>(boidPrefab, pos, Quaternion.identity);
         }
     }
 

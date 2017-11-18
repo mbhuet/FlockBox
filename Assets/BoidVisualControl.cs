@@ -7,7 +7,14 @@ public class BoidVisualControl : MonoBehaviour {
     public SpriteRenderer nose;
     public SpriteRenderer body;
 
-	// Use this for initialization
+	public void SetRotation(float degrees)
+    {
+        if (degrees < 180 && degrees > 0)
+        {
+        }
+
+
+    }
 	void Start () {
 		
 	}

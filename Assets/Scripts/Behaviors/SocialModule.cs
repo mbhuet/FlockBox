@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SocialStatusModule : BoidModule {
+/*
+public class SocialStatusModule : SteeringBehavior {
     public float status;
     const float maxStatus = 100;
     const float minStatus = 0;
@@ -17,14 +18,14 @@ public class SocialStatusModule : BoidModule {
         status = UnityEngine.Random.Range(minStatus, maxStatus);
     }
 
-    public override void SetOwner(Boid owner)
+    public override void SetOwner(SteeringAgent owner)
     {
         base.SetOwner(owner);
         owner.sprite.color = Color.Lerp(lowStatusColor, highStatusColor, status / maxStatus);
     }
 
     protected override float AvoidanceFactor(Obstacle other) { return 1; }
-    protected override float SeparationFactor(Boid other) {
+    protected override float SeparationFactor(SteeringAgent other) {
         //separate more from lower status, 
         if (other.HasModuleOfType(typeof(SocialStatusModule)))
         {
@@ -35,7 +36,7 @@ public class SocialStatusModule : BoidModule {
         return 1;
 
     }
-    protected override float CohesionFactor(Boid other) {
+    protected override float CohesionFactor(SteeringAgent other) {
         //attract to higher status, 
         if (other.HasModuleOfType<SocialStatusModule>())
         {
@@ -44,7 +45,7 @@ public class SocialStatusModule : BoidModule {
         }
         return 1;
     }
-    protected override float AlignmentFactor(Boid other) {
+    protected override float AlignmentFactor(SteeringAgent other) {
         //attract to higher status, 
         if (other.HasModuleOfType<SocialStatusModule>())
         {
@@ -54,3 +55,4 @@ public class SocialStatusModule : BoidModule {
         return 1;
     }
 }
+*/
