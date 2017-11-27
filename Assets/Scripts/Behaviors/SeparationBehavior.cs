@@ -38,9 +38,9 @@ public class SeparationBehavior : SteeringBehavior {
             // steer.setMag(maxspeed);
 
             // Implement Reynolds: Steering = Desired - Velocity
-            steer = steer.normalized * (mine.maxSpeed);
+            steer = steer.normalized * (mine.settings.maxSpeed);
             steer -= (mine.velocity);
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.maxforce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
         }
         return steer;
     }

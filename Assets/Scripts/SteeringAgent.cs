@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Every behavior needs to have a weight, an effective distance
-//Want to be able to have multipe implementations of SteeringAgent present in the same simulation
+
+//Every SteeringAgent uses the same SteeringBehavior instances, there's only one per type and its stored in a static Dictionary
+//SteeringBehaviors will never have instance variables
+//SteeringAgents have 
 
 [RequireComponent(typeof(SteeringAgentVisual))]
 [System.Serializable]
 public class SteeringAgent : MonoBehaviour
 {
-
-
     static bool drawVectors = false;
 
     Coordinates lastNeighborhood = new Coordinates(0,0);
@@ -20,49 +20,39 @@ public class SteeringAgent : MonoBehaviour
     public Vector3 velocity { get; protected set; }
     public Vector3 acceleration { get; protected set; }
     float visualRadius = 12.0f;
-    public float maxforce = 10;    // Maximum steering force
-    public float maxSpeed = 2;    // Maximum speed
+    
     public bool z_layering = true; //will set position z values based on y value;
 
-    public static List<SteeringBehavior> behaviors;
-    static bool behaviorsInitialized = false;
+    public BehaviorSettings settings;
 
-    [SerializeField]
-    private string[] selectedModuleTypeNames = { };
-    static Dictionary<Type, SteeringBehavior> behaviorDict = new Dictionary<Type, SteeringBehavior>();
+    //Takes a type, returns instance
+    static Dictionary<string, SteeringBehavior> sharedBehaviorDict = new Dictionary<string, SteeringBehavior>();
     protected Dictionary<string, float> attributes;
-
-    float[] effectiveDistances = { 10f };
 
     SteeringAgentVisual visual;
 
+
     protected void Awake()
     {
-        if (!behaviorsInitialized) InitializeBehaviors();
+        InitializeBehaviors();
         visual = GetComponent<SteeringAgentVisual>();
         acceleration = new Vector3(0, 0);
+        position = transform.position;
 
         // This is a new Vector3 method not yet implemented in JS
         // velocity = Vector3.random2D();
 
         // Leaving the code temporarily this way so that this example runs in JS
         float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * maxSpeed;
-
+        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * settings.maxSpeed;
     }
 
-    protected void Start()
-    {
-        position = transform.position;
-    }
 
     protected void Update()
     {
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
-        // Update velocity
         velocity += (acceleration) * Time.deltaTime;
-        // Limit speed 
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, maxSpeed);
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, settings.maxSpeed);
         if(drawVectors) Debug.DrawLine(position, position + velocity * Time.deltaTime, Color.yellow);
 
         position += (velocity * Time.deltaTime );
@@ -91,83 +81,18 @@ public class SteeringAgent : MonoBehaviour
             lastNeighborhood.col = currentNeighborhood.col;
         }
     }
-    
 
-    public void LoadBehavior(Type behaviorType)
-    {
-        SteeringBehavior behavior = (SteeringBehavior)Activator.CreateInstance(behaviorType);
-        behaviors.Add(behavior);
-    }
 
-    public void LoadBehavior<T>() where T : SteeringBehavior, new()
-    {
-        SteeringBehavior behavior = new T();
-        behaviors.Add(behavior);
-    }
 
-    public bool HasModuleOfType(Type behaviorType)
-    {
-        return behaviorDict.ContainsKey(behaviorType);
-    }
-
-    public bool HasModuleOfType<T>()
-    {
-        return behaviorDict.ContainsKey(typeof(T));
-    }
-
-    public T GetModuleOfType<T>() where T : SteeringBehavior
-    {
-        return (T)behaviorDict[typeof(T)];
-    }
-
-    public SteeringBehavior GetBehaviorOfType(Type behaviorType)
-    {
-        return behaviorDict[behaviorType];
-    }
-
-    public List<Type> GetSelectedBehaviorTypes()
-    {
-//        Debug.Log("GetSelectedModuleTypes");
-        List<Type> selectedModuleTypes = new List<Type>();
-        foreach (string name in selectedModuleTypeNames)
-        {
-            selectedModuleTypes.Add(Type.GetType(name));
-        }
-        return selectedModuleTypes;
-    }
-
-    public void AddModuleSelection(Type modType)
-    {
-        string[] expandedSelection = new string[selectedModuleTypeNames.Length + 1];
-        selectedModuleTypeNames.CopyTo(expandedSelection, 0);
-        expandedSelection[expandedSelection.Length - 1] = modType.ToString();
-        selectedModuleTypeNames = expandedSelection;
-    }
-
-    public void RemoveModuleSelection(Type modType)
-    {
-        string[] reducedSelection = new string[selectedModuleTypeNames.Length - 1];
-        string remName = modType.ToString();
-        int modCount = 0;
-        foreach (string name in selectedModuleTypeNames)
-        {
-            if (name != remName)
-            {
-                if (modCount < reducedSelection.Length) reducedSelection[modCount] = name;
-                modCount++;
-            }
-        }
-        if (modCount == reducedSelection.Length) selectedModuleTypeNames = reducedSelection;
-    }
-
+    //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
     void InitializeBehaviors()
     {
-        behaviors = new List<SteeringBehavior>();
-        foreach (Type behaviorType in GetSelectedBehaviorTypes())
+        foreach (BehaviorInfo info in settings.behaviors)
         {
-            LoadBehavior(behaviorType);
+            string behaviorType = info.behaviorTypeName;
+            if (!sharedBehaviorDict.ContainsKey(behaviorType))
+                sharedBehaviorDict.Add(behaviorType, (SteeringBehavior)Activator.CreateInstance(Type.GetType(behaviorType)));
         }
-        behaviorsInitialized = true;
     }
 
     public float GetAttribute(string name)
@@ -207,10 +132,8 @@ public class SteeringAgent : MonoBehaviour
     // We accumulate a new acceleration each time based on three rules
     void flock(SurroundingsInfo surroundings)
     {
-        foreach (SteeringBehavior behavior in behaviors)
-        {
-            applyForce(behavior.GetSteeringBehaviorVector(this, surroundings, 10));
-        }
+        foreach (BehaviorInfo info in settings.behaviors)
+            applyForce(sharedBehaviorDict[info.behaviorTypeName].GetSteeringBehaviorVector(this, surroundings, info.effectiveRadius) * info.weight);
     }
 
 
@@ -218,12 +141,12 @@ public class SteeringAgent : MonoBehaviour
     {
         Vector3 desired = target - position;  // A vector pointing from the position to the target
         // Scale to maximum speed
-        desired = desired.normalized * (maxSpeed);
+        desired = desired.normalized * (settings.maxSpeed);
 
 
         // Steering = Desired minus Velocity
         Vector3 steer = desired - velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, maxforce);
+        steer = steer.normalized * Mathf.Min(steer.magnitude, settings.maxForce);
          // Limit to maximum steering force
         return steer;
     }
@@ -231,6 +154,8 @@ public class SteeringAgent : MonoBehaviour
     void move()
     {
         this.transform.position = new Vector3(position.x, position.y, (z_layering? position.y : 0));
+        if (visual == null) visual = GetComponent<SteeringAgentVisual>();
+        visual.SetRotation(Quaternion.identity);
         visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
     }
 

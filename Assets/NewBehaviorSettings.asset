@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7329fc57a590d0542989222ce93ae7aa, type: 3}
+  m_Name: NewBehaviorSettings
+  m_EditorClassIdentifier: 
+  _id: 10082
+  dbg: 0
+  Prefs:
+    _Buckets: 08000000ffffffffffffffff00000000ffffffffffffffffffffffffffffffff05000000090000000600000007000000ffffffff04000000ffffffff03000000ffffffff
+    _HashCodes: 711daa63f2e815087ad5ea49d1ab5e4442769e1c2f220903f785080df885080df0250903b129090300000000000000000000000000000000000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffff02000000ffffffff01000000ffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000
+    _Count: 10
+    _Version: 55130
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: 711daa63f2e815887ad5eac9d1ab5ec442769e9c2f220903f785080df885080df0250903b129090300000000000000000000000000000000000000000000000000000000
+    _Values:
+    - ValueString: 
+      ValueFloat: 4
+      Type: 0
+    - ValueString: 
+      ValueFloat: 10
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 14
+      Type: 1
+    - ValueString: 
+      ValueFloat: 53
+      Type: 1
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+  maxForce: 19.32
+  maxSpeed: 36.7
+  behaviors:
+  - behaviorTypeName: AlignmentBehavior
+    weight: 1.66
+    effectiveRadius: 10
+  - behaviorTypeName: CohesionBehavior
+    weight: 2.22
+    effectiveRadius: 10
+  - behaviorTypeName: SeparationBehavior
+    weight: 7.61
+    effectiveRadius: 10

@@ -82,13 +82,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxforce: 10
-  maxSpeed: 40
   z_layering: 0
-  selectedModuleTypeNames:
-  - AlignmentBehavior
-  - CohesionBehavior
-  - SeparationBehavior
+  settings: {fileID: 11400000, guid: 7d0d7c34c6b280c4f9b4d0dd097f90bd, type: 2}
 --- !u!114 &114762736815519660
 MonoBehaviour:
   m_ObjectHideFlags: 1

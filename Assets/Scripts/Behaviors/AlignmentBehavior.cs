@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AlignmentBehavior : SteeringBehavior {
-    public new string[] requiredAttributes = {"status"};
 
     // Alignment
     // For every nearby boid in the system, calculate the average velocity
@@ -31,9 +30,9 @@ public class AlignmentBehavior : SteeringBehavior {
 
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
-            sum *= (mine.maxSpeed);
+            sum *= (mine.settings.maxSpeed);
             Vector3 steer = sum - mine.velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.maxforce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
             return steer;
         }
         else
