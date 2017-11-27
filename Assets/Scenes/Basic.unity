@@ -172,7 +172,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 120
+  orthographic size: 60
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -194,57 +194,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1150902055}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1960383432
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1960383434}
-  - component: {fileID: 1960383433}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1960383433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1960383432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visualRadius: 12
-  maxSpeed: 2
-  separationWeight: 1
-  alignmentWeight: 0.7
-  cohesionWeight: 1.1
-  avoidanceWeight: 1
---- !u!4 &1960383434
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1960383432}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.650663, y: 8.718333, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2079507317
 GameObject:
@@ -273,11 +227,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e14ae125ebd474e91cac66f70b5d47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidPrefab: {fileID: 114795357090310694, guid: 1c8654586a152c347b442898352293da,
+  boidPrefab: {fileID: 114191054272108188, guid: 1c8654586a152c347b442898352293da,
     type: 2}
   obstaclePrefab: {fileID: 114468748862160914, guid: bb88c6274a934b3448243917f5be9dad,
     type: 2}
-  numStartSpawns: 400
+  numStartSpawns: 1000
 --- !u!4 &2079507319
 Transform:
   m_ObjectHideFlags: 0

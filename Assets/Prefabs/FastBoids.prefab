@@ -52,16 +52,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualRadius: 4
+  maxforce: 10
   maxSpeed: 500
-  baseWeights: {fileID: 0}
-  separationWeight: 3
-  alignmentWeight: 1.1
-  cohesionWeight: 1.6
-  avoidanceWeight: 10
+  z_layering: 1
   selectedModuleTypeNames:
   - BasicModule
   - SocialStatusModule
+  selectedModuleWeights: []
+  selectedModuleRadius: []
 --- !u!212 &212032912268903974
 SpriteRenderer:
   m_ObjectHideFlags: 1

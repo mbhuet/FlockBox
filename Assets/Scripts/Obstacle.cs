@@ -29,7 +29,7 @@ public class Obstacle : MonoBehaviour {
     public void OnEndGrow()
     {
         SetAlpha(1);
-        Boid.AddObstacleToNeighborhoods(this);
+        NeighborhoodCoordinator.AddObstacleToNeighborhoods(this);
     }
 
     void SetAlpha(float alpha)
