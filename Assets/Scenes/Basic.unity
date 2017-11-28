@@ -231,7 +231,7 @@ MonoBehaviour:
     type: 2}
   obstaclePrefab: {fileID: 114468748862160914, guid: bb88c6274a934b3448243917f5be9dad,
     type: 2}
-  numStartSpawns: 1000
+  numStartSpawns: 500
 --- !u!4 &2079507319
 Transform:
   m_ObjectHideFlags: 0

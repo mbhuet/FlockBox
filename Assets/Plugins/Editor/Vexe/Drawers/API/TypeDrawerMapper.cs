@@ -142,6 +142,7 @@ namespace Vexe.Editor
                         .Add<OnChangedAttribute, OnChangedDrawer>()
                         .Add<PathAttribute, PathDrawer>()
                         .Add<ShowTypeAttribute, ShowTypeDrawer>()
+						.Add<ShowSerializableTypeAttribute, ShowSerializableTypeDrawer>()
                         .Add<fSliderAttribute, fSliderDrawer>()
                         .Add<iSliderAttribute, iSliderDrawer>()
                         .Add<vSliderAttribute, vSliderDrawer>()

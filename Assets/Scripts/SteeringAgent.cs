@@ -26,8 +26,8 @@ public class SteeringAgent : MonoBehaviour
     public BehaviorSettings settings;
 
     //Takes a type, returns instance
-    static Dictionary<string, SteeringBehavior> sharedBehaviorDict = new Dictionary<string, SteeringBehavior>();
-    protected Dictionary<string, float> attributes;
+    static Dictionary<Type, SteeringBehavior> sharedBehaviorDict = new Dictionary<Type, SteeringBehavior>();
+	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
     SteeringAgentVisual visual;
 
@@ -37,7 +37,6 @@ public class SteeringAgent : MonoBehaviour
         InitializeBehaviors();
         visual = GetComponent<SteeringAgentVisual>();
         acceleration = new Vector3(0, 0);
-        position = transform.position;
 
         // This is a new Vector3 method not yet implemented in JS
         // velocity = Vector3.random2D();
@@ -46,6 +45,12 @@ public class SteeringAgent : MonoBehaviour
         float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
         velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * settings.maxSpeed;
     }
+
+	protected void Start(){
+		position = transform.position;
+
+	}
+
 
 
     protected void Update()
@@ -83,21 +88,33 @@ public class SteeringAgent : MonoBehaviour
     }
 
 
+	public static SteeringBehavior LoadSharedBehavior<T>() where T: SteeringBehavior, new(){
+		if(!sharedBehaviorDict.ContainsKey(typeof(T)))
+			sharedBehaviorDict.Add (typeof(T), new T ());
+		return sharedBehaviorDict [typeof(T)];
+	}
+
+	public static SteeringBehavior GetSharedBehavior<T>() where T: SteeringBehavior, new(){
+		if (!sharedBehaviorDict.ContainsKey (typeof(T)))
+			return LoadSharedBehavior<T> ();
+		return sharedBehaviorDict [typeof(T)];
+	}
+
 
     //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
     void InitializeBehaviors()
     {
+		
         foreach (BehaviorInfo info in settings.behaviors)
         {
-            string behaviorType = info.behaviorTypeName;
-            if (!sharedBehaviorDict.ContainsKey(behaviorType))
-                sharedBehaviorDict.Add(behaviorType, (SteeringBehavior)Activator.CreateInstance(Type.GetType(behaviorType)));
+            if (!sharedBehaviorDict.ContainsKey(info.behaviorType))
+				sharedBehaviorDict.Add(info.behaviorType, (SteeringBehavior)Activator.CreateInstance((info.behaviorType)));
         }
     }
 
-    public float GetAttribute(string name)
+	public object GetAttribute(string name)
     {
-        float val;
+        object val;
         if (!attributes.TryGetValue(name, out val))
             return 0;
         return val;
@@ -133,7 +150,7 @@ public class SteeringAgent : MonoBehaviour
     void flock(SurroundingsInfo surroundings)
     {
         foreach (BehaviorInfo info in settings.behaviors)
-            applyForce(sharedBehaviorDict[info.behaviorTypeName].GetSteeringBehaviorVector(this, surroundings, info.effectiveRadius) * info.weight);
+            applyForce(sharedBehaviorDict[info.behaviorType].GetSteeringBehaviorVector(this, surroundings, info.effectiveRadius) * info.weight);
     }
 
 

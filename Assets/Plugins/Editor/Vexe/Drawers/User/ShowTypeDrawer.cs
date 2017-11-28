@@ -46,4 +46,50 @@ namespace Vexe.Editor.Drawers
 			}
 		}
 	}
+
+	public class ShowSerializableTypeDrawer : AttributeDrawer<SerializableType, ShowSerializableTypeAttribute>
+	{
+		private Type[] availableTypes;
+		private string[] typesNames;
+		private int index;
+
+		protected override void Initialize()
+		{
+			if (attribute.FromThisGo)
+			{
+				availableTypes = gameObject.GetAllComponents()
+					.Select(x => x.GetType())
+					.Where(x => x.IsA(attribute.baseType))
+					.ToArray();
+			}
+			else
+			{
+				availableTypes = ReflectionHelper.GetAllTypesOf(attribute.baseType)
+					.Where(t => !t.IsAbstract)
+					.ToArray();
+			}
+
+			typesNames = availableTypes.Select(t => t.Name)
+				.ToArray();
+
+		}
+
+		public override void OnGUI()
+		{
+			//gui.Label ((memberValue).ToString() + " " + availableTypes.IndexOf(memberValue.SystemType));
+
+			index = member.IsNull() ? -1 : Array.IndexOf(availableTypes,memberValue.SystemType);
+			var selection = gui.Popup(displayText, index, typesNames);
+			{
+				//gui.Label (index.ToString () + " " + selection.ToString());
+
+				if (index != selection)
+				{
+					memberValue = availableTypes[selection];
+					index = selection;
+				}
+			}
+		}
+
+	}
 }

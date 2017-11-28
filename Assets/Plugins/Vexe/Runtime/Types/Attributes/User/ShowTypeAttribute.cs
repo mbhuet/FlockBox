@@ -20,4 +20,23 @@ namespace Vexe.Runtime.Types
 			this.baseType = baseType;
 		}
 	}
+
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter)]
+	public class ShowSerializableTypeAttribute : DrawnAttribute
+	{
+		/// <summary>
+		/// The base Type to start from. All non-abstract child types of this type will be shown
+		/// </summary>
+		public readonly Type baseType;
+
+		/// <summary>
+		/// Show only component types attached to the game object?
+		/// </summary>
+		public bool FromThisGo { get; set; }
+
+		public ShowSerializableTypeAttribute(Type baseType)
+		{
+			this.baseType = baseType;
+		}
+	}
 }
