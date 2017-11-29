@@ -10,6 +10,7 @@ public class AvoidanceBehavior : SteeringBehavior {
         if (surroundings.obstacles.First == null) return Vector3.zero;
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;
+        Vector3 closestHitPoint = Vector3.zero;
         Obstacle mostThreateningObstacle = surroundings.obstacles.First.Value;
 
         foreach (Obstacle obs in surroundings.obstacles)
@@ -24,24 +25,19 @@ public class AvoidanceBehavior : SteeringBehavior {
                 if (distanceToClosestPoint < closestHitDistance)
                 {
                     closestHitDistance = distanceToClosestPoint;
+                    closestHitPoint = closestPoint;
                     mostThreateningObstacle = obs;
                 }
-                //Debug.DrawLine(mine.position, closestPoint, Color.blue);
-                //Debug.DrawLine(obs.center, closestPoint, Color.green);
 
             }
         }
 
         if (!foundObstacleInPath) return Vector3.zero;
+        float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.position, mostThreateningObstacle.center) - mostThreateningObstacle.radius, 1);
+        if (distanceToObstacleEdge > effectiveDistance) return Vector3.zero;
+        Vector3 steer = closestHitPoint - mostThreateningObstacle.center;
 
-       // Debug.DrawRay(mine.position, mine.velocity, Color.yellow);
-        Vector3 steer = (mine.position + mine.velocity) - (mostThreateningObstacle.center - mine.position);
-
-        //steer = mine.position - mostThreateningObstacle.center;
         steer = steer.normalized * mine.settings.maxForce;
-
-
-        //Debug.DrawRay(mine.position, steer, Color.red);
         return steer;
     }
 
