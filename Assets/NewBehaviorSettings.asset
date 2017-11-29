@@ -14,14 +14,14 @@ MonoBehaviour:
   _id: -276596
   dbg: 0
   Prefs:
-    _Buckets: 090000000400000003000000ffffffffffffffffffffffffffffffff0700000008000000ffffffffffffffffffffffffffffffffffffffff01000000ffffffff05000000
-    _HashCodes: 87822263084e8e07903a6349672352476cf11978d97a926d9a7e926da1c39c7ca2c39c7c5b82926d00000000000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000060000000200000000000000000000000000000000000000000000000000000000000000
-    _Count: 10
-    _Version: 29373
+    _Buckets: 090000000400000003000000ffffffffffffffffffffffffffffffff07000000080000000b000000ffffffffffffffffffffffffffffffff010000000a00000005000000
+    _HashCodes: 87822263084e8e07903a6349672352476cf11978d97a926d9a7e926da1c39c7ca2c39c7c5b82926ddfe56b661c86926d0000000000000000000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000600000002000000ffffffffffffffff0000000000000000000000000000000000000000
+    _Count: 12
+    _Version: 85615
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 87822263084e8e87903a63c9672352c76cf119f8d97a926d9a7e926da1c39cfca2c39cfc5b82926d00000000000000000000000000000000000000000000000000000000
+    _Keys: 87822263084e8e87903a63c9672352c76cf119f8d97a926d9a7e926da1c39cfca2c39cfc5b82926ddfe56b661c86926d0000000000000000000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -55,10 +55,10 @@ MonoBehaviour:
       Type: 2
     - ValueString: 
       ValueFloat: 0
-      Type: 0
+      Type: 2
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 1
+      Type: 2
     - ValueString: 
       ValueFloat: 0
       Type: 0
@@ -82,19 +82,26 @@ MonoBehaviour:
       m_AssemblyQualifiedName: AlignmentBehavior, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       m_AssemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    weight: 1
+    weight: 0.6
     effectiveRadius: 10
   - behaviorType:
       m_Name: CohesionBehavior
       m_AssemblyQualifiedName: CohesionBehavior, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       m_AssemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    weight: 1
+    weight: 1.64
     effectiveRadius: 10
   - behaviorType:
       m_Name: SeparationBehavior
       m_AssemblyQualifiedName: SeparationBehavior, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       m_AssemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    weight: 1
+    weight: 1.41
+    effectiveRadius: 10
+  - behaviorType:
+      m_Name: AvoidanceBehavior
+      m_AssemblyQualifiedName: AvoidanceBehavior, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_AssemblyName: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    weight: 1.54
     effectiveRadius: 10
