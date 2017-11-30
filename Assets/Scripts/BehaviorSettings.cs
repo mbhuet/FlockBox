@@ -14,12 +14,11 @@ public class BehaviorSettings : BaseScriptableObject {
     public float maxForce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
 
-	[Display(Seq.PerItemRemove)]
-
     public AlignmentBehavior alignmment = new AlignmentBehavior();
     public CohesionBehavior cohesion = new CohesionBehavior();
     public SeparationBehavior separation = new SeparationBehavior();
     public AvoidanceBehavior avoidance = new AvoidanceBehavior();
+    public SocialStatusBehavior socialStatus = new SocialStatusBehavior();
 
     private void Awake()
     {

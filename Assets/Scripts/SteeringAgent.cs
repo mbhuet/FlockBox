@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vexe.Runtime.Types;
 
 
 //Every SteeringAgent uses the same SteeringBehavior instances, there's only one per type and its stored in a static Dictionary
@@ -10,7 +11,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(SteeringAgentVisual))]
 [System.Serializable]
-public class SteeringAgent : MonoBehaviour
+public class SteeringAgent : BaseBehaviour
 {
     static bool drawVectors = false;
 
@@ -26,14 +27,22 @@ public class SteeringAgent : MonoBehaviour
     public BehaviorSettings settings;
 
     //Takes a type, returns instance
+    [SerializeField]
 	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
-    SteeringAgentVisual visual;
+    private SteeringAgentVisual m_visual;
+    public SteeringAgentVisual visual
+    {
+        get
+        {
+            if (m_visual == null) m_visual = GetComponent<SteeringAgentVisual>();
+            return m_visual;
+        }
+    }
 
 
     protected void Awake()
     {
-        visual = GetComponent<SteeringAgentVisual>();
         acceleration = new Vector3(0, 0);
 
         // This is a new Vector3 method not yet implemented in JS
@@ -147,7 +156,6 @@ public class SteeringAgent : MonoBehaviour
     void move()
     {
         this.transform.position = new Vector3(position.x, position.y, (z_layering? position.y : 0));
-        if (visual == null) visual = GetComponent<SteeringAgentVisual>();
         visual.SetRotation(Quaternion.identity);
         visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
     }

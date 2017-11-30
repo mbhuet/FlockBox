@@ -10,4 +10,9 @@ public class SteeringAgentVisual : MonoBehaviour {
     {
         if (sprite != null) sprite.transform.rotation = rotation;
     }
+
+    public void SetColor(Color color)
+    {
+        sprite.color = color;
+    }
 }
