@@ -26,7 +26,6 @@ public class SteeringAgent : MonoBehaviour
     public BehaviorSettings settings;
 
     //Takes a type, returns instance
-    static Dictionary<Type, SteeringBehavior> sharedBehaviorDict = new Dictionary<Type, SteeringBehavior>();
 	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
     SteeringAgentVisual visual;
@@ -34,7 +33,6 @@ public class SteeringAgent : MonoBehaviour
 
     protected void Awake()
     {
-        InitializeBehaviors();
         visual = GetComponent<SteeringAgentVisual>();
         acceleration = new Vector3(0, 0);
 
@@ -48,7 +46,6 @@ public class SteeringAgent : MonoBehaviour
 
 	protected void Start(){
 		position = transform.position;
-
 	}
 
 
@@ -88,29 +85,8 @@ public class SteeringAgent : MonoBehaviour
     }
 
 
-	public static SteeringBehavior LoadSharedBehavior<T>() where T: SteeringBehavior, new(){
-		if(!sharedBehaviorDict.ContainsKey(typeof(T)))
-			sharedBehaviorDict.Add (typeof(T), new T ());
-		return sharedBehaviorDict [typeof(T)];
-	}
-
-	public static SteeringBehavior GetSharedBehavior<T>() where T: SteeringBehavior, new(){
-		if (!sharedBehaviorDict.ContainsKey (typeof(T)))
-			return LoadSharedBehavior<T> ();
-		return sharedBehaviorDict [typeof(T)];
-	}
-
-
     //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
-    void InitializeBehaviors()
-    {
-		
-        foreach (BehaviorInfo info in settings.behaviors)
-        {
-            if (!sharedBehaviorDict.ContainsKey(info.behaviorType))
-				sharedBehaviorDict.Add(info.behaviorType, (SteeringBehavior)Activator.CreateInstance((info.behaviorType)));
-        }
-    }
+    
 
 	public object GetAttribute(string name)
     {
@@ -149,8 +125,8 @@ public class SteeringAgent : MonoBehaviour
     // We accumulate a new acceleration each time based on three rules
     void flock(SurroundingsInfo surroundings)
     {
-        foreach (BehaviorInfo info in settings.behaviors)
-            applyForce(sharedBehaviorDict[info.behaviorType].GetSteeringBehaviorVector(this, surroundings, info.effectiveRadius) * info.weight);
+        foreach (SteeringBehavior behavior in settings.activeBehaviors)
+            applyForce(behavior.GetSteeringBehaviorVector(this, surroundings));
     }
 
 

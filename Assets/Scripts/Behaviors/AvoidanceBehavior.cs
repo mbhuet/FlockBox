@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[System.Serializable]
 public class AvoidanceBehavior : SteeringBehavior {
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings, float effectiveDistance)
+    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
         if (surroundings.obstacles.First == null) return Vector3.zero;
         bool foundObstacleInPath = false;
@@ -34,11 +34,11 @@ public class AvoidanceBehavior : SteeringBehavior {
 
         if (!foundObstacleInPath) return Vector3.zero;
         float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.position, mostThreateningObstacle.center) - mostThreateningObstacle.radius, 1);
-        if (distanceToObstacleEdge > effectiveDistance) return Vector3.zero;
+        if (distanceToObstacleEdge > effectiveRadius) return Vector3.zero;
         Vector3 steer = closestHitPoint - mostThreateningObstacle.center;
 
         steer = steer.normalized * mine.settings.maxForce;
-        return steer;
+        return steer * weight;
     }
 
 

@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Vexe.Runtime.Types;
 using UnityEngine;
 
+[System.Serializable]
 public class SeparationBehavior : SteeringBehavior {
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings, float effectiveDistance)
+    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Vector3 steer = Vector3.zero;
         int count = 0;
@@ -14,7 +16,7 @@ public class SeparationBehavior : SteeringBehavior {
 
             float d = Vector3.Distance(mine.position, other.position);
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-            if ((d > 0) && (d < effectiveDistance))
+            if ((d > 0) && (d < effectiveRadius))
             {
                 // Calculate vector pointing away from neighbor
                 Vector3 diff = mine.position - other.position;
@@ -42,6 +44,6 @@ public class SeparationBehavior : SteeringBehavior {
             steer -= (mine.velocity);
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
         }
-        return steer;
+        return steer * weight;
     }
 }

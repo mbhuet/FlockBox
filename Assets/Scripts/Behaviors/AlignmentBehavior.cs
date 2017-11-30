@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AlignmentBehavior : SteeringBehavior {
 
     // Alignment
     // For every nearby boid in the system, calculate the average velocity
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings, float effectiveDistance)
+    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
@@ -14,7 +15,7 @@ public class AlignmentBehavior : SteeringBehavior {
         {
 
             float d = Vector3.Distance(mine.position, other.position);
-            if ((d > 0) && (d < effectiveDistance))
+            if ((d > 0) && (d < effectiveRadius))
             {
                 float modFactor = 1;
                 sum += (other.velocity) * modFactor;
@@ -33,7 +34,7 @@ public class AlignmentBehavior : SteeringBehavior {
             sum *= (mine.settings.maxSpeed);
             Vector3 steer = sum - mine.velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
-            return steer;
+            return steer * weight;
         }
         else
         {
