@@ -19,6 +19,8 @@ public class BehaviorSettings : BaseScriptableObject {
     public SeparationBehavior separation = new SeparationBehavior();
     public AvoidanceBehavior avoidance = new AvoidanceBehavior();
     public SocialStatusBehavior socialStatus = new SocialStatusBehavior();
+    public RelationshipBehavior friendships = new RelationshipBehavior();
+    //public EmptyBehavior empty = new EmptyBehavior();
 
     private void Awake()
     {

@@ -13,8 +13,6 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class SteeringAgent : BaseBehaviour
 {
-    static bool drawVectors = false;
-
     Coordinates lastNeighborhood = new Coordinates(0,0);
 
     public Vector3 position { get; protected set; }
@@ -64,7 +62,6 @@ public class SteeringAgent : BaseBehaviour
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, settings.maxSpeed);
-        if(drawVectors) Debug.DrawLine(position, position + velocity * Time.deltaTime, Color.yellow);
 
         position += (velocity * Time.deltaTime );
 
@@ -105,13 +102,13 @@ public class SteeringAgent : BaseBehaviour
         return val;
     }
 
-    public void SetAttribute(string name, float val)
+    public void SetAttribute(string name, object value)
     {
         if (attributes.ContainsKey(name))
-            attributes[name] = val;
+            attributes[name] = value;
         else
         {
-            attributes.Add(name, val);
+            attributes.Add(name, value);
         }
     }
 
@@ -135,7 +132,11 @@ public class SteeringAgent : BaseBehaviour
     void flock(SurroundingsInfo surroundings)
     {
         foreach (SteeringBehavior behavior in settings.activeBehaviors)
-            applyForce(behavior.GetSteeringBehaviorVector(this, surroundings));
+        {
+            Vector3 steer = (behavior.GetSteeringBehaviorVector(this, surroundings));
+            if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
+            applyForce(steer);
+        }
     }
 
 

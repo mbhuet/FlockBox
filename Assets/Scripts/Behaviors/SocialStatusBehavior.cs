@@ -14,6 +14,7 @@ public class SocialStatusBehavior : CohesionBehavior
 
     const string statusAttributeName = "socialStatus";
 
+    [VisibleWhen("isActive")]
     public AnimationCurve attractionCurve;
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
@@ -38,7 +39,8 @@ public class SocialStatusBehavior : CohesionBehavior
                     float attraction = attractionCurve.Evaluate((statusDifferential / maxStatus + 1) * .5f);
                     //Debug.DrawLine(mine.position, other.position, Color.Lerp(Color.blue, Color.red, (attraction + 1)/5f));
                         sum += mineToOther.normalized * attraction;
-                        count += statusDifferential / maxStatus;
+                        count += attraction;
+                    //Debug.Log("diff " + statusDifferential + " attract " + attraction);
                     
                 }
             }
