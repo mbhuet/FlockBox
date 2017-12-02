@@ -37,6 +37,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private static int neighborhoodRows_static;
     private static Vector2 neighborhoodSize_static;
     private static Vector2 neighborhoodsCenter_static;
+    private Transform trackingTarget;
 
     public static Vector2 max { get; private set; }
     public static Vector2 min { get; private set; }
@@ -52,8 +53,19 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     void Start()
     {
-        if (!neighborhoodsInitialized)
-            InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, transform.position);
+        trackingTarget = this.transform;
+        if (!neighborhoodsInitialized) { 
+            InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, this.transform);
+    }
+    }
+
+    private void Update()
+    {
+        if (trackingTarget!= null && trackingTarget.hasChanged)
+        {
+            UpdateStaticValues(trackingTarget);
+            trackingTarget.hasChanged = false;
+        }
     }
 
     private void OnDrawGizmos()
@@ -88,40 +100,46 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
 
         Vector2 viewExtents = new Vector2(Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize);
-        Vector2 camPos = Camera.main.transform.position;
         float wrappingPadding = 1;
-
+        
         Vector2 neighborhoodSize = Vector2.one * defaultNeighborhoodDimension;
         int neighborhoodCols = Mathf.FloorToInt((viewExtents.x + wrappingPadding) * 2 / neighborhoodSize.x) + 1;
         int neighborhoodRows = Mathf.FloorToInt((viewExtents.y + wrappingPadding) * 2 / neighborhoodSize.y) + 1;
 
-        InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, camPos);
+        InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, Camera.main.transform);
+    }
+
+    private static void UpdateStaticValues(Transform target)
+    {
+        Debug.Log("UpdateVals");
+
+        neighborhoodsCenter_static = target.position;
+        max = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
+        min = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
     }
 
 
-    private static void InitializeNeighborhoods(int rows, int cols, Vector2 neighborhood_size, Vector2 center)
+    private static void InitializeNeighborhoods(int rows, int cols, Vector2 neighborhood_size, Transform centerTarget)
     {
         Debug.Log("NeighborhoodCoordinator Init " + rows + " " + cols + " " + neighborhood_size);
 
         neighborhoodSize_static = neighborhood_size;
         neighborhoodCols_static = cols;
         neighborhoodRows_static = rows;
-        neighborhoodsCenter_static = center;
+        UpdateStaticValues(centerTarget);
+
 
         neighborhoods = new Neighborhood[rows, cols];
         for (int r = 0; r < rows; r++)
         {
             for (int c = 0; c < cols; c++)
             {
-                Vector2 neighborhoodPos = center + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size.x, ((r - rows / 2f) + .5f) * neighborhood_size.y);
+                Vector2 neighborhoodPos = neighborhoodsCenter_static + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size.x, ((r - rows / 2f) + .5f) * neighborhood_size.y);
                 neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
             }
         }
 
-        max = center + Vector2.right * (cols * neighborhood_size.x)/ 2f + Vector2.up * (rows * neighborhood_size.y )/ 2f;
-        min = center + Vector2.left * (cols * neighborhood_size.x) / 2f + Vector2.down * (rows * neighborhood_size.y) / 2f;
         size = max - min;
-        Debug.Log(min + " " + size + " " + max);
 
         neighborhoodsInitialized = true;
     }

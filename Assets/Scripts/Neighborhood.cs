@@ -6,7 +6,10 @@ public class Neighborhood
 {
     LinkedList<SteeringAgent> neighbors;
     LinkedList<Obstacle> obstacles;
-    public Vector2 neighborhoodCenter;
+    public Vector2 neighborhoodCenter {
+    get { return (Vector2)Camera.main.transform.position + m_neighborhoodCenter; }
+    }
+    private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
         neighbors = new LinkedList<SteeringAgent>();
@@ -14,7 +17,7 @@ public class Neighborhood
     }
     public Neighborhood(Vector2 pos) : this()
     {
-        neighborhoodCenter = pos;
+        m_neighborhoodCenter = pos;
     }
     public void AddNeighbor(SteeringAgent occupant) { neighbors.AddLast(occupant); }
     public void RemoveNeighbor(SteeringAgent neighbor) { neighbors.Remove(neighbor); }
