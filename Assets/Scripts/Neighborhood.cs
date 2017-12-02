@@ -28,9 +28,9 @@ public class Neighborhood
 
 public struct SurroundingsInfo
 {
-    public SurroundingsInfo(LinkedList<SteeringAgent> boids, LinkedList<Obstacle> obs) { neighbors = boids; obstacles = obs; }
-    public LinkedList<SteeringAgent> neighbors;
-    public LinkedList<Obstacle> obstacles;
+    public SurroundingsInfo(LinkedList<SteeringAgentWrapped> boids, LinkedList<ObstacleWrapped> obs) { neighbors = boids; obstacles = obs; }
+    public LinkedList<SteeringAgentWrapped> neighbors;
+    public LinkedList<ObstacleWrapped> obstacles;
 }
 
 public struct Coordinates

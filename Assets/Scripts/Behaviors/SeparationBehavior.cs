@@ -11,15 +11,15 @@ public class SeparationBehavior : SteeringBehavior {
         Vector3 steer = Vector3.zero;
         int count = 0;
         // For every boid in the system, check if it's too close
-        foreach (SteeringAgent other in surroundings.neighbors)
+        foreach (SteeringAgentWrapped other in surroundings.neighbors)
         {
 
-            float d = Vector3.Distance(mine.position, other.position);
+            float d = Vector3.Distance(mine.position, other.wrappedPosition);
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
             if ((d > 0) && (d < effectiveRadius))
             {
                 // Calculate vector pointing away from neighbor
-                Vector3 diff = mine.position - other.position;
+                Vector3 diff = mine.position - other.wrappedPosition;
                 diff.Normalize();
                 diff /= (d);        // Weight by distance
                 steer += (diff);

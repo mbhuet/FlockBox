@@ -14,14 +14,14 @@ MonoBehaviour:
   _id: -276596
   dbg: 0
   Prefs:
-    _Buckets: 07000000080000000a00000003000000ffffffff0000000012000000ffffffff0e0000000d000000ffffffff1100000010000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f000000ffffffffffffffffffffffffffffffff0b000000090000000600000005000000ffffffff
-    _HashCodes: 87822263084e8e07903a6349672352476cf11978d97a926d9a7e926da1c39c7ca2c39c7c5b82926ddfe56b661c86926db7b74d1f38cf5b1fc5fffd1a62f4d3276271c54622678243a87fb31f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff02000000ffffffff04000000ffffffffffffffffffffffffffffffff0c000000ffffffff01000000ffffffffffffffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-    _Count: 19
-    _Version: 638558
+    _Buckets: 07000000080000000a00000003000000ffffffff0000000012000000ffffffff0e0000000d000000ffffffff1100000014000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f000000ffffffffffffffffffffffffffffffff0b000000090000000600000013000000ffffffff
+    _HashCodes: 87822263084e8e07903a6349672352476cf11978d97a926d9a7e926da1c39c7ca2c39c7c5b82926ddfe56b661c86926db7b74d1f38cf5b1fc5fffd1a62f4d3276271c54622678243a87fb31f03d57a234201ac3300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff02000000ffffffff04000000ffffffffffffffffffffffffffffffff0c000000ffffffff01000000ffffffffffffffff050000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Count: 21
+    _Version: 1928048
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 87822263084e8e87903a63c9672352c76cf119f8d97a926d9a7e926da1c39cfca2c39cfc5b82926ddfe56b661c86926db7b74d9f38cf5b9fc5fffd9a62f4d3a76271c5c622678243a87fb39f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Keys: 87822263084e8e87903a63c9672352c76cf119f8d97a926d9a7e926da1c39cfca2c39cfc5b82926ddfe56b661c86926db7b74d9f38cf5b9fc5fffd9a62f4d3a76271c5c622678243a87fb39f03d57a234201ac3300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 31
@@ -81,8 +81,11 @@ MonoBehaviour:
       ValueFloat: 1
       Type: 2
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
     - ValueString: 
       ValueFloat: 0
       Type: 0
@@ -131,31 +134,38 @@ MonoBehaviour:
     - ValueString: 
       ValueFloat: 0
       Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  maxForce: 20
-  maxSpeed: 24.38
+  maxForce: 10.3
+  maxSpeed: 24
   alignmment:
     isActive: 1
-    weight: 4.02
+    weight: 1.5
     effectiveRadius: 10
+    drawVectorLine: 1
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
   cohesion:
     isActive: 0
     weight: 0.9
     effectiveRadius: 10
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
   separation:
     isActive: 1
-    weight: 3.01
+    weight: 8.97
     effectiveRadius: 10
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
   avoidance:
     isActive: 0
     weight: 2.69
     effectiveRadius: 24.74
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
   socialStatus:
     isActive: 1
-    weight: 4.83
+    weight: 2.69
     effectiveRadius: 80.12
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
     statusSpectrum:
       serializedVersion: 2
       key0: {r: 0.15862083, g: 0, b: 1, a: 1}
@@ -190,23 +200,27 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 2
-        time: -0.0074338913
-        value: 0.0032212734
-        inSlope: 1.9763261
-        outSlope: 1.9763261
-        tangentMode: 34
-      - serializedVersion: 2
-        time: 0.4872619
-        value: 0.9809015
-        inSlope: 0.10881562
-        outSlope: 0.10881562
+        time: 0
+        value: -0.0024795532
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
       - serializedVersion: 2
-        time: 0.9943123
-        value: -0.006957054
-        inSlope: -1.9482453
-        outSlope: -1.9482453
-        tangentMode: 34
+        time: 1
+        value: -0.0024795532
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  friendships:
+    isActive: 1
+    weight: 8.44
+    effectiveRadius: 10
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+    maxFriends: 6
+    minFriendshipDuration: 5
+    maxFriendshipDuration: 10
+    maxStatusDifference: 10

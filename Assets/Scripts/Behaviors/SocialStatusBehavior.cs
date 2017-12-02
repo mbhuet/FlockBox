@@ -12,8 +12,9 @@ public class SocialStatusBehavior : CohesionBehavior
     [VisibleWhen("isActive")]
     public int maxStatus = 100;
 
-    const string statusAttributeName = "socialStatus";
+    public const string statusAttributeName = "socialStatus";
 
+    [VisibleWhen("isActive")]
     public AnimationCurve attractionCurve;
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
@@ -24,21 +25,21 @@ public class SocialStatusBehavior : CohesionBehavior
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgent other in surroundings.neighbors)
+        foreach (SteeringAgentWrapped other_wrap in surroundings.neighbors)
         {
-
-            float d = Vector3.Distance(mine.position, other.position);
+            SteeringAgent other = other_wrap.agent;
+            float d = Vector3.Distance(mine.position, other_wrap.wrappedPosition);
             if ((d > 0) && (d < effectiveRadius))
             {
                 if (other.HasAttribute(statusAttributeName))
                 {
                     float statusDifferential = (float)other.GetAttribute(statusAttributeName) - myStatus;
                     
-                        Vector3 mineToOther = (other.position - mine.position).normalized;
+                        Vector3 mineToOther = (other_wrap.wrappedPosition - mine.position).normalized;
                     float attraction = attractionCurve.Evaluate((statusDifferential / maxStatus + 1) * .5f);
-                    //Debug.DrawLine(mine.position, other.position, Color.Lerp(Color.blue, Color.red, (attraction + 1)/5f));
                         sum += mineToOther.normalized * attraction;
-                        count += statusDifferential / maxStatus;
+                        count += attraction;
+                    //Debug.Log("diff " + statusDifferential + " attract " + attraction);
                     
                 }
             }

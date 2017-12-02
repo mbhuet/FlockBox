@@ -11,14 +11,14 @@ public class CohesionBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgent other in surroundings.neighbors)
+        foreach (SteeringAgentWrapped other in surroundings.neighbors)
         {
 
-            float d = Vector3.Distance(mine.position, other.position);
+            float d = Vector3.Distance(mine.position, other.wrappedPosition);
             if ((d > 0) && (d < effectiveRadius))
             {
                 float modFactor = 1;
-                sum += (other.position); // Add position
+                sum += (other.wrappedPosition); // Add position
                 count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
             }
         }

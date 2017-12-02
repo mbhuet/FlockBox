@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEditor;
 using System.Reflection;
 using System.Linq;
 using Vexe.Runtime.Types;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 
@@ -19,6 +21,8 @@ public class BehaviorSettings : BaseScriptableObject {
     public SeparationBehavior separation = new SeparationBehavior();
     public AvoidanceBehavior avoidance = new AvoidanceBehavior();
     public SocialStatusBehavior socialStatus = new SocialStatusBehavior();
+    public RelationshipBehavior friendships = new RelationshipBehavior();
+    //public EmptyBehavior empty = new EmptyBehavior();
 
     private void Awake()
     {
@@ -68,7 +72,7 @@ public class BehaviorSettings : BaseScriptableObject {
                 m_activeBehaviors.Add(behavior);
         }
     }
-
+#if UNITY_EDITOR
     [MenuItem("Assets/Create/Behavior Settings")]
     public static void CreateMyAsset()
     {
@@ -77,7 +81,8 @@ public class BehaviorSettings : BaseScriptableObject {
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = asset;
-    }
+}
+#endif
 
 
 }
