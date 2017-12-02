@@ -16,7 +16,7 @@ public class RelationshipBehavior : SteeringBehavior {
     const string friendTimersAttributeName = "friendTimers";
     const string ignoreFriendAttributeName = "ignoreFriend";
 
-
+    public static bool drawConnections = false;
 
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
@@ -36,7 +36,7 @@ public class RelationshipBehavior : SteeringBehavior {
                 Vector3 wrappedPosition = ClosestPositionWithWrap(mine.position, friend.position);
                 sum += wrappedPosition;
                 friendCount++;
-                Debug.DrawLine(mine.position, wrappedPosition, Color.yellow);
+                if(drawConnections) GLDebug.DrawLine(mine.position, wrappedPosition, Color.yellow);
             }
         }
 
