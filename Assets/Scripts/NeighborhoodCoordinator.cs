@@ -28,7 +28,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private static bool neighborhoodsInitialized = false;
     private const float defaultNeighborhoodDimension = 10;
 
-
+    public bool displayGizmos;
     public int neighborhoodCols;
     public int neighborhoodRows;
     public Vector2 neighborhoodSize;
@@ -58,7 +58,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private void OnDrawGizmos()
     {
-        DrawNeighborHoods();
+        if(displayGizmos)DrawNeighborHoods();
     }
 
     void DrawNeighborHoods()
@@ -121,6 +121,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         max = center + Vector2.right * (cols * neighborhood_size.x)/ 2f + Vector2.up * (rows * neighborhood_size.y )/ 2f;
         min = center + Vector2.left * (cols * neighborhood_size.x) / 2f + Vector2.down * (rows * neighborhood_size.y) / 2f;
         size = max - min;
+        Debug.Log(min + " " + size + " " + max);
 
         neighborhoodsInitialized = true;
     }

@@ -64,7 +64,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1143379499884764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.57, y: -0.04, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4257344352815708}
@@ -89,7 +89,7 @@ MonoBehaviour:
     _HashCodes: e16caa6362381608ea24eb49b9a1a264000000000000000000000000
     _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
     _Count: 4
-    _Version: 104
+    _Version: 1158
     _FreeList: -1
     _FreeCount: 0
     _Keys: e16caa6362381688ea24ebc9b9a1a264000000000000000000000000
