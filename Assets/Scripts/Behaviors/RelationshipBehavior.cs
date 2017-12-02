@@ -8,8 +8,9 @@ using UnityEngine;
 public class RelationshipBehavior : SteeringBehavior {
 
     [VisibleWhen("isActive")]   public int maxFriends;
-    [VisibleWhen("isActive")]   public float minFriendshipDuration;
-    [VisibleWhen("isActive")]   public float maxFriendshipDuration;
+    [VisibleWhen("isActive")]   public float minFriendshipDuration = 5;
+    [VisibleWhen("isActive")]   public float maxFriendshipDuration = 10;
+    [VisibleWhen("isActive")]   public float maxStatusDifference = 10;
 
     const string friendArrayAttributeName = "friends";
     const string friendTimersAttributeName = "friendTimers";
@@ -32,9 +33,10 @@ public class RelationshipBehavior : SteeringBehavior {
             else if(friends[friendIndex] != null)
             {
                 SteeringAgent friend = friends[friendIndex];
-                sum += friend.position;
+                Vector3 wrappedPosition = ClosestPositionWithWrap(mine.position, friend.position);
+                sum += wrappedPosition;
                 friendCount++;
-                if(Vector3.Distance(mine.position, friend.position) < 30)Debug.DrawLine(mine.position, friend.position, Color.yellow);
+                Debug.DrawLine(mine.position, wrappedPosition, Color.yellow);
             }
         }
 
@@ -107,16 +109,20 @@ public class RelationshipBehavior : SteeringBehavior {
     }
 
 
-    void SearchForNewFriends(SteeringAgent agent, SteeringAgent[] friends, LinkedList<SteeringAgent> neighbors) {
+    void SearchForNewFriends(SteeringAgent agent, SteeringAgent[] friends, LinkedList<SteeringAgentWrapped> neighbors) {
         SteeringAgent ignore = (SteeringAgent)agent.GetAttribute(ignoreFriendAttributeName);
         List<SteeringAgent> alreadyFriends = new List<SteeringAgent>(friends);
-        foreach(SteeringAgent neighbor in neighbors)
+        foreach(SteeringAgentWrapped neighbor_wrap in neighbors)
         {
+            SteeringAgent neighbor = neighbor_wrap.agent;
             if (neighbor == agent || alreadyFriends.Contains(neighbor) || (ignore != null && neighbor != ignore)) continue;
-            if(Vector3.Distance(agent.position, neighbor.position) <= effectiveRadius)
+            if(Vector3.Distance(agent.position, neighbor_wrap.wrappedPosition) <= effectiveRadius)
             {
                 if (HasEmptyFriendSlot(neighbor))
                 {
+                    if(neighbor.HasAttribute(SocialStatusBehavior.statusAttributeName) && agent.HasAttribute(SocialStatusBehavior.statusAttributeName)){
+                        if (!WithinSocialStatusRange(agent, neighbor)) continue;
+                    }
                     float timerVal = GetFriendshipTimerStartingValue();
                     BeginFriendship(agent, neighbor, timerVal);
                     BeginFriendship(neighbor, agent, timerVal);
@@ -136,5 +142,27 @@ public class RelationshipBehavior : SteeringBehavior {
         return UnityEngine.Random.Range(minFriendshipDuration, maxFriendshipDuration);
     }
 
+    bool WithinSocialStatusRange(SteeringAgent a, SteeringAgent b)
+    {
+        float a_status = (float)a.GetAttribute(SocialStatusBehavior.statusAttributeName);
+        float b_status = (float)b.GetAttribute(SocialStatusBehavior.statusAttributeName);
+        return Mathf.Abs(a_status - b_status) <= maxStatusDifference;
+    }
+
+    //if two friends are on opposite sides of the screen because one just wrapped around, they should be drawn to the edges of the screen over the wrap, not to the middle of the screen
+    Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
+    {
+
+        if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
+        {
+            //Debug.Log("here " + Mathf.Abs(myPosition.x - otherPosition.x) + " " + NeighborhoodCoordinator.size.x / 2f);
+            otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
+        }
+        if(Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
+        {
+            otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
+        }
+        return otherPosition;
+    }
     
 }

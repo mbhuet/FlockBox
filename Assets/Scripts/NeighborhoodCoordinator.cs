@@ -7,6 +7,20 @@ using UnityEngine;
 //Class will manage itself if there are no instances by creating an instance
 //
 
+public struct SteeringAgentWrapped
+{
+    public SteeringAgentWrapped(SteeringAgent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
+    public SteeringAgent agent;
+    public Vector3 wrappedPosition;
+}
+
+public struct ObstacleWrapped
+{
+    public ObstacleWrapped(Obstacle obstacle, Vector3 wrappedCenter) { this.obstacle = obstacle; this.wrappedCenter = wrappedCenter; }
+    public Obstacle obstacle;
+    public Vector3 wrappedCenter;
+}
+
 public class NeighborhoodCoordinator : MonoBehaviour {
     private static NeighborhoodCoordinator Instance;
     private static Neighborhood[,] neighborhoods;
@@ -26,6 +40,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static Vector2 max { get; private set; }
     public static Vector2 min { get; private set; }
+    public static Vector2 size { get; private set; }
 
 
     void Awake()
@@ -84,11 +99,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     }
 
 
-    private static void InitializeNeighborhoods(int rows, int cols, Vector2 size, Vector2 center)
+    private static void InitializeNeighborhoods(int rows, int cols, Vector2 neighborhood_size, Vector2 center)
     {
-        Debug.Log("NeighborhoodCoordinator Init " + rows + " " + cols + " " + size);
+        Debug.Log("NeighborhoodCoordinator Init " + rows + " " + cols + " " + neighborhood_size);
 
-        neighborhoodSize_static = size;
+        neighborhoodSize_static = neighborhood_size;
         neighborhoodCols_static = cols;
         neighborhoodRows_static = rows;
         neighborhoodsCenter_static = center;
@@ -98,13 +113,14 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         {
             for (int c = 0; c < cols; c++)
             {
-                Vector2 neighborhoodPos = center + new Vector2(((c - cols / 2f) + .5f) * size.x, ((r - rows / 2f) + .5f) * size.y);
+                Vector2 neighborhoodPos = center + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size.x, ((r - rows / 2f) + .5f) * neighborhood_size.y);
                 neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
             }
         }
 
-        max = center + Vector2.right * (cols * size.x)/ 2f + Vector2.up * (rows * size.y )/ 2f;
-        min = center + Vector2.left * (cols * size.x) / 2f + Vector2.down * (rows * size.y) / 2f;
+        max = center + Vector2.right * (cols * neighborhood_size.x)/ 2f + Vector2.up * (rows * neighborhood_size.y )/ 2f;
+        min = center + Vector2.left * (cols * neighborhood_size.x) / 2f + Vector2.down * (rows * neighborhood_size.y) / 2f;
+        size = max - min;
 
         neighborhoodsInitialized = true;
     }
@@ -141,25 +157,54 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static SurroundingsInfo GetSurroundings(Coordinates homeNeighborhoodCoords, int neighborhoodRadius)
     {
-        LinkedList<SteeringAgent> allNeighbors = new LinkedList<SteeringAgent>();
-        LinkedList<Obstacle> allObstacles = new LinkedList<Obstacle>();
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
+
+        LinkedList<SteeringAgentWrapped> allNeighbors = new LinkedList<SteeringAgentWrapped>();
+        LinkedList<ObstacleWrapped> allObstacles = new LinkedList<ObstacleWrapped>();
+        List<Obstacle> obstacles_alreadyAdded = new List<Obstacle>();
 
         for (int r = homeNeighborhoodCoords.row - neighborhoodRadius; r <= homeNeighborhoodCoords.row + neighborhoodRadius; r++)
         {
             for (int c = homeNeighborhoodCoords.col - neighborhoodRadius; c <= homeNeighborhoodCoords.col + neighborhoodRadius; c++)
             {
-                if (r >= 0 && r < neighborhoodRows_static && c >= 0 && c < neighborhoodCols_static)
+                int r_wrap = r;
+                int c_wrap = c;
+
+                Vector3 wrap_positionOffset = Vector3.zero;
+                if (r < 0)
                 {
-                    foreach (SteeringAgent neighbor in neighborhoods[r, c].GetNeighbors())
+                    r_wrap = neighborhoodRows_static + r;
+                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
+                }
+                else if (r >= neighborhoodRows_static)
+                {
+                    r_wrap = r - neighborhoodRows_static;
+                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
+                }
+                if (c < 0)
+                {
+                    c_wrap = neighborhoodCols_static + c;
+                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
+                }
+                else if (c >= neighborhoodCols_static)
+                {
+                    c_wrap = c - neighborhoodCols_static;
+                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
+                }
+
+                foreach (SteeringAgent neighbor in neighborhoods[r_wrap, c_wrap].GetNeighbors())
+                {
+                    allNeighbors.AddLast(new SteeringAgentWrapped(neighbor, neighbor.position + wrap_positionOffset));
+                }
+                foreach (Obstacle obstacle in neighborhoods[r_wrap, c_wrap].GetObstacles())
+                {
+                    if (!obstacles_alreadyAdded.Contains(obstacle))
                     {
-                        allNeighbors.AddLast(neighbor);
-                    }
-                    foreach (Obstacle obstacle in neighborhoods[r, c].GetObstacles())
-                    {
-                        if (!allObstacles.Contains(obstacle))
-                            allObstacles.AddLast(obstacle);
+                        obstacles_alreadyAdded.Add(obstacle);
+                        allObstacles.AddLast(new ObstacleWrapped(obstacle, obstacle.center + wrap_positionOffset));
                     }
                 }
+                
             }
         }
         SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles);

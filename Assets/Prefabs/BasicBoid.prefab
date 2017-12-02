@@ -52,7 +52,7 @@ Transform:
   m_GameObject: {fileID: 1519705564441548}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 3, y: 6, z: 1}
   m_Children: []
   m_Father: {fileID: 4580682949008232}
   m_RootOrder: 0
@@ -82,6 +82,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _id: 10738
+  dbg: 0
+  Prefs:
+    _Buckets: 03000000ffffffffffffffff0100000002000000ffffffffffffffff
+    _HashCodes: e16caa6362381608ea24eb49b9a1a264000000000000000000000000
+    _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
+    _Count: 4
+    _Version: 104
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: e16caa6362381688ea24ebc9b9a1a264000000000000000000000000
+    _Values:
+    - ValueString: 
+      ValueFloat: 4
+      Type: 0
+    - ValueString: 
+      ValueFloat: 10
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
   z_layering: 0
   settings: {fileID: 11400000, guid: 7d0d7c34c6b280c4f9b4d0dd097f90bd, type: 2}
 --- !u!114 &114762736815519660

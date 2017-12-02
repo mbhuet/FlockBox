@@ -11,14 +11,14 @@ public class AlignmentBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
-        foreach (SteeringAgent other in surroundings.neighbors)
+        foreach (SteeringAgentWrapped other in surroundings.neighbors)
         {
 
-            float d = Vector3.Distance(mine.position, other.position);
+            float d = Vector3.Distance(mine.position, other.wrappedPosition);
             if ((d > 0) && (d < effectiveRadius))
             {
                 float modFactor = 1;
-                sum += (other.velocity) * modFactor;
+                sum += (other.agent.velocity) * modFactor;
                 count++;
             }
         }

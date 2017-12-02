@@ -11,12 +11,13 @@ public class AvoidanceBehavior : SteeringBehavior {
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;
         Vector3 closestHitPoint = Vector3.zero;
-        Obstacle mostThreateningObstacle = surroundings.obstacles.First.Value;
+        Obstacle mostThreateningObstacle = surroundings.obstacles.First.Value.obstacle;
 
-        foreach (Obstacle obs in surroundings.obstacles)
+        foreach (ObstacleWrapped obs_wrapped in surroundings.obstacles)
         {
-            Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs);
-            if (Vector3.Distance(closestPoint, obs.center) < obs.radius)
+            Obstacle obstacle = obs_wrapped.obstacle;
+            Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
+            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedCenter) < obstacle.radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
@@ -26,7 +27,7 @@ public class AvoidanceBehavior : SteeringBehavior {
                 {
                     closestHitDistance = distanceToClosestPoint;
                     closestHitPoint = closestPoint;
-                    mostThreateningObstacle = obs;
+                    mostThreateningObstacle = obstacle;
                 }
 
             }
@@ -42,10 +43,10 @@ public class AvoidanceBehavior : SteeringBehavior {
     }
 
 
-    Vector3 ClosestPointPathToObstacle(SteeringAgent agent, Obstacle obstacle)
+    Vector3 ClosestPointPathToObstacle(SteeringAgent agent, ObstacleWrapped obstacle)
     {
         Vector3 agentPos = agent.position;
-        Vector3 agentToObstacle = obstacle.center - agentPos;
+        Vector3 agentToObstacle = obstacle.wrappedCenter - agentPos;
         Vector3 projection = Vector3.Project(agentToObstacle, agent.velocity.normalized);
         if (projection.normalized == agent.velocity.normalized)
             return agentPos + projection;
