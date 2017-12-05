@@ -65,11 +65,11 @@ public class GLDebug : MonoBehaviour
 	void SetMaterial ()
 	{
 		matZOn = new Material (Shader.Find("GLline/GLlineZOn"));
-		matZOn.hideFlags = HideFlags.HideAndDontSave;
-		matZOn.shader.hideFlags = HideFlags.HideAndDontSave;
+		matZOn.hideFlags = HideFlags.None;
+		matZOn.shader.hideFlags = HideFlags.None;
         matZOff = new Material(Shader.Find("GLline/GLlineZOff"));
-		matZOff.hideFlags = HideFlags.HideAndDontSave;
-		matZOff.shader.hideFlags = HideFlags.HideAndDontSave;
+		matZOff.hideFlags = HideFlags.None;
+		matZOff.shader.hideFlags = HideFlags.None;
 	}
 	
 	void Update ()

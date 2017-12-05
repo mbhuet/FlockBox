@@ -16,7 +16,7 @@ public class RelationshipBehavior : SteeringBehavior {
     const string friendTimersAttributeName = "friendTimers";
     const string ignoreFriendAttributeName = "ignoreFriend";
 
-    public static bool drawConnections = false;
+    public static bool drawConnections = true;
 
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)

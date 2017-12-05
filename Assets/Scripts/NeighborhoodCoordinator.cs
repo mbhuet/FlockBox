@@ -111,8 +111,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private static void UpdateStaticValues(Transform target)
     {
-        Debug.Log("UpdateVals");
-
         neighborhoodsCenter_static = target.position;
         max = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
         min = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
