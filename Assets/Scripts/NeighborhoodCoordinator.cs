@@ -29,9 +29,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private const float defaultNeighborhoodDimension = 10;
 
     public bool displayGizmos;
-    public int neighborhoodCols;
-    public int neighborhoodRows;
-    public Vector2 neighborhoodSize;
+    public int neighborhoodCols = 10;
+    public int neighborhoodRows = 10;
+    public Vector2 neighborhoodSize = Vector2.one * defaultNeighborhoodDimension;
 
     private static int neighborhoodCols_static;
     private static int neighborhoodRows_static;

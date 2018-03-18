@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vexe.Runtime.Types;
 
 public class SteeringAgentVisual : MonoBehaviour {
 
@@ -19,5 +20,10 @@ public class SteeringAgentVisual : MonoBehaviour {
     public void SetColor(Color color)
     {
         sprite.color = color;
+    }
+
+    public virtual void UpdateForAttribute(string attributeName, float value)
+    {
+
     }
 }

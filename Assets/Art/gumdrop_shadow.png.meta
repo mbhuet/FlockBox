@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: ed74feaf9d6063248bfd01a4aa4c0c07
-timeCreated: 1520223258
+timeCreated: 1521415777
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -41,12 +41,12 @@ TextureImporter:
   lightmap: 0
   compressionQuality: 50
   spriteMode: 1
-  spriteExtrude: 0
+  spriteExtrude: 1
   spriteMeshType: 0
   alignment: 7
   spritePivot: {x: 0.5, y: 0}
-  spriteBorder: {x: 14, y: 24, z: 14, w: 63}
-  spritePixelsToUnits: 100
+  spriteBorder: {x: 101, y: 0, z: 102, w: 256}
+  spritePixelsToUnits: 256
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -87,16 +87,6 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
   - buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-  - buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1

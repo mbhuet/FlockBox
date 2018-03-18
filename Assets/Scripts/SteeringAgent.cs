@@ -156,7 +156,7 @@ public class SteeringAgent : BaseBehaviour
 
     void move()
     {
-        this.transform.position = new Vector3(position.x, position.y, (z_layering? position.y : 0));
+        this.transform.position = new Vector3(position.x, position.y, (z_layering? ZLayering.YtoZPosition(position.y) : 0));
         visual.SetRotation(Quaternion.identity);
         visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
     }

@@ -8,8 +8,6 @@ using UnityEngine;
 public class SocialStatusBehavior : CohesionBehavior
 {
     [VisibleWhen("isActive")]
-    public Gradient statusSpectrum;
-    [VisibleWhen("isActive")]
     public int maxStatus = 100;
 
     [fSlider(0,1)]
@@ -24,8 +22,8 @@ public class SocialStatusBehavior : CohesionBehavior
     {
         if (!mine.HasAttribute(statusAttributeName)) mine.SetAttribute(statusAttributeName, GetRandomStatusValue());
         float myStatus = (float)mine.GetAttribute(statusAttributeName);
-        mine.visual.SetColor(statusSpectrum.Evaluate(myStatus / maxStatus));
-        mine.visual.SetSize(new Vector2(1, myStatus / 10f + 1) );
+        mine.visual.UpdateForAttribute(statusAttributeName, myStatus/maxStatus);
+
 
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
