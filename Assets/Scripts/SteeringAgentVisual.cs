@@ -11,6 +11,11 @@ public class SteeringAgentVisual : MonoBehaviour {
         if (sprite != null) sprite.transform.rotation = rotation;
     }
 
+    public virtual void SetSize(Vector2 size)
+    {
+        if (sprite != null) sprite.size = size;
+    }
+
     public void SetColor(Color color)
     {
         sprite.color = color;
