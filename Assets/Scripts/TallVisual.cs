@@ -20,7 +20,7 @@ public class TallVisual : SteeringAgentVisual {
             case SocialStatusBehavior.statusAttributeName:
                 //val is from 0-1
                 SetColor(statusSpectrum.Evaluate(value));
-                SetSize(new Vector2(1.8f, value * 10 + 2) );
+                SetSize(new Vector2(1, value * 10 + 2) );
                 break;
         }
     }
