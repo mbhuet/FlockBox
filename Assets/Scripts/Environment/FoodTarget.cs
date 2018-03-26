@@ -5,6 +5,7 @@ using UnityEngine;
 public class FoodTarget : Target {
 
     public float minStatus;
+    public float nourishAmount = 1;
 
     protected new void Start()
     {
@@ -23,6 +24,27 @@ public class FoodTarget : Target {
             sufficientStatus = status >= minStatus;
         }
         return sufficientStatus && base.CanBePursuedBy(agent) ;
+    }
+
+    public override void CaughtBy(SteeringAgent agent)
+    {
+        base.CaughtBy(agent);
+        Nourish(agent);
+    }
+
+    void Grow()
+    {
+
+    }
+
+    void Nourish(SteeringAgent agent)
+    {
+        if (agent.HasAttribute(SocialStatusBehavior.statusAttributeName))
+        {
+            float status = (float)agent.GetAttribute(SocialStatusBehavior.statusAttributeName);
+            status += nourishAmount;
+            agent.SetAttribute(SocialStatusBehavior.statusAttributeName, status);
+        }
     }
 
 

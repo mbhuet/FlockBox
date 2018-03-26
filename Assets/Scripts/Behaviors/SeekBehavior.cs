@@ -62,12 +62,8 @@ public class SeekBehavior : SteeringBehavior {
         }
 
         if (chosenTargetFound) {
-            Debug.Log("Seeking Target ");
-
-            float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, mine.position);
-            if (distAway <= chosenTargetWrapped.target.radius) chosenTargetWrapped.target.Catch(mine);
+            AttemptCatch(mine, chosenTargetWrapped);
             Vector3 desired_velocity = (chosenTargetWrapped.wrappedPosition - mine.position) * mine.settings.maxSpeed;
-
             Vector3 steering = desired_velocity - mine.velocity;
             return steering;
         }
@@ -96,6 +92,11 @@ public class SeekBehavior : SteeringBehavior {
         Target.InformOfPursuit(false, agent, targetID);
     }
 
+    static void AttemptCatch(SteeringAgent agent, TargetWrapped chosenTargetWrapped)
+    {
+        float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, agent.position);
+        if (distAway <= chosenTargetWrapped.target.radius) chosenTargetWrapped.target.CaughtBy(agent);
+    }
 
 
     private TargetWrapped ClosestUnclaimedTarget(LinkedList<TargetWrapped> nearbyTargets, SteeringAgent agent)

@@ -48,7 +48,6 @@ public class Target : MonoBehaviour {
 
     public void InformOfPursuit(bool isBeingPursued, SteeringAgent agent)
     {
-        Debug.Log("Being pursued " + isBeingPursued);
         if (isBeingPursued) pursuer = agent;
         else pursuer = null;
     }
@@ -58,7 +57,8 @@ public class Target : MonoBehaviour {
         return agent == pursuer || !pursuer;
     }
 
-    public virtual void Catch(SteeringAgent agent)
+
+    public virtual void CaughtBy(SteeringAgent agent)
     {
         InformOfPursuit(false, agent);
         NeighborhoodCoordinator.RemoveTarget(this, currentNeighborhood);
