@@ -7,6 +7,14 @@ using UnityEngine;
 //Class will manage itself if there are no instances by creating an instance
 //
 
+public struct SurroundingsDefinition
+{
+    public SurroundingsDefinition(int row, int col, int rad) { neighborhoodCol = col;  neighborhoodRow = row; radius = rad; }
+    public int neighborhoodRow;
+    public int neighborhoodCol;
+    public int radius;
+}
+
 public struct SteeringAgentWrapped
 {
     public SteeringAgentWrapped(SteeringAgent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
@@ -19,6 +27,13 @@ public struct ObstacleWrapped
     public ObstacleWrapped(Obstacle obstacle, Vector3 wrappedCenter) { this.obstacle = obstacle; this.wrappedCenter = wrappedCenter; }
     public Obstacle obstacle;
     public Vector3 wrappedCenter;
+}
+
+public struct TargetWrapped
+{
+    public TargetWrapped(Target target, Vector3 wrappedPosition) { this.target = target;  this.wrappedPosition = wrappedPosition; }
+    public Target target;
+    public Vector3 wrappedPosition;
 }
 
 public class NeighborhoodCoordinator : MonoBehaviour {
@@ -43,6 +58,8 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static Vector2 min { get; private set; }
     public static Vector2 size { get; private set; }
 
+    public static Dictionary<SurroundingsDefinition, SurroundingsInfo> cachedSurroundings;
+
 
     void Awake()
     {
@@ -66,6 +83,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             UpdateStaticValues(trackingTarget);
             trackingTarget.hasChanged = false;
         }
+    }
+
+    private void LateUpdate()
+    {
+        cachedSurroundings.Clear();
     }
 
     private void OnDrawGizmos()
@@ -154,6 +176,19 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (ValidCoordinates(coords)) neighborhoods[coords.row, coords.col].RemoveNeighbor(agent);
     }
 
+
+    public static void AddTarget(Target target, Coordinates coords)
+    {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
+        if (ValidCoordinates(coords)) neighborhoods[coords.row, coords.col].AddTarget(target);
+    }
+
+    public static void RemoveTarget(Target target, Coordinates coords)
+    {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
+        if (ValidCoordinates(coords)) neighborhoods[coords.row, coords.col].RemoveTarget(target);
+    }
+
     private static bool ValidCoordinates(Coordinates coords)
     {
         return (coords.row < neighborhoodRows_static && coords.col < neighborhoodCols_static && coords.row >= 0 && coords.col >= 0);
@@ -175,10 +210,18 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static SurroundingsInfo GetSurroundings(Coordinates homeNeighborhoodCoords, int neighborhoodRadius)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
+        if (cachedSurroundings == null) cachedSurroundings = new Dictionary<SurroundingsDefinition, SurroundingsInfo>();
+        
+        SurroundingsDefinition def = new SurroundingsDefinition(homeNeighborhoodCoords.row, homeNeighborhoodCoords.col, neighborhoodRadius);
+        if (cachedSurroundings.ContainsKey(def)) return cachedSurroundings[def];
+
 
         LinkedList<SteeringAgentWrapped> allNeighbors = new LinkedList<SteeringAgentWrapped>();
         LinkedList<ObstacleWrapped> allObstacles = new LinkedList<ObstacleWrapped>();
         List<Obstacle> obstacles_alreadyAdded = new List<Obstacle>();
+
+        Dictionary<string, LinkedList<TargetWrapped>> allTargets = new Dictionary<string, LinkedList<TargetWrapped>>();
+
 
         for (int r = homeNeighborhoodCoords.row - neighborhoodRadius; r <= homeNeighborhoodCoords.row + neighborhoodRadius; r++)
         {
@@ -221,10 +264,26 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                         allObstacles.AddLast(new ObstacleWrapped(obstacle, obstacle.center + wrap_positionOffset));
                     }
                 }
-                
+
+                Dictionary < string, LinkedList <Target>> sourceTargets = neighborhoods[r_wrap, c_wrap].GetTargets();
+                foreach (string tag in sourceTargets.Keys)
+                {
+                    LinkedList<Target> targetsOut;
+                    if(sourceTargets.TryGetValue(tag, out targetsOut))
+                    {
+                        if (!allTargets.ContainsKey(tag)) allTargets.Add(tag, new LinkedList<TargetWrapped>());
+                        foreach(Target target in targetsOut)
+                        {
+                            allTargets[tag].AddLast(new TargetWrapped(target, target.position + wrap_positionOffset));
+                        }
+                    }
+                }
+
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles);
+        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles, allTargets);
+
+        cachedSurroundings[def] = data;
         return data;
     }
 

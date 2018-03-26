@@ -20,8 +20,11 @@ public class BehaviorSettings : BaseScriptableObject {
     public CohesionBehavior cohesion = new CohesionBehavior();
     public SeparationBehavior separation = new SeparationBehavior();
     public AvoidanceBehavior avoidance = new AvoidanceBehavior();
+    public WanderBehavior wander = new WanderBehavior();
     public SocialStatusBehavior socialStatus = new SocialStatusBehavior();
     public RelationshipBehavior friendships = new RelationshipBehavior();
+    public SeekBehavior seek = new SeekBehavior();
+
     //public EmptyBehavior empty = new EmptyBehavior();
 
     private void Awake()

@@ -22,7 +22,7 @@ public class SocialStatusBehavior : CohesionBehavior
     {
         if (!mine.HasAttribute(statusAttributeName)) mine.SetAttribute(statusAttributeName, GetRandomStatusValue());
         float myStatus = (float)mine.GetAttribute(statusAttributeName);
-        mine.visual.UpdateForAttribute(statusAttributeName, myStatus/maxStatus);
+        mine.visual.UpdateForAttribute(statusAttributeName, myStatus);
 
 
 

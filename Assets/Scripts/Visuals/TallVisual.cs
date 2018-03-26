@@ -8,6 +8,12 @@ public class TallVisual : SteeringAgentVisual {
     public Gradient statusSpectrum;
     public GameObject shadowCaster;
 
+    
+    public static float StatusToHeight(float status)
+    {
+        return status / 10f + 2f;
+    }
+
     public override void SetRotation(Quaternion rotation)
     {
         //do nothing
@@ -19,8 +25,8 @@ public class TallVisual : SteeringAgentVisual {
         {
             case SocialStatusBehavior.statusAttributeName:
                 //val is from 0-1
-                SetColor(statusSpectrum.Evaluate(value));
-                SetSize(new Vector2(1, value * 10 + 2) );
+                SetColor(statusSpectrum.Evaluate(value/100f));
+                SetSize(new Vector2(1, StatusToHeight(value)) );
                 break;
         }
     }

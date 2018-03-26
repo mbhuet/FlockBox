@@ -112,6 +112,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _id: 11684
+  dbg: 0
+  Prefs:
+    _Buckets: 02000000ffffffffffffffffffffffffffffffffffffffff03000000
+    _HashCodes: 6fdfaa63f0aa16087897eb49c7a85066000000000000000000000000
+    _Next: ffffffffffffffff0000000001000000000000000000000000000000
+    _Count: 4
+    _Version: 120
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: 6fdfaa63f0aa16887897ebc9c7a85066000000000000000000000000
+    _Values:
+    - ValueString: 
+      ValueFloat: 4
+      Type: 0
+    - ValueString: 
+      ValueFloat: 10
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
   z_layering: 1
   settings: {fileID: 0}
 --- !u!114 &114487736467919828
