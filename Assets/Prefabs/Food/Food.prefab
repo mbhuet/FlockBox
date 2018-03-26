@@ -84,6 +84,7 @@ MonoBehaviour:
   radius: 1
   visual: {fileID: 212887414298345770}
   minStatus: 0
+  nourishAmount: 20
 --- !u!212 &212887414298345770
 SpriteRenderer:
   m_ObjectHideFlags: 1

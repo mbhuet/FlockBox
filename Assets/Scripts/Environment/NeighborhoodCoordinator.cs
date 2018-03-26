@@ -87,7 +87,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private void LateUpdate()
     {
-        cachedSurroundings.Clear();
+        if(cachedSurroundings != null) cachedSurroundings.Clear();
     }
 
     private void OnDrawGizmos()

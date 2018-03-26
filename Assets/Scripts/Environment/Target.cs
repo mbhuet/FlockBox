@@ -14,6 +14,8 @@ public class Target : MonoBehaviour {
     protected SteeringAgent pursuer;
     public SpriteRenderer visual;
 
+    public bool isCaught { get; protected set; }
+
 
     protected static int targetCount = 0;
     protected static Dictionary<int, Target> targetRegistry;
@@ -54,12 +56,13 @@ public class Target : MonoBehaviour {
 
     public virtual bool CanBePursuedBy(SteeringAgent agent)
     {
-        return agent == pursuer || !pursuer;
+        return !isCaught && (agent == pursuer || !pursuer);
     }
 
 
     public virtual void CaughtBy(SteeringAgent agent)
     {
+        isCaught = true;
         InformOfPursuit(false, agent);
         NeighborhoodCoordinator.RemoveTarget(this, currentNeighborhood);
         visual.enabled = false;

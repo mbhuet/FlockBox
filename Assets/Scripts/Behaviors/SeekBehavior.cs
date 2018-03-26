@@ -95,7 +95,7 @@ public class SeekBehavior : SteeringBehavior {
     static void AttemptCatch(SteeringAgent agent, TargetWrapped chosenTargetWrapped)
     {
         float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, agent.position);
-        if (distAway <= chosenTargetWrapped.target.radius) chosenTargetWrapped.target.CaughtBy(agent);
+        if (distAway <= chosenTargetWrapped.target.radius && !chosenTargetWrapped.target.isCaught) chosenTargetWrapped.target.CaughtBy(agent);
     }
 
 
@@ -106,6 +106,7 @@ public class SeekBehavior : SteeringBehavior {
         foreach(TargetWrapped target in nearbyTargets)
         {
             float dist = Vector3.Distance(target.wrappedPosition, agent.position);
+            if(dist <= target.target.radius) AttemptCatch(agent, target);
             if (dist < closeDist && target.target.CanBePursuedBy(agent)){
                 closeDist = dist;
                 closeTarget = target;
