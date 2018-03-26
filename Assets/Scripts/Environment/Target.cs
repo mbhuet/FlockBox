@@ -11,7 +11,8 @@ public class Target : MonoBehaviour {
 
     protected Coordinates currentNeighborhood;
 
-    protected SteeringAgent pursuer;
+    public int maxPursuers = 1;
+    protected int numPursuers = 0;
     public SpriteRenderer visual;
 
     public bool isCaught { get; protected set; }
@@ -50,13 +51,14 @@ public class Target : MonoBehaviour {
 
     public void InformOfPursuit(bool isBeingPursued, SteeringAgent agent)
     {
-        if (isBeingPursued) pursuer = agent;
-        else pursuer = null;
+        if (isBeingPursued) numPursuers++;
+        else numPursuers--;
+        if (numPursuers < 0) numPursuers = 0;
     }
 
     public virtual bool CanBePursuedBy(SteeringAgent agent)
     {
-        return !isCaught && (agent == pursuer || !pursuer);
+        return !isCaught && numPursuers <maxPursuers;
     }
 
 
@@ -66,5 +68,6 @@ public class Target : MonoBehaviour {
         InformOfPursuit(false, agent);
         NeighborhoodCoordinator.RemoveTarget(this, currentNeighborhood);
         visual.enabled = false;
+        numPursuers = 0;
     }
 }

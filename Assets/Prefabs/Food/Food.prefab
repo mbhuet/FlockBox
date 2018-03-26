@@ -81,7 +81,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1d4df24cb99e04aa367083e4b39fbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
+  radius: 2
+  maxPursuers: 3
   visual: {fileID: 212887414298345770}
   minStatus: 0
   nourishAmount: 20
