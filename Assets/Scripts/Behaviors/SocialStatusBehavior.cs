@@ -15,6 +15,8 @@ public class SocialStatusBehavior : CohesionBehavior
 
     public const string statusAttributeName = "socialStatus";
 
+    public static float bankedStatus = 0;
+
     [VisibleWhen("isActive")]
     public AnimationCurve attractionCurve;
 
@@ -22,8 +24,11 @@ public class SocialStatusBehavior : CohesionBehavior
     {
         if (!mine.HasAttribute(statusAttributeName)) mine.SetAttribute(statusAttributeName, GetRandomStatusValue());
         float myStatus = (float)mine.GetAttribute(statusAttributeName);
+        myStatus = RemoveTaxes(myStatus);
+
         mine.visual.UpdateForAttribute(statusAttributeName, myStatus);
 
+        mine.SetAttribute(statusAttributeName, myStatus);
 
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
@@ -64,6 +69,13 @@ public class SocialStatusBehavior : CohesionBehavior
         {
             return new Vector3(0, 0);
         }
+    }
+
+    private float RemoveTaxes(float initialValue)
+    {
+        float tax = initialValue * .1f * Time.deltaTime;
+        bankedStatus += tax;
+        return initialValue - tax;
     }
 
     private float GetRandomStatusValue()

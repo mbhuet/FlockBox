@@ -510,7 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880c1e25c4062154aafcebfa1aa638f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayGizmos: 1
+  displayGizmos: 0
   neighborhoodCols: 2
   neighborhoodRows: 2
   neighborhoodSize: {x: 10, y: 10}

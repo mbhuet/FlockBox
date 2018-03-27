@@ -12,4 +12,10 @@ public static class ZLayering {
         //tilt 0 -> max val
         return Mathf.Tan(groundTilt * Mathf.Deg2Rad) * yPos;
     }
+
+    public static Vector3 GetZLayeredPosition(Vector3 sourcePos)
+    {
+        return new Vector3(sourcePos.x, sourcePos.y, ZLayering.YtoZPosition(sourcePos.y));
+
+    }
 }

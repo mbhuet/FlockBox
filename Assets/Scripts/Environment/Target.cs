@@ -18,17 +18,27 @@ public class Target : MonoBehaviour {
     public bool isCaught { get; protected set; }
 
 
-    protected static int targetCount = 0;
+    protected static int targetCount_static = 0;
     protected static Dictionary<int, Target> targetRegistry;
 
 
+    public delegate void TargetEvent(Target target);
+    public TargetEvent OnCaught;
+    public TargetEvent OnSpawn;
+
     protected void Start()
     {
-        position = transform.position;
-        AddToNeighborhood();
-        targetCount++;
-        targetID = targetCount;
-        if (targetRegistry == null) targetRegistry = new Dictionary<int, Target>(); 
+        RegisterNewTarget();
+        Spawn(transform.position);
+        
+
+    }
+
+    protected void RegisterNewTarget()
+    {
+        targetCount_static++;
+        targetID = targetCount_static;
+        if (targetRegistry == null) targetRegistry = new Dictionary<int, Target>();
         targetRegistry.Add(targetID, this);
     }
 
@@ -36,7 +46,11 @@ public class Target : MonoBehaviour {
     {
         currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
         NeighborhoodCoordinator.AddTarget(this, currentNeighborhood);
+    }
 
+    void RemoveFromNeighborhood()
+    {
+        NeighborhoodCoordinator.RemoveTarget(this, currentNeighborhood);
 
     }
 
@@ -61,13 +75,23 @@ public class Target : MonoBehaviour {
         return !isCaught && numPursuers <maxPursuers;
     }
 
+    public virtual void Spawn(Vector2 position)
+    {
+        isCaught = false;
+        this.position = position;
+        this.transform.position = ZLayering.GetZLayeredPosition(position);
+        AddToNeighborhood();
+        numPursuers = 0;
+        if (OnSpawn != null) OnSpawn.Invoke(this);
+    }
+
 
     public virtual void CaughtBy(SteeringAgent agent)
     {
+        RemoveFromNeighborhood();
         isCaught = true;
-        InformOfPursuit(false, agent);
-        NeighborhoodCoordinator.RemoveTarget(this, currentNeighborhood);
         visual.enabled = false;
         numPursuers = 0;
+        if (OnCaught != null) OnCaught.Invoke(this);
     }
 }

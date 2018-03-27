@@ -10,7 +10,7 @@ public class FoodTarget : Target {
     protected new void Start()
     {
         Vector3 pos = transform.position;
-        transform.position = new Vector3(pos.x, pos.y, ZLayering.YtoZPosition(pos.y));
+        transform.position = ZLayering.GetZLayeredPosition(pos);
         visual.transform.localPosition = Vector3.up * (TallVisual.StatusToHeight(minStatus) - 1);
         base.Start();
     }
@@ -32,9 +32,10 @@ public class FoodTarget : Target {
         Nourish(agent);
     }
 
-    void Grow()
+    public override void Spawn(Vector2 position)
     {
-
+        base.Spawn(position);
+        visual.enabled = true;
     }
 
     void Nourish(SteeringAgent agent)
