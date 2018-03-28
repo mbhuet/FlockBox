@@ -15,68 +15,56 @@ public class SeekBehavior : SteeringBehavior {
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
-
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
-        bool chosenTargetFound = false;
-
-        TargetWrapped chosenTargetWrapped = new TargetWrapped();
 
         LinkedList<TargetWrapped> allTargets = new LinkedList<TargetWrapped>();
         Dictionary<string, LinkedList<TargetWrapped>> sourroundingTargets = surroundings.targets;
         foreach (string tag in targetTags) {
-            if (chosenTargetFound) break;
 
             LinkedList<TargetWrapped> targetsOut;
             if (sourroundingTargets.TryGetValue(tag, out targetsOut)) {
                 foreach (TargetWrapped target in targetsOut)
                 {
                     allTargets.AddLast(target);
-                    if(chosenTargetID != -1 && !chosenTargetFound)
-                    {
-                        if (target.target.targetID == chosenTargetID)
-                        {
-                            chosenTargetFound = true;
-                            chosenTargetWrapped = target;
-                            break;
-                        }
-                    }
                 }
             }
         }
 
-        //
-        if (!chosenTargetFound && allTargets.First != null)
+        //no targets in neighborhood
+        if (allTargets.First == null)
         {
-            TargetWrapped target = ClosestUnclaimedTarget(allTargets, mine);
-            if (target.target.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+            if(chosenTargetID != -1)
             {
-                EngagePursuit(mine, target.target);
-                chosenTargetWrapped = target;
-                chosenTargetFound = true;
+                DisengagePursuit(mine, chosenTargetID);
             }
+            return Vector3.zero;
         }
 
-        if (!chosenTargetFound && chosenTargetID!= -1)
+        TargetWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
+
+        //no pursuable targets nearby
+        if (!closestTarget.target.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+        {
+            if (chosenTargetID != -1)
+            {
+                DisengagePursuit(mine, chosenTargetID);
+            }
+            return Vector3.zero;
+        }
+
+
+        if (closestTarget.target.targetID != chosenTargetID) 
         {
             DisengagePursuit(mine, chosenTargetID);
+            EngagePursuit(mine, closestTarget.target);
         }
 
-        if (chosenTargetFound) {
-            AttemptCatch(mine, chosenTargetWrapped);
-            Vector3 desired_velocity = (chosenTargetWrapped.wrappedPosition - mine.position) * mine.settings.maxSpeed;
-            Vector3 steering = desired_velocity - mine.velocity;
-            return steering;
-        }
+        AttemptCatch(mine, closestTarget);
+        Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.position).normalized * mine.settings.maxSpeed;
+        Vector3 steer = desired_velocity - mine.velocity;
+        steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
 
-        
-
-        
-
-
-
-            return Vector3.zero;
-
-
+        return steer * weight;
 
     }
 
@@ -99,15 +87,17 @@ public class SeekBehavior : SteeringBehavior {
     }
 
 
-    private TargetWrapped ClosestUnclaimedTarget(LinkedList<TargetWrapped> nearbyTargets, SteeringAgent agent)
+    private static TargetWrapped ClosestPursuableTarget(LinkedList<TargetWrapped> nearbyTargets, SteeringAgent agent)
     {
+        int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
+
         float closeDist = float.MaxValue;
         TargetWrapped closeTarget = nearbyTargets.First.Value;
         foreach(TargetWrapped target in nearbyTargets)
         {
             float dist = Vector3.Distance(target.wrappedPosition, agent.position);
-            if(dist <= target.target.radius) AttemptCatch(agent, target);
-            if (dist < closeDist && target.target.CanBePursuedBy(agent)){
+            //if(dist <= target.target.radius) AttemptCatch(agent, target);
+            if (dist < closeDist && (target.target.CanBePursuedBy(agent))){
                 closeDist = dist;
                 closeTarget = target;
             }

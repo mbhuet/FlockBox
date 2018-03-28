@@ -72,7 +72,8 @@ public class Target : MonoBehaviour {
 
     public virtual bool CanBePursuedBy(SteeringAgent agent)
     {
-        return !isCaught && numPursuers <maxPursuers;
+        int agentTargetID = (int)agent.GetAttribute(SeekBehavior.targetIDAttributeName);
+        return !isCaught && (numPursuers < maxPursuers || agentTargetID == targetID);
     }
 
     public virtual void Spawn(Vector2 position)

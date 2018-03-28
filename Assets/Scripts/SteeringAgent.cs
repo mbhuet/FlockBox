@@ -11,11 +11,9 @@ using Vexe.Runtime.Types;
 
 [RequireComponent(typeof(SteeringAgentVisual))]
 [System.Serializable]
-public class SteeringAgent : BaseBehaviour
+public class SteeringAgent : Agent
 {
-    Coordinates lastNeighborhood = new Coordinates(0,0);
 
-    public Vector3 position { get; protected set; }
     public Vector3 velocity { get; protected set; }
     public Vector3 acceleration { get; protected set; }
     float visualRadius = 12.0f;
@@ -76,7 +74,7 @@ public class SteeringAgent : BaseBehaviour
     {
         FindNeighborhood();
     }
-    
+
 
     protected void FindNeighborhood()
     {
@@ -90,11 +88,10 @@ public class SteeringAgent : BaseBehaviour
         }
     }
 
-
     //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
-    
 
-	public object GetAttribute(string name)
+
+    public object GetAttribute(string name)
     {
         object val;
         if (!attributes.TryGetValue(name, out val))
@@ -163,16 +160,7 @@ public class SteeringAgent : BaseBehaviour
 
     // Wraparound
     
-    void borders()
-    {
-        bool mustWrap = false;
-        Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.min.x) { wrappedPosition.x = NeighborhoodCoordinator.max.x + (position.x - NeighborhoodCoordinator.min.x); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.min.y) { wrappedPosition.y = NeighborhoodCoordinator.max.y + (position.y - NeighborhoodCoordinator.min.y); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.max.x) { wrappedPosition.x = NeighborhoodCoordinator.min.x + (position.x - NeighborhoodCoordinator.max.x); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.max.y) { wrappedPosition.y = NeighborhoodCoordinator.min.y + (position.y - NeighborhoodCoordinator.max.y); mustWrap = true; }
-        if(mustWrap) position = wrappedPosition;
-    }
+    
    
 
     
