@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 8
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -39,6 +39,7 @@ RenderSettings:
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -54,11 +55,10 @@ LightmapSettings:
     m_EnableBakedLightmaps: 0
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
-    serializedVersion: 9
+    serializedVersion: 10
     m_Resolution: 2
     m_BakeResolution: 40
-    m_TextureWidth: 1024
-    m_TextureHeight: 1024
+    m_AtlasSize: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -113,6 +113,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &57877983
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -1.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 1.3529565
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 2.422473
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035610065716092, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1247891213174674, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 75b5e51bd54d1f644956b29acfb8356e, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &183052624
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,6 +190,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
@@ -207,7 +254,7 @@ GameObject:
   - component: {fileID: 489392758}
   - component: {fileID: 489392757}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FoodSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -227,7 +274,7 @@ MonoBehaviour:
   minStatus: 0
   patchRadius: 50
   numFoodSpawns: 10
-  foodPrefab: {fileID: 114470086152575448, guid: 75b5e51bd54d1f644956b29acfb8356e,
+  foodPrefab: {fileID: 114513997731407932, guid: 309b36300bd04fd459b369c3959f7f30,
     type: 2}
 --- !u!4 &489392758
 Transform:
@@ -287,6 +334,52 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1f29ac7db3ab9be4a8e8b6117387e6c7, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &624895062
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -1.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -3.3970432
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -2.2775269
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4524860855587824, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1195555919620444, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 309b36300bd04fd459b369c3959f7f30, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1150902055
 GameObject:
@@ -465,6 +558,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: f87c9ad2f025f8f4e9ece429dbf3113f, type: 2}
   m_StaticBatchInfo:
