@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10a40061c5603424b8d2e2c8c482b7a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minStatus: 0
+  minStatus: 10
   patchRadius: 50
   numFoodSpawns: 10
   foodPrefab: {fileID: 114513997731407932, guid: 309b36300bd04fd459b369c3959f7f30,

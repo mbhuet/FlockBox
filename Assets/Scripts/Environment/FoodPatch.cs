@@ -52,7 +52,9 @@ public class FoodPatch : MonoBehaviour {
 
     float GetRandomStatusRequirement()
     {
-        return Random.Range(minStatus, 100);
+        float rand =  Random.Range(-100, 100);
+        return Mathf.Clamp(rand, 0, 100);
+        //return 0;
     }
 
     void AddFoodToCache(FoodPlant plant)
