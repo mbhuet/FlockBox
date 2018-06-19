@@ -2,23 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour {
-    SpriteRenderer sprite;
+public class Zone : MonoBehaviour {
     public const float forceFieldDistance = 10; //how close can a Boid be before it hits the force field
+
+    protected SpriteRenderer sprite;
     public float radius { get; protected set; }
     public Vector3 center { get; protected set; }
 
-	// Use this for initialization
-	void Awake () {
+    // Use this for initialization
+    void Awake()
+    {
         sprite = GetComponent<SpriteRenderer>();
-	}
+    }
 
-
-	
-	// Update is called once per frame
-	void Start () {
+    // Update is called once per frame
+    void Start()
+    {
         center = transform.position;
 
+    }
+
+    // Update is called once per frame
+    void Update () {
+		
 	}
 
     public void OnBeginGrow()
@@ -29,7 +35,7 @@ public class Obstacle : MonoBehaviour {
     public void OnEndGrow()
     {
         SetAlpha(1);
-        NeighborhoodCoordinator.AddObstacleToNeighborhoods(this);
+        NeighborhoodCoordinator.AddZoneToNeighborhoods(this);
     }
 
     void SetAlpha(float alpha)
@@ -45,5 +51,4 @@ public class Obstacle : MonoBehaviour {
         this.radius = radius;
         transform.localScale = Vector2.one * radius * 2;
     }
-
 }

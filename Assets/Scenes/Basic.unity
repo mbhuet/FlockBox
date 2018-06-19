@@ -700,7 +700,7 @@ GameObject:
   - component: {fileID: 2079507319}
   - component: {fileID: 2079507318}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: AgentSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -718,8 +718,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114700207507286314, guid: 1f29ac7db3ab9be4a8e8b6117387e6c7,
-    type: 2}
-  obstaclePrefab: {fileID: 114468748862160914, guid: bb88c6274a934b3448243917f5be9dad,
     type: 2}
   numStartSpawns: 50
 --- !u!4 &2079507319

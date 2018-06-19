@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class AgentSpawner : MonoBehaviour {
     public SteeringAgent boidPrefab;
-    public Obstacle obstaclePrefab;
     public int numStartSpawns;
 
     // Use this for initialization
@@ -18,10 +17,7 @@ public class AgentSpawner : MonoBehaviour {
         {
             Spawn(1, Camera.main.ScreenToWorldPoint(Input.mousePosition));
         }
-        if (Input.GetMouseButtonDown(1))
-        {
-            StartCoroutine(GrowObstacle(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
-        }
+        
     }
 
     void Spawn(int numBoids)
@@ -41,17 +37,5 @@ public class AgentSpawner : MonoBehaviour {
         }
     }
 
-    IEnumerator GrowObstacle(Vector2 center)
-    {
-        Obstacle newObstacle = GameObject.Instantiate<Obstacle>(obstaclePrefab, center, Quaternion.identity);
-        float radius = 0;
-        newObstacle.OnBeginGrow();
-        while (Input.GetMouseButton(1))
-        {
-            radius += Time.deltaTime * 10 * Mathf.Max(1, radius *.1f);
-            newObstacle.SetRadius(radius);
-            yield return null;
-        }
-        newObstacle.OnEndGrow();
-    }
+    
 }

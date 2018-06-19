@@ -9,23 +9,10 @@ using Vexe.Runtime.Types;
 using UnityEditor;
 #endif
 
-
-
-public class BehaviorSettings : BaseScriptableObject {
-
+public abstract class BehaviorSettings : BaseScriptableObject {
     public float maxForce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
-
-    public AlignmentBehavior alignmment = new AlignmentBehavior();
-    public CohesionBehavior cohesion = new CohesionBehavior();
-    public SeparationBehavior separation = new SeparationBehavior();
-    public AvoidanceBehavior avoidance = new AvoidanceBehavior();
-    public WanderBehavior wander = new WanderBehavior();
-    public SocialStatusBehavior socialStatus = new SocialStatusBehavior();
-    public RelationshipBehavior friendships = new RelationshipBehavior();
-    public SeekBehavior seek = new SeekBehavior();
-
-    //public EmptyBehavior empty = new EmptyBehavior();
+                                  // Use this for initialization
 
     private void Awake()
     {
@@ -36,18 +23,39 @@ public class BehaviorSettings : BaseScriptableObject {
         GetActiveBehaviors();
     }
 
+/*
+#if UNITY_EDITOR
+    [MenuItem("Assets/Create/Behavior Settings")]
+    public static void CreateMyAsset()
+    {
+        BehaviorSettings asset = ScriptableObject.CreateInstance<BehaviorSettings>();
+        AssetDatabase.CreateAsset(asset, "Assets/NewBehaviorSettings.asset");
+        AssetDatabase.SaveAssets();
+        EditorUtility.FocusProjectWindow();
+        Selection.activeObject = asset;
+    }
+#endif
+*/
+
+
     private List<SteeringBehavior> m_allBehaviors;
-    public List<SteeringBehavior> allBehaviors {
-        get {
+    public List<SteeringBehavior> allBehaviors
+    {
+        get
+        {
             if (m_allBehaviors == null) { GetAllBehaviors(); }
-            return m_allBehaviors;  }
+            return m_allBehaviors;
+        }
     }
 
     private List<SteeringBehavior> m_activeBehaviors;
     public List<SteeringBehavior> activeBehaviors
-    { get{
-            if (m_activeBehaviors == null){ GetActiveBehaviors();}
-            return m_activeBehaviors;   }
+    {
+        get
+        {
+            if (m_activeBehaviors == null) { GetActiveBehaviors(); }
+            return m_activeBehaviors;
+        }
     }
 
     private void GetAllBehaviors()
@@ -57,7 +65,8 @@ public class BehaviorSettings : BaseScriptableObject {
         foreach (FieldInfo field in fields)
         {
             //Debug.Log(field.Name + " " + field.FieldType.ToString());
-            if (field.FieldType.IsSubclassOf(typeof(SteeringBehavior))){
+            if (field.FieldType.IsSubclassOf(typeof(SteeringBehavior)))
+            {
                 //Debug.Log("is behavior");
                 SteeringBehavior behavior = (SteeringBehavior)field.GetValue(this);
                 behavior.OnActiveStatusChange += GetActiveBehaviors;
@@ -75,18 +84,4 @@ public class BehaviorSettings : BaseScriptableObject {
                 m_activeBehaviors.Add(behavior);
         }
     }
-#if UNITY_EDITOR
-    [MenuItem("Assets/Create/Behavior Settings")]
-    public static void CreateMyAsset()
-    {
-        BehaviorSettings asset = ScriptableObject.CreateInstance<BehaviorSettings>();
-        AssetDatabase.CreateAsset(asset, "Assets/NewBehaviorSettings.asset");
-        AssetDatabase.SaveAssets();
-        EditorUtility.FocusProjectWindow();
-        Selection.activeObject = asset;
 }
-#endif
-
-
-}
-

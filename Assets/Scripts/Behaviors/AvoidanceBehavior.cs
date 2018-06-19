@@ -1,23 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vexe.Runtime.Types;
+
 
 [System.Serializable]
 public class AvoidanceBehavior : SteeringBehavior {
 
+    [PerItem, Tags, VisibleWhen("isActive")]
+    public string[] avoidTags;
+
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        if (surroundings.obstacles.First == null) return Vector3.zero;
+        LinkedList<ZoneWrapped> obstacles = GetAvoidZones(surroundings);
+        if (obstacles.First == null) return Vector3.zero;
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;
         Vector3 closestHitPoint = Vector3.zero;
-        Obstacle mostThreateningObstacle = surroundings.obstacles.First.Value.obstacle;
+        Zone mostThreateningObstacle = obstacles.First.Value.zone;
 
-        foreach (ObstacleWrapped obs_wrapped in surroundings.obstacles)
+        foreach (ZoneWrapped obs_wrapped in obstacles)
         {
-            Obstacle obstacle = obs_wrapped.obstacle;
+            Zone zone = obs_wrapped.zone;
             Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedCenter) < obstacle.radius)
+            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedCenter) < zone.radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
@@ -27,7 +33,7 @@ public class AvoidanceBehavior : SteeringBehavior {
                 {
                     closestHitDistance = distanceToClosestPoint;
                     closestHitPoint = closestPoint;
-                    mostThreateningObstacle = obstacle;
+                    mostThreateningObstacle = zone;
                 }
 
             }
@@ -42,8 +48,27 @@ public class AvoidanceBehavior : SteeringBehavior {
         return steer * weight;
     }
 
+    LinkedList<ZoneWrapped> GetAvoidZones(SurroundingsInfo surroundings)
+    {
+        Dictionary<string, LinkedList<ZoneWrapped>> zoneDict = surroundings.zones;
+        LinkedList<ZoneWrapped> obstacles = new LinkedList<ZoneWrapped>();
 
-    Vector3 ClosestPointPathToObstacle(SteeringAgent agent, ObstacleWrapped obstacle)
+        LinkedList<ZoneWrapped> zonesOut = new LinkedList<ZoneWrapped>();
+        foreach(string avoidTag in avoidTags)
+        {
+            if(zoneDict.TryGetValue(avoidTag, out zonesOut))
+            {
+                foreach (ZoneWrapped avoidZone in zonesOut)
+                {
+                    obstacles.AddLast(avoidZone);
+                }
+
+            }
+        }
+        return obstacles;
+    }
+
+    Vector3 ClosestPointPathToObstacle(SteeringAgent agent, ZoneWrapped obstacle)
     {
         Vector3 agentPos = agent.position;
         Vector3 agentToObstacle = obstacle.wrappedCenter - agentPos;

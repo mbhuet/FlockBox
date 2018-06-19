@@ -22,10 +22,11 @@ public struct SteeringAgentWrapped
     public Vector3 wrappedPosition;
 }
 
-public struct ObstacleWrapped
+
+public struct ZoneWrapped
 {
-    public ObstacleWrapped(Obstacle obstacle, Vector3 wrappedCenter) { this.obstacle = obstacle; this.wrappedCenter = wrappedCenter; }
-    public Obstacle obstacle;
+    public ZoneWrapped(Zone zone, Vector3 wrappedCenter) { this.zone = zone; this.wrappedCenter = wrappedCenter; }
+    public Zone zone;
     public Vector3 wrappedCenter;
 }
 
@@ -217,8 +218,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
 
         LinkedList<SteeringAgentWrapped> allNeighbors = new LinkedList<SteeringAgentWrapped>();
-        LinkedList<ObstacleWrapped> allObstacles = new LinkedList<ObstacleWrapped>();
-        List<Obstacle> obstacles_alreadyAdded = new List<Obstacle>();
+        
+
+        Dictionary<string, LinkedList<ZoneWrapped>> allZones = new Dictionary<string, LinkedList<ZoneWrapped>>();
+
 
         Dictionary<string, LinkedList<TargetWrapped>> allTargets = new Dictionary<string, LinkedList<TargetWrapped>>();
 
@@ -256,12 +259,17 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 {
                     allNeighbors.AddLast(new SteeringAgentWrapped(neighbor, neighbor.position + wrap_positionOffset));
                 }
-                foreach (Obstacle obstacle in neighborhoods[r_wrap, c_wrap].GetObstacles())
+                Dictionary<string, LinkedList<Zone>> sourceZones = neighborhoods[r_wrap, c_wrap].GetZones();
+                foreach (string tag in sourceZones.Keys)
                 {
-                    if (!obstacles_alreadyAdded.Contains(obstacle))
+                    LinkedList<Zone> zonesOut;
+                    if (sourceZones.TryGetValue(tag, out zonesOut))
                     {
-                        obstacles_alreadyAdded.Add(obstacle);
-                        allObstacles.AddLast(new ObstacleWrapped(obstacle, obstacle.center + wrap_positionOffset));
+                        if (!allZones.ContainsKey(tag)) allZones.Add(tag, new LinkedList<ZoneWrapped>());
+                        foreach (Zone zone in zonesOut)
+                        {
+                            allZones[tag].AddLast(new ZoneWrapped(zone, zone.center + wrap_positionOffset));
+                        }
                     }
                 }
 
@@ -281,16 +289,16 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allObstacles, allTargets);
+        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allZones, allTargets);
 
         cachedSurroundings[def] = data;
         return data;
     }
 
-    public static void AddObstacleToNeighborhoods(Obstacle obs)
+    public static void AddZoneToNeighborhoods(Zone zone)
     {
-        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(obs.center);
-        int radius = 1 + Mathf.FloorToInt((obs.radius + Obstacle.forceFieldDistance) / neighborhoodSize_static.x);
+        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(zone.center);
+        int radius = 1 + Mathf.FloorToInt((zone.radius + Zone.forceFieldDistance) / neighborhoodSize_static.x);
         //        Debug.Log((obs.radius + Obstacle.forceFieldDistance) + " " + radius);
         for (int r = centerCoords.row - radius; r <= centerCoords.row + radius; r++)
         {
@@ -300,21 +308,21 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 {
                     Neighborhood checkNeighborhood = neighborhoods[r, c];
                     // Find the closest point to the circle within the rectangle
-                    float closestX = Mathf.Clamp(obs.center.x,
+                    float closestX = Mathf.Clamp(zone.center.x,
                         checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static.x / 2f,
                         checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static.x / 2f);
-                    float closestY = Mathf.Clamp(obs.center.y,
+                    float closestY = Mathf.Clamp(zone.center.y,
                         checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static.y / 2f,
                         checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static.y / 2f);
 
                     // Calculate the distance between the circle's center and this closest point
-                    float distanceX = obs.center.x - closestX;
-                    float distanceY = obs.center.y - closestY;
+                    float distanceX = zone.center.x - closestX;
+                    float distanceY = zone.center.y - closestY;
 
                     // If the distance is less than the circle's radius, an intersection occurs
                     float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
-                    if (distanceSquared < ((obs.radius + Obstacle.forceFieldDistance) * (obs.radius + Obstacle.forceFieldDistance)))
-                        neighborhoods[r, c].AddObstacle(obs);
+                    if (distanceSquared < ((zone.radius + Zone.forceFieldDistance) * (zone.radius + Zone.forceFieldDistance)))
+                        neighborhoods[r, c].AddZone(zone);
                 }
             }
         }
