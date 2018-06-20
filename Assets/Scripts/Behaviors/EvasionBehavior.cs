@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PreyBehaviors : BehaviorSettings {
-
+public class EvasionBehavior : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

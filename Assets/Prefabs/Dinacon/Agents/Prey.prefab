@@ -89,7 +89,7 @@ MonoBehaviour:
     _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
     _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
     _Count: 6
-    _Version: 2433
+    _Version: 3404
     _FreeList: -1
     _FreeCount: 0
     _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
@@ -110,13 +110,13 @@ MonoBehaviour:
       ValueFloat: 14
       Type: 1
     - ValueString: 
-      ValueFloat: 222
+      ValueFloat: 202
       Type: 1
     - ValueString: 
       ValueFloat: 0
       Type: 0
   z_layering: 0
-  settings: {fileID: 11400000, guid: 775fe8c56edc73a45a33c493d176bee4, type: 2}
+  settings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
 --- !u!114 &114694176680571396
 MonoBehaviour:
   m_ObjectHideFlags: 1
