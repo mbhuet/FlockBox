@@ -22,6 +22,7 @@ public class EcosystemAgent : SteeringAgent {
 
     public float nourishmentToReproduce = 1;
     public float lifespan = 10;
+    protected float eatTime = 1;
     protected float spawnTime;
 
     protected void Start()
@@ -44,6 +45,7 @@ public class EcosystemAgent : SteeringAgent {
 
     protected bool IsNourishedEnoughToReproduce()
     {
+        if (!HasAttribute(nourishAttributeName)) return false;
         return (float)GetAttribute(nourishAttributeName) >= nourishmentToReproduce;
     }
 
@@ -72,7 +74,7 @@ public class EcosystemAgent : SteeringAgent {
         RemoveFromNeighborhood();
         velocityThrottle = 0;
         visual.Blink(true);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(eatTime);
         visual.Blink(false);
         Kill();
     }
@@ -80,9 +82,8 @@ public class EcosystemAgent : SteeringAgent {
 
     protected IEnumerator EAT_Enter()
     {
-        Debug.Log("eat enter");
         velocityThrottle = 0;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(eatTime);
         fsm.ChangeState(EcoState.WANDER);
     }
 

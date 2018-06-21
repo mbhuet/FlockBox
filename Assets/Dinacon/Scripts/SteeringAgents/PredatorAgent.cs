@@ -8,7 +8,6 @@ public class PredatorAgent : EcosystemAgent {
 
     public override void CatchAgent(SteeringAgent other)
     {
-        Debug.Log("predator catch");
         base.CatchAgent(other);
         fsm.ChangeState(EcoState.EAT);
     }

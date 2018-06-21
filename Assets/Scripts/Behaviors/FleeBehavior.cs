@@ -6,7 +6,7 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class FleeBehavior : SteeringBehavior
 {
-
+    public const string fleeAttributeName = "fleeing";
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
@@ -54,10 +54,13 @@ public class FleeBehavior : SteeringBehavior
             Vector3 steer = desired_velocity - mine.velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
+            mine.SetAttribute(fleeAttributeName, true);
+
             return steer * weight;
         }
         else
         {
+            mine.SetAttribute(fleeAttributeName, false);
             return new Vector3(0, 0);
         }
 

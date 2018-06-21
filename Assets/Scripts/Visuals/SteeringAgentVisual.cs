@@ -55,7 +55,7 @@ public class SteeringAgentVisual : MonoBehaviour {
         bool visible_last = true;
         while (blinking)
         {
-            visible = Mathf.Sin(Time.time * blinkRate) > .8f;
+            visible = Mathf.Sin(Time.time * blinkRate) > .75f;
             if(visible && !visible_last)
             {
                 Show();

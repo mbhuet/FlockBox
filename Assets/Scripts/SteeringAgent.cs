@@ -217,7 +217,6 @@ public class SteeringAgent : Agent
     public virtual void CatchAgent(SteeringAgent other)
     {
         if (OnCatch != null) OnCatch.Invoke(this);
-        Debug.Log("agent catch");
         other.CaughtBy(this);
     }
 
