@@ -16,11 +16,24 @@ public class SteeringAgent : Agent
 
     public Vector3 velocity { get; protected set; }
     public Vector3 acceleration { get; protected set; }
-    float visualRadius = 12.0f;
-    
+    public bool isAlive { get; protected set; }
+
+    public float radius = 1f;
+
+    public int agentID { get; protected set; }
+    protected static Dictionary<int, SteeringAgent> agentRegistry;
+    protected static int agentCount_static = 0;
+
+
+
     public bool z_layering = true; //will set position z values based on y value;
 
     public BehaviorSettings activeSettings;
+
+    public delegate void AgentEvent(SteeringAgent agent);
+    public AgentEvent OnCaught;
+    public AgentEvent OnKill;
+    public AgentEvent OnSpawn;
 
     //Takes a type, returns instance
     [SerializeField]
@@ -47,9 +60,11 @@ public class SteeringAgent : Agent
         // Leaving the code temporarily this way so that this example runs in JS
         float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
         velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * activeSettings.maxSpeed;
+        isAlive = true;
     }
 
 	protected void Start(){
+        RegisterNewAgent();
 		position = transform.position;
 	}
 
@@ -57,6 +72,7 @@ public class SteeringAgent : Agent
 
     protected void Update()
     {
+        if (!isAlive) return;
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed);
@@ -72,9 +88,18 @@ public class SteeringAgent : Agent
 
     protected void LateUpdate()
     {
+        if (!isAlive) return;
         FindNeighborhood();
     }
 
+    protected void RegisterNewAgent()
+    {
+        agentCount_static++;
+        agentID = agentCount_static;
+        if (agentRegistry == null) agentRegistry = new Dictionary<int, SteeringAgent>();
+        agentRegistry.Add(agentID, this);
+        this.name += "_" + agentID;
+    }
 
     protected void FindNeighborhood()
     {
@@ -87,6 +112,7 @@ public class SteeringAgent : Agent
             lastNeighborhood.col = currentNeighborhood.col;
         }
     }
+
 
     //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
 
@@ -156,6 +182,28 @@ public class SteeringAgent : Agent
         this.transform.position = new Vector3(position.x, position.y, (z_layering? ZLayering.YtoZPosition(position.y) : 0));
         visual.SetRotation(Quaternion.identity);
         visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+    }
+
+    public virtual void Kill()
+    {
+        if (OnKill != null) OnKill.Invoke(this);
+        isAlive = false;
+        visual.Hide();
+        NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
+
+    }
+
+    public virtual void Spawn(Vector3 position)
+    {
+        if (OnSpawn != null) OnSpawn.Invoke(this);
+        isAlive = true;
+        visual.Show();
+    }
+
+    public virtual void CaughtBy(SteeringAgent other)
+    {
+        Debug.Log("agent caught");
+        if (OnCaught != null) OnCaught.Invoke(this);
     }
 
     // Wraparound

@@ -26,4 +26,14 @@ public class SteeringAgentVisual : MonoBehaviour {
     {
 
     }
+
+    public virtual void Show()
+    {
+        sprite.enabled = true;
+    }
+
+    public virtual void Hide()
+    {
+        sprite.enabled = false;
+    }
 }

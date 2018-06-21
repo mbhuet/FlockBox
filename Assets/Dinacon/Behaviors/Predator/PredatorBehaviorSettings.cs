@@ -12,7 +12,7 @@ public class PredatorBehaviorSettings : BehaviorSettings
     public CohesionBehavior cohesion = new CohesionBehavior();
     public SeparationBehavior separation = new SeparationBehavior();
     public WanderBehavior wander = new WanderBehavior();
-    public SeekBehavior seek = new SeekBehavior();
+    public PursuitBehavior pursuit = new PursuitBehavior();
 
 
 #if UNITY_EDITOR

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ArrowKeyMovement : MonoBehaviour {
     public float speed;
+    public bool useZLayering = false;
 	// Update is called once per frame
 	void Update () {
         Vector3 move = 
@@ -13,6 +14,6 @@ public class ArrowKeyMovement : MonoBehaviour {
             Vector2.down * (Input.GetKey(KeyCode.DownArrow)? 1 : 0);
 
         move = move * Time.deltaTime * speed;
-        this.transform.Translate(new Vector3(move.x, move.y, ZLayering.YtoZPosition(move.y)));
+        this.transform.Translate(new Vector3(move.x, move.y, useZLayering? ZLayering.YtoZPosition(move.y) : 0));
 	}
 }
