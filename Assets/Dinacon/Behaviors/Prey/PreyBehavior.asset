@@ -18,7 +18,7 @@ MonoBehaviour:
     _HashCodes: 9b7e85631c4af107a436c649d946920e763b681b76b8593a0d4a99080e4a9908000000000000000000000000000000000000000000000000000000000000000000000000
     _Next: ffffffffffffffffffffffffffffffffffffffffffffffff01000000ffffffff000000000000000000000000000000000000000000000000000000000000000000000000
     _Count: 8
-    _Version: 21586
+    _Version: 21816
     _FreeList: -1
     _FreeCount: 0
     _Keys: 9b7e85631c4af187a436c6c9d946920e763b681b76b8593a0d4a99080e4a9908000000000000000000000000000000000000000000000000000000000000000000000000
@@ -76,65 +76,3 @@ MonoBehaviour:
       Type: 0
   maxForce: 3.6
   maxSpeed: 10.18
-  alignmment:
-    isActive: 1
-    weight: 3.3
-    effectiveRadius: 10
-    drawVectorLine: 1
-    vectorColor: {r: 0.993973, g: 1, b: 0, a: 1}
-  cohesion:
-    isActive: 1
-    weight: 1.9
-    effectiveRadius: 10
-    drawVectorLine: 1
-    vectorColor: {r: 0, g: 0.8771584, b: 1, a: 1}
-  separation:
-    isActive: 1
-    weight: 2.4
-    effectiveRadius: 10
-    drawVectorLine: 1
-    vectorColor: {r: 1, g: 0, b: 0.8612037, a: 1}
-  avoidance:
-    isActive: 0
-    weight: 1
-    effectiveRadius: 10
-    drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
-    avoidTags: []
-  wander:
-    isActive: 0
-    weight: 1
-    effectiveRadius: 10
-    drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
-  socialStatus:
-    isActive: 0
-    weight: 1
-    effectiveRadius: 10
-    drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
-    maxStatus: 100
-    speedDampening: 0.1
-    attractionCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  friendships:
-    isActive: 0
-    weight: 1
-    effectiveRadius: 10
-    drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
-    maxFriends: 0
-    minFriendshipDuration: 5
-    maxFriendshipDuration: 10
-    maxStatusDifference: 10
-  seek:
-    isActive: 0
-    weight: 1
-    effectiveRadius: 10
-    drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
-    targetTags: []

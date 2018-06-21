@@ -105,7 +105,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             {
                 Gizmos.color = Color.red;
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
-                if (neighborhoods[r, c].GetNeighbors().First != null)
+                if (neighborhoods[r, c].IsOccupied())
                 {
                     Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
@@ -218,6 +218,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
 
         LinkedList<SteeringAgentWrapped> allNeighbors = new LinkedList<SteeringAgentWrapped>();
+       Dictionary<string, LinkedList<SteeringAgentWrapped>> categorizedNeighbors = new Dictionary<string, LinkedList<SteeringAgentWrapped>>();
         
 
         Dictionary<string, LinkedList<ZoneWrapped>> allZones = new Dictionary<string, LinkedList<ZoneWrapped>>();
@@ -255,10 +256,23 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
                 }
 
-                foreach (SteeringAgent neighbor in neighborhoods[r_wrap, c_wrap].GetNeighbors())
+                Dictionary<string, LinkedList<SteeringAgent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetNeighbors();
+                foreach (string tag in sourceAgents.Keys)
                 {
-                    allNeighbors.AddLast(new SteeringAgentWrapped(neighbor, neighbor.position + wrap_positionOffset));
+                    LinkedList<SteeringAgent> agentsOut;
+                    if (sourceAgents.TryGetValue(tag, out agentsOut))
+                    {
+
+                        if (!categorizedNeighbors.ContainsKey(tag)) categorizedNeighbors.Add(tag, new LinkedList<SteeringAgentWrapped>());
+                        foreach (SteeringAgent agent in agentsOut)
+                        {
+                            SteeringAgentWrapped wrappedAgent = new SteeringAgentWrapped(agent, agent.position + wrap_positionOffset);
+                            allNeighbors.AddLast(wrappedAgent);
+                            categorizedNeighbors[tag].AddLast(wrappedAgent);
+                        }
+                    }
                 }
+
                 Dictionary<string, LinkedList<Zone>> sourceZones = neighborhoods[r_wrap, c_wrap].GetZones();
                 foreach (string tag in sourceZones.Keys)
                 {
@@ -289,7 +303,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, allZones, allTargets);
+        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, categorizedNeighbors, allZones, allTargets);
 
         cachedSurroundings[def] = data;
         return data;

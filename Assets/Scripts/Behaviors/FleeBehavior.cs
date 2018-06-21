@@ -7,9 +7,6 @@ using Vexe.Runtime.Types;
 public class FleeBehavior : SteeringBehavior
 {
 
-    [PerItem, Tags, VisibleWhen("isActive")]
-    public string[] fleeTags;
-
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
@@ -18,7 +15,7 @@ public class FleeBehavior : SteeringBehavior
         Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
 
-        foreach(SteeringAgentWrapped other in surroundings.neighbors)
+        foreach(SteeringAgentWrapped other in GetFilteredNeighbors(surroundings))
         {
             if (FleeThisTag(other.agent.tag))
             {
@@ -29,7 +26,7 @@ public class FleeBehavior : SteeringBehavior
             }
         }
 
-        foreach (string tag in fleeTags)
+        foreach (string tag in filterTags)
         {
 
             LinkedList<TargetWrapped> targetsOut;
@@ -53,9 +50,9 @@ public class FleeBehavior : SteeringBehavior
         if (count > 0)
         {
             fleeMidpoint /= (count);
-            Vector3 desired_velocity = (fleeMidpoint - mine.position).normalized * -1 * mine.settings.maxSpeed;
+            Vector3 desired_velocity = (fleeMidpoint - mine.position).normalized * -1 * mine.activeSettings.maxSpeed;
             Vector3 steer = desired_velocity - mine.velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
             return steer * weight;
         }
@@ -68,9 +65,9 @@ public class FleeBehavior : SteeringBehavior
 
     protected bool FleeThisTag(string tag)
     {
-        for(int i = 0; i<fleeTags.Length; i++)
+        for(int i = 0; i<filterTags.Length; i++)
         {
-            if (fleeTags[i] == tag) return true;
+            if (filterTags[i] == tag) return true;
         }
         return false;
     }

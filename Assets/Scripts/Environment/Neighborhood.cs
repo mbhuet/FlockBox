@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Neighborhood
 {
-    LinkedList<SteeringAgent> neighbors;
+    Dictionary<string, LinkedList<SteeringAgent>> neighbors;
     Dictionary<string, LinkedList<Zone>> zones;
     Dictionary<string, LinkedList<Target>> targets;
 
@@ -15,7 +15,7 @@ public class Neighborhood
     private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
-        neighbors = new LinkedList<SteeringAgent>();
+        neighbors = new Dictionary<string, LinkedList<SteeringAgent>>();
         zones = new Dictionary<string, LinkedList<Zone>>();
         targets = new Dictionary<string, LinkedList<Target>>();
     }
@@ -23,11 +23,49 @@ public class Neighborhood
     {
         m_neighborhoodCenter = pos;
     }
-    public void AddNeighbor(SteeringAgent occupant) { neighbors.AddLast(occupant); }
-    public void RemoveNeighbor(SteeringAgent neighbor) { neighbors.Remove(neighbor); }
     public void ClearNeighbors() { neighbors.Clear(); }
-    public bool IsOccupied() { return neighbors.First != null; }
-    public LinkedList<SteeringAgent> GetNeighbors() { return neighbors; }
+    public bool IsOccupied() { return neighbors.Count > 0; }
+
+    public void AddNeighbor(SteeringAgent occupant)
+    {
+        string tag = occupant.gameObject.tag;
+        LinkedList<SteeringAgent> agentsOut;
+        if (neighbors.TryGetValue(tag, out agentsOut))
+        {
+            agentsOut.AddLast(occupant);
+        }
+        else
+        {
+            LinkedList<SteeringAgent> newAgents = new LinkedList<SteeringAgent>();
+            newAgents.AddLast(occupant);
+            neighbors.Add(tag, newAgents);
+        }
+    }
+    public void RemoveNeighbor(SteeringAgent neighbor)
+    {
+        string tag = neighbor.gameObject.tag;
+        LinkedList<SteeringAgent> agentsOut;
+        if (neighbors.TryGetValue(tag, out agentsOut))
+        {
+            agentsOut.Remove(neighbor);
+        }
+    }
+    public Dictionary<string, LinkedList<SteeringAgent>> GetNeighbors()
+    {
+        return neighbors;
+    }
+    public LinkedList<SteeringAgent> GetNeighbors(string tag)
+    {
+        LinkedList<SteeringAgent> agentsOut;
+        if (neighbors.TryGetValue(tag, out agentsOut))
+        {
+            return agentsOut;
+        }
+        else
+        {
+            return new LinkedList<SteeringAgent>();
+        }
+    }
 
     public void AddZone(Zone zone)
     {
@@ -112,11 +150,13 @@ public class Neighborhood
 public struct SurroundingsInfo
 {
     public SurroundingsInfo(
-        LinkedList<SteeringAgentWrapped> boids, 
+        LinkedList<SteeringAgentWrapped> allAgents,
+        Dictionary<string, LinkedList<SteeringAgentWrapped>> agents, 
         Dictionary<string, LinkedList<ZoneWrapped>> zns, 
         Dictionary<string, LinkedList<TargetWrapped>> targs)
-        { neighbors = boids; zones = zns; targets = targs;}
-    public LinkedList<SteeringAgentWrapped> neighbors;
+        { allNeighbors = allAgents; neighbors = agents; zones = zns; targets = targs;}
+    public LinkedList<SteeringAgentWrapped> allNeighbors;
+    public Dictionary<string, LinkedList<SteeringAgentWrapped>> neighbors;
     public Dictionary<string, LinkedList<ZoneWrapped>> zones;
     public Dictionary<string, LinkedList<TargetWrapped>> targets;
 }

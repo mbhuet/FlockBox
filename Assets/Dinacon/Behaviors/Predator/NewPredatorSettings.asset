@@ -8,20 +8,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c6c713314fd2149b659963798b513a, type: 3}
-  m_Name: PreyForageSettings
-  m_EditorClassIdentifier: Assembly-CSharp::PreyForageSettings
-  _id: -1503262
+  m_Script: {fileID: 11500000, guid: ba7a052db86c8104788f12d22cbd87e8, type: 3}
+  m_Name: NewPredatorSettings
+  m_EditorClassIdentifier: 
+  _id: -2377730
   dbg: 0
   Prefs:
-    _Buckets: 0400000007000000ffffffff03000000080000000100000006000000ffffffff02000000ffffffff09000000ffffffff0a000000ffffffffffffffff00000000ffffffff
-    _HashCodes: f144de6072104a05fafc1e472c251b30774e5936784e59364c419a444cc4a825afcfd2184c75fb082b7ec657000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff05000000ffffffffffffffffffffffff000000000000000000000000000000000000000000000000
-    _Count: 11
-    _Version: 30607
+    _Buckets: 0c000000ffffffffffffffff01000000ffffffffffffffff0a0000000b0000000800000003000000ffffffff06000000ffffffff070000000e0000000f000000ffffffff
+    _HashCodes: 55a0405fd66bac035e58814513e20b08b0d6e114b053d333f0cbbe183ade546c9037541ff9906e73935f4204945f42044471ac48a1ef5d20815b352fe1574c7800000000
+    _Next: ffffffffffffffffffffffffffffffff02000000ffffffff0500000000000000ffffffff0400000009000000ffffffffffffffffffffffffffffffff0d00000000000000
+    _Count: 16
+    _Version: 9685
     _FreeList: -1
     _FreeCount: 0
-    _Keys: f144de6072104a85fafc1ec72c251bb0774e59b6784e59b64c419a444cc4a825afcfd2184c75fb882b7ec657000000000000000000000000000000000000000000000000
+    _Keys: 55a0405fd66bac835e5881c513e20b08b0d6e114b053d333f0cbbe183ade546c9037549ff9906ef3935f4284945f42844471ac48a1ef5da0815b352fe1574cf800000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -36,22 +36,37 @@ MonoBehaviour:
       ValueFloat: 1
       Type: 2
     - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
       ValueFloat: 14
       Type: 1
     - ValueString: 
       ValueFloat: 53
       Type: 1
     - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
       ValueFloat: 0
@@ -59,53 +74,41 @@ MonoBehaviour:
     - ValueString: 
       ValueFloat: 0
       Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  maxForce: 4.47
-  maxSpeed: 12.7
+  maxForce: 10
+  maxSpeed: 20
   alignmment:
     isActive: 1
-    weight: 1.9
+    weight: 1
     effectiveRadius: 10
+    filterTags: []
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
   cohesion:
-    isActive: 1
-    weight: 1.6
+    isActive: 0
+    weight: 1
     effectiveRadius: 10
+    filterTags: []
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
   separation:
     isActive: 1
-    weight: 4.8
-    effectiveRadius: 5
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
-  flee:
-    isActive: 1
-    weight: 10
-    effectiveRadius: 20
-    drawVectorLine: 1
-    vectorColor: {r: 1, g: 0, b: 0, a: 1}
-    fleeTags:
-    - Predator
   wander:
     isActive: 1
-    weight: 0.7
+    weight: 1
     effectiveRadius: 10
+    filterTags: []
     drawVectorLine: 0
-    vectorColor: {r: 1, g: 0.06774927, b: 0, a: 1}
-    wanderScope: 151.19
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+    wanderScope: 90
+  seek:
+    isActive: 1
+    weight: 5.9
+    effectiveRadius: 30
+    filterTags: []
+    drawVectorLine: 1
+    vectorColor: {r: 0, g: 0.91210127, b: 1, a: 1}

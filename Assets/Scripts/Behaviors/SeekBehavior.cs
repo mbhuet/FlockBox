@@ -7,8 +7,6 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class SeekBehavior : SteeringBehavior {
 
-    [PerItem, Tags, VisibleWhen("isActive")]
-    public string[] targetTags;
     public const string targetIDAttributeName = "targetID";
 
 
@@ -19,7 +17,7 @@ public class SeekBehavior : SteeringBehavior {
 
         LinkedList<TargetWrapped> allTargets = new LinkedList<TargetWrapped>();
         Dictionary<string, LinkedList<TargetWrapped>> sourroundingTargets = surroundings.targets;
-        foreach (string tag in targetTags) {
+        foreach (string tag in filterTags) {
 
             LinkedList<TargetWrapped> targetsOut;
             if (sourroundingTargets.TryGetValue(tag, out targetsOut)) {
@@ -60,9 +58,9 @@ public class SeekBehavior : SteeringBehavior {
         }
 
         AttemptCatch(mine, closestTarget);
-        Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.position).normalized * mine.settings.maxSpeed;
+        Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.position).normalized * mine.activeSettings.maxSpeed;
         Vector3 steer = desired_velocity - mine.velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+        steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
         return steer * weight;
 

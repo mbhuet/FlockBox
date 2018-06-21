@@ -7,8 +7,6 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class AvoidanceBehavior : SteeringBehavior {
 
-    [PerItem, Tags, VisibleWhen("isActive")]
-    public string[] avoidTags;
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
@@ -44,7 +42,7 @@ public class AvoidanceBehavior : SteeringBehavior {
         if (distanceToObstacleEdge > effectiveRadius) return Vector3.zero;
         Vector3 steer = closestHitPoint - mostThreateningObstacle.center;
 
-        steer = steer.normalized * mine.settings.maxForce;
+        steer = steer.normalized * mine.activeSettings.maxForce;
         return steer * weight;
     }
 
@@ -54,7 +52,7 @@ public class AvoidanceBehavior : SteeringBehavior {
         LinkedList<ZoneWrapped> obstacles = new LinkedList<ZoneWrapped>();
 
         LinkedList<ZoneWrapped> zonesOut = new LinkedList<ZoneWrapped>();
-        foreach(string avoidTag in avoidTags)
+        foreach(string avoidTag in filterTags)
         {
             if(zoneDict.TryGetValue(avoidTag, out zonesOut))
             {

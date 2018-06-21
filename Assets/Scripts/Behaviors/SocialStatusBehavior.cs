@@ -33,7 +33,7 @@ public class SocialStatusBehavior : CohesionBehavior
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgentWrapped other_wrap in surroundings.neighbors)
+        foreach (SteeringAgentWrapped other_wrap in GetFilteredNeighbors(surroundings))
         {
             SteeringAgent other = other_wrap.agent;
             float d = Vector3.Distance(mine.position, other_wrap.wrappedPosition);
@@ -59,9 +59,9 @@ public class SocialStatusBehavior : CohesionBehavior
 
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
-            sum *= (mine.settings.maxSpeed);
+            sum *= (mine.activeSettings.maxSpeed);
             Vector3 steer = sum - mine.velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
             //Debug.DrawRay(mine.position, steer, Color.yellow);
             return steer * weight;
         }

@@ -101,7 +101,7 @@ MonoBehaviour:
     _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
     _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
     _Count: 6
-    _Version: 5340
+    _Version: 5627
     _FreeList: -1
     _FreeCount: 0
     _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
@@ -128,7 +128,7 @@ MonoBehaviour:
       ValueFloat: 0
       Type: 0
   z_layering: 0
-  settings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
+  activeSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
 --- !u!212 &212752175146748776
 SpriteRenderer:
   m_ObjectHideFlags: 1

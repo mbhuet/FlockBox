@@ -20,7 +20,7 @@ public class SteeringAgent : Agent
     
     public bool z_layering = true; //will set position z values based on y value;
 
-    public BehaviorSettings settings;
+    public BehaviorSettings activeSettings;
 
     //Takes a type, returns instance
     [SerializeField]
@@ -46,7 +46,7 @@ public class SteeringAgent : Agent
 
         // Leaving the code temporarily this way so that this example runs in JS
         float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * settings.maxSpeed;
+        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * activeSettings.maxSpeed;
     }
 
 	protected void Start(){
@@ -59,7 +59,7 @@ public class SteeringAgent : Agent
     {
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
         velocity += (acceleration) * Time.deltaTime;
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, settings.maxSpeed);
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed);
 
         position += (velocity * Time.deltaTime );
 
@@ -128,7 +128,7 @@ public class SteeringAgent : Agent
     // We accumulate a new acceleration each time based on three rules
     void flock(SurroundingsInfo surroundings)
     {
-        foreach (SteeringBehavior behavior in settings.activeBehaviors)
+        foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
         {
             Vector3 steer = (behavior.GetSteeringBehaviorVector(this, surroundings));
             if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
@@ -141,12 +141,12 @@ public class SteeringAgent : Agent
     {
         Vector3 desired = target - position;  // A vector pointing from the position to the target
         // Scale to maximum speed
-        desired = desired.normalized * (settings.maxSpeed);
+        desired = desired.normalized * (activeSettings.maxSpeed);
 
 
         // Steering = Desired minus Velocity
         Vector3 steer = desired - velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, settings.maxForce);
+        steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
          // Limit to maximum steering force
         return steer;
     }
