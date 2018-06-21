@@ -34,6 +34,7 @@ public class Target : MonoBehaviour {
 
     }
 
+
     protected void RegisterNewTarget()
     {
         targetCount_static++;
@@ -41,6 +42,7 @@ public class Target : MonoBehaviour {
         if (targetRegistry == null) targetRegistry = new Dictionary<int, Target>();
         targetRegistry.Add(targetID, this);
     }
+
 
     void AddToNeighborhood()
     {

@@ -10,6 +10,7 @@ public class PreyForageSettings : BehaviorSettings {
     public AlignmentBehavior alignmment = new AlignmentBehavior();
     public CohesionBehavior cohesion = new CohesionBehavior();
     public SeparationBehavior separation = new SeparationBehavior();
+    public FleeBehavior flee = new FleeBehavior();
     public WanderBehavior wander = new WanderBehavior();
 
 #if UNITY_EDITOR

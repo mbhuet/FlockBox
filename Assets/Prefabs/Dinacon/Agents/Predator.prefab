@@ -52,7 +52,7 @@ Transform:
   m_GameObject: {fileID: 1464827785186454}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 2, y: 4, z: 2}
   m_Children: []
   m_Father: {fileID: 4884802120858628}
   m_RootOrder: 0
@@ -97,14 +97,14 @@ MonoBehaviour:
   _id: -89910
   dbg: 0
   Prefs:
-    _Buckets: ffffffffffffffffffffffffffffffff0300000002000000ffffffff
-    _HashCodes: 09d17a638a9ce6071289bb49e19bea31000000000000000000000000
-    _Next: ffffffffffffffff0000000001000000000000000000000000000000
-    _Count: 4
-    _Version: 1041
+    _Buckets: ffffffffffffffff04000000050000000300000002000000ffffffff
+    _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
+    _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
+    _Count: 6
+    _Version: 5340
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 09d17a638a9ce6871289bbc9e19beab1000000000000000000000000
+    _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -119,16 +119,16 @@ MonoBehaviour:
       ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 14
+      Type: 1
+    - ValueString: 
+      ValueFloat: 222
+      Type: 1
     - ValueString: 
       ValueFloat: 0
       Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  z_layering: 1
-  settings: {fileID: 11400000, guid: 17e9dfb97b8ffa140855e655ca2f07a0, type: 2}
+  z_layering: 0
+  settings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
 --- !u!212 &212752175146748776
 SpriteRenderer:
   m_ObjectHideFlags: 1

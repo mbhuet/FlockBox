@@ -1,16 +1,78 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vexe.Runtime.Types;
 
-public class FleeBehavior : MonoBehaviour {
+[System.Serializable]
+public class FleeBehavior : SteeringBehavior
+{
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-}
+    [PerItem, Tags, VisibleWhen("isActive")]
+    public string[] fleeTags;
+
+
+    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
+    {
+        Dictionary<string, LinkedList<TargetWrapped>> sourroundingTargets = surroundings.targets;
+
+        Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
+        float count = 0;
+
+        foreach(SteeringAgentWrapped other in surroundings.neighbors)
+        {
+            if (FleeThisTag(other.agent.tag))
+            {
+                float modFactor = 1;
+                fleeMidpoint += (other.wrappedPosition); // Add position
+                count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
+
+            }
+        }
+
+        foreach (string tag in fleeTags)
+        {
+
+            LinkedList<TargetWrapped> targetsOut;
+            if (sourroundingTargets.TryGetValue(tag, out targetsOut))
+            {
+                foreach (TargetWrapped target in targetsOut)
+                {
+                    float d = Vector3.Distance(mine.position, target.wrappedPosition);
+
+                    if ((d > 0) && (d < effectiveRadius))
+                    {
+                        float modFactor = 1;
+                        fleeMidpoint += (target.wrappedPosition); // Add position
+                        count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
+                    }
+                }
+            }
+        }
+
+
+        if (count > 0)
+        {
+            fleeMidpoint /= (count);
+            Vector3 desired_velocity = (fleeMidpoint - mine.position).normalized * -1 * mine.settings.maxSpeed;
+            Vector3 steer = desired_velocity - mine.velocity;
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+
+            return steer * weight;
+        }
+        else
+        {
+            return new Vector3(0, 0);
+        }
+
+    }
+
+    protected bool FleeThisTag(string tag)
+    {
+        for(int i = 0; i<fleeTags.Length; i++)
+        {
+            if (fleeTags[i] == tag) return true;
+        }
+        return false;
+    }
+
+    }

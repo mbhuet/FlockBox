@@ -152,15 +152,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114760367099908784, guid: e04386479251fce4281fb62d260aafe6,
-        type: 2}
-      propertyPath: Prefs._Version
-      value: 1129
-      objectReference: {fileID: 0}
-    - target: {fileID: 1875201363984898, guid: e04386479251fce4281fb62d260aafe6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e04386479251fce4281fb62d260aafe6, type: 2}
   m_IsPrefabParent: 0
@@ -202,10 +193,6 @@ Prefab:
     - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
       propertyPath: m_RootOrder
       value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1072889458426260, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
@@ -278,8 +265,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e14ae125ebd474e91cac66f70b5d47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidPrefab: {fileID: 0}
-  numStartSpawns: 0
+  boidPrefab: {fileID: 114760367099908784, guid: e04386479251fce4281fb62d260aafe6,
+    type: 2}
+  numStartSpawns: 3
 --- !u!1 &1370631403
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,7 +422,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114573989587551004, guid: f4f9261fbcc0edd4eb44c57a4dd620bf,
     type: 2}
-  numStartSpawns: 1
+  numStartSpawns: 30
 --- !u!4 &2024458055
 Transform:
   m_ObjectHideFlags: 0

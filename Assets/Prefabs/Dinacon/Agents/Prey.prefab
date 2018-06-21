@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4919785705889650}
   - component: {fileID: 114694176680571396}
   - component: {fileID: 114573989587551004}
+  - component: {fileID: 114049457348239284}
   m_Layer: 0
   m_Name: Prey
   m_TagString: Prey
@@ -71,6 +72,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114049457348239284
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1072889458426260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b0b6f1a66090554699d905b0b3f7a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 1
+  maxPursuers: 1
+  visual: {fileID: 212945211848660094}
 --- !u!114 &114573989587551004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,7 +104,7 @@ MonoBehaviour:
     _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
     _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
     _Count: 6
-    _Version: 3404
+    _Version: 3839
     _FreeList: -1
     _FreeCount: 0
     _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
