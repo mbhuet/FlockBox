@@ -46,8 +46,8 @@ public class PursuitBehavior : SteeringBehavior
         float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.position);
         if (distAway <= (chosenQuaryWrapped.agent.radius + mine.radius))
         {
-            chosenQuaryWrapped.agent.CaughtBy(mine);
-            Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
+            mine.CatchAgent(chosenQuaryWrapped.agent);
+            //Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
         }
     }
 

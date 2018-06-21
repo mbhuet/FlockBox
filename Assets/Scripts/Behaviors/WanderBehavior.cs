@@ -13,7 +13,7 @@ public class WanderBehavior : SteeringBehavior {
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
 
-        Vector3 lastForward = mine.velocity.normalized;
+        Vector3 lastForward = mine.forward.normalized;
         float wanderRotation = (Mathf.PerlinNoise(Time.time, 0) * 2 - 1) * wanderScope / 2f;
         //wanderRotation *= Mathf.Deg2Rad;
         Vector3 wanderVector = Quaternion.AngleAxis(wanderRotation, Vector3.forward) * lastForward;

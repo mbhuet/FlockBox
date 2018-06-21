@@ -6,6 +6,7 @@ using Vexe.Runtime.Types;
 public class SteeringAgentVisual : MonoBehaviour {
 
     public SpriteRenderer sprite;
+    protected bool blinking = false;
 
     public virtual void SetRotation(Quaternion rotation)
     {
@@ -35,5 +36,36 @@ public class SteeringAgentVisual : MonoBehaviour {
     public virtual void Hide()
     {
         sprite.enabled = false;
+    }
+
+    public void Blink(bool isBlinking)
+    {
+        blinking = isBlinking;
+        if (isBlinking)
+        {
+            StopCoroutine("BlinkRoutine");
+            StartCoroutine("BlinkRoutine");
+        }
+    }
+
+    private IEnumerator BlinkRoutine()
+    {
+        float blinkRate = 20;
+        bool visible = true;
+        bool visible_last = true;
+        while (blinking)
+        {
+            visible = Mathf.Sin(Time.time * blinkRate) > .8f;
+            if(visible && !visible_last)
+            {
+                Show();
+            }
+            else if(!visible && visible_last)
+            {
+                Hide();
+            }
+            yield return null;
+            visible_last = visible;
+        }
     }
 }

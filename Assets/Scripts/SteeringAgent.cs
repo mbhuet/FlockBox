@@ -15,6 +15,7 @@ public class SteeringAgent : Agent
 {
 
     public Vector3 velocity { get; protected set; }
+    public Vector3 forward { get; protected set; }
     public Vector3 acceleration { get; protected set; }
     public bool isAlive { get; protected set; }
 
@@ -24,6 +25,7 @@ public class SteeringAgent : Agent
     protected static Dictionary<int, SteeringAgent> agentRegistry;
     protected static int agentCount_static = 0;
 
+    protected float velocityThrottle = 1;
 
 
     public bool z_layering = true; //will set position z values based on y value;
@@ -32,6 +34,7 @@ public class SteeringAgent : Agent
 
     public delegate void AgentEvent(SteeringAgent agent);
     public AgentEvent OnCaught;
+    public AgentEvent OnCatch;
     public AgentEvent OnKill;
     public AgentEvent OnSpawn;
 
@@ -65,19 +68,19 @@ public class SteeringAgent : Agent
 
 	protected void Start(){
         RegisterNewAgent();
-		position = transform.position;
+		Spawn(transform.position);
 	}
 
 
 
-    protected void Update()
+    protected virtual void Update()
     {
         if (!isAlive) return;
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
         velocity += (acceleration) * Time.deltaTime;
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed);
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed) * velocityThrottle;
 
-        position += (velocity * Time.deltaTime );
+        position += (velocity * Time.deltaTime);
 
         // Reset accelertion to 0 each cycle
         acceleration *= 0;
@@ -113,6 +116,12 @@ public class SteeringAgent : Agent
         }
     }
 
+    protected void RemoveFromNeighborhood()
+    {
+        NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
+
+    }
+
 
     //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
 
@@ -125,7 +134,7 @@ public class SteeringAgent : Agent
         return val;
     }
 
-    public void SetAttribute(string name, object value)
+    public virtual void SetAttribute(string name, object value)
     {
         if (attributes.ContainsKey(name))
             attributes[name] = value;
@@ -179,9 +188,13 @@ public class SteeringAgent : Agent
 
     void move()
     {
+
         this.transform.position = new Vector3(position.x, position.y, (z_layering? ZLayering.YtoZPosition(position.y) : 0));
-        visual.SetRotation(Quaternion.identity);
-        visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+        if (velocity.magnitude > 0) forward = velocity.normalized;
+
+            visual.SetRotation(Quaternion.identity);
+            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(forward.y, forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+        
     }
 
     public virtual void Kill()
@@ -198,13 +211,22 @@ public class SteeringAgent : Agent
         if (OnSpawn != null) OnSpawn.Invoke(this);
         isAlive = true;
         visual.Show();
+        this.position = position;
+    }
+
+    public virtual void CatchAgent(SteeringAgent other)
+    {
+        if (OnCatch != null) OnCatch.Invoke(this);
+        Debug.Log("agent catch");
+        other.CaughtBy(this);
     }
 
     public virtual void CaughtBy(SteeringAgent other)
     {
-        Debug.Log("agent caught");
+        //Debug.Log("agent caught");
         if (OnCaught != null) OnCaught.Invoke(this);
     }
+
 
     // Wraparound
     
