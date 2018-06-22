@@ -101,7 +101,7 @@ MonoBehaviour:
     _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
     _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
     _Count: 6
-    _Version: 6912
+    _Version: 7232
     _FreeList: -1
     _FreeCount: 0
     _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
@@ -133,7 +133,7 @@ MonoBehaviour:
   minimumEnergy: 1
   energyToReproduce: 1
   energyDecayRate: 0.1
-  lifespan: 10
+  lifespan: 60
   huntSettings: {fileID: 0}
   wanderSettings: {fileID: 0}
 --- !u!212 &212752175146748776

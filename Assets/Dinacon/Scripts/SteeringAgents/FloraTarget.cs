@@ -6,10 +6,11 @@ public class FloraTarget: Target {
     const float energyProductionRate = 1;
     protected Vector3 spawnDirection = Vector3.zero;
     private int numChildren;
-    public float propagationInterval = 1;
+    public float propagationInterval { get { return generation; } }
     public float energy = 1;
     protected int spawnedChildren = 0;
     private int generation = 0;
+    private const float spawnTurnScope = 90;
 
     public int rapidPropogationToGen = 0;
 
@@ -38,13 +39,14 @@ public class FloraTarget: Target {
         float eval = propagationCurve.Evaluate(rand);
         int floor = Mathf.FloorToInt(eval);
         Debug.Log(rand + " " + eval + " " + floor);
-        return 1;
+        return floor;
     }
 
     public void SetSpawnDirection(Vector3 direction, int generation)
     {
-        spawnDirection = direction;
         this.generation = generation;
+        float turn = (Mathf.PerlinNoise(generation* 100, 0) - .5f) * spawnTurnScope;
+        spawnDirection = Quaternion.AngleAxis(turn, Vector3.forward) * direction;
     }
 
     public void InstantPropogationToGeneration(int stopGeneration)
@@ -90,8 +92,12 @@ public class FloraTarget: Target {
     protected void SpawnChild(Vector3 direction)
     {
         FloraTarget child = GameObject.Instantiate(this) as FloraTarget;
-        child.transform.position = this.transform.position + direction.normalized * radius * 2;
-        child.SetSpawnDirection(Vector3.zero, generation + 1);
+        float angleBetweenChildren = spawnTurnScope;
+        float childAngle = -angleBetweenChildren * (numChildren-1) / 2f + angleBetweenChildren * spawnedChildren;
+        Quaternion childTurn = Quaternion.AngleAxis(childAngle, Vector3.forward);
+        Vector3 spawnDirection = childTurn * direction.normalized;
+        child.transform.position = this.transform.position + spawnDirection.normalized * radius * 2;
+        child.SetSpawnDirection(spawnDirection, generation + 1);
         if (rapidPropogationToGen > generation)
         {
             child.InstantPropogationToGeneration(rapidPropogationToGen);

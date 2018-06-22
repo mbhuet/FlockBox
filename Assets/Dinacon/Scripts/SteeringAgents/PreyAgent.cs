@@ -47,9 +47,9 @@ public class PreyAgent : EcosystemAgent {
         {
             fsm.ChangeState(EcoState.FLEE);
         }
-        if (IsNourishedEnoughToReproduce())
+        else if (IsNourishedEnoughToReproduce())
         {
-            fsm.ChangeState(EcoState.REPRODUCE);
+            //fsm.ChangeState(EcoState.REPRODUCE);
         }
     }
 
