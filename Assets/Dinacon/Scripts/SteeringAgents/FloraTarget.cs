@@ -8,25 +8,48 @@ public class FloraTarget: Target {
     private int numChildren;
     public float propagationInterval = 1;
     public float energy = 1;
+    protected int spawnedChildren = 0;
+    private int generation = 0;
+
+    public int rapidPropogationToGen = 0;
 
     public AnimationCurve propagationCurve;
 
     public override void Spawn(Vector2 position)
     {
-        StartCoroutine(GrowToFullSize(position));
+        name = "Flora_" + targetID;
         numChildren = randomNumChildren();
         if (spawnDirection == Vector3.zero) spawnDirection = Random.insideUnitCircle.normalized;
+
+        if (rapidPropogationToGen > generation)
+        {
+            base.Spawn(position);
+            InstantPropogation();
+        }
+        else
+        {
+            StartCoroutine(GrowToFullSize(position));
+        }
     }
 
     private int randomNumChildren()
     {
+        float rand = Random.Range(0f, 1f);
+        float eval = propagationCurve.Evaluate(rand);
+        int floor = Mathf.FloorToInt(eval);
+        Debug.Log(rand + " " + eval + " " + floor);
         return 1;
-        return Mathf.FloorToInt(propagationCurve.Evaluate(Random.Range(0f, 1f)));
     }
 
-    public void SetSpawnDirection(Vector3 direction)
+    public void SetSpawnDirection(Vector3 direction, int generation)
     {
         spawnDirection = direction;
+        this.generation = generation;
+    }
+
+    public void InstantPropogationToGeneration(int stopGeneration)
+    {
+        rapidPropogationToGen = stopGeneration;
     }
 
     protected IEnumerator GrowToFullSize(Vector2 position)
@@ -41,18 +64,24 @@ public class FloraTarget: Target {
         visual.transform.localScale = Vector3.one;
         
         base.Spawn(position);
-        StartCoroutine(Propagate());
+        StartCoroutine(PropagationRoutine());
     }
 
-    protected IEnumerator Propagate()
+    protected void InstantPropogation()
     {
-        int spawnedChildren = 0;
+        for(int i = 0; i<numChildren; i++)
+        {
+            SpawnChild(spawnDirection);
+        }
+    }
+
+    protected IEnumerator PropagationRoutine()
+    {
         yield return new WaitForSeconds(propagationInterval);
         while(spawnedChildren<numChildren && !isCaught)
         {
 
             SpawnChild(spawnDirection);
-            spawnedChildren++;
             yield return new WaitForSeconds(propagationInterval);
 
         }
@@ -62,7 +91,14 @@ public class FloraTarget: Target {
     {
         FloraTarget child = GameObject.Instantiate(this) as FloraTarget;
         child.transform.position = this.transform.position + direction.normalized * radius * 2;
-        child.SetSpawnDirection(Vector3.zero);
+        child.SetSpawnDirection(Vector3.zero, generation + 1);
+        if (rapidPropogationToGen > generation)
+        {
+            child.InstantPropogationToGeneration(rapidPropogationToGen);
+        }
+
+            spawnedChildren++;
+
     }
 
     public override void CaughtBy(SteeringAgent other)
