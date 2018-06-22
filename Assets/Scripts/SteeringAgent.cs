@@ -220,6 +220,11 @@ public class SteeringAgent : Agent
         other.CaughtBy(this);
     }
 
+    public virtual void CatchTarget(Target target)
+    {
+        target.CaughtBy(this);
+    }
+
     public virtual void CaughtBy(SteeringAgent other)
     {
         //Debug.Log("agent caught");

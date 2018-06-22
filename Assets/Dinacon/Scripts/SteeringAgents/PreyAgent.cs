@@ -6,7 +6,6 @@ public class PreyAgent : EcosystemAgent {
     public BehaviorSettings forageSettings;
     public BehaviorSettings fleeSettings;
 
-    public float nourishAmount = 1;
 
 
 
@@ -15,15 +14,22 @@ public class PreyAgent : EcosystemAgent {
 
         base.CaughtBy(other);
         float last_nourishment = 0;
-        if (other.HasAttribute(nourishAttributeName))
+        if (other.HasAttribute(energyAttributeName))
         {
-             last_nourishment = (float)other.GetAttribute(nourishAttributeName);
+             last_nourishment = (float)other.GetAttribute(energyAttributeName);
         }
-        other.SetAttribute(nourishAttributeName, last_nourishment + nourishAmount);
+        other.SetAttribute(energyAttributeName, last_nourishment + energy);
 
         fsm.ChangeState(EcoState.EATEN);
 
     }
+
+    public override void CatchTarget(Target target)
+    {
+        base.CatchTarget(target);
+        fsm.ChangeState(EcoState.EAT);
+    }
+
 
     protected void WANDER_Enter()
     {

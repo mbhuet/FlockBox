@@ -14,6 +14,7 @@ public class Target : MonoBehaviour {
     public int maxPursuers = 1;
     protected int numPursuers = 0;
     public SpriteRenderer visual;
+    public bool useZLayering;
 
     public bool isCaught { get; protected set; }
 
@@ -82,7 +83,7 @@ public class Target : MonoBehaviour {
     {
         isCaught = false;
         this.position = position;
-        this.transform.position = ZLayering.GetZLayeredPosition(position);
+        if(useZLayering) this.transform.position = ZLayering.GetZLayeredPosition(position);
         AddToNeighborhood();
         numPursuers = 0;
         if (OnSpawn != null) OnSpawn.Invoke(this);
