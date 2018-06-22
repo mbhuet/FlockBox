@@ -7,10 +7,21 @@ public class SteeringAgentVisual : MonoBehaviour {
 
     public SpriteRenderer sprite;
     protected bool blinking = false;
+    protected Quaternion baseRotation;
+    public bool flipYWhenLookingRight = false;
+
+    protected void Start()
+    {
+        baseRotation = sprite.transform.localRotation;
+    }
 
     public virtual void SetRotation(Quaternion rotation)
     {
-        if (sprite != null) sprite.transform.rotation = rotation;
+        if (sprite != null)
+        {
+            sprite.transform.rotation = baseRotation * rotation;
+            sprite.flipY = (flipYWhenLookingRight && rotation.eulerAngles.z > 180 || rotation.eulerAngles.z <-180);
+        }
     }
 
     public virtual void SetSize(Vector2 size)

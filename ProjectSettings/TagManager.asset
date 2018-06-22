@@ -8,6 +8,7 @@ TagManager:
   - Predator
   - Prey
   - Flora
+  - Boid
   layers:
   - Default
   - TransparentFX

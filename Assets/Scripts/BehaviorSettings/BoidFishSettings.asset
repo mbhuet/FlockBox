@@ -14,14 +14,14 @@ MonoBehaviour:
   _id: -1100128
   dbg: 0
   Prefs:
-    _Buckets: 01000000ffffffffffffffff02000000ffffffffffffffffffffffffffffffffffffffff0500000000000000ffffffffffffffff04000000ffffffff0600000007000000
-    _HashCodes: f3f59c6174c10806fcaddd473148a964ce3c7f71ceb97010b5bd704db6bd704d000000000000000000000000000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff03000000000000000000000000000000000000000000000000000000000000000000000000000000
-    _Count: 8
-    _Version: 17013
+    _Buckets: 01000000ffffffffffffffff0c000000ffffffff0b000000ffffffffffffffffffffffff05000000000000000a000000ffffffff0800000009000000060000000d000000
+    _HashCodes: f3f59c6174c10806fcaddd473148a964ce3c7f71ceb97010b5bd704db6bd704de2c788733f09b4223f463a4b51dcb75294c6f40894293671000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff0300000004000000ffffffffffffffffffffffff0200000007000000000000000000000000000000
+    _Count: 14
+    _Version: 24237
     _FreeList: -1
     _FreeCount: 0
-    _Keys: f3f59c6174c10886fcadddc73148a9e4ce3c7ff1ceb97010b5bd70cdb6bd70cd000000000000000000000000000000000000000000000000000000000000000000000000
+    _Keys: f3f59c6174c10886fcadddc73148a9e4ce3c7ff1ceb97010b5bd70cdb6bd70cde2c788733f09b4a23f463acb51dcb7d294c6f48894293671000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -48,8 +48,14 @@ MonoBehaviour:
       ValueFloat: 53
       Type: 1
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
     - ValueString: 
       ValueFloat: 0
       Type: 0
@@ -68,29 +74,29 @@ MonoBehaviour:
     - ValueString: 
       ValueFloat: 0
       Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  maxForce: 2
+  maxForce: 10
   maxSpeed: 20
   alignmment:
     isActive: 1
     weight: 1
     effectiveRadius: 5
+    filterTags:
+    - Boid
     drawVectorLine: 1
     vectorColor: {r: 1, g: 0, b: 0, a: 1}
   cohesion:
     isActive: 1
     weight: 1
     effectiveRadius: 10
+    filterTags:
+    - Boid
     drawVectorLine: 1
     vectorColor: {r: 0, g: 0.28014588, b: 1, a: 1}
   separation:
     isActive: 1
-    weight: 1
-    effectiveRadius: 10
+    weight: 2.12
+    effectiveRadius: 5
+    filterTags:
+    - Boid
     drawVectorLine: 1
     vectorColor: {r: 0.9951428, g: 1, b: 0, a: 1}
