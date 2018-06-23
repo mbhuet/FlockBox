@@ -7,6 +7,9 @@ public class Target : MonoBehaviour {
     public Vector3 position { get; protected set; }
     public float radius;
 
+    protected bool hasSpawned = false;
+    private bool isRegistered = false;
+
     public int targetID { get; protected set; }
 
     protected Coordinates currentNeighborhood;
@@ -29,8 +32,7 @@ public class Target : MonoBehaviour {
 
     protected void Start()
     {
-        RegisterNewTarget();
-        Spawn(transform.position);
+        if(!hasSpawned)Spawn(transform.position);
         
 
     }
@@ -42,6 +44,7 @@ public class Target : MonoBehaviour {
         targetID = targetCount_static;
         if (targetRegistry == null) targetRegistry = new Dictionary<int, Target>();
         targetRegistry.Add(targetID, this);
+        isRegistered = true;
     }
 
 
@@ -81,11 +84,16 @@ public class Target : MonoBehaviour {
 
     public virtual void Spawn(Vector2 position)
     {
+        if(!isRegistered) RegisterNewTarget();
+
         isCaught = false;
+        visual.enabled = true;
+
         this.position = position;
-        if(useZLayering) this.transform.position = ZLayering.GetZLayeredPosition(position);
+        this.transform.position = (useZLayering ? ZLayering.GetZLayeredPosition(position): (Vector3)position);
         AddToNeighborhood();
         numPursuers = 0;
+        hasSpawned = true;
         if (OnSpawn != null) OnSpawn.Invoke(this);
     }
 
@@ -93,6 +101,7 @@ public class Target : MonoBehaviour {
     public virtual void CaughtBy(SteeringAgent agent)
     {
         RemoveFromNeighborhood();
+        hasSpawned = false;
         isCaught = true;
         visual.enabled = false;
         numPursuers = 0;

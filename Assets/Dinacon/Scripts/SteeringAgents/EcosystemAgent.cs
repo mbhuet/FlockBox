@@ -28,6 +28,7 @@ public class EcosystemAgent : SteeringAgent {
     {
         get
         {
+            if (!HasAttribute(energyAttributeName)) SetAttribute(energyAttributeName, 0f);
             return (float) GetAttribute(energyAttributeName);
         }
         set

@@ -60,7 +60,6 @@ public class PreyAgent : EcosystemAgent {
 
     protected void FLEE_Enter()
     {
-        Debug.Log("flee enter");
         activeSettings = fleeSettings;
     }
 
