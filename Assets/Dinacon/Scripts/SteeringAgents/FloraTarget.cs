@@ -9,7 +9,7 @@ public class FloraTarget: Target {
     const float energyProductionRate = 1;
     protected Vector3 spawnDirection = Vector3.zero;
     private int numChildren;
-    public float propagationInterval { get { return generation + 1; } }
+    public float propagationInterval { get { if (generation == 0) return numChildren; return generation; } }
     public float energy = 1;
     private int generation = 0;
     private const float spawnTurnScope = 90;

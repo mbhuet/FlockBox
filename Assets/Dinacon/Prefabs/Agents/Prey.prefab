@@ -102,7 +102,7 @@ MonoBehaviour:
     _HashCodes: 93e25f5d14aecb019c9aa043eb72d14615650b4a16650b4a00000000
     _Next: ffffffffffffffff0000000001000000030000000200000000000000
     _Count: 6
-    _Version: 5391
+    _Version: 5695
     _FreeList: -1
     _FreeCount: 0
     _Keys: 93e25f5d14aecb819c9aa0c3eb72d1c615650b4a16650b4a00000000
@@ -134,7 +134,7 @@ MonoBehaviour:
   minimumEnergy: 1
   energyToReproduce: 1
   energyDecayRate: 0.1
-  lifespan: 10
+  lifespan: 60
   forageSettings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
   fleeSettings: {fileID: 11400000, guid: 934ecba1a0341984ba46363af42613ec, type: 2}
 --- !u!212 &212945211848660094
