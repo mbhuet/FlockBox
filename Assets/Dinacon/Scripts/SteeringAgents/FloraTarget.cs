@@ -6,33 +6,58 @@ using UnityEngine;
 /// Once all of a floraTarget's children have been caught, it is available to be eaten. It will respawn children over time if allowed
 /// </summary>
 public class FloraTarget: Target {
+
     const float energyProductionRate = 1;
     protected Vector3 spawnDirection = Vector3.zero;
     private int numChildren;
-    public float propagationInterval { get { if (generation == 0) return numChildren; return generation; } }
+    public float propagationInterval = 3;// { get { if (generation == 0) return numChildren; return generation; } }
     public float energy = 1;
     private int generation = 0;
     private const float spawnTurnScope = 90;
+    public float lifespan = 10;
+    private float spawnTime;
+    private float age { get { return Time.time - spawnTime; } }
 
-    private List<Target> children;
+    private List<FloraTarget> children;
     private List<Vector3> openChildPositions;
 
     protected bool readyToEat = false;
 
 
     public int rapidPropogationToGen = 0;
+    public int cutoffGeneration = 10;
 
     public AnimationCurve propagationCurve;
 
     protected static List<FloraTarget> floraCache;
 
+    public Sprite leafSprite;
+    public Sprite rootSprite;
+    public Sprite seedSprite;
+    public FloraSeed seedPrefab;
+
+    private bool hasSeed = false;
+
+
     public override void Spawn(Vector2 position)
     {
         base.Spawn(position);
-
+        spawnTime = Time.time;
         name = "Flora_" + targetID;
 
+        hasSeed = randomSeedChance();
+
         PrepareForChildren();
+        if (generation == 0)
+        {
+            visual.SetSprite(rootSprite);
+            BeginLifeCountdown();
+        }
+        else if (hasSeed)
+        {
+            visual.SetSprite(seedSprite);
+        }
+        else visual.SetSprite(leafSprite);
 
         if (rapidPropogationToGen > generation)
         {
@@ -47,16 +72,28 @@ public class FloraTarget: Target {
 
     private int randomNumChildren()
     {
+        if (hasSeed) return 0;
         if (generation == 0) return 4;
+        if (generation == cutoffGeneration) return 0;
         float rand = Random.Range(0f, 1f);
         float eval = propagationCurve.Evaluate(rand);
         int floor = Mathf.FloorToInt(eval);
         return floor;
     }
 
-    public void SetSpawnDirection(Vector3 direction, int generation)
+    private bool randomSeedChance()
     {
-        this.generation = generation;
+        if (generation == 0) return false;
+        return Random.Range(0, 10) == 0;
+    }
+
+    public void SetGeneration(int gen)
+    {
+        generation = gen;
+    }
+
+    public void SetSpawnDirection(Vector3 direction)
+    {
         float turn = (Mathf.PerlinNoise(generation, 0) - .5f) * spawnTurnScope;
         spawnDirection = Quaternion.AngleAxis(turn, Vector3.forward) * direction;
     }
@@ -72,21 +109,25 @@ public class FloraTarget: Target {
         for(float t = 0; t<1; t+= Time.deltaTime)
         {
             
-            visual.transform.localScale = Vector3.one * t;
+            visual.SetRootSize(t);
             yield return null;
 
         }
-        visual.transform.localScale = Vector3.one;
+        visual.SetRootSize(1);
         readyToEat = true;
 
-        StartCoroutine("DelayedPropagationRoutine");
+        for (int i = 0; i < numChildren; i++)
+        {
+            StartCoroutine("DelayedPropagationRoutine");
+        }
     }
+
 
     protected void InstantPropogation()
     {
         for(int i = 0; i<numChildren; i++)
         {
-            SpawnChild();
+            AttemptToSpawnChild();
         }
         readyToEat = true;
 
@@ -94,14 +135,22 @@ public class FloraTarget: Target {
 
     protected IEnumerator DelayedPropagationRoutine()
     {
-        yield return new WaitForSeconds(propagationInterval);
+        yield return new WaitForSeconds(propagationInterval + Random.Range(-1f, 1f));
         if (!isCaught)
         {
-            SpawnChild();
+            AttemptToSpawnChild();
 
-            if (openChildPositions.Count > 0) StartCoroutine("DelayedPropagationRoutine");
+            //if (openChildPositions.Count > 0) StartCoroutine("DelayedPropagationRoutine");
         }
 
+    }
+
+    protected void AttachSeedToAgent(SteeringAgent agent)
+    {
+        FloraSeed seed = GameObject.Instantiate(seedPrefab);
+        seed.LatchOntoAgent(agent);
+
+        
     }
 
     protected void PrepareForChildren()
@@ -109,7 +158,7 @@ public class FloraTarget: Target {
         if (spawnDirection == Vector3.zero) spawnDirection = Random.insideUnitCircle.normalized;
 
         numChildren = randomNumChildren();
-        children = new List<Target>();
+        children = new List<FloraTarget>();
         openChildPositions = new List<Vector3>();
 
         for (int i = 0; i < numChildren; i++)
@@ -128,21 +177,23 @@ public class FloraTarget: Target {
 
     protected void ChildWasCaught(Target child)
     {
-        children.Remove(child);
-        openChildPositions.Add(child.position);
+        FloraTarget floraChild = child as FloraTarget;
+        children.Remove(floraChild);
+        openChildPositions.Add(floraChild.position);
         child.OnCaught -= ChildWasCaught;
         StartCoroutine("DelayedPropagationRoutine");
     }
 
-    protected void SpawnChild()
+    protected void AttemptToSpawnChild()
     {
         if (openChildPositions.Count == 0) return;
 
         Vector3 childPos = openChildPositions[0];
         openChildPositions.RemoveAt(0);
 
-        FloraTarget child = GetFlora();
-        child.SetSpawnDirection((childPos - position).normalized, generation + 1);
+        FloraTarget child = GetFlora(this);
+        child.SetSpawnDirection((childPos - position).normalized);
+        child.SetGeneration(generation + 1);
         child.InstantPropogationToGeneration(rapidPropogationToGen);
         
         child.Spawn(childPos);
@@ -155,6 +206,8 @@ public class FloraTarget: Target {
 
     public override bool CanBePursuedBy(SteeringAgent agent)
     {
+        //roots cannot be eaten
+        if (generation == 0) return false;
 
         //if not ready to eat, return false
         if (!readyToEat || isCaught) return false;
@@ -163,7 +216,7 @@ public class FloraTarget: Target {
         if (children.Count == 0) return true;
 
         //if there are edible children, this target should not be eaten
-        foreach(Target child in children)
+        foreach(FloraTarget child in children)
         {
             if (child.CanBePursuedBy(agent)) return false;
         }
@@ -179,8 +232,28 @@ public class FloraTarget: Target {
     {
         base.CaughtBy(other);
         NourishAgent(other);
+        if (hasSeed) AttachSeedToAgent(other);
+        StartCoroutine(BlinkDieRoutine());
+        Kill();
+    }
+
+    public override void Kill()
+    {
+        base.Kill();
+        DisconnectFromChildren();
         StopCoroutine("DelayedPropagationRoutine");
-        CacheSelf();
+        StopCoroutine("LifeCountdownRoutine");
+    }
+
+    protected void DisconnectFromChildren()
+    {
+        foreach(FloraTarget child in children)
+        {
+            child.OnCaught -= ChildWasCaught;
+            child.BeginLifeCountdown();
+        }
+        children.Clear();
+
     }
 
     protected void NourishAgent(SteeringAgent agent)
@@ -193,7 +266,7 @@ public class FloraTarget: Target {
         agent.SetAttribute(EcosystemAgent.energyAttributeName, last_nourishment + energy);
     }
 
-    protected FloraTarget GetFlora()
+    public static FloraTarget GetFlora(FloraTarget prefab)
     {
         if (floraCache == null) floraCache = new List<FloraTarget>();
         if (floraCache.Count > 0)
@@ -203,18 +276,56 @@ public class FloraTarget: Target {
             flora.gameObject.SetActive(true);
             return flora;
         }
-        else return GameObject.Instantiate(this) as FloraTarget;
+        else return GameObject.Instantiate(prefab) as FloraTarget;
     }
 
     protected void CacheSelf()
     {
         if (floraCache == null) floraCache = new List<FloraTarget>();
-        gameObject.SetActive(false);
         floraCache.Add(this);
+        gameObject.SetActive(false);
+        StopAllCoroutines();
     }
 
-    protected IEnumerator EatenRoutine()
+    public void BeginLifeCountdown()
     {
-        yield return null;
+        StartCoroutine("LifeCountdownRoutine");
+    }
+
+    protected IEnumerator LifeCountdownRoutine()
+    {
+        yield return new WaitForSeconds(lifespan + Random.Range(-1f, 1f));
+        if (!isCaught)
+        {
+            Kill();
+            StartCoroutine(ShrinkDieRoutine());
+        }
+    }
+
+    protected IEnumerator BlinkDieRoutine()
+    {
+        readyToEat = false;
+        visual.Blink(true);
+        yield return new WaitForSeconds(1);
+        visual.Blink(false);
+        CacheSelf();
+
+    }
+
+    protected IEnumerator ShrinkDieRoutine()
+    {
+        Debug.Log(this.name + " shrink die routine");
+        visual.Show();
+        readyToEat = false;
+        for (float t = 1; t > 0; t -= Time.deltaTime)
+        {
+
+            visual.SetRootSize(t);
+            yield return null;
+
+        }
+        visual.SetRootSize(0);
+        visual.Hide();
+        CacheSelf();
     }
 }

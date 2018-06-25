@@ -156,10 +156,14 @@ Prefab:
       propertyPath: m_Name
       value: Flora (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1424219917661176, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
   m_IsPrefabParent: 0
---- !u!1001 &115205899
+--- !u!1001 &396498191
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -205,77 +209,7 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e04386479251fce4281fb62d260aafe6, type: 2}
   m_IsPrefabParent: 0
---- !u!1001 &201351808
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
-  m_IsPrefabParent: 0
---- !u!1 &739121027
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 739121028}
-  m_Layer: 0
-  m_Name: FloraSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &739121028
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 739121027}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &885011853
+--- !u!1001 &453009974
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -318,9 +252,87 @@ Prefab:
       propertyPath: m_Name
       value: Flora (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1424219917661176, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
   m_IsPrefabParent: 0
+--- !u!1001 &516414372
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4919785705889650, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1072889458426260, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1 &739121027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 739121028}
+  m_Layer: 0
+  m_Name: FloraSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &739121028
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 739121027}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1075212870
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +348,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1075212871
 Transform:
   m_ObjectHideFlags: 0
@@ -363,7 +375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114760367099908784, guid: e04386479251fce4281fb62d260aafe6,
     type: 2}
-  numStartSpawns: 3
+  numStartSpawns: 1
 --- !u!1 &1370631403
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +419,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -471,7 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880c1e25c4062154aafcebfa1aa638f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayGizmos: 1
+  displayGizmos: 0
   neighborhoodCols: 8
   neighborhoodRows: 6
   neighborhoodSize: {x: 10, y: 10}
@@ -518,6 +530,10 @@ Prefab:
       propertyPath: m_Name
       value: Flora (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1424219917661176, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
   m_IsPrefabParent: 0
@@ -550,7 +566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114866401564063706, guid: f4f9261fbcc0edd4eb44c57a4dd620bf,
     type: 2}
-  numStartSpawns: 100
+  numStartSpawns: 1
 --- !u!4 &2024458055
 Transform:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GumdropVisual : SteeringAgentVisual {
+public class GumdropVisual : AgentVisual {
     public SpriteRenderer eyes;
     public SpriteRenderer nose;
 //   public SpriteRenderer body;

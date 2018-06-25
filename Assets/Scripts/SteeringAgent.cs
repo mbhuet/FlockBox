@@ -9,7 +9,7 @@ using Vexe.Runtime.Types;
 //SteeringBehaviors will never have instance variables
 //SteeringAgents have 
 
-[RequireComponent(typeof(SteeringAgentVisual))]
+[RequireComponent(typeof(AgentVisual))]
 [System.Serializable]
 public class SteeringAgent : Agent
 {
@@ -18,6 +18,7 @@ public class SteeringAgent : Agent
     public Vector3 forward { get; protected set; }
     public Vector3 acceleration { get; protected set; }
     public bool isAlive { get; protected set; }
+    private bool hasSpawned = false;
 
     public float radius = 1f;
 
@@ -42,12 +43,12 @@ public class SteeringAgent : Agent
     [SerializeField]
 	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
-    private SteeringAgentVisual m_visual;
-    public SteeringAgentVisual visual
+    private AgentVisual m_visual;
+    public AgentVisual visual
     {
         get
         {
-            if (m_visual == null) m_visual = GetComponent<SteeringAgentVisual>();
+            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
             return m_visual;
         }
     }
@@ -68,7 +69,7 @@ public class SteeringAgent : Agent
 
 	protected void Start(){
         RegisterNewAgent();
-		Spawn(transform.position);
+		if(!hasSpawned) Spawn(transform.position);
 	}
 
 
@@ -101,7 +102,13 @@ public class SteeringAgent : Agent
         agentID = agentCount_static;
         if (agentRegistry == null) agentRegistry = new Dictionary<int, SteeringAgent>();
         agentRegistry.Add(agentID, this);
-        this.name += "_" + agentID;
+        string name = this.name;
+        name = name.Replace("(Clone)", "");
+        int underscoreIndex = name.IndexOf('_');
+        if(underscoreIndex>-1) name = name.Remove(underscoreIndex);
+        name += "_" +agentID;
+        this.name = name;
+
     }
 
     protected void FindNeighborhood()
@@ -201,6 +208,7 @@ public class SteeringAgent : Agent
     {
         if (OnKill != null) OnKill.Invoke(this);
         isAlive = false;
+        hasSpawned = false;
         visual.Hide();
         NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
 
@@ -210,6 +218,8 @@ public class SteeringAgent : Agent
     {
         if (OnSpawn != null) OnSpawn.Invoke(this);
         isAlive = true;
+        hasSpawned = true;
+        velocityThrottle = 1;
         visual.Show();
         this.position = position;
     }

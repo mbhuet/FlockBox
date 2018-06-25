@@ -14,7 +14,7 @@ public class WanderBehavior : SteeringBehavior {
     {
 
         Vector3 lastForward = mine.forward.normalized;
-        float wanderRotation = (Mathf.PerlinNoise(Time.time, 0) * 2 - 1) * wanderScope / 2f;
+        float wanderRotation = (Mathf.PerlinNoise(Time.time, 0) -.5f) * wanderScope;
         //wanderRotation *= Mathf.Deg2Rad;
         Vector3 wanderVector = Quaternion.AngleAxis(wanderRotation, Vector3.forward) * lastForward;
 

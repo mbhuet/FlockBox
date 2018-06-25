@@ -3,28 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vexe.Runtime.Types;
 
-public class SteeringAgentVisual : MonoBehaviour {
+public class AgentVisual : MonoBehaviour {
 
     public SpriteRenderer sprite;
+    public Transform visualRoot;
     protected bool blinking = false;
-    protected Quaternion baseRotation;
+    protected Quaternion baseRotation = Quaternion.identity;
     public bool flipYWhenLookingRight = false;
 
     protected void Start()
     {
-        baseRotation = sprite.transform.localRotation;
+        //baseRotation = sprite.transform.localRotation;
     }
 
     public virtual void SetRotation(Quaternion rotation)
     {
         if (sprite != null)
         {
-            sprite.transform.rotation = baseRotation * rotation;
+            visualRoot.transform.rotation = baseRotation * rotation;
             sprite.flipY = (flipYWhenLookingRight && rotation.eulerAngles.z > 180 || rotation.eulerAngles.z <-180);
         }
     }
 
-    public virtual void SetSize(Vector2 size)
+    public virtual void SetSprite(Sprite newSprite)
+    {
+        sprite.sprite = newSprite;
+    }
+
+    public virtual void SetRootSize(float size)
+    {
+        visualRoot.localScale = Vector3.one * size;
+    }
+
+    public virtual void SetSpriteSize(Vector2 size)
     {
         if (sprite != null) sprite.size = size;
     }
@@ -61,7 +72,7 @@ public class SteeringAgentVisual : MonoBehaviour {
 
     private IEnumerator BlinkRoutine()
     {
-        float blinkRate = 20;
+        float blinkRate = 100;
         bool visible = true;
         bool visible_last = true;
         while (blinking)

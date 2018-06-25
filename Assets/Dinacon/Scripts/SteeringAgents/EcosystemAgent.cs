@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
 
-public class EcosystemAgent : SteeringAgent {
+public abstract  class EcosystemAgent : SteeringAgent {
     public enum EcoState
     {
         FLEE, //will ignore everything except pursuers
@@ -16,14 +16,15 @@ public class EcosystemAgent : SteeringAgent {
         DIE,
     }
 
+
+
     protected StateMachine<EcoState> fsm;
 
     public const string energyAttributeName = "energy";
 
-    public float minimumEnergy = 1; //the baseline energy stored by this agent
+    public float startEnergy = 1; //the baseline energy stored by this agent
     public float energyToReproduce = 2; // the energy this agent must collect to reproduce
-    public float energyDecayRate = 1;
-    public float lifespan = 10;
+    public float base_energyDecayRate = 1;
     protected float energy
     {
         get
@@ -34,19 +35,23 @@ public class EcosystemAgent : SteeringAgent {
         set
         {
             SetAttribute(energyAttributeName, value);
-            visual.SetSize(Vector2.one * value);
+            visual.SetSpriteSize(Vector2.one * value);
         }
     }
     protected float eatTime = 1;
     protected float spawnTime;
+    protected float age
+    {
+        get { return Time.time - spawnTime; }
+    }
 
     protected bool isDying = false;
+
 
 
     protected void Start()
     {
         base.Start();
-        InitStateMachine();
     }
 
     protected void Update()
@@ -54,8 +59,8 @@ public class EcosystemAgent : SteeringAgent {
         base.Update();
         if (isAlive && !isDying)
         {
+//            Debug.Log(this.name + " alive, not dying, energy is " + energy + " " + fsm.State);
             EnergyDecay();
-            CheckOldAge();
         }
 
     }
@@ -68,31 +73,47 @@ public class EcosystemAgent : SteeringAgent {
 
     protected void EnergyDecay()
     {
-        energy -= energyDecayRate * Time.deltaTime;
-        if (energy <= 0) fsm.ChangeState(EcoState.DIE);
+        energy -= base_energyDecayRate * age * Time.deltaTime;
+        //velocityThrottle = energy / startEnergy;
+        visual.SetRootSize(Mathf.Max(1, energy / startEnergy));
+        if (energy <= 0)
+        {
+            fsm.ChangeState(EcoState.DIE);
+        }
     }
 
     public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
         spawnTime = Time.time;
-        energy = minimumEnergy;
+        energy = startEnergy;
+        InitStateMachine();
+    }
+
+    protected abstract void CreateOffspring();
+    protected abstract void CacheSelf();
+
+    public override void Kill()
+    {
+        base.Kill();
+        ShakeOffSeeds();
+        CacheSelf();
+    }
+
+    protected void ShakeOffSeeds()
+    {
+        foreach(FloraSeed seed in gameObject.GetComponentsInChildren<FloraSeed>())
+        {
+            seed.transform.parent = null;
+        }
     }
 
 
     protected bool IsNourishedEnoughToReproduce()
     {
-        if (!HasAttribute(energyAttributeName)) return false;
-        return (float)GetAttribute(energyAttributeName) >= minimumEnergy;
+        return energy >= energyToReproduce;
     }
 
-    protected void CheckOldAge()
-    {
-        if (Time.time - spawnTime >= lifespan)
-        {
-            fsm.ChangeState(EcoState.DIE);
-        }
-    }
 
     protected IEnumerator DIE_Enter()
     {
@@ -133,6 +154,13 @@ public class EcosystemAgent : SteeringAgent {
     protected void EAT_Exit()
     {
         velocityThrottle = 1;
+    }
+
+    protected void REPRODUCE_Enter()
+    {
+        CreateOffspring();
+        energy -= startEnergy;
+        fsm.ChangeState(EcoState.WANDER);
     }
 
 

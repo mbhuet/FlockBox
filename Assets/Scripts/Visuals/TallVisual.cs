@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class TallVisual : SteeringAgentVisual {
+public class TallVisual : AgentVisual {
 
     public Gradient statusSpectrum;
     public GameObject shadowCaster;
@@ -26,14 +26,14 @@ public class TallVisual : SteeringAgentVisual {
             case SocialStatusBehavior.statusAttributeName:
                 //val is from 0-1
                 SetColor(statusSpectrum.Evaluate(value/100f));
-                SetSize(new Vector2(1, StatusToHeight(value)) );
+                SetSpriteSize(new Vector2(1, StatusToHeight(value)) );
                 break;
         }
     }
 
-    public override void SetSize(Vector2 size)
+    public override void SetSpriteSize(Vector2 size)
     {
-        base.SetSize(size);
+        base.SetSpriteSize(size);
         shadowCaster.transform.localPosition = Vector3.up * size.y / 2f;
         shadowCaster.transform.localScale = new Vector3(2, size.y, 1);
     }

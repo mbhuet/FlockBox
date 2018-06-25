@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AgentVisual))]
 public class Target : MonoBehaviour {
 
     public Vector3 position { get; protected set; }
@@ -16,11 +17,19 @@ public class Target : MonoBehaviour {
 
     public int maxPursuers = 1;
     protected int numPursuers = 0;
-    public SpriteRenderer visual;
     public bool useZLayering;
 
     public bool isCaught { get; protected set; }
 
+    private AgentVisual m_visual;
+    public AgentVisual visual
+    {
+        get
+        {
+            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
+            return m_visual;
+        }
+    }
 
     protected static int targetCount_static = 0;
     protected static Dictionary<int, Target> targetRegistry;
@@ -87,7 +96,7 @@ public class Target : MonoBehaviour {
         if(!isRegistered) RegisterNewTarget();
 
         isCaught = false;
-        visual.enabled = true;
+        visual.Show();
 
         this.position = position;
         this.transform.position = (useZLayering ? ZLayering.GetZLayeredPosition(position): (Vector3)position);
@@ -100,11 +109,16 @@ public class Target : MonoBehaviour {
 
     public virtual void CaughtBy(SteeringAgent agent)
     {
+        Kill();
+        if (OnCaught != null) OnCaught.Invoke(this);
+    }
+
+    public virtual void Kill()
+    {
         RemoveFromNeighborhood();
         hasSpawned = false;
         isCaught = true;
-        visual.enabled = false;
+        visual.Hide();// = false;
         numPursuers = 0;
-        if (OnCaught != null) OnCaught.Invoke(this);
     }
 }

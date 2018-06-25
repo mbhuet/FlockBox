@@ -6,7 +6,7 @@ public class Zone : MonoBehaviour {
     public const float forceFieldDistance = 10; //how close can a Boid be before it hits the force field
 
     protected SpriteRenderer sprite;
-    public float radius { get; protected set; }
+    public float radius = 1;
     public Vector3 center { get; protected set; }
 
     // Use this for initialization
@@ -19,13 +19,10 @@ public class Zone : MonoBehaviour {
     void Start()
     {
         center = transform.position;
-
+        SetRadius(radius);
+        OnEndGrow();
     }
 
-    // Update is called once per frame
-    void Update () {
-		
-	}
 
     public void OnBeginGrow()
     {

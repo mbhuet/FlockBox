@@ -7,7 +7,14 @@ public class PreyAgent : EcosystemAgent {
     public BehaviorSettings fleeSettings;
 
 
+    protected static List<PreyAgent> preyCache;
+    protected static int numPrey = 0;
 
+    protected override void CreateOffspring()
+    {
+        PreyAgent offspring = GetPrey();
+        offspring.Spawn(position);
+    }
 
     public override void CaughtBy(SteeringAgent other)
     {
@@ -49,7 +56,7 @@ public class PreyAgent : EcosystemAgent {
         }
         else if (IsNourishedEnoughToReproduce())
         {
-            //fsm.ChangeState(EcoState.REPRODUCE);
+            fsm.ChangeState(EcoState.REPRODUCE);
         }
     }
 
@@ -73,6 +80,27 @@ public class PreyAgent : EcosystemAgent {
 
     protected void FLEE_Exit()
     {
+
+    }
+
+    protected PreyAgent GetPrey()
+    {
+        if (preyCache == null) preyCache = new List<PreyAgent>();
+        if (preyCache.Count > 0)
+        {
+            PreyAgent prey = preyCache[0];
+            preyCache.RemoveAt(0);
+            prey.gameObject.SetActive(true);
+            return prey;
+        }
+        else return GameObject.Instantiate(this) as PreyAgent;
+    }
+
+    protected override void CacheSelf()
+    {
+        if (preyCache == null) preyCache = new List<PreyAgent>();
+        preyCache.Add(this);
+        gameObject.SetActive(false);
 
     }
 

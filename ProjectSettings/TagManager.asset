@@ -9,6 +9,7 @@ TagManager:
   - Prey
   - Flora
   - Boid
+  - Obstacle
   layers:
   - Default
   - TransparentFX
