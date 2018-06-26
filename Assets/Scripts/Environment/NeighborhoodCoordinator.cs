@@ -221,10 +221,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
        Dictionary<string, LinkedList<SteeringAgentWrapped>> categorizedNeighbors = new Dictionary<string, LinkedList<SteeringAgentWrapped>>();
         
 
-        Dictionary<string, LinkedList<ZoneWrapped>> allZones = new Dictionary<string, LinkedList<ZoneWrapped>>();
+        Dictionary<string, LinkedList<ZoneWrapped>> categorizedZones = new Dictionary<string, LinkedList<ZoneWrapped>>();
 
 
-        Dictionary<string, LinkedList<TargetWrapped>> allTargets = new Dictionary<string, LinkedList<TargetWrapped>>();
+        Dictionary<string, LinkedList<TargetWrapped>> categorizedTargets = new Dictionary<string, LinkedList<TargetWrapped>>();
 
 
         for (int r = homeNeighborhoodCoords.row - neighborhoodRadius; r <= homeNeighborhoodCoords.row + neighborhoodRadius; r++)
@@ -279,10 +279,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     LinkedList<Zone> zonesOut;
                     if (sourceZones.TryGetValue(tag, out zonesOut))
                     {
-                        if (!allZones.ContainsKey(tag)) allZones.Add(tag, new LinkedList<ZoneWrapped>());
+                        if (!categorizedZones.ContainsKey(tag)) categorizedZones.Add(tag, new LinkedList<ZoneWrapped>());
                         foreach (Zone zone in zonesOut)
                         {
-                            allZones[tag].AddLast(new ZoneWrapped(zone, zone.center + wrap_positionOffset));
+                            categorizedZones[tag].AddLast(new ZoneWrapped(zone, zone.center + wrap_positionOffset));
                         }
                     }
                 }
@@ -293,17 +293,17 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     LinkedList<Target> targetsOut;
                     if(sourceTargets.TryGetValue(tag, out targetsOut))
                     {
-                        if (!allTargets.ContainsKey(tag)) allTargets.Add(tag, new LinkedList<TargetWrapped>());
+                        if (!categorizedTargets.ContainsKey(tag)) categorizedTargets.Add(tag, new LinkedList<TargetWrapped>());
                         foreach(Target target in targetsOut)
                         {
-                            allTargets[tag].AddLast(new TargetWrapped(target, target.position + wrap_positionOffset));
+                            categorizedTargets[tag].AddLast(new TargetWrapped(target, target.position + wrap_positionOffset));
                         }
                     }
                 }
 
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, categorizedNeighbors, allZones, allTargets);
+        SurroundingsInfo data = new SurroundingsInfo(allNeighbors, categorizedNeighbors, categorizedZones, categorizedTargets);
 
         cachedSurroundings[def] = data;
         return data;

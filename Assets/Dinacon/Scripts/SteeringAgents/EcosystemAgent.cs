@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
+using Vexe.Runtime.Types;
 
 public abstract  class EcosystemAgent : SteeringAgent {
     public enum EcoState
     {
         FLEE, //will ignore everything except pursuers
-        HUNT, //will ignore everything except quary
+        HUNT, //will respond to food sources
         WANDER, //will not respond to nearby food sources
-        FORAGE, //will respond to nearby food sources
-        EAT,
-        EATEN, //being eaten
-        REPRODUCE,
+        EAT, //is eating
+        EATEN, //is being eaten
         DIE,
     }
 
@@ -22,8 +21,22 @@ public abstract  class EcosystemAgent : SteeringAgent {
 
     public const string energyAttributeName = "energy";
 
+    public BehaviorSettings huntSettings;
+    public BehaviorSettings wanderSettings;
+
     public float startEnergy = 1; //the baseline energy stored by this agent
-    public float energyToReproduce = 2; // the energy this agent must collect to reproduce
+    public float reproductionCost = 2; // the energy this agent must expend to reproduce
+
+    public float reproductionInterval = 10; //how often this agent will attempt to reproduce
+    protected bool readyToReproduce = false;
+
+    [vSlider(0, 100)]
+    public Vector2 satisfactionRange;
+
+    protected bool isSatisfied { get { return energy >= energyGoal; } }
+    protected float energyGoal { get { return (readyToReproduce ? reproductionEnergyThreshold : satisfactionRange.y); } }
+    protected float reproductionEnergyThreshold { get { return satisfactionRange.y + reproductionCost; } }
+
     public float base_energyDecayRate = 1;
     protected float energy
     {
@@ -35,7 +48,6 @@ public abstract  class EcosystemAgent : SteeringAgent {
         set
         {
             SetAttribute(energyAttributeName, value);
-            visual.SetSpriteSize(Vector2.one * value);
         }
     }
     protected float eatTime = 1;
@@ -46,7 +58,6 @@ public abstract  class EcosystemAgent : SteeringAgent {
     }
 
     protected bool isDying = false;
-
 
 
     protected void Start()
@@ -75,7 +86,7 @@ public abstract  class EcosystemAgent : SteeringAgent {
     {
         energy -= base_energyDecayRate * age * Time.deltaTime;
         //velocityThrottle = energy / startEnergy;
-        visual.SetRootSize(Mathf.Max(1, energy / startEnergy));
+        visual.SetRootSize(Mathf.Clamp(energy / startEnergy, 1, 2));
         if (energy <= 0)
         {
             fsm.ChangeState(EcoState.DIE);
@@ -88,9 +99,17 @@ public abstract  class EcosystemAgent : SteeringAgent {
         spawnTime = Time.time;
         energy = startEnergy;
         InitStateMachine();
+        StartCoroutine(ReproductionCountdown());
     }
+    
 
-    protected abstract void CreateOffspring();
+    protected void BirthOffspring()
+    {
+        energy -= reproductionCost;
+        SpawnOffspring();
+        StartCoroutine(ReproductionCountdown());
+    }
+    protected abstract void SpawnOffspring();
     protected abstract void CacheSelf();
 
     public override void Kill()
@@ -108,11 +127,45 @@ public abstract  class EcosystemAgent : SteeringAgent {
         }
     }
 
-
-    protected bool IsNourishedEnoughToReproduce()
+    protected IEnumerator ReproductionCountdown()
     {
-        return energy >= energyToReproduce;
+        readyToReproduce = false;
+        yield return new WaitForSeconds(reproductionInterval);
+        readyToReproduce = true;
     }
+
+
+
+    protected void WANDER_Enter()
+    {
+        activeSettings = wanderSettings;
+        
+    }
+
+    protected void WANDER_Update()
+    {
+        if (readyToReproduce && energy >= reproductionEnergyThreshold)
+        {
+            BirthOffspring();
+        }
+        if (!isSatisfied)
+        {
+            fsm.ChangeState(EcoState.HUNT);
+        }
+    }
+
+    protected void HUNT_Enter()
+    {
+        activeSettings = huntSettings;
+    }
+    
+    protected void HUNT_Update() 
+    {
+        if (isSatisfied)
+        {
+            fsm.ChangeState(EcoState.WANDER);
+        }
+    } 
 
 
     protected IEnumerator DIE_Enter()
@@ -140,6 +193,8 @@ public abstract  class EcosystemAgent : SteeringAgent {
         visual.Blink(true);
         yield return new WaitForSeconds(eatTime);
         visual.Blink(false);
+        velocityThrottle = 1;
+
         Kill();
     }
 
@@ -148,20 +203,13 @@ public abstract  class EcosystemAgent : SteeringAgent {
     {
         velocityThrottle = 0;
         yield return new WaitForSeconds(eatTime);
-        fsm.ChangeState(EcoState.WANDER);
-    }
-
-    protected void EAT_Exit()
-    {
         velocityThrottle = 1;
-    }
 
-    protected void REPRODUCE_Enter()
-    {
-        CreateOffspring();
-        energy -= startEnergy;
         fsm.ChangeState(EcoState.WANDER);
     }
+
+
+    
 
 
 }

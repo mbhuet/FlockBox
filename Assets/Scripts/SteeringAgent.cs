@@ -9,7 +9,6 @@ using Vexe.Runtime.Types;
 //SteeringBehaviors will never have instance variables
 //SteeringAgents have 
 
-[RequireComponent(typeof(AgentVisual))]
 [System.Serializable]
 public class SteeringAgent : Agent
 {
@@ -20,14 +19,11 @@ public class SteeringAgent : Agent
     public bool isAlive { get; protected set; }
     private bool hasSpawned = false;
 
-    public float radius = 1f;
-
     public int agentID { get; protected set; }
     protected static Dictionary<int, SteeringAgent> agentRegistry;
     protected static int agentCount_static = 0;
 
     protected float velocityThrottle = 1;
-
 
     public bool z_layering = true; //will set position z values based on y value;
 
@@ -43,15 +39,7 @@ public class SteeringAgent : Agent
     [SerializeField]
 	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
-    private AgentVisual m_visual;
-    public AgentVisual visual
-    {
-        get
-        {
-            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
-            return m_visual;
-        }
-    }
+    
 
 
     protected void Awake()

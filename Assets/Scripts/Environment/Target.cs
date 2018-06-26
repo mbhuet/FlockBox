@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AgentVisual))]
-public class Target : MonoBehaviour {
+public class Target : Agent {
 
-    public Vector3 position { get; protected set; }
-    public float radius;
 
     protected bool hasSpawned = false;
     private bool isRegistered = false;
@@ -21,16 +19,7 @@ public class Target : MonoBehaviour {
 
     public bool isCaught { get; protected set; }
 
-    private AgentVisual m_visual;
-    public AgentVisual visual
-    {
-        get
-        {
-            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
-            return m_visual;
-        }
-    }
-
+    
     protected static int targetCount_static = 0;
     protected static Dictionary<int, Target> targetRegistry;
 
@@ -97,7 +86,7 @@ public class Target : MonoBehaviour {
 
         isCaught = false;
         visual.Show();
-
+        borders();
         this.position = position;
         this.transform.position = (useZLayering ? ZLayering.GetZLayeredPosition(position): (Vector3)position);
         AddToNeighborhood();

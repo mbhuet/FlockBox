@@ -96,6 +96,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8a2b0ae85f7c7e42b3ef011519b9ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _id: -2846214
+  dbg: 0
+  Prefs:
+    _Buckets: ffffffffffffffffffffffff0300000004000000ffffffffffffffff
+    _HashCodes: d905635e5ad1ce02e2bda3448faa6c6990aa6c690000000000000000
+    _Next: ffffffffffffffff0000000001000000020000000000000000000000
+    _Count: 5
+    _Version: 5169
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: d905635e5ad1ce82e2bda3c48faa6c6990aa6c690000000000000000
+    _Values:
+    - ValueString: 
+      ValueFloat: 4
+      Type: 0
+    - ValueString: 
+      ValueFloat: 10
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 14
+      Type: 1
+    - ValueString: 
+      ValueFloat: 145
+      Type: 1
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
   radius: 0.5
   maxPursuers: 5
   useZLayering: 0
@@ -103,7 +136,8 @@ MonoBehaviour:
   energy: 1
   lifespan: 10
   rapidPropogationToGen: 0
-  cutoffGeneration: 10
+  cutoffGeneration: 7
+  seedChance: 0.07
   propagationCurve:
     serializedVersion: 2
     m_Curve:

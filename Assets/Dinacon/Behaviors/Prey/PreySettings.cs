@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class PreyForageSettings : BehaviorSettings {
+public class PreySettings : BehaviorSettings {
 
     public AlignmentBehavior alignmment = new AlignmentBehavior();
     public CohesionBehavior cohesion = new CohesionBehavior();
@@ -18,7 +18,7 @@ public class PreyForageSettings : BehaviorSettings {
     [MenuItem("Assets/Create/BehaviorSettings/Prey/Prey_Forage")]
     public static void CreateMyAsset()
     {
-        PreyForageSettings asset = ScriptableObject.CreateInstance<PreyForageSettings>();
+        PreySettings asset = ScriptableObject.CreateInstance<PreySettings>();
         AssetDatabase.CreateAsset(asset, "Assets/NewPreyForageSettings.asset");
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();

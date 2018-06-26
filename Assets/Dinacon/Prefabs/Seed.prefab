@@ -83,6 +83,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rootPrefab: {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13,
     type: 2}
+  fallOffDistance: 10
 --- !u!212 &212532993037332856
 SpriteRenderer:
   m_ObjectHideFlags: 1

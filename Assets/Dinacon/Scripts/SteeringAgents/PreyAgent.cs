@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PreyAgent : EcosystemAgent {
-    public BehaviorSettings forageSettings;
-    public BehaviorSettings fleeSettings;
 
+    public BehaviorSettings fleeSettings;
 
     protected static List<PreyAgent> preyCache;
     protected static int numPrey = 0;
 
-    protected override void CreateOffspring()
+    protected override void SpawnOffspring()
     {
         PreyAgent offspring = GetPrey();
         offspring.Spawn(position);
+    }
+
+    protected void Update()
+    {
+        base.Update();
+        if (fsm.State!= EcoState.FLEE && (bool)GetAttribute(FleeBehavior.fleeAttributeName))
+        {
+            fsm.ChangeState(EcoState.FLEE);
+        }
     }
 
     public override void CaughtBy(SteeringAgent other)
@@ -38,32 +46,6 @@ public class PreyAgent : EcosystemAgent {
     }
 
 
-    protected void WANDER_Enter()
-    {
-        fsm.ChangeState(EcoState.FORAGE);
-    }
-
-    protected void FORAGE_Enter()
-    {
-        activeSettings = forageSettings;
-    }
-
-    protected void FORAGE_Update()
-    {
-        if ((bool)GetAttribute(FleeBehavior.fleeAttributeName))
-        {
-            fsm.ChangeState(EcoState.FLEE);
-        }
-        else if (IsNourishedEnoughToReproduce())
-        {
-            fsm.ChangeState(EcoState.REPRODUCE);
-        }
-    }
-
-    protected void FORAGE_Exit()
-    {
-
-    }
 
     protected void FLEE_Enter()
     {
@@ -74,14 +56,10 @@ public class PreyAgent : EcosystemAgent {
     {
         if (!(bool)GetAttribute(FleeBehavior.fleeAttributeName))
         {
-            fsm.ChangeState(EcoState.FORAGE);
+            fsm.ChangeState(EcoState.WANDER);
         }
     }
 
-    protected void FLEE_Exit()
-    {
-
-    }
 
     protected PreyAgent GetPrey()
     {
@@ -103,5 +81,6 @@ public class PreyAgent : EcosystemAgent {
         gameObject.SetActive(false);
 
     }
+
 
 }

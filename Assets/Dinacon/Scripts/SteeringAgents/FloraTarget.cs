@@ -26,6 +26,7 @@ public class FloraTarget: Target {
 
     public int rapidPropogationToGen = 0;
     public int cutoffGeneration = 10;
+    public float seedChance = .1f;
 
     public AnimationCurve propagationCurve;
 
@@ -62,12 +63,13 @@ public class FloraTarget: Target {
         if (rapidPropogationToGen > generation)
         {
             InstantPropogation();
-            rapidPropogationToGen = 0;
         }
         else
         {
             StartCoroutine(GrowToFullSize(position));
         }
+        rapidPropogationToGen = 0;
+
     }
 
     private int randomNumChildren()
@@ -84,7 +86,7 @@ public class FloraTarget: Target {
     private bool randomSeedChance()
     {
         if (generation == 0) return false;
-        return Random.Range(0, 10) == 0;
+        return Random.Range(0, 1f) < seedChance;
     }
 
     public void SetGeneration(int gen)
@@ -314,7 +316,7 @@ public class FloraTarget: Target {
 
     protected IEnumerator ShrinkDieRoutine()
     {
-        Debug.Log(this.name + " shrink die routine");
+
         visual.Show();
         readyToEat = false;
         for (float t = 1; t > 0; t -= Time.deltaTime)

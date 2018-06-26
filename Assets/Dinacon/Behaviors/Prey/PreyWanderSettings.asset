@@ -8,20 +8,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba7a052db86c8104788f12d22cbd87e8, type: 3}
-  m_Name: NewPredatorSettings
-  m_EditorClassIdentifier: 
-  _id: -2377730
+  m_Script: {fileID: 11500000, guid: 34c6c713314fd2149b659963798b513a, type: 3}
+  m_Name: PreyForageSettings
+  m_EditorClassIdentifier: Assembly-CSharp::PreyForageSettings
+  _id: -1503262
   dbg: 0
   Prefs:
-    _Buckets: ffffffff03000000ffffffffffffffffffffffff05000000ffffffff07000000ffffffff0d00000014000000ffffffffffffffffffffffffffffffff0a0000000b000000ffffffffffffffffffffffff0400000010000000ffffffffffffffffffffffffffffffff11000000060000000100000013000000ffffffffffffffffffffffff12000000ffffffff0f0000000c000000
-    _HashCodes: 55a0405fd66bac035e58814513e20b08b0d6e114b053d333f0cbbe183ade546c9037541ff9906e73935f4204945f42044471ac48a1ef5d20815b352fe1574c78324c6666302af14721266024f245cc3c72ac874000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff02000000ffffffff08000000ffffffffffffffff000000000e00000009000000ffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-    _Count: 21
-    _Version: 33744
+    _Buckets: 11000000070000000e000000ffffffffffffffff0400000005000000ffffffff14000000ffffffffffffffff12000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff080000001500000010000000160000000a000000ffffffffffffffffffffffff03000000ffffffff09000000020000000d00000013000000ffffffffffffffff000000000c000000
+    _HashCodes: f144de6072104a05fafc1e472c251b30774e5936784e59364c419a444cc4a825afcfd2184c75fb082b7ec657e0676e433da999723de61f1b3d1a044c1d52f729133c867f5626c3355689041e56d5a6098cb985297d4e0e731629e3430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffff01000000ffffffffffffffffffffffffffffffffffffffff06000000ffffffffffffffffffffffffffffffffffffffff0b000000ffffffff0f000000ffffffffffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Count: 23
+    _Version: 123492
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 55a0405fd66bac835e5881c513e20b08b0d6e114b053d333f0cbbe183ade546c9037549ff9906ef3935f4284945f42844471ac48a1ef5da0815b352fe1574cf8324c66e6302af1c7212660a4f245ccbc72ac874000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    _Keys: f144de6072104a85fafc1ec72c251bb0774e59b6784e59b64c419a444cc4a825afcfd2184c75fb882b7ec657e0676e433da999723de61f9b3d1a044c1d52f729133c86ff5626c3b55689049e56d5a6098cb985297d4e0ef31629e3430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 31
@@ -36,44 +36,17 @@ MonoBehaviour:
       ValueFloat: 1
       Type: 2
     - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
       ValueFloat: 14
       Type: 1
     - ValueString: 
       ValueFloat: 53
       Type: 1
     - ValueString: 
-      ValueFloat: 0
+      ValueFloat: 1
       Type: 2
     - ValueString: 
       ValueFloat: 1
       Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
     - ValueString: 
       ValueFloat: 1
       Type: 2
@@ -82,7 +55,40 @@ MonoBehaviour:
       Type: 2
     - ValueString: 
       ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
       Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
     - ValueString: 
       ValueFloat: 0
       Type: 0
@@ -128,49 +134,53 @@ MonoBehaviour:
     - ValueString: 
       ValueFloat: 0
       Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  maxForce: 10
-  maxSpeed: 20
+  maxForce: 4.47
+  maxSpeed: 12.7
   alignmment:
     isActive: 1
-    weight: 1
+    weight: 1.9
     effectiveRadius: 10
-    filterTags: []
+    filterTags:
+    - Prey
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
   cohesion:
-    isActive: 0
-    weight: 1
+    isActive: 1
+    weight: 1.6
     effectiveRadius: 10
-    filterTags: []
+    filterTags:
+    - Prey
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
   separation:
     isActive: 1
-    weight: 1
-    effectiveRadius: 10
+    weight: 4.8
+    effectiveRadius: 5
+    filterTags:
+    - Prey
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  flee:
+    isActive: 1
+    weight: 0.52
+    effectiveRadius: 20
     filterTags:
     - Predator
     drawVectorLine: 0
-    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+    vectorColor: {r: 1, g: 0, b: 0, a: 1}
   wander:
     isActive: 1
-    weight: 1
+    weight: 0.7
     effectiveRadius: 10
     filterTags: []
     drawVectorLine: 0
-    vectorColor: {r: 0.17121458, g: 1, b: 0, a: 1}
-    wanderScope: 90
-  pursuit:
+    vectorColor: {r: 1, g: 0.06774927, b: 0, a: 1}
+    wanderScope: 151.19
+  seek:
     isActive: 1
-    weight: 4.06
-    effectiveRadius: 30
+    weight: 10
+    effectiveRadius: 10
     filterTags:
-    - Prey
+    - Flora
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}

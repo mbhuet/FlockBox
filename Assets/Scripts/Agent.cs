@@ -4,20 +4,25 @@ using UnityEngine;
 using Vexe.Runtime.Types;
 
 [System.Serializable]
+[RequireComponent(typeof(AgentVisual))]
 public class Agent : BaseBehaviour {
 
     public Vector3 position { get; protected set; }
+
+    public float radius = 1f;
+
     protected Coordinates lastNeighborhood = new Coordinates(0, 0);
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private AgentVisual m_visual;
+    public AgentVisual visual
+    {
+        get
+        {
+            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
+            return m_visual;
+        }
+    }
+
 
 
 

@@ -132,7 +132,7 @@ MonoBehaviour:
     _HashCodes: 93e25f5d14aecb019c9aa043eb72d14615650b4a16650b4a00000000
     _Next: ffffffffffffffff0000000001000000030000000200000000000000
     _Count: 6
-    _Version: 7614
+    _Version: 12030
     _FreeList: -1
     _FreeCount: 0
     _Keys: 93e25f5d14aecb819c9aa0c3eb72d1c615650b4a16650b4a00000000
@@ -153,18 +153,21 @@ MonoBehaviour:
       ValueFloat: 14
       Type: 1
     - ValueString: 
-      ValueFloat: 222
+      ValueFloat: 238
       Type: 1
     - ValueString: 
       ValueFloat: 0
       Type: 0
   radius: 1
   z_layering: 0
-  activeSettings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
+  activeSettings: {fileID: 11400000, guid: 6a456dbcafa563a458788556a95b7156, type: 2}
+  huntSettings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
+  wanderSettings: {fileID: 11400000, guid: 6a456dbcafa563a458788556a95b7156, type: 2}
   startEnergy: 5
-  energyToReproduce: 10
+  reproductionCost: 10
+  reproductionInterval: 10
+  satisfactionRange: {x: 5, y: 10}
   base_energyDecayRate: 0.01
-  forageSettings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
   fleeSettings: {fileID: 11400000, guid: 934ecba1a0341984ba46363af42613ec, type: 2}
 --- !u!212 &212945211848660094
 SpriteRenderer:

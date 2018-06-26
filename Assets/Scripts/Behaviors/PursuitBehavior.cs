@@ -7,6 +7,7 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class PursuitBehavior : SteeringBehavior
 {
+    public const string pursuitAttributName = "pursuing";
 
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
@@ -18,6 +19,8 @@ public class PursuitBehavior : SteeringBehavior
         //no targets in neighborhood
         if (allTargets.First == null)
         {
+            mine.SetAttribute(pursuitAttributName, false);
+
             return Vector3.zero;
         }
 
@@ -35,7 +38,8 @@ public class PursuitBehavior : SteeringBehavior
         Vector3 predictedInterceptPosition = closestTarget.wrappedPosition + closestTarget.agent.velocity * est_timeToIntercept;
 
         AttemptCatch(mine, closestTarget);
-        
+        mine.SetAttribute(pursuitAttributName, true);
+
         return mine.seek(predictedInterceptPosition) * weight;
 
     }

@@ -8,6 +8,7 @@ public class Neighborhood
     Dictionary<string, LinkedList<Zone>> zones;
     Dictionary<string, LinkedList<Target>> targets;
 
+    List<SteeringAgent> allNeighbors;
 
     public Vector2 neighborhoodCenter {
     get { return (Vector2)Camera.main.transform.position + m_neighborhoodCenter; }
@@ -15,6 +16,7 @@ public class Neighborhood
     private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
+        allNeighbors = new List<SteeringAgent>();
         neighbors = new Dictionary<string, LinkedList<SteeringAgent>>();
         zones = new Dictionary<string, LinkedList<Zone>>();
         targets = new Dictionary<string, LinkedList<Target>>();
@@ -24,7 +26,7 @@ public class Neighborhood
         m_neighborhoodCenter = pos;
     }
     public void ClearNeighbors() { neighbors.Clear(); }
-    public bool IsOccupied() { return neighbors.Count > 0; }
+    public bool IsOccupied() { return allNeighbors.Count > 0; }
 
     public void AddNeighbor(SteeringAgent occupant)
     {
@@ -40,6 +42,7 @@ public class Neighborhood
             newAgents.AddLast(occupant);
             neighbors.Add(tag, newAgents);
         }
+        allNeighbors.Add(occupant);
     }
     public void RemoveNeighbor(SteeringAgent neighbor)
     {
@@ -49,6 +52,7 @@ public class Neighborhood
         {
             agentsOut.Remove(neighbor);
         }
+        allNeighbors.Remove(neighbor);
     }
     public Dictionary<string, LinkedList<SteeringAgent>> GetNeighbors()
     {

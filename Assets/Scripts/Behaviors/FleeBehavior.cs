@@ -17,8 +17,12 @@ public class FleeBehavior : SteeringBehavior
 
         foreach(SteeringAgentWrapped other in GetFilteredNeighbors(surroundings))
         {
-            if (FleeThisTag(other.agent.tag))
+            float d = Vector3.Distance(mine.position, other.wrappedPosition);
+
+            if ((d > 0) && (d < effectiveRadius))
             {
+                Debug.DrawLine(mine.position, other.wrappedPosition, Color.yellow);// target.wrappedPosition, Color.yellow, 1);
+
                 float modFactor = 1;
                 fleeMidpoint += (other.wrappedPosition); // Add position
                 count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
@@ -34,6 +38,7 @@ public class FleeBehavior : SteeringBehavior
             {
                 foreach (TargetWrapped target in targetsOut)
                 {
+                    
                     float d = Vector3.Distance(mine.position, target.wrappedPosition);
 
                     if ((d > 0) && (d < effectiveRadius))
