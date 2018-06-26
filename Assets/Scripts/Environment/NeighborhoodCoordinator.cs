@@ -113,7 +113,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 }
                 if (neighborhoods[r, c].IsOccupied())
                 {
-                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
                 else
                 {
@@ -263,7 +263,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
                 }
 
-                toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
+                //toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
 
 
                 Dictionary<string, LinkedList<SteeringAgent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetNeighbors();

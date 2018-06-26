@@ -17,7 +17,6 @@ public class FleeBehavior : SteeringBehavior
 
         foreach(SteeringAgentWrapped other in GetFilteredNeighbors(surroundings))
         {
-            Debug.DrawLine(mine.position, other.wrappedPosition, Color.yellow);// target.wrappedPosition, Color.yellow, 1);
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
 
             if ((d > 0) && (d < effectiveRadius))
