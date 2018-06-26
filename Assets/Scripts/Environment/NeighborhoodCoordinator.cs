@@ -61,6 +61,8 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static Dictionary<SurroundingsDefinition, SurroundingsInfo> cachedSurroundings;
 
+    private static List<Neighborhood> toDraw = new List<Neighborhood>();
+
 
     void Awake()
     {
@@ -105,9 +107,13 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             {
                 Gizmos.color = Color.red;
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
-                if (neighborhoods[r, c].IsOccupied())
+                if (toDraw.Contains(neighborhoods[r, c]))
                 {
                     Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                }
+                if (neighborhoods[r, c].IsOccupied())
+                {
+                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
                 else
                 {
@@ -116,6 +122,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
             }
         }
+        toDraw.Clear();
     }
 
 
@@ -238,23 +245,26 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
-                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
+                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
                 }
                 else if (r >= neighborhoodRows_static)
                 {
                     r_wrap = r - neighborhoodRows_static;
-                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
+                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
                 }
                 if (c < 0)
                 {
                     c_wrap = neighborhoodCols_static + c;
-                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
+                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
                 }
                 else if (c >= neighborhoodCols_static)
                 {
                     c_wrap = c - neighborhoodCols_static;
-                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
+                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
                 }
+
+                toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
+
 
                 Dictionary<string, LinkedList<SteeringAgent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetNeighbors();
                 foreach (string tag in sourceAgents.Keys)
