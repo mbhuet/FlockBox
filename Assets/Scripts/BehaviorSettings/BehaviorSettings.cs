@@ -14,6 +14,8 @@ public abstract class BehaviorSettings : BaseScriptableObject {
     public float maxSpeed = 2;    // Maximum speed
                                   // Use this for initialization
 
+    public float perceptionDistance { get; protected set; }
+
     private void Awake()
     {
         GetActiveBehaviors();
@@ -78,10 +80,14 @@ public abstract class BehaviorSettings : BaseScriptableObject {
     private void GetActiveBehaviors()
     {
         m_activeBehaviors = new List<SteeringBehavior>();
+        perceptionDistance = 0;
         foreach (SteeringBehavior behavior in allBehaviors)
         {
             if (behavior.isActive)
+            {
                 m_activeBehaviors.Add(behavior);
+                perceptionDistance = Mathf.Max(perceptionDistance, behavior.effectiveRadius);
+            }
         }
     }
 }

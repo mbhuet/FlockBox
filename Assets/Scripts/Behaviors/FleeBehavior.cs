@@ -10,12 +10,12 @@ public class FleeBehavior : SteeringBehavior
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        Dictionary<string, LinkedList<TargetWrapped>> sourroundingTargets = surroundings.targets;
+        Dictionary<string, LinkedList<AgentWrapped>> sourroundingTargets = surroundings.sortedAgents;
 
         Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
 
-        foreach(SteeringAgentWrapped other in GetFilteredNeighbors(surroundings))
+        foreach(AgentWrapped other in GetFilteredAgents(surroundings))
         {
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
 
@@ -27,27 +27,6 @@ public class FleeBehavior : SteeringBehavior
                 fleeMidpoint += (other.wrappedPosition); // Add position
                 count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
 
-            }
-        }
-
-        foreach (string tag in filterTags)
-        {
-
-            LinkedList<TargetWrapped> targetsOut;
-            if (sourroundingTargets.TryGetValue(tag, out targetsOut))
-            {
-                foreach (TargetWrapped target in targetsOut)
-                {
-                    
-                    float d = Vector3.Distance(mine.position, target.wrappedPosition);
-
-                    if ((d > 0) && (d < effectiveRadius))
-                    {
-                        float modFactor = 1;
-                        fleeMidpoint += (target.wrappedPosition); // Add position
-                        count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
-                    }
-                }
             }
         }
 
@@ -71,13 +50,5 @@ public class FleeBehavior : SteeringBehavior
 
     }
 
-    protected bool FleeThisTag(string tag)
-    {
-        for(int i = 0; i<filterTags.Length; i++)
-        {
-            if (filterTags[i] == tag) return true;
-        }
-        return false;
-    }
 
     }

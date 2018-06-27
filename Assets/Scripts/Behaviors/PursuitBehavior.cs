@@ -14,7 +14,7 @@ public class PursuitBehavior : SteeringBehavior
     {
         
 
-        LinkedList<SteeringAgentWrapped> allTargets = GetFilteredNeighbors(surroundings);
+        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings);
 
         //no targets in neighborhood
         if (allTargets.First == null)
@@ -31,7 +31,7 @@ public class PursuitBehavior : SteeringBehavior
          * 
          */
 
-        SteeringAgentWrapped closestTarget = ClosestTarget(allTargets, mine);
+        AgentWrapped closestTarget = ClosestTarget(allTargets, mine);
 
         Vector3 distance = closestTarget.wrappedPosition - mine.position;
         float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
@@ -45,7 +45,7 @@ public class PursuitBehavior : SteeringBehavior
     }
 
     
-    static void AttemptCatch(SteeringAgent mine, SteeringAgentWrapped chosenQuaryWrapped)
+    static void AttemptCatch(Agent mine, AgentWrapped chosenQuaryWrapped)
     {
         float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.position);
         if (distAway <= (chosenQuaryWrapped.agent.radius + mine.radius))
@@ -56,12 +56,12 @@ public class PursuitBehavior : SteeringBehavior
     }
 
 
-    private static SteeringAgentWrapped ClosestTarget(LinkedList<SteeringAgentWrapped> nearbyTargets, SteeringAgent agent)
+    private static AgentWrapped ClosestTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
     {
         
         float closeDist = float.MaxValue;
-        SteeringAgentWrapped closeTarget = nearbyTargets.First.Value;
-        foreach (SteeringAgentWrapped target in nearbyTargets)
+        AgentWrapped closeTarget = nearbyTargets.First.Value;
+        foreach (AgentWrapped target in nearbyTargets)
         {
             float dist = Vector3.Distance(target.wrappedPosition, agent.position);
             //if(dist <= target.target.radius) AttemptCatch(agent, target);

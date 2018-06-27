@@ -12,70 +12,28 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class SteeringAgent : Agent
 {
-
-    public Vector3 velocity { get; protected set; }
-    public Vector3 forward { get; protected set; }
     public Vector3 acceleration { get; protected set; }
-    public bool isAlive { get; protected set; }
-    private bool hasSpawned = false;
-
-    public int agentID { get; protected set; }
-    protected static Dictionary<int, SteeringAgent> agentRegistry;
-    protected static int agentCount_static = 0;
 
     protected float velocityThrottle = 1;
 
-    public bool z_layering = true; //will set position z values based on y value;
-
     public BehaviorSettings activeSettings;
 
-    public delegate void AgentEvent(SteeringAgent agent);
-    public AgentEvent OnCaught;
-    public AgentEvent OnCatch;
-    public AgentEvent OnKill;
-    public AgentEvent OnSpawn;
-
     //Takes a type, returns instance
-    [SerializeField]
-	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
-    
-
-
-    protected void Awake()
-    {
-        acceleration = new Vector3(0, 0);
-
-        // This is a new Vector3 method not yet implemented in JS
-        // velocity = Vector3.random2D();
-
-        // Leaving the code temporarily this way so that this example runs in JS
-        float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * activeSettings.maxSpeed;
-        isAlive = true;
-    }
-
-	protected void Start(){
-        RegisterNewAgent();
-		if(!hasSpawned) Spawn(transform.position);
-	}
-
-
-
+	
     protected virtual void Update()
     {
         if (!isAlive) return;
-        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
+        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood, activeSettings.perceptionDistance));
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed) * velocityThrottle;
 
         position += (velocity * Time.deltaTime);
-
+        position = NeighborhoodCoordinator.WrapPosition(position);
         // Reset accelertion to 0 each cycle
         acceleration *= 0;
 
-        move();
-        borders();
+        UpdateTransform();
     }
 
     protected void LateUpdate()
@@ -84,70 +42,6 @@ public class SteeringAgent : Agent
         FindNeighborhood();
     }
 
-    protected void RegisterNewAgent()
-    {
-        agentCount_static++;
-        agentID = agentCount_static;
-        if (agentRegistry == null) agentRegistry = new Dictionary<int, SteeringAgent>();
-        agentRegistry.Add(agentID, this);
-        string name = this.name;
-        name = name.Replace("(Clone)", "");
-        int underscoreIndex = name.IndexOf('_');
-        if(underscoreIndex>-1) name = name.Remove(underscoreIndex);
-        name += "_" +agentID;
-        this.name = name;
-
-    }
-
-    protected void FindNeighborhood()
-    {
-        Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
-        if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
-        {
-            NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
-            NeighborhoodCoordinator.AddNeighbor(this, currentNeighborhood);
-            lastNeighborhood.row = currentNeighborhood.row;
-            lastNeighborhood.col = currentNeighborhood.col;
-        }
-    }
-
-    protected void RemoveFromNeighborhood()
-    {
-        NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
-
-    }
-
-
-    //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
-
-
-    public object GetAttribute(string name)
-    {
-        object val;
-        if (!attributes.TryGetValue(name, out val))
-            return 0;
-        return val;
-    }
-
-    public virtual void SetAttribute(string name, object value)
-    {
-        if (attributes.ContainsKey(name))
-            attributes[name] = value;
-        else
-        {
-            attributes.Add(name, value);
-        }
-    }
-
-    public void RemoveAttribute(string name)
-    {
-        attributes.Remove(name);
-    }
-
-    public bool HasAttribute(string name)
-    {
-        return attributes.ContainsKey(name);
-    }
 
     void applyForce(Vector3 force)
     {
@@ -181,10 +75,10 @@ public class SteeringAgent : Agent
         return steer;
     }
 
-    void move()
+    void UpdateTransform()
     {
 
-        this.transform.position = new Vector3(position.x, position.y, (z_layering? ZLayering.YtoZPosition(position.y) : 0));
+        this.transform.position = new Vector3(position.x, position.y, (useZLayering? ZLayering.YtoZPosition(position.y) : 0));
         if (velocity.magnitude > 0) forward = velocity.normalized;
 
             visual.SetRotation(Quaternion.identity);
@@ -192,50 +86,26 @@ public class SteeringAgent : Agent
         
     }
 
-    public virtual void Kill()
-    {
-        if (OnKill != null) OnKill.Invoke(this);
-        isAlive = false;
-        hasSpawned = false;
-        visual.Hide();
-        NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
 
-    }
 
-    public virtual void Spawn(Vector3 position)
+    public override void Spawn(Vector3 position)
     {
-        if (OnSpawn != null) OnSpawn.Invoke(this);
-        isAlive = true;
-        hasSpawned = true;
+        base.Spawn(position);
         velocityThrottle = 1;
-        visual.Show();
-        this.position = position;
+        acceleration = new Vector3(0, 0);
+        float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
+        velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
     }
 
-    public virtual void CatchAgent(SteeringAgent other)
-    {
-        if (OnCatch != null) OnCatch.Invoke(this);
-        other.CaughtBy(this);
-    }
 
-    public virtual void CatchTarget(Target target)
-    {
-        target.CaughtBy(this);
-    }
-
-    public virtual void CaughtBy(SteeringAgent other)
-    {
-        //Debug.Log("agent caught");
-        if (OnCaught != null) OnCaught.Invoke(this);
-    }
 
 
     // Wraparound
-    
-    
-   
 
-    
 
-   
+
+
+
+
+
 }

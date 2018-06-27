@@ -20,7 +20,7 @@ public class FoodPellet : Target {
         base.Start();
     }
 
-    public override bool CanBePursuedBy(SteeringAgent agent)
+    public override bool CanBePursuedBy(Agent agent)
     {
         bool sufficientStatus = true;
         if (agent.HasAttribute(SocialStatusBehavior.statusAttributeName))
@@ -31,16 +31,15 @@ public class FoodPellet : Target {
         return sufficientStatus && base.CanBePursuedBy(agent) ;
     }
 
-    public override void CaughtBy(SteeringAgent agent)
+    public override void CaughtBy(Agent agent)
     {
         base.CaughtBy(agent);
         Nourish(agent);
     }
 
-    public override void Spawn(Vector2 position)
+    public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
-        visual.enabled = true;
         StartCoroutine(GrowRoutine());
         //SetMinimumStatusRequirement(Random.Range(0, 100));
     }
@@ -67,7 +66,7 @@ public class FoodPellet : Target {
         visual.transform.localPosition = Vector3.up * height;
     }
 
-    void Nourish(SteeringAgent agent)
+    void Nourish(Agent agent)
     {
         if (agent.HasAttribute(SocialStatusBehavior.statusAttributeName))
         {
@@ -77,7 +76,7 @@ public class FoodPellet : Target {
         }
     }
 
-    private void InvokeEatenEvent(Target target)
+    private void InvokeEatenEvent(Agent target)
     {
         if (OnEaten != null) OnEaten.Invoke(this);
     }

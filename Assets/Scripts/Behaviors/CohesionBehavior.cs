@@ -11,7 +11,7 @@ public class CohesionBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgentWrapped other in GetFilteredNeighbors(surroundings))
+        foreach (AgentWrapped other in GetFilteredAgents(surroundings))
         {
 
             float d = Vector3.Distance(mine.position, other.wrappedPosition);

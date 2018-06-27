@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
 using Vexe.Runtime.Types;
+using UnityEngine.SceneManagement;
 
-public abstract  class EcosystemAgent : SteeringAgent {
+public  class FaunaAgent : SteeringAgent {
     public enum EcoState
     {
         FLEE, //will ignore everything except pursuers
@@ -21,6 +22,7 @@ public abstract  class EcosystemAgent : SteeringAgent {
 
     public const string energyAttributeName = "energy";
 
+    public BehaviorSettings fleeSettings;
     public BehaviorSettings huntSettings;
     public BehaviorSettings wanderSettings;
 
@@ -51,20 +53,13 @@ public abstract  class EcosystemAgent : SteeringAgent {
         }
     }
     protected float eatTime = 1;
-    protected float spawnTime;
-    protected float age
-    {
-        get { return Time.time - spawnTime; }
-    }
-
     protected bool isDying = false;
 
+    
 
-    protected void Start()
-    {
-        base.Start();
-    }
 
+    
+    
     protected void Update()
     {
         base.Update();
@@ -96,7 +91,6 @@ public abstract  class EcosystemAgent : SteeringAgent {
     public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
-        spawnTime = Time.time;
         energy = startEnergy;
         InitStateMachine();
         StartCoroutine(ReproductionCountdown());
@@ -109,14 +103,38 @@ public abstract  class EcosystemAgent : SteeringAgent {
         SpawnOffspring();
         StartCoroutine(ReproductionCountdown());
     }
-    protected abstract void SpawnOffspring();
-    protected abstract void CacheSelf();
+    protected virtual void SpawnOffspring()
+    {
+        Agent offspring = GetInstance();
+        offspring.Spawn(position);
+    }
+
 
     public override void Kill()
     {
-        base.Kill();
         ShakeOffSeeds();
-        CacheSelf();
+        base.Kill();
+    }
+
+    public override void CatchAgent(Agent other)
+    {
+        base.CatchAgent(other);
+        fsm.ChangeState(EcoState.EAT);
+    }
+
+    public override void CaughtBy(Agent other)
+    {
+
+        base.CaughtBy(other);
+        float last_nourishment = 0;
+        if (other.HasAttribute(energyAttributeName))
+        {
+            last_nourishment = (float)other.GetAttribute(energyAttributeName);
+        }
+        other.SetAttribute(energyAttributeName, last_nourishment + energy);
+
+        fsm.ChangeState(EcoState.EATEN);
+
     }
 
     protected void ShakeOffSeeds()
@@ -148,7 +166,11 @@ public abstract  class EcosystemAgent : SteeringAgent {
         {
             BirthOffspring();
         }
-        if (!isSatisfied)
+        if ((bool)GetAttribute(FleeBehavior.fleeAttributeName))
+        {
+            fsm.ChangeState(EcoState.FLEE);
+        }
+        else if (!isSatisfied)
         {
             fsm.ChangeState(EcoState.HUNT);
         }
@@ -161,7 +183,11 @@ public abstract  class EcosystemAgent : SteeringAgent {
     
     protected void HUNT_Update() 
     {
-        if (isSatisfied)
+        if ((bool)GetAttribute(FleeBehavior.fleeAttributeName))
+        {
+            fsm.ChangeState(EcoState.FLEE);
+        }
+        else if (isSatisfied)
         {
             fsm.ChangeState(EcoState.WANDER);
         }
@@ -171,7 +197,7 @@ public abstract  class EcosystemAgent : SteeringAgent {
     protected IEnumerator DIE_Enter()
     {
         visual.Blink(true);
-        RemoveFromNeighborhood();
+        RemoveFromLastNeighborhood();
         isDying = true;
         float t = 1;
         while (t > 0)
@@ -181,14 +207,15 @@ public abstract  class EcosystemAgent : SteeringAgent {
             yield return null;
         }
         visual.Blink(false);
-        Kill();
         isDying = false;
+
+        Kill();
     }
 
 
     protected IEnumerator EATEN_Enter()
     {
-        RemoveFromNeighborhood();
+        RemoveFromLastNeighborhood();
         velocityThrottle = 0;
         visual.Blink(true);
         yield return new WaitForSeconds(eatTime);
@@ -208,8 +235,21 @@ public abstract  class EcosystemAgent : SteeringAgent {
         fsm.ChangeState(EcoState.WANDER);
     }
 
+    protected void FLEE_Enter()
+    {
+        activeSettings = fleeSettings;
+    }
 
-    
+    protected void FLEE_Update()
+    {
+        if (!(bool)GetAttribute(FleeBehavior.fleeAttributeName))
+        {
+            fsm.ChangeState(EcoState.WANDER);
+        }
+    }
+
+
+
 
 
 }

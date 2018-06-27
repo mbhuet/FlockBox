@@ -1,22 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Once all of a floraTarget's children have been caught, it is available to be eaten. It will respawn children over time if allowed
 /// </summary>
-public class FloraTarget: Target {
+public class FloraTarget: Agent {
 
     const float energyProductionRate = 1;
-    protected Vector3 spawnDirection = Vector3.zero;
     private int numChildren;
     public float propagationInterval = 3;// { get { if (generation == 0) return numChildren; return generation; } }
     public float energy = 1;
     private int generation = 0;
     private const float spawnTurnScope = 90;
     public float lifespan = 10;
-    private float spawnTime;
-    private float age { get { return Time.time - spawnTime; } }
+
 
     private List<FloraTarget> children;
     private List<Vector3> openChildPositions;
@@ -40,11 +39,13 @@ public class FloraTarget: Target {
     private bool hasSeed = false;
 
 
-    public override void Spawn(Vector2 position)
+    public void Spawn(Vector3 position, int generation, Vector3 forwardDirection, int rapidPropogationCutoff)
     {
         base.Spawn(position);
-        spawnTime = Time.time;
-        name = "Flora_" + targetID;
+        this.generation = generation;
+        rapidPropogationToGen = rapidPropogationCutoff;
+        float turn = (Mathf.PerlinNoise(generation, 0) - .5f) * spawnTurnScope;
+        forward = Quaternion.AngleAxis(turn, Vector3.forward) * forwardDirection;
 
         hasSeed = randomSeedChance();
 
@@ -72,6 +73,11 @@ public class FloraTarget: Target {
 
     }
 
+    public override void Spawn(Vector3 position)
+    {
+        Spawn(position, 0, Random.insideUnitCircle.normalized, 0);     
+    }
+
     private int randomNumChildren()
     {
         if (hasSeed) return 0;
@@ -87,22 +93,6 @@ public class FloraTarget: Target {
     {
         if (generation == 0) return false;
         return Random.Range(0, 1f) < seedChance;
-    }
-
-    public void SetGeneration(int gen)
-    {
-        generation = gen;
-    }
-
-    public void SetSpawnDirection(Vector3 direction)
-    {
-        float turn = (Mathf.PerlinNoise(generation, 0) - .5f) * spawnTurnScope;
-        spawnDirection = Quaternion.AngleAxis(turn, Vector3.forward) * direction;
-    }
-
-    public void InstantPropogationToGeneration(int stopGeneration)
-    {
-        rapidPropogationToGen = stopGeneration;
     }
 
     protected IEnumerator GrowToFullSize(Vector2 position)
@@ -131,6 +121,7 @@ public class FloraTarget: Target {
         {
             AttemptToSpawnChild();
         }
+        visual.SetRootSize(1);
         readyToEat = true;
 
     }
@@ -141,13 +132,11 @@ public class FloraTarget: Target {
         if (!isCaught)
         {
             AttemptToSpawnChild();
-
-            //if (openChildPositions.Count > 0) StartCoroutine("DelayedPropagationRoutine");
         }
 
     }
 
-    protected void AttachSeedToAgent(SteeringAgent agent)
+    protected void AttachSeedToAgent(Agent agent)
     {
         FloraSeed seed = GameObject.Instantiate(seedPrefab);
         seed.LatchOntoAgent(agent);
@@ -157,7 +146,6 @@ public class FloraTarget: Target {
 
     protected void PrepareForChildren()
     {
-        if (spawnDirection == Vector3.zero) spawnDirection = Random.insideUnitCircle.normalized;
 
         numChildren = randomNumChildren();
         children = new List<FloraTarget>();
@@ -170,14 +158,14 @@ public class FloraTarget: Target {
             float childAngle = -angleBetweenChildren * (numChildren - 1) / 2f + angleBetweenChildren * i;
             Quaternion childTurn = Quaternion.AngleAxis(childAngle, Vector3.forward);
 
-            Vector3 childDirection = childTurn * spawnDirection.normalized;
+            Vector3 childDirection = childTurn * forward.normalized;
             Vector3 childPosition = this.transform.position + childDirection.normalized * radius * 2;
 
             openChildPositions.Add(childPosition);
         }
     }
 
-    protected void ChildWasCaught(Target child)
+    protected void ChildWasCaught(Agent child)
     {
         FloraTarget floraChild = child as FloraTarget;
         children.Remove(floraChild);
@@ -194,19 +182,15 @@ public class FloraTarget: Target {
         openChildPositions.RemoveAt(0);
 
         FloraTarget child = GetFlora(this);
-        child.SetSpawnDirection((childPos - position).normalized);
-        child.SetGeneration(generation + 1);
-        child.InstantPropogationToGeneration(rapidPropogationToGen);
         
-        child.Spawn(childPos);
-        child.transform.position = childPos;
+        child.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
 
         children.Add(child);
         child.OnCaught += ChildWasCaught;
         
     }
 
-    public override bool CanBePursuedBy(SteeringAgent agent)
+    public override bool CanBePursuedBy(Agent agent)
     {
         //roots cannot be eaten
         if (generation == 0) return false;
@@ -230,13 +214,12 @@ public class FloraTarget: Target {
         return true;
     }
 
-    public override void CaughtBy(SteeringAgent other)
+    public override void CaughtBy(Agent other)
     {
         base.CaughtBy(other);
         NourishAgent(other);
         if (hasSeed) AttachSeedToAgent(other);
         StartCoroutine(BlinkDieRoutine());
-        Kill();
     }
 
     public override void Kill()
@@ -252,20 +235,21 @@ public class FloraTarget: Target {
         foreach(FloraTarget child in children)
         {
             child.OnCaught -= ChildWasCaught;
-            child.BeginLifeCountdown();
+            if(child.isActiveAndEnabled)
+                child.BeginLifeCountdown();
         }
         children.Clear();
 
     }
 
-    protected void NourishAgent(SteeringAgent agent)
+    protected void NourishAgent(Agent agent)
     {
         float last_nourishment = 0;
-        if (agent.HasAttribute(EcosystemAgent.energyAttributeName))
+        if (agent.HasAttribute(FaunaAgent.energyAttributeName))
         {
-            last_nourishment = (float)agent.GetAttribute(EcosystemAgent.energyAttributeName);
+            last_nourishment = (float)agent.GetAttribute(FaunaAgent.energyAttributeName);
         }
-        agent.SetAttribute(EcosystemAgent.energyAttributeName, last_nourishment + energy);
+        agent.SetAttribute(FaunaAgent.energyAttributeName, last_nourishment + energy);
     }
 
     public static FloraTarget GetFlora(FloraTarget prefab)
@@ -299,24 +283,24 @@ public class FloraTarget: Target {
         yield return new WaitForSeconds(lifespan + Random.Range(-1f, 1f));
         if (!isCaught)
         {
-            Kill();
             StartCoroutine(ShrinkDieRoutine());
         }
     }
 
     protected IEnumerator BlinkDieRoutine()
     {
+        RemoveFromLastNeighborhood();
         readyToEat = false;
         visual.Blink(true);
         yield return new WaitForSeconds(1);
         visual.Blink(false);
-        CacheSelf();
+        Kill();
 
     }
 
     protected IEnumerator ShrinkDieRoutine()
     {
-
+        RemoveFromLastNeighborhood();
         visual.Show();
         readyToEat = false;
         for (float t = 1; t > 0; t -= Time.deltaTime)
@@ -327,7 +311,6 @@ public class FloraTarget: Target {
 
         }
         visual.SetRootSize(0);
-        visual.Hide();
-        CacheSelf();
+        Kill();
     }
 }

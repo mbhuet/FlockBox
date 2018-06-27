@@ -34,17 +34,17 @@ public abstract class SteeringBehavior{
         if (OnActiveStatusChange != null) OnActiveStatusChange();
     }
 
-    protected LinkedList<SteeringAgentWrapped> GetFilteredNeighbors(SurroundingsInfo surroundings)
+    protected LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings)
     {
-        Dictionary<string, LinkedList<SteeringAgentWrapped>> agentDict = surroundings.neighbors;
-        LinkedList<SteeringAgentWrapped> filteredAgents = new LinkedList<SteeringAgentWrapped>();
+        Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
+        LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
 
-        LinkedList<SteeringAgentWrapped> agentsOut = new LinkedList<SteeringAgentWrapped>();
+        LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();
         foreach (string tag in filterTags)
         {
             if (agentDict.TryGetValue(tag, out agentsOut))
             {
-                foreach (SteeringAgentWrapped agent in agentsOut)
+                foreach (AgentWrapped agent in agentsOut)
                 {
                     filteredAgents.AddLast(agent);
                 }
@@ -54,44 +54,6 @@ public abstract class SteeringBehavior{
         return filteredAgents;
     }
 
-    protected LinkedList<ZoneWrapped> GetFilteredZones(SurroundingsInfo surroundings)
-    {
-        Dictionary<string, LinkedList<ZoneWrapped>> zoneDict = surroundings.zones;
-        LinkedList<ZoneWrapped> filteredZones = new LinkedList<ZoneWrapped>();
-
-        LinkedList<ZoneWrapped> zonesOut = new LinkedList<ZoneWrapped>();
-        foreach (string tag in filterTags)
-        {
-            if (zoneDict.TryGetValue(tag, out zonesOut))
-            {
-                foreach (ZoneWrapped avoidZone in zonesOut)
-                {
-                    filteredZones.AddLast(avoidZone);
-                }
-
-            }
-        }
-        return filteredZones;
-    }
-
-    protected LinkedList<TargetWrapped> GetFilteredTargets(SurroundingsInfo surroundings)
-    {
-        Dictionary<string, LinkedList<TargetWrapped>> targetDict = surroundings.targets;
-        LinkedList<TargetWrapped> filteredTargets = new LinkedList<TargetWrapped>();
-
-        LinkedList<TargetWrapped> targetsOut = new LinkedList<TargetWrapped>();
-        foreach (string tag in filterTags)
-        {
-            if (targetDict.TryGetValue(tag, out targetsOut))
-            {
-                foreach (TargetWrapped target in targetsOut)
-                {
-                    filteredTargets.AddLast(target);
-                }
-
-            }
-        }
-        return filteredTargets;
-    }
+    
     
 }

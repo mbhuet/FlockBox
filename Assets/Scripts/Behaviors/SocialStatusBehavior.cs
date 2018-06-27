@@ -33,9 +33,9 @@ public class SocialStatusBehavior : CohesionBehavior
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgentWrapped other_wrap in GetFilteredNeighbors(surroundings))
+        foreach (AgentWrapped other_wrap in GetFilteredAgents(surroundings))
         {
-            SteeringAgent other = other_wrap.agent;
+            Agent other = other_wrap.agent;
             float d = Vector3.Distance(mine.position, other_wrap.wrappedPosition);
             if ((d > 0) && (d < effectiveRadius))
             {

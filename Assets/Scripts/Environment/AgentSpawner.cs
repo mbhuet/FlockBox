@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AgentSpawner : MonoBehaviour {
-    public SteeringAgent boidPrefab;
+    public Agent boidPrefab;
     public int numStartSpawns;
 
     // Use this for initialization
@@ -12,13 +12,7 @@ public class AgentSpawner : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Spawn(1, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        }
-        
-    }
+    
 
     void Spawn(int numBoids)
     {
@@ -33,7 +27,7 @@ public class AgentSpawner : MonoBehaviour {
     {
         for (int i = 0; i < numBoids; i++)
         {
-            GameObject.Instantiate<SteeringAgent>(boidPrefab, pos, Quaternion.identity);
+            GameObject.Instantiate<Agent>(boidPrefab, pos, Quaternion.identity);
         }
     }
 

@@ -122,20 +122,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1875201363984898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca4ebf788867a5841ac5fbf929f9864a, type: 3}
+  m_Script: {fileID: 11500000, guid: 37984d9994658544eb68907d677ca1dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: -89910
+  _id: 59552
   dbg: 0
   Prefs:
-    _Buckets: ffffffffffffffff04000000050000000300000002000000ffffffff
-    _HashCodes: 09d17a638a9ce6071289bb49e19bea315f454e0760454e0700000000
-    _Next: ffffffffffffffff0000000001000000ffffffffffffffff00000000
-    _Count: 6
-    _Version: 14284
+    _Buckets: ffffffffffffffff03000000ffffffffffffffff0100000002000000
+    _HashCodes: f383c163744f2d08fc3b024a4b3c503b000000000000000000000000
+    _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
+    _Count: 4
+    _Version: 2103
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 09d17a638a9ce6871289bbc9e19beab15f454e0760454e0700000000
+    _Keys: f383c163744f2d88fc3b02ca4b3c50bb000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -150,23 +150,25 @@ MonoBehaviour:
       ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 14
-      Type: 1
-    - ValueString: 
-      ValueFloat: 238
-      Type: 1
+      ValueFloat: 0
+      Type: 0
     - ValueString: 
       ValueFloat: 0
       Type: 0
-  radius: 1
-  z_layering: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+  radius: 2
+  useZLayering: 0
+  maxPursuers: 10
   activeSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
+  fleeSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
   huntSettings: {fileID: 11400000, guid: 56ee157d636b8d74f944ba9e127ff4f7, type: 2}
   wanderSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
-  startEnergy: 50
-  reproductionCost: 100
-  reproductionInterval: 10
-  satisfactionRange: {x: 50, y: 80}
+  startEnergy: 30
+  reproductionCost: 60
+  reproductionInterval: 30
+  satisfactionRange: {x: 50, y: 70}
   base_energyDecayRate: 0.01
 --- !u!212 &212752175146748776
 SpriteRenderer:

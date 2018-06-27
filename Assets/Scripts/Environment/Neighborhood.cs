@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class Neighborhood
 {
-    Dictionary<string, LinkedList<SteeringAgent>> neighbors;
-    Dictionary<string, LinkedList<Zone>> zones;
-    Dictionary<string, LinkedList<Target>> targets;
+    Dictionary<string, List<Agent>> sortedAgents;
 
-    List<SteeringAgent> allNeighbors;
+    List<Agent> allAgents;
 
     public Vector2 neighborhoodCenter {
     get { return (Vector2)Camera.main.transform.position + m_neighborhoodCenter; }
@@ -16,153 +14,70 @@ public class Neighborhood
     private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
-        allNeighbors = new List<SteeringAgent>();
-        neighbors = new Dictionary<string, LinkedList<SteeringAgent>>();
-        zones = new Dictionary<string, LinkedList<Zone>>();
-        targets = new Dictionary<string, LinkedList<Target>>();
+        allAgents = new List<Agent>();
+        sortedAgents = new Dictionary<string, List<Agent>>();
     }
     public Neighborhood(Vector2 pos) : this()
     {
         m_neighborhoodCenter = pos;
     }
-    public void ClearNeighbors() { neighbors.Clear(); }
-    public bool IsOccupied() { return allNeighbors.Count > 0; }
+    public void ClearAgents() { sortedAgents.Clear(); allAgents.Clear(); }
+    public bool IsOccupied() { return allAgents.Count > 0; }
 
-    public void AddNeighbor(SteeringAgent occupant)
+    public void AddAgent(Agent occupant)
     {
         string tag = occupant.gameObject.tag;
-        LinkedList<SteeringAgent> agentsOut;
-        if (neighbors.TryGetValue(tag, out agentsOut))
+        List<Agent> agentsOut;
+        if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            agentsOut.AddLast(occupant);
+            agentsOut.Add(occupant);
         }
         else
         {
-            LinkedList<SteeringAgent> newAgents = new LinkedList<SteeringAgent>();
-            newAgents.AddLast(occupant);
-            neighbors.Add(tag, newAgents);
+            List<Agent> newAgents = new List<Agent>();
+            newAgents.Add(occupant);
+            sortedAgents.Add(tag, newAgents);
         }
-        allNeighbors.Add(occupant);
+        allAgents.Add(occupant);
     }
-    public void RemoveNeighbor(SteeringAgent neighbor)
+    public void RemoveAgent(Agent agent)
     {
-        string tag = neighbor.gameObject.tag;
-        LinkedList<SteeringAgent> agentsOut;
-        if (neighbors.TryGetValue(tag, out agentsOut))
+        string tag = agent.gameObject.tag;
+        List<Agent> agentsOut;
+        if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            agentsOut.Remove(neighbor);
+            agentsOut.Remove(agent);
         }
-        allNeighbors.Remove(neighbor);
+        allAgents.Remove(agent);
     }
-    public Dictionary<string, LinkedList<SteeringAgent>> GetNeighbors()
+    public Dictionary<string, List<Agent>> GetAgents()
     {
-        return neighbors;
+        return sortedAgents;
     }
-    public LinkedList<SteeringAgent> GetNeighbors(string tag)
+    public List<Agent> GetAgents(string tag)
     {
-        LinkedList<SteeringAgent> agentsOut;
-        if (neighbors.TryGetValue(tag, out agentsOut))
+        List<Agent> agentsOut;
+        if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
             return agentsOut;
         }
         else
         {
-            return new LinkedList<SteeringAgent>();
+            return new List<Agent>();
         }
     }
 
-    public void AddZone(Zone zone)
-    {
-        string tag = zone.gameObject.tag;
-        LinkedList<Zone> zonesOut;
-        if (zones.TryGetValue(tag, out zonesOut))
-        {
-            zonesOut.AddLast(zone);
-        }
-        else
-        {
-            LinkedList<Zone> newZones = new LinkedList<Zone>();
-            newZones.AddLast(zone);
-            zones.Add(tag, newZones);
-        }
-    }
-    public void RemoveZone(Zone zone)
-    {
-        string tag = zone.gameObject.tag;
-        LinkedList<Zone> zonesOut;
-        if (zones.TryGetValue(tag, out zonesOut))
-        {
-            zonesOut.Remove(zone);
-        }
-    }
-    public Dictionary<string, LinkedList<Zone>> GetZones()
-    {
-        return zones;
-    }
-    public LinkedList<Zone> GetZones(string tag)
-    {
-        LinkedList<Zone> zonesOut;
-        if (zones.TryGetValue(tag, out zonesOut))
-        {
-            return zonesOut;
-        }
-        else
-        {
-            return new LinkedList<Zone>();
-        }
-    }
-
-    public void AddTarget(Target target)
-    {
-        string tag = target.gameObject.tag;
-        LinkedList<Target> targetsOut;
-        if (targets.TryGetValue(tag, out targetsOut)){
-            targetsOut.AddLast(target);
-        }
-        else
-        {
-            LinkedList<Target> targs = new LinkedList<Target>();
-            targs.AddLast(target);
-            targets.Add(tag, targs);
-        }
-    }
-    public void RemoveTarget(Target target)
-    {
-        string tag = target.gameObject.tag;
-        LinkedList<Target> targetsOut;
-        if (targets.TryGetValue(tag, out targetsOut))
-        {
-            targetsOut.Remove(target);
-        }
-    }
-    public Dictionary<string, LinkedList<Target>> GetTargets()
-    {
-        return targets;
-    }
-    public LinkedList<Target> GetTargets(string tag) {
-        LinkedList<Target> targetsOut;
-        if(targets.TryGetValue(tag, out targetsOut)){
-            return targetsOut;
-        }
-        else
-        {
-            return new LinkedList<Target>();
-        }
-    }
+    
 }
 
 public struct SurroundingsInfo
 {
     public SurroundingsInfo(
-        LinkedList<SteeringAgentWrapped> allAgents,
-        Dictionary<string, LinkedList<SteeringAgentWrapped>> agents, 
-        Dictionary<string, LinkedList<ZoneWrapped>> zns, 
-        Dictionary<string, LinkedList<TargetWrapped>> targs)
-        { allNeighbors = allAgents; neighbors = agents; zones = zns; targets = targs;}
-    public LinkedList<SteeringAgentWrapped> allNeighbors;
-    public Dictionary<string, LinkedList<SteeringAgentWrapped>> neighbors;
-    public Dictionary<string, LinkedList<ZoneWrapped>> zones;
-    public Dictionary<string, LinkedList<TargetWrapped>> targets;
+        LinkedList<AgentWrapped> allAgents,
+        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents)
+        { this.allAgents = allAgents; this.sortedAgents = sortedAgents;}
+    public LinkedList<AgentWrapped> allAgents;
+    public Dictionary<string, LinkedList<AgentWrapped>> sortedAgents;
 }
 
 public struct Coordinates

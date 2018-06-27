@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class FloraSeed : MonoBehaviour {
 
-    public FloraTarget rootPrefab;
+    public Agent rootPrefab;
     protected Vector3 latchPoint;
     public float fallOffDistance = 10;
 
-    private SteeringAgent seedHost;
+    private Agent seedHost;
 
-    public void LatchOntoAgent(SteeringAgent host)
+    public void LatchOntoAgent(Agent host)
     {
         //this host already has a seed attached
         if(host.GetComponentInChildren<FloraSeed>() != null)
@@ -33,7 +33,7 @@ public class FloraSeed : MonoBehaviour {
         }
     }
 
-    void OnHostKill(SteeringAgent host)
+    void OnHostKill(Agent host)
     {
         Plant();
     }
@@ -41,8 +41,7 @@ public class FloraSeed : MonoBehaviour {
     void Plant()
     {
         if(seedHost!=null)seedHost.OnKill -= OnHostKill;
-        FloraTarget root = FloraTarget.GetFlora(rootPrefab);
-        root.SetGeneration(0);
+        Agent root = rootPrefab.GetInstance();
         root.Spawn(transform.position);
         GameObject.Destroy(this.gameObject);
     }

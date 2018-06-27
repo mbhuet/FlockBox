@@ -23,7 +23,7 @@ public class RelationshipBehavior : SteeringBehavior {
     {
         if (!mine.HasAttribute(friendArrayAttributeName)) CreateFriendshipSlots(mine);
         List<int> expired = ExpiredFriendships(mine);
-        SteeringAgent[] friends = (SteeringAgent[])mine.GetAttribute(friendArrayAttributeName);
+        Agent[] friends = (Agent[])mine.GetAttribute(friendArrayAttributeName);
 
         Vector3 sum = Vector3.zero;
         int friendCount = 0;
@@ -32,7 +32,7 @@ public class RelationshipBehavior : SteeringBehavior {
             if (expired.Contains(friendIndex)) EndFriendship(mine, friends, friendIndex);
             else if(friends[friendIndex] != null)
             {
-                SteeringAgent friend = friends[friendIndex];
+                Agent friend = friends[friendIndex];
                 Vector3 wrappedPosition = ClosestPositionWithWrap(mine.position, friend.position);
                 sum += wrappedPosition;
                 friendCount++;
@@ -42,7 +42,7 @@ public class RelationshipBehavior : SteeringBehavior {
 
         if (friendCount < maxFriends)
         {
-            SearchForNewFriends(mine, friends, GetFilteredNeighbors(surroundings));
+            SearchForNewFriends(mine, friends, GetFilteredAgents(surroundings));
         }
 
         if (friendCount > 0)
@@ -56,7 +56,7 @@ public class RelationshipBehavior : SteeringBehavior {
         }
     }
 
-    List<int> ExpiredFriendships(SteeringAgent agent)
+    List<int> ExpiredFriendships(Agent agent)
     {
         List<int> expiredFriendships = new List<int>();
         float[] timers = (float[])agent.GetAttribute(friendTimersAttributeName);
@@ -69,18 +69,18 @@ public class RelationshipBehavior : SteeringBehavior {
         return expiredFriendships;
     }
 
-    void EndFriendship(SteeringAgent agent, int index)
-        {   EndFriendship(agent, (SteeringAgent[])agent.GetAttribute(friendArrayAttributeName), index);   }
-    void EndFriendship(SteeringAgent agent, SteeringAgent[] friends, int index)
+    void EndFriendship(Agent agent, int index)
+        {   EndFriendship(agent, (Agent[])agent.GetAttribute(friendArrayAttributeName), index);   }
+    void EndFriendship(Agent agent, Agent[] friends, int index)
     {
         agent.SetAttribute(ignoreFriendAttributeName, friends[index]);
         friends[index] = null;
 
     }
 
-    void BeginFriendship(SteeringAgent agent, SteeringAgent newFriend, float friendshipDuration)
-        {   BeginFriendship(agent, (SteeringAgent[])agent.GetAttribute(friendArrayAttributeName), newFriend, friendshipDuration);   }
-    void BeginFriendship(SteeringAgent agent, SteeringAgent[] friends, SteeringAgent newFriend, float friendshipDuration)
+    void BeginFriendship(Agent agent, Agent newFriend, float friendshipDuration)
+        {   BeginFriendship(agent, (Agent[])agent.GetAttribute(friendArrayAttributeName), newFriend, friendshipDuration);   }
+    void BeginFriendship(Agent agent, Agent[] friends, Agent newFriend, float friendshipDuration)
     {
         for (int i = 0; i < friends.Length; i++)
             if (friends[i] == null)
@@ -93,13 +93,13 @@ public class RelationshipBehavior : SteeringBehavior {
             }
     }
 
-    bool HasEmptyFriendSlot(SteeringAgent agent)
+    bool HasEmptyFriendSlot(Agent agent)
     {
         if (!agent.HasAttribute(friendArrayAttributeName)) return false;
-        return HasEmptyFriendSlot((SteeringAgent[])agent.GetAttribute(friendArrayAttributeName));
+        return HasEmptyFriendSlot((Agent[])agent.GetAttribute(friendArrayAttributeName));
     }
 
-    bool HasEmptyFriendSlot(SteeringAgent[] friends)
+    bool HasEmptyFriendSlot(Agent[] friends)
     {
         for(int i = 0; i<friends.Length; i++)
         {
@@ -109,12 +109,12 @@ public class RelationshipBehavior : SteeringBehavior {
     }
 
 
-    void SearchForNewFriends(SteeringAgent agent, SteeringAgent[] friends, LinkedList<SteeringAgentWrapped> neighbors) {
-        SteeringAgent ignore = (SteeringAgent)agent.GetAttribute(ignoreFriendAttributeName);
-        List<SteeringAgent> alreadyFriends = new List<SteeringAgent>(friends);
-        foreach(SteeringAgentWrapped neighbor_wrap in neighbors)
+    void SearchForNewFriends(Agent agent, Agent[] friends, LinkedList<AgentWrapped> neighbors) {
+        Agent ignore = (Agent)agent.GetAttribute(ignoreFriendAttributeName);
+        List<Agent> alreadyFriends = new List<Agent>(friends);
+        foreach(AgentWrapped neighbor_wrap in neighbors)
         {
-            SteeringAgent neighbor = neighbor_wrap.agent;
+            Agent neighbor = neighbor_wrap.agent;
             if (neighbor == agent || alreadyFriends.Contains(neighbor) || (ignore != null && neighbor != ignore)) continue;
             if(Vector3.Distance(agent.position, neighbor_wrap.wrappedPosition) <= effectiveRadius)
             {
@@ -131,9 +131,9 @@ public class RelationshipBehavior : SteeringBehavior {
         }
     }
 
-    void CreateFriendshipSlots(SteeringAgent agent)
+    void CreateFriendshipSlots(Agent agent)
     {
-        agent.SetAttribute(friendArrayAttributeName, new SteeringAgent[maxFriends]);
+        agent.SetAttribute(friendArrayAttributeName, new Agent[maxFriends]);
         agent.SetAttribute(friendTimersAttributeName, new float[maxFriends]);
     }
 
@@ -142,7 +142,7 @@ public class RelationshipBehavior : SteeringBehavior {
         return UnityEngine.Random.Range(minFriendshipDuration, maxFriendshipDuration);
     }
 
-    bool WithinSocialStatusRange(SteeringAgent a, SteeringAgent b)
+    bool WithinSocialStatusRange(Agent a, Agent b)
     {
         float a_status = (float)a.GetAttribute(SocialStatusBehavior.statusAttributeName);
         float b_status = (float)b.GetAttribute(SocialStatusBehavior.statusAttributeName);

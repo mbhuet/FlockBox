@@ -93,7 +93,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1072889458426260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 12.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4894392781250120}
@@ -122,20 +122,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1072889458426260}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a6d33d26791ed241ba2ea9eee7f079d, type: 3}
+  m_Script: {fileID: 11500000, guid: 37984d9994658544eb68907d677ca1dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: -3394048
+  _id: 59512
   dbg: 0
   Prefs:
-    _Buckets: ffffffffffffffffffffffff0400000005000000ffffffffffffffff
-    _HashCodes: 93e25f5d14aecb019c9aa043eb72d14615650b4a16650b4a00000000
-    _Next: ffffffffffffffff0000000001000000030000000200000000000000
-    _Count: 6
-    _Version: 12030
+    _Buckets: 03000000ffffffffffffffffffffffff0100000002000000ffffffff
+    _HashCodes: 1b7fc1639c4a2d082437024a730d3e3b000000000000000000000000
+    _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
+    _Count: 4
+    _Version: 4409
     _FreeList: -1
     _FreeCount: 0
-    _Keys: 93e25f5d14aecb819c9aa0c3eb72d1c615650b4a16650b4a00000000
+    _Keys: 1b7fc1639c4a2d88243702ca730d3ebb000000000000000000000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -150,25 +150,26 @@ MonoBehaviour:
       ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 14
-      Type: 1
+      ValueFloat: 0
+      Type: 0
     - ValueString: 
-      ValueFloat: 238
-      Type: 1
+      ValueFloat: 0
+      Type: 0
     - ValueString: 
       ValueFloat: 0
       Type: 0
   radius: 1
-  z_layering: 0
+  useZLayering: 0
+  maxPursuers: 10
   activeSettings: {fileID: 11400000, guid: 6a456dbcafa563a458788556a95b7156, type: 2}
+  fleeSettings: {fileID: 11400000, guid: 934ecba1a0341984ba46363af42613ec, type: 2}
   huntSettings: {fileID: 11400000, guid: bcf44078289a6d849ac97697cb7ce4b0, type: 2}
   wanderSettings: {fileID: 11400000, guid: 6a456dbcafa563a458788556a95b7156, type: 2}
-  startEnergy: 5
-  reproductionCost: 10
-  reproductionInterval: 10
-  satisfactionRange: {x: 5, y: 10}
+  startEnergy: 2
+  reproductionCost: 2
+  reproductionInterval: 0
+  satisfactionRange: {x: 2, y: 5}
   base_energyDecayRate: 0.01
-  fleeSettings: {fileID: 11400000, guid: 934ecba1a0341984ba46363af42613ec, type: 2}
 --- !u!212 &212945211848660094
 SpriteRenderer:
   m_ObjectHideFlags: 1

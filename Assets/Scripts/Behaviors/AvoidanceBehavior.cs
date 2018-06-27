@@ -10,18 +10,18 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        LinkedList<ZoneWrapped> obstacles = GetAvoidZones(surroundings);
+        LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings);
         if (obstacles.First == null) return Vector3.zero;
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;
         Vector3 closestHitPoint = Vector3.zero;
-        Zone mostThreateningObstacle = obstacles.First.Value.zone;
+        Agent mostThreateningObstacle = obstacles.First.Value.agent;
 
-        foreach (ZoneWrapped obs_wrapped in obstacles)
+        foreach (AgentWrapped obs_wrapped in obstacles)
         {
-            Zone zone = obs_wrapped.zone;
+            Agent zone = obs_wrapped.agent;
             Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedCenter) < zone.radius)
+            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < zone.radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
@@ -38,40 +38,22 @@ public class AvoidanceBehavior : SteeringBehavior {
         }
 
         if (!foundObstacleInPath) return Vector3.zero;
-        float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.position, mostThreateningObstacle.center) - mostThreateningObstacle.radius, 1);
+        float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.position, mostThreateningObstacle.position) - mostThreateningObstacle.radius, 1);
         if (distanceToObstacleEdge > effectiveRadius) return Vector3.zero;
-        Vector3 steer = closestHitPoint - mostThreateningObstacle.center;
+        Vector3 steer = closestHitPoint - mostThreateningObstacle.position;
 
         steer = steer.normalized * mine.activeSettings.maxForce;
         return steer * weight;
     }
 
-    LinkedList<ZoneWrapped> GetAvoidZones(SurroundingsInfo surroundings)
+    
+
+    Vector3 ClosestPointPathToObstacle(SteeringAgent mine, AgentWrapped obstacle)
     {
-        Dictionary<string, LinkedList<ZoneWrapped>> zoneDict = surroundings.zones;
-        LinkedList<ZoneWrapped> obstacles = new LinkedList<ZoneWrapped>();
-
-        LinkedList<ZoneWrapped> zonesOut = new LinkedList<ZoneWrapped>();
-        foreach(string avoidTag in filterTags)
-        {
-            if(zoneDict.TryGetValue(avoidTag, out zonesOut))
-            {
-                foreach (ZoneWrapped avoidZone in zonesOut)
-                {
-                    obstacles.AddLast(avoidZone);
-                }
-
-            }
-        }
-        return obstacles;
-    }
-
-    Vector3 ClosestPointPathToObstacle(SteeringAgent agent, ZoneWrapped obstacle)
-    {
-        Vector3 agentPos = agent.position;
-        Vector3 agentToObstacle = obstacle.wrappedCenter - agentPos;
-        Vector3 projection = Vector3.Project(agentToObstacle, agent.velocity.normalized);
-        if (projection.normalized == agent.velocity.normalized)
+        Vector3 agentPos = mine.position;
+        Vector3 agentToObstacle = obstacle.wrappedPosition - agentPos;
+        Vector3 projection = Vector3.Project(agentToObstacle, mine.velocity.normalized);
+        if (projection.normalized == mine.velocity.normalized)
             return agentPos + projection;
         else return agentPos;
     }
