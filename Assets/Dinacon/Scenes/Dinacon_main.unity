@@ -431,9 +431,9 @@ MonoBehaviour:
     type: 2}
   floraPrefab: {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13,
     type: 2}
-  initialPredators: 1
-  initialPrey: 10
-  initialFlora: 3
+  initialPredators: 2
+  initialPrey: 30
+  initialFlora: 5
 --- !u!1 &1370631403
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,8 +543,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 0
-  neighborhoodCols: 8
-  neighborhoodRows: 6
+  neighborhoodCols: 10
+  neighborhoodRows: 7
   neighborhoodSize: {x: 10, y: 10}
 --- !u!114 &1370631410
 MonoBehaviour:

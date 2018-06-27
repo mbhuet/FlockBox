@@ -29,8 +29,6 @@ public class FloraTarget: Agent {
 
     public AnimationCurve propagationCurve;
 
-    protected static List<FloraTarget> floraCache;
-
     public Sprite leafSprite;
     public Sprite rootSprite;
     public Sprite seedSprite;
@@ -181,7 +179,7 @@ public class FloraTarget: Agent {
         Vector3 childPos = openChildPositions[0];
         openChildPositions.RemoveAt(0);
 
-        FloraTarget child = GetFlora(this);
+        FloraTarget child = GetInstance() as FloraTarget;
         
         child.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
 
@@ -224,10 +222,10 @@ public class FloraTarget: Agent {
 
     public override void Kill()
     {
-        base.Kill();
         DisconnectFromChildren();
-        StopCoroutine("DelayedPropagationRoutine");
-        StopCoroutine("LifeCountdownRoutine");
+        StopAllCoroutines();
+        base.Kill();
+
     }
 
     protected void DisconnectFromChildren()
@@ -250,27 +248,6 @@ public class FloraTarget: Agent {
             last_nourishment = (float)agent.GetAttribute(FaunaAgent.energyAttributeName);
         }
         agent.SetAttribute(FaunaAgent.energyAttributeName, last_nourishment + energy);
-    }
-
-    public static FloraTarget GetFlora(FloraTarget prefab)
-    {
-        if (floraCache == null) floraCache = new List<FloraTarget>();
-        if (floraCache.Count > 0)
-        {
-            FloraTarget flora = floraCache[0];
-            floraCache.RemoveAt(0);
-            flora.gameObject.SetActive(true);
-            return flora;
-        }
-        else return GameObject.Instantiate(prefab) as FloraTarget;
-    }
-
-    protected void CacheSelf()
-    {
-        if (floraCache == null) floraCache = new List<FloraTarget>();
-        floraCache.Add(this);
-        gameObject.SetActive(false);
-        StopAllCoroutines();
     }
 
     public void BeginLifeCountdown()
