@@ -12,6 +12,8 @@ using Vexe.Runtime.Types;
 [System.Serializable]
 public class SteeringAgent : Agent
 {
+
+    
     public Vector3 acceleration { get; protected set; }
 
     protected float velocityThrottle = 1;

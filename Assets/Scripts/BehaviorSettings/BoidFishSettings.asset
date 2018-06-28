@@ -18,7 +18,7 @@ MonoBehaviour:
     _HashCodes: f3f59c6174c10806fcaddd473148a964ce3c7f71ceb97010b5bd704db6bd704de2c788733f09b4223f463a4b51dcb75294c6f40894293671ae9df17b1fb2115abfa01e61f0340a2800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Next: ffffffffffffffffffffffffffffffffffffffff0400000003000000ffffffff05000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Count: 18
-    _Version: 69443
+    _Version: 90096
     _FreeList: -1
     _FreeCount: 0
     _Keys: f3f59c6174c10886fcadddc73148a9e4ce3c7ff1ceb97010b5bd70cdb6bd70cde2c788733f09b4a23f463acb51dcb7d294c6f48894293671ae9df17b1fb2115abfa01e61f0340aa800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -48,13 +48,13 @@ MonoBehaviour:
       ValueFloat: 53
       Type: 1
     - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 1
+      ValueFloat: 0
       Type: 2
     - ValueString: 
       ValueFloat: 0
@@ -138,11 +138,11 @@ MonoBehaviour:
   maxSpeed: 21.08
   alignmment:
     isActive: 1
-    weight: 0.77
-    effectiveRadius: 5
+    weight: 1.5
+    effectiveRadius: 10
     filterTags:
     - Boid
-    drawVectorLine: 0
+    drawVectorLine: 1
     vectorColor: {r: 1, g: 0, b: 0, a: 1}
   cohesion:
     isActive: 1
@@ -150,15 +150,15 @@ MonoBehaviour:
     effectiveRadius: 10
     filterTags:
     - Boid
-    drawVectorLine: 0
+    drawVectorLine: 1
     vectorColor: {r: 0, g: 0.28014588, b: 1, a: 1}
   separation:
     isActive: 1
-    weight: 1.72
+    weight: 1.6
     effectiveRadius: 5
     filterTags:
     - Boid
-    drawVectorLine: 0
+    drawVectorLine: 1
     vectorColor: {r: 0.9951428, g: 1, b: 0, a: 1}
   wander:
     isActive: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
     vectorColor: {r: 1, g: 1, b: 1, a: 1}
     wanderScope: 90
   avoid:
-    isActive: 1
+    isActive: 0
     weight: 6.31
     effectiveRadius: 10
     filterTags:

@@ -132,7 +132,7 @@ MonoBehaviour:
     _HashCodes: f383c163744f2d08fc3b024a4b3c503b000000000000000000000000
     _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
     _Count: 4
-    _Version: 2103
+    _Version: 5267
     _FreeList: -1
     _FreeCount: 0
     _Keys: f383c163744f2d88fc3b02ca4b3c50bb000000000000000000000000
@@ -166,9 +166,9 @@ MonoBehaviour:
   huntSettings: {fileID: 11400000, guid: 56ee157d636b8d74f944ba9e127ff4f7, type: 2}
   wanderSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
   startEnergy: 30
-  reproductionCost: 60
-  reproductionInterval: 30
-  satisfactionRange: {x: 50, y: 70}
+  reproductionCost: 10
+  reproductionInterval: 0
+  satisfactionRange: {x: 20, y: 30}
   base_energyDecayRate: 0.01
 --- !u!212 &212752175146748776
 SpriteRenderer:

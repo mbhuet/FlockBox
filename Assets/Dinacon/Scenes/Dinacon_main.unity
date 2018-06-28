@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880c1e25c4062154aafcebfa1aa638f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayGizmos: 0
+  displayGizmos: 1
   neighborhoodCols: 10
   neighborhoodRows: 7
   neighborhoodSize: {x: 10, y: 10}

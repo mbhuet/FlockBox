@@ -35,6 +35,7 @@ public  class FaunaAgent : SteeringAgent {
     [vSlider(0, 100)]
     public Vector2 satisfactionRange;
 
+    protected bool isFleeing { get { return (bool)GetAttribute(FleeBehavior.fleeAttributeName); } }
     protected bool isSatisfied { get { return energy >= energyGoal; } }
     protected float energyGoal { get { return (readyToReproduce ? reproductionEnergyThreshold : satisfactionRange.y); } }
     protected float reproductionEnergyThreshold { get { return satisfactionRange.y + reproductionCost; } }
@@ -91,7 +92,7 @@ public  class FaunaAgent : SteeringAgent {
     public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
-        energy = startEnergy;
+        energy = Random.Range(satisfactionRange.x, satisfactionRange.y);
         InitStateMachine();
         StartCoroutine(ReproductionCountdown());
     }
@@ -166,10 +167,7 @@ public  class FaunaAgent : SteeringAgent {
         {
             BirthOffspring();
         }
-        if ((bool)GetAttribute(FleeBehavior.fleeAttributeName))
-        {
-            fsm.ChangeState(EcoState.FLEE);
-        }
+
         else if (!isSatisfied)
         {
             fsm.ChangeState(EcoState.HUNT);
@@ -183,7 +181,7 @@ public  class FaunaAgent : SteeringAgent {
     
     protected void HUNT_Update() 
     {
-        if ((bool)GetAttribute(FleeBehavior.fleeAttributeName))
+        if (isFleeing)
         {
             fsm.ChangeState(EcoState.FLEE);
         }
@@ -229,10 +227,24 @@ public  class FaunaAgent : SteeringAgent {
     protected IEnumerator EAT_Enter()
     {
         velocityThrottle = 0;
-        yield return new WaitForSeconds(eatTime);
+
+        for(float t =0; t<eatTime; t += Time.deltaTime)
+        {
+            if (isFleeing)
+            {
+                fsm.ChangeState(EcoState.FLEE);
+                yield break;
+            }
+            yield return null;
+        }
+        
+        fsm.ChangeState(EcoState.WANDER);
+    }
+
+    protected void EAT_Exit()
+    {
         velocityThrottle = 1;
 
-        fsm.ChangeState(EcoState.WANDER);
     }
 
     protected void FLEE_Enter()
