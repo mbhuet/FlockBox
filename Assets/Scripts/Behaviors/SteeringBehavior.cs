@@ -20,6 +20,8 @@ public abstract class SteeringBehavior{
     public float weight = 1;
     [Display(2f), VisibleWhen("isActive")]
     public float effectiveRadius = 10;
+    [PerItem, Tags, VisibleWhen("isActive")]
+    public string[] filterTags;
     [Display(3f), VisibleWhen("isActive")]
     public bool drawVectorLine;
     [Display(4f), VisibleWhen("isActive", "drawVectorLine")]
@@ -31,5 +33,27 @@ public abstract class SteeringBehavior{
     {
         if (OnActiveStatusChange != null) OnActiveStatusChange();
     }
+
+    protected LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings)
+    {
+        Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
+        LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
+
+        LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();
+        foreach (string tag in filterTags)
+        {
+            if (agentDict.TryGetValue(tag, out agentsOut))
+            {
+                foreach (AgentWrapped agent in agentsOut)
+                {
+                    filteredAgents.AddLast(agent);
+                }
+
+            }
+        }
+        return filteredAgents;
+    }
+
+    
     
 }

@@ -11,7 +11,7 @@ public class AlignmentBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
-        foreach (SteeringAgentWrapped other in surroundings.neighbors)
+        foreach (AgentWrapped other in GetFilteredAgents(surroundings))
         {
 
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
@@ -31,9 +31,9 @@ public class AlignmentBehavior : SteeringBehavior {
 
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
-            sum *= (mine.settings.maxSpeed);
+            sum *= (mine.activeSettings.maxSpeed);
             Vector3 steer = sum - mine.velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
             return steer * weight;
         }
         else

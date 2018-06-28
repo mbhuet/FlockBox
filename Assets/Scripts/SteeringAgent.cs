@@ -9,118 +9,41 @@ using Vexe.Runtime.Types;
 //SteeringBehaviors will never have instance variables
 //SteeringAgents have 
 
-[RequireComponent(typeof(SteeringAgentVisual))]
 [System.Serializable]
-public class SteeringAgent : BaseBehaviour
+public class SteeringAgent : Agent
 {
-    Coordinates lastNeighborhood = new Coordinates(0,0);
 
-    public Vector3 position { get; protected set; }
-    public Vector3 velocity { get; protected set; }
-    public Vector3 acceleration { get; protected set; }
-    float visualRadius = 12.0f;
     
-    public bool z_layering = true; //will set position z values based on y value;
+    public Vector3 acceleration { get; protected set; }
 
-    public BehaviorSettings settings;
+    protected float velocityThrottle = 1;
+
+    public BehaviorSettings activeSettings;
 
     //Takes a type, returns instance
-    [SerializeField]
-	protected Dictionary<string, object> attributes = new Dictionary<string, object>();
 
-    private SteeringAgentVisual m_visual;
-    public SteeringAgentVisual visual
+	
+    protected virtual void Update()
     {
-        get
-        {
-            if (m_visual == null) m_visual = GetComponent<SteeringAgentVisual>();
-            return m_visual;
-        }
-    }
-
-
-    protected void Awake()
-    {
-        acceleration = new Vector3(0, 0);
-
-        // This is a new Vector3 method not yet implemented in JS
-        // velocity = Vector3.random2D();
-
-        // Leaving the code temporarily this way so that this example runs in JS
-        float angle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * settings.maxSpeed;
-    }
-
-	protected void Start(){
-		position = transform.position;
-	}
-
-
-
-    protected void Update()
-    {
-        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood,1));
+        if (!isAlive) return;
+        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood, activeSettings.perceptionDistance));
         velocity += (acceleration) * Time.deltaTime;
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, settings.maxSpeed);
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed) * velocityThrottle;
 
-        position += (velocity * Time.deltaTime );
-
+        position += (velocity * Time.deltaTime);
+        position = NeighborhoodCoordinator.WrapPosition(position);
         // Reset accelertion to 0 each cycle
         acceleration *= 0;
 
-        move();
-        borders();
+        UpdateTransform();
     }
 
     protected void LateUpdate()
     {
+        if (!isAlive) return;
         FindNeighborhood();
     }
-    
 
-    protected void FindNeighborhood()
-    {
-        Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
-        if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
-        {
-            NeighborhoodCoordinator.RemoveNeighbor(this, lastNeighborhood);
-            NeighborhoodCoordinator.AddNeighbor(this, currentNeighborhood);
-            lastNeighborhood.row = currentNeighborhood.row;
-            lastNeighborhood.col = currentNeighborhood.col;
-        }
-    }
-
-
-    //if the SteeringBehaviors this agent needs have not been intantiated in the static Dictionary, create them
-    
-
-	public object GetAttribute(string name)
-    {
-        object val;
-        if (!attributes.TryGetValue(name, out val))
-            return 0;
-        return val;
-    }
-
-    public void SetAttribute(string name, object value)
-    {
-        if (attributes.ContainsKey(name))
-            attributes[name] = value;
-        else
-        {
-            attributes.Add(name, value);
-        }
-    }
-
-    public void RemoveAttribute(string name)
-    {
-        attributes.Remove(name);
-    }
-
-    public bool HasAttribute(string name)
-    {
-        return attributes.ContainsKey(name);
-    }
 
     void applyForce(Vector3 force)
     {
@@ -131,7 +54,7 @@ public class SteeringAgent : BaseBehaviour
     // We accumulate a new acceleration each time based on three rules
     void flock(SurroundingsInfo surroundings)
     {
-        foreach (SteeringBehavior behavior in settings.activeBehaviors)
+        foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
         {
             Vector3 steer = (behavior.GetSteeringBehaviorVector(this, surroundings));
             if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
@@ -144,38 +67,47 @@ public class SteeringAgent : BaseBehaviour
     {
         Vector3 desired = target - position;  // A vector pointing from the position to the target
         // Scale to maximum speed
-        desired = desired.normalized * (settings.maxSpeed);
+        desired = desired.normalized * (activeSettings.maxSpeed);
 
 
         // Steering = Desired minus Velocity
         Vector3 steer = desired - velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, settings.maxForce);
+        steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
          // Limit to maximum steering force
         return steer;
     }
 
-    void move()
+    void UpdateTransform()
     {
-        this.transform.position = new Vector3(position.x, position.y, (z_layering? position.y : 0));
-        visual.SetRotation(Quaternion.identity);
-        visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(velocity.y, velocity.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+
+        this.transform.position = new Vector3(position.x, position.y, (useZLayering? ZLayering.YtoZPosition(position.y) : 0));
+        if (velocity.magnitude > 0) forward = velocity.normalized;
+
+            visual.SetRotation(Quaternion.identity);
+            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(forward.y, forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+        
     }
+
+
+
+    public override void Spawn(Vector3 position)
+    {
+        base.Spawn(position);
+        velocityThrottle = 1;
+        acceleration = new Vector3(0, 0);
+        float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
+        velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
+    }
+
+
+
 
     // Wraparound
-    
-    void borders()
-    {
-        bool wrap = false;
-        Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.min.x) { wrappedPosition.x = NeighborhoodCoordinator.max.x + (position.x - NeighborhoodCoordinator.min.x); wrap = true; }
-        if (position.y < NeighborhoodCoordinator.min.y) { wrappedPosition.y = NeighborhoodCoordinator.max.y + (position.y - NeighborhoodCoordinator.min.y); wrap = true; }
-        if (position.x > NeighborhoodCoordinator.max.x) { wrappedPosition.x = NeighborhoodCoordinator.min.x + (position.x - NeighborhoodCoordinator.max.x); wrap = true; }
-        if (position.y > NeighborhoodCoordinator.max.y) { wrappedPosition.y = NeighborhoodCoordinator.min.y + (position.y - NeighborhoodCoordinator.max.y); wrap = true; }
-        if(wrap) position = wrappedPosition;
-    }
-   
 
-    
 
-   
+
+
+
+
+
 }

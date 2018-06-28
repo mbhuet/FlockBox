@@ -8,11 +8,14 @@ using UnityEngine;
 public class SocialStatusBehavior : CohesionBehavior
 {
     [VisibleWhen("isActive")]
-    public Gradient statusSpectrum;
-    [VisibleWhen("isActive")]
     public int maxStatus = 100;
 
+    [fSlider(0,1)]
+    public float speedDampening = .1f;
+
     public const string statusAttributeName = "socialStatus";
+
+    public static float bankedStatus = 0;
 
     [VisibleWhen("isActive")]
     public AnimationCurve attractionCurve;
@@ -21,13 +24,18 @@ public class SocialStatusBehavior : CohesionBehavior
     {
         if (!mine.HasAttribute(statusAttributeName)) mine.SetAttribute(statusAttributeName, GetRandomStatusValue());
         float myStatus = (float)mine.GetAttribute(statusAttributeName);
-        mine.visual.SetColor(statusSpectrum.Evaluate(myStatus / maxStatus));
+        myStatus = RemoveTaxes(myStatus);
+
+        mine.visual.UpdateForAttribute(statusAttributeName, myStatus);
+
+        mine.SetAttribute(statusAttributeName, myStatus);
+
 
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
-        foreach (SteeringAgentWrapped other_wrap in surroundings.neighbors)
+        foreach (AgentWrapped other_wrap in GetFilteredAgents(surroundings))
         {
-            SteeringAgent other = other_wrap.agent;
+            Agent other = other_wrap.agent;
             float d = Vector3.Distance(mine.position, other_wrap.wrappedPosition);
             if ((d > 0) && (d < effectiveRadius))
             {
@@ -51,9 +59,9 @@ public class SocialStatusBehavior : CohesionBehavior
 
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
-            sum *= (mine.settings.maxSpeed);
+            sum *= (mine.activeSettings.maxSpeed);
             Vector3 steer = sum - mine.velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
             //Debug.DrawRay(mine.position, steer, Color.yellow);
             return steer * weight;
         }
@@ -61,6 +69,13 @@ public class SocialStatusBehavior : CohesionBehavior
         {
             return new Vector3(0, 0);
         }
+    }
+
+    private float RemoveTaxes(float initialValue)
+    {
+        float tax = initialValue * .1f * Time.deltaTime;
+        bankedStatus += tax;
+        return initialValue - tax;
     }
 
     private float GetRandomStatusValue()

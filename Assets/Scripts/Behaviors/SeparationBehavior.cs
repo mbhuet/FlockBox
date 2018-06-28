@@ -11,7 +11,7 @@ public class SeparationBehavior : SteeringBehavior {
         Vector3 steer = Vector3.zero;
         int count = 0;
         // For every boid in the system, check if it's too close
-        foreach (SteeringAgentWrapped other in surroundings.neighbors)
+        foreach (AgentWrapped other in GetFilteredAgents( surroundings))
         {
 
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
@@ -40,9 +40,9 @@ public class SeparationBehavior : SteeringBehavior {
             // steer.setMag(maxspeed);
 
             // Implement Reynolds: Steering = Desired - Velocity
-            steer = steer.normalized * (mine.settings.maxSpeed);
+            steer = steer.normalized * (mine.activeSettings.maxSpeed);
             steer -= (mine.velocity);
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.settings.maxForce);
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
         return steer * weight;
     }
