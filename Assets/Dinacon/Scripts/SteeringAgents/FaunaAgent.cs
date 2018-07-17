@@ -42,6 +42,9 @@ public  class FaunaAgent : SteeringAgent {
     protected float energyGoal { get { return (readyToReproduce ? reproductionEnergyThreshold : satisfactionRange.y); } }
     protected float reproductionEnergyThreshold { get { return satisfactionRange.y + reproductionCost; } }
 
+    public TextMesh energyCounter;
+
+
     public float base_energyDecayRate = 1;
     protected float energy
     {
@@ -53,6 +56,7 @@ public  class FaunaAgent : SteeringAgent {
         set
         {
             SetAttribute(energyAttributeName, value);
+            energyCounter.text = energy.ToString("0.0");
         }
     }
     protected float eatTime = 1;
