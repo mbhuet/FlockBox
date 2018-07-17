@@ -34,7 +34,7 @@ public abstract class SteeringBehavior{
         if (OnActiveStatusChange != null) OnActiveStatusChange();
     }
 
-    protected LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings)
+    public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, params string[] filterTags)
     {
         Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
         LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();

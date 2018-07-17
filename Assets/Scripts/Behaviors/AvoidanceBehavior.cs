@@ -10,7 +10,7 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings);
+        LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings, filterTags);
         if (obstacles.First == null) return Vector3.zero;
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;

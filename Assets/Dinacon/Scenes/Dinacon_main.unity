@@ -168,11 +168,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4404524332951526, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -1.98
+      value: 8.5
       objectReference: {fileID: 0}
     - target: {fileID: 4404524332951526, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 13.26
+      value: -11.5
       objectReference: {fileID: 0}
     - target: {fileID: 4404524332951526, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
       propertyPath: m_LocalPosition.z
@@ -311,16 +311,6 @@ Prefab:
     - target: {fileID: 1424219917661176, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13,
-        type: 2}
-      propertyPath: Prefs._Version
-      value: 680
-      objectReference: {fileID: 0}
-    - target: {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13,
-        type: 2}
-      propertyPath: rapidPropogationToGen
-      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
@@ -542,7 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880c1e25c4062154aafcebfa1aa638f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayGizmos: 1
+  displayGizmos: 0
   neighborhoodCols: 10
   neighborhoodRows: 7
   neighborhoodSize: {x: 10, y: 10}

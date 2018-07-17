@@ -51,7 +51,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1424219917661176}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -19.98, y: -12.07, z: -0.703125}
+  m_LocalPosition: {x: 17.2, y: -11.1, z: -0.703125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4555295878624326}
@@ -99,14 +99,14 @@ MonoBehaviour:
   _id: -2846214
   dbg: 0
   Prefs:
-    _Buckets: ffffffffffffffffffffffff0300000004000000ffffffffffffffff
-    _HashCodes: d905635e5ad1ce02e2bda3448faa6c6990aa6c690000000000000000
-    _Next: ffffffffffffffff0000000001000000020000000000000000000000
-    _Count: 5
-    _Version: 5169
+    _Buckets: ffffffff05000000ffffffff0300000004000000ffffffffffffffff
+    _HashCodes: d905635e5ad1ce02e2bda3448faa6c6990aa6c69b1dc981300000000
+    _Next: ffffffffffffffff000000000100000002000000ffffffff00000000
+    _Count: 6
+    _Version: 2150
     _FreeList: -1
     _FreeCount: 0
-    _Keys: d905635e5ad1ce82e2bda3c48faa6c6990aa6c690000000000000000
+    _Keys: d905635e5ad1ce82e2bda3c48faa6c6990aa6c69b1dc989300000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -125,17 +125,19 @@ MonoBehaviour:
       Type: 1
     - ValueString: 
       ValueFloat: 0
-      Type: 0
+      Type: 2
     - ValueString: 
       ValueFloat: 0
       Type: 0
   radius: 0.5
-  maxPursuers: 5
   useZLayering: 0
+  maxPursuers: 5
   propagationInterval: 3
   energy: 1
   lifespan: 10
-  rapidPropogationToGen: 0
+  stemPrefab: {fileID: 120891990261901178, guid: b9db862c2b14200479ede2d500ac54a9,
+    type: 2}
+  rapidPropogationToGen: 5
   cutoffGeneration: 7
   seedChance: 0.07
   propagationCurve:

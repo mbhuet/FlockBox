@@ -35,6 +35,7 @@ public abstract class Agent : BaseBehaviour {
     public bool isRegistered { get; protected set; }
 
     protected static Dictionary<System.Type, List<Agent>> agentCache;
+    protected static Dictionary<System.Type, List<Agent>> activePopulations;
 
 
     public bool isAlive { get; protected set; }
@@ -85,10 +86,10 @@ public abstract class Agent : BaseBehaviour {
     protected void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
-        SceneManager.activeSceneChanged += OnSceneChange;
+        SceneManager.sceneUnloaded += OnSceneChange;
     }
 
-    protected void OnSceneChange(Scene before, Scene after)
+    protected void OnSceneChange(Scene before)
     {
         Kill();
     }
@@ -139,7 +140,8 @@ public abstract class Agent : BaseBehaviour {
         visual.Hide();
         numPursuers = 0;
         RemoveFromLastNeighborhood();
-        CacheSelf();
+        RemoveSelfFromActivePopulation();
+        AddSelfToCache();
     }
 
     public virtual void Spawn(Vector3 position)
@@ -153,6 +155,8 @@ public abstract class Agent : BaseBehaviour {
         this.position = NeighborhoodCoordinator.WrapPosition(position);
         FindNeighborhood();
         transform.position = position;
+        AddSelfToActivePopulation();
+
     }
 
     public virtual void CatchAgent(Agent other)
@@ -192,7 +196,7 @@ public abstract class Agent : BaseBehaviour {
     }
 
 
-    private void CacheSelf()
+    private void AddSelfToCache()
     {
         if (agentCache == null) agentCache = new Dictionary<System.Type, List<Agent>>();
         System.Type myType = this.GetType();
@@ -200,14 +204,50 @@ public abstract class Agent : BaseBehaviour {
         {
             agentCache.Add(myType, new List<Agent>());
         }
-        agentCache[myType].Add(this);
+
+        if(!agentCache[myType].Contains(this)) agentCache[myType].Add(this);
         this.gameObject.SetActive(false);
     }
+
+    protected void AddSelfToActivePopulation()
+    {
+        System.Type myType = this.GetType();
+        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
+        if (!activePopulations.ContainsKey(myType))
+        {
+            activePopulations.Add(myType, new List<Agent>());
+        }
+        if (!activePopulations[myType].Contains(this)) activePopulations[myType].Add(this);
+    }
+
+    protected void RemoveSelfFromActivePopulation()
+    {
+        System.Type myType = this.GetType();
+        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
+        if (!activePopulations.ContainsKey(myType))
+        {
+            activePopulations.Add(myType, new List<Agent>());
+        }
+        activePopulations[myType].Remove(this);
+    }
+
+    protected int GetPopulationOfType(System.Type type)
+    {
+        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
+        if (!activePopulations.ContainsKey(type))
+        {
+            return 0;
+        }
+        return activePopulations[type].Count;
+    }
+
+
 
     public Agent GetInstance()
     {
         if (agentCache == null) agentCache = new Dictionary<System.Type, List<Agent>>();
         System.Type myType = this.GetType();
+        
         if (!agentCache.ContainsKey(myType))
         {
             agentCache.Add(myType, new List<Agent>());

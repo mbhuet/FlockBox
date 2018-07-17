@@ -70,6 +70,7 @@ public class Neighborhood
     
 }
 
+[System.Serializable]
 public struct SurroundingsInfo
 {
     public SurroundingsInfo(
@@ -80,6 +81,7 @@ public struct SurroundingsInfo
     public Dictionary<string, LinkedList<AgentWrapped>> sortedAgents;
 }
 
+[System.Serializable]
 public struct Coordinates
 {
     public Coordinates(int r, int c) { row = r; col = c; }

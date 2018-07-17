@@ -192,7 +192,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static SurroundingsInfo GetSurroundings(Coordinates homeNeighborhoodCoords, float perceptionDistance)//int neighborhoodRadius)
     {
-        int neighborhoodRadius = (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
+        int neighborhoodRadius = 1+ (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
         if (cachedSurroundings == null) cachedSurroundings = new Dictionary<SurroundingsDefinition, SurroundingsInfo>();
         

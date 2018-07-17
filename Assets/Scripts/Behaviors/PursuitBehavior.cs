@@ -14,7 +14,7 @@ public class PursuitBehavior : SteeringBehavior
     {
         
 
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings);
+        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, filterTags);
 
         //no targets in neighborhood
         if (allTargets.First == null)

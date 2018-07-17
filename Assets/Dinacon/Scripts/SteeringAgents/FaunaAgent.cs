@@ -29,7 +29,9 @@ public  class FaunaAgent : SteeringAgent {
     public float startEnergy = 1; //the baseline energy stored by this agent
     public float reproductionCost = 2; // the energy this agent must expend to reproduce
 
-    public float reproductionInterval = 10; //how often this agent will attempt to reproduce
+    public int idealPopulation = 5;
+
+    protected float reproductionInterval = 10; //how often this agent will attempt to reproduce
     protected bool readyToReproduce = false;
 
     [vSlider(0, 100)]

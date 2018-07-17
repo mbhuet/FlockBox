@@ -8,6 +8,24 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class FloraTarget: Agent {
 
+    [System.Serializable]
+    protected class FloraChildSlot
+    {
+        public Vector3 position;
+        public FloraTarget parent;
+        public FloraTarget child;
+        public LineRenderer stem;
+
+        public bool IsOccupied { get { return child != null; } }
+        public bool IsObstructed { get { return FloraTarget.ChildPositionOverlapsExistingFlora(parent, position); } }
+        public bool IsAvailable { get { return !IsOccupied && !IsObstructed; } }
+
+        public FloraChildSlot(FloraTarget parent, Vector3 position, LineRenderer stem)
+        {
+            this.parent = parent; this.position = position; this.stem = stem; child = null;
+        }
+    }
+
     const float energyProductionRate = 1;
     private int numChildren;
     public float propagationInterval = 3;// { get { if (generation == 0) return numChildren; return generation; } }
@@ -16,9 +34,10 @@ public class FloraTarget: Agent {
     private const float spawnTurnScope = 90;
     public float lifespan = 10;
 
+    public LineRenderer stemPrefab;
 
-    private List<FloraTarget> children;
-    private List<Vector3> openChildPositions;
+
+    private List<FloraChildSlot> children;
 
     protected bool readyToEat = false;
 
@@ -42,7 +61,7 @@ public class FloraTarget: Agent {
         base.Spawn(position);
         this.generation = generation;
         rapidPropogationToGen = rapidPropogationCutoff;
-        float turn = (Mathf.PerlinNoise(generation, 0) - .5f) * spawnTurnScope;
+        float turn = (Mathf.PerlinNoise(generation, 0) - .5f) * 180;
         forward = Quaternion.AngleAxis(turn, Vector3.forward) * forwardDirection;
 
         hasSeed = randomSeedChance();
@@ -146,8 +165,7 @@ public class FloraTarget: Agent {
     {
 
         numChildren = randomNumChildren();
-        children = new List<FloraTarget>();
-        openChildPositions = new List<Vector3>();
+        children = new List<FloraChildSlot>();
 
         for (int i = 0; i < numChildren; i++)
         {
@@ -159,33 +177,65 @@ public class FloraTarget: Agent {
             Vector3 childDirection = childTurn * forward.normalized;
             Vector3 childPosition = this.transform.position + childDirection.normalized * radius * 2;
 
-            openChildPositions.Add(childPosition);
+            LineRenderer stem = GameObject.Instantiate(stemPrefab) as LineRenderer;
+            children.Add(new FloraChildSlot(this, childPosition, stem));
         }
     }
 
     protected void ChildWasCaught(Agent child)
     {
         FloraTarget floraChild = child as FloraTarget;
-        children.Remove(floraChild);
-        openChildPositions.Add(floraChild.position);
-        child.OnCaught -= ChildWasCaught;
+        foreach(FloraChildSlot slot in children)
+        {
+            if (slot.IsOccupied && slot.child == child) EmptyChildSlot(slot);
+        }
         StartCoroutine("DelayedPropagationRoutine");
+    }
+
+    protected void FillChildSlot(FloraChildSlot slot)
+    {
+        FloraTarget floraChild = GetInstance() as FloraTarget;
+        Vector3 childPos = slot.position;
+        floraChild.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
+        floraChild.OnCaught += ChildWasCaught;
+        slot.stem.SetPositions(new Vector3[] { slot.position, this.position });
+        slot.child = floraChild;
+    }
+
+    protected void EmptyChildSlot(FloraChildSlot slot)
+    {
+        if (!slot.IsOccupied) return;
+        slot.child.OnCaught -= ChildWasCaught;
+        slot.child = null;
     }
 
     protected void AttemptToSpawnChild()
     {
-        if (openChildPositions.Count == 0) return;
-
-        Vector3 childPos = openChildPositions[0];
-        openChildPositions.RemoveAt(0);
-
-        FloraTarget child = GetInstance() as FloraTarget;
+        foreach (FloraChildSlot slot in children)
+        {
+            if (slot.IsAvailable)
+            {
+                FillChildSlot(slot);
+                return;
+            }
+        }
         
-        child.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
+    }
 
-        children.Add(child);
-        child.OnCaught += ChildWasCaught;
-        
+    protected static bool ChildPositionOverlapsExistingFlora(FloraTarget parent, Vector3 childPosition)
+    {
+        LinkedList<AgentWrapped> neighbors = SteeringBehavior.GetFilteredAgents(
+            NeighborhoodCoordinator.GetSurroundings(
+                  NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(childPosition), parent.radius*2), parent.tag);
+        foreach(AgentWrapped flora in neighbors)
+        {
+            if (Vector3.Distance(flora.wrappedPosition, childPosition) < parent.radius * 2 && flora.agent != parent)
+            {
+//                Debug.Log(parent.name + " Child Overlap at " + childPosition + " with " + flora.agent.name);
+                return true;
+            }
+        }
+        return false;
     }
 
     public override bool CanBePursuedBy(Agent agent)
@@ -197,16 +247,13 @@ public class FloraTarget: Agent {
         if (!readyToEat || isCaught) return false;
 
         //if there are no children, return true
-        if (children.Count == 0) return true;
+        if (numChildren == 0) return true;
 
-        //if there are edible children, this target should not be eaten
-        foreach(FloraTarget child in children)
+        //if there are active children, this target should not be eaten
+        foreach(FloraChildSlot childSlot in children)
         {
-            if (child.CanBePursuedBy(agent)) return false;
+            if (childSlot.IsOccupied) return false;
         }
-
-        //if there are children and none of them are edible yet, return false
-        if (children.Count > 0) return false;
 
         //default
         return true;
@@ -230,11 +277,15 @@ public class FloraTarget: Agent {
 
     protected void DisconnectFromChildren()
     {
-        foreach(FloraTarget child in children)
+        if (children == null) return;
+        foreach(FloraChildSlot childSlot in children)
         {
-            child.OnCaught -= ChildWasCaught;
-            if(child.isActiveAndEnabled)
-                child.BeginLifeCountdown();
+            GameObject.Destroy(childSlot.stem.gameObject);
+
+            if (!childSlot.IsOccupied) continue;
+            if(childSlot.child.isActiveAndEnabled)
+                childSlot.child.BeginLifeCountdown();
+            EmptyChildSlot(childSlot);
         }
         children.Clear();
 
@@ -257,6 +308,7 @@ public class FloraTarget: Agent {
 
     protected IEnumerator LifeCountdownRoutine()
     {
+        Debug.Log(this.name + " Life Countdown");
         yield return new WaitForSeconds(lifespan + Random.Range(-1f, 1f));
         if (!isCaught)
         {

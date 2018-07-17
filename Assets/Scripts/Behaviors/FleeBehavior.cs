@@ -15,7 +15,7 @@ public class FleeBehavior : SteeringBehavior
         Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
 
-        foreach(AgentWrapped other in GetFilteredAgents(surroundings))
+        foreach(AgentWrapped other in GetFilteredAgents(surroundings, filterTags))
         {
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
 
