@@ -108,7 +108,7 @@ public class FloraTarget: Agent {
 
     private bool randomSeedChance()
     {
-        if (generation == 0) return false;
+        if (generation == 0 || generation == 1) return false;
         return Random.Range(0, 1f) < seedChance;
     }
 
@@ -175,7 +175,7 @@ public class FloraTarget: Agent {
             Quaternion childTurn = Quaternion.AngleAxis(childAngle, Vector3.forward);
 
             Vector3 childDirection = childTurn * forward.normalized;
-            Vector3 childPosition = this.transform.position + childDirection.normalized * radius * 2;
+            Vector3 childPosition = position + childDirection.normalized * radius * 2;
 
             LineRenderer stem = GameObject.Instantiate(stemPrefab) as LineRenderer;
             children.Add(new FloraChildSlot(this, childPosition, stem));
@@ -198,7 +198,7 @@ public class FloraTarget: Agent {
         Vector3 childPos = slot.position;
         floraChild.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
         floraChild.OnCaught += ChildWasCaught;
-        slot.stem.SetPositions(new Vector3[] { slot.position, this.position });
+        slot.stem.SetPositions(new Vector3[] { NeighborhoodCoordinator.ClosestPositionWithWrap(this.position, slot.position), this.position });
         slot.child = floraChild;
     }
 
@@ -308,7 +308,7 @@ public class FloraTarget: Agent {
 
     protected IEnumerator LifeCountdownRoutine()
     {
-        Debug.Log(this.name + " Life Countdown");
+//        Debug.Log(this.name + " Life Countdown");
         yield return new WaitForSeconds(lifespan + Random.Range(-1f, 1f));
         if (!isCaught)
         {

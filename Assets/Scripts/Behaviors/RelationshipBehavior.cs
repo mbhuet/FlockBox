@@ -33,7 +33,7 @@ public class RelationshipBehavior : SteeringBehavior {
             else if(friends[friendIndex] != null)
             {
                 Agent friend = friends[friendIndex];
-                Vector3 wrappedPosition = ClosestPositionWithWrap(mine.position, friend.position);
+                Vector3 wrappedPosition = NeighborhoodCoordinator.ClosestPositionWithWrap(mine.position, friend.position);
                 sum += wrappedPosition;
                 friendCount++;
                 if(drawConnections) GLDebug.DrawLine(mine.position, wrappedPosition, Color.yellow);
@@ -149,20 +149,6 @@ public class RelationshipBehavior : SteeringBehavior {
         return Mathf.Abs(a_status - b_status) <= maxStatusDifference;
     }
 
-    //if two friends are on opposite sides of the screen because one just wrapped around, they should be drawn to the edges of the screen over the wrap, not to the middle of the screen
-    Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
-    {
 
-        if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
-        {
-            //Debug.Log("here " + Mathf.Abs(myPosition.x - otherPosition.x) + " " + NeighborhoodCoordinator.size.x / 2f);
-            otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
-        }
-        if(Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
-        {
-            otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
-        }
-        return otherPosition;
-    }
     
 }

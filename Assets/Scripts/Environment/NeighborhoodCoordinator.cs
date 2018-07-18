@@ -301,4 +301,20 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (mustWrap) position = wrappedPosition;
         return wrappedPosition;
     }
+
+    //if two friends are on opposite sides of the screen because one just wrapped around, they should be drawn to the edges of the screen over the wrap, not to the middle of the screen
+    public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
+    {
+
+        if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
+        {
+            //Debug.Log("here " + Mathf.Abs(myPosition.x - otherPosition.x) + " " + NeighborhoodCoordinator.size.x / 2f);
+            otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
+        }
+        if (Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
+        {
+            otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
+        }
+        return otherPosition;
+    }
 }

@@ -8,6 +8,10 @@ public class EcosystemInitialSpawn : MonoBehaviour {
     public FaunaAgent preyPrefab;
     public FloraTarget floraPrefab;
 
+    public Agent[] stampPalette;
+
+    private Agent selectedAgent;
+
     public int initialPredators = 1;
     public int initialPrey = 10;
     public int initialFlora = 3;
@@ -15,7 +19,40 @@ public class EcosystemInitialSpawn : MonoBehaviour {
 
     private void Start()
     {
+        SelectAgentForStamping(0);
         InitialSpawn();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            StampAgent();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SelectAgentForStamping(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SelectAgentForStamping(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SelectAgentForStamping(2);
+        }
+    }
+
+    private void StampAgent()
+    {
+        if (selectedAgent == null) return;
+        SpawnAgent(selectedAgent, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+    }
+
+    private void SelectAgentForStamping(int index)
+    {
+        if (index >= stampPalette.Length) return;
+        selectedAgent = stampPalette[index];
     }
 
     void InitialSpawn()
@@ -36,6 +73,8 @@ public class EcosystemInitialSpawn : MonoBehaviour {
         }
 
     }
+
+
 
     void SpawnAgent(Agent prefab, Vector2 pos)
     {

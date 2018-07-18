@@ -154,7 +154,7 @@ public abstract class Agent : BaseBehaviour {
         visual.Show();
         this.position = NeighborhoodCoordinator.WrapPosition(position);
         FindNeighborhood();
-        transform.position = position;
+        transform.position = this.position;
         AddSelfToActivePopulation();
 
     }
