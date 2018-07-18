@@ -76,6 +76,12 @@ public abstract class Agent : BaseBehaviour {
     }
 
 
+    public virtual bool IsStationary()
+    {
+        return true;
+    }
+
+
 
     public delegate void AgentEvent(Agent agent);
     public AgentEvent OnCaught;
@@ -152,11 +158,17 @@ public abstract class Agent : BaseBehaviour {
         hasSpawned = true;
         isCaught = false;
         visual.Show();
-        this.position = NeighborhoodCoordinator.WrapPosition(position);
-        FindNeighborhood();
-        transform.position = this.position;
+        this.position = position;
+        ForceWrapPosition();
         AddSelfToActivePopulation();
 
+    }
+
+    public virtual void ForceWrapPosition()
+    {
+        position = NeighborhoodCoordinator.WrapPosition(position);
+        transform.position = this.position;
+        FindNeighborhood();
     }
 
     public virtual void CatchAgent(Agent other)

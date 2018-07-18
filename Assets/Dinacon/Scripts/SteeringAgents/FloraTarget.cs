@@ -95,6 +95,19 @@ public class FloraTarget: Agent {
         Spawn(position, 0, Random.insideUnitCircle.normalized, 0);     
     }
 
+    public override void ForceWrapPosition()
+    {
+        base.ForceWrapPosition();
+        if (children != null)
+        {
+            foreach (FloraChildSlot slot in children)
+            {
+                slot.position = NeighborhoodCoordinator.WrapPosition(slot.position);
+                slot.stem.SetPositions(new Vector3[] { position, NeighborhoodCoordinator.ClosestPositionWithWrap(position, slot.position) });
+            }
+        }
+    }
+
     private int randomNumChildren()
     {
         if (hasSeed) return 0;
@@ -178,6 +191,10 @@ public class FloraTarget: Agent {
             Vector3 childPosition = position + childDirection.normalized * radius * 2;
 
             LineRenderer stem = GameObject.Instantiate(stemPrefab) as LineRenderer;
+            stem.SetPositions(new Vector3[] { position, childPosition});
+
+            //stem.SetPositions(new Vector3[] { NeighborhoodCoordinator.ClosestPositionWithWrap(this.position, childPosition), this.position });
+            stem.enabled = false;
             children.Add(new FloraChildSlot(this, childPosition, stem));
         }
     }
@@ -198,7 +215,7 @@ public class FloraTarget: Agent {
         Vector3 childPos = slot.position;
         floraChild.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
         floraChild.OnCaught += ChildWasCaught;
-        slot.stem.SetPositions(new Vector3[] { NeighborhoodCoordinator.ClosestPositionWithWrap(this.position, slot.position), this.position });
+        slot.stem.enabled = true;
         slot.child = floraChild;
     }
 

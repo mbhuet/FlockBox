@@ -70,6 +70,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (trackingTarget!= null && trackingTarget.hasChanged)
         {
             UpdateStaticValues(trackingTarget);
+            WrapStationaryAgentsInEdgeNeighborhoods();
             trackingTarget.hasChanged = false;
         }
     }
@@ -294,10 +295,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
         bool mustWrap = false;
         Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y); mustWrap = true; }
+        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
+        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
+        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
+        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
         if (mustWrap) position = wrappedPosition;
         return wrappedPosition;
     }
@@ -316,5 +317,23 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
         }
         return otherPosition;
+    }
+
+    public static void WrapStationaryAgentsInEdgeNeighborhoods()
+    {
+        List<Agent> stationaryAgents = new List<Agent>();
+        //iterate over top row
+        for (int c = 0; c < neighborhoodCols_static; c++)
+        {
+            for (int r = 0; r < neighborhoodRows_static; r++)
+            {
+                stationaryAgents.AddRange(neighborhoods[r, c].GetStationaryAgents());
+            }
+        }
+
+        foreach(Agent agent in stationaryAgents)
+        {
+            agent.ForceWrapPosition();
+        }
     }
 }

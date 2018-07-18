@@ -7,6 +7,7 @@ public class Neighborhood
     Dictionary<string, List<Agent>> sortedAgents;
 
     List<Agent> allAgents;
+    List<Agent> stationaryAgents;
 
     public Vector2 neighborhoodCenter {
     get { return (Vector2)Camera.main.transform.position + m_neighborhoodCenter; }
@@ -15,6 +16,7 @@ public class Neighborhood
     public Neighborhood()
     {
         allAgents = new List<Agent>();
+        stationaryAgents = new List<Agent>();
         sortedAgents = new Dictionary<string, List<Agent>>();
     }
     public Neighborhood(Vector2 pos) : this()
@@ -39,6 +41,7 @@ public class Neighborhood
             sortedAgents.Add(tag, newAgents);
         }
         allAgents.Add(occupant);
+        if (occupant.IsStationary()) stationaryAgents.Add(occupant);
     }
     public void RemoveAgent(Agent agent)
     {
@@ -49,6 +52,8 @@ public class Neighborhood
             agentsOut.Remove(agent);
         }
         allAgents.Remove(agent);
+        if (agent.IsStationary()) stationaryAgents.Remove(agent);
+
     }
     public Dictionary<string, List<Agent>> GetAgents()
     {
@@ -65,6 +70,11 @@ public class Neighborhood
         {
             return new List<Agent>();
         }
+    }
+
+    public List<Agent> GetStationaryAgents()
+    {
+        return stationaryAgents;
     }
 
     

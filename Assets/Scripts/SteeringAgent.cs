@@ -99,7 +99,10 @@ public class SteeringAgent : Agent
         velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
     }
 
-
+    public override bool IsStationary()
+    {
+        return false;
+    }
 
 
     // Wraparound
