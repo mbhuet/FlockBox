@@ -12,8 +12,8 @@ public class PursuitBehavior : SteeringBehavior
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        
 
+//        Debug.Log("pursuit");
         LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, filterTags);
 
         //no targets in neighborhood
@@ -51,7 +51,7 @@ public class PursuitBehavior : SteeringBehavior
         if (distAway <= (chosenQuaryWrapped.agent.radius + mine.radius))
         {
             mine.CatchAgent(chosenQuaryWrapped.agent);
-            //Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
+//            Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
         }
     }
 

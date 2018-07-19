@@ -123,10 +123,11 @@ public abstract class Agent : BaseBehaviour {
 
     protected void FindNeighborhood()
     {
+//        Debug.Log(this.name +" findNeighborhood");
         Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
         if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
         {
-            NeighborhoodCoordinator.RemoveAgent(this, lastNeighborhood);
+            RemoveFromLastNeighborhood();
             NeighborhoodCoordinator.AddAgent(this, currentNeighborhood);
             lastNeighborhood.row = currentNeighborhood.row;
             lastNeighborhood.col = currentNeighborhood.col;
@@ -135,6 +136,7 @@ public abstract class Agent : BaseBehaviour {
 
     protected void RemoveFromLastNeighborhood()
     {
+//        Debug.Log(this.name + " remove from last neighborhood");
         NeighborhoodCoordinator.RemoveAgent(this, lastNeighborhood);
     }
 
@@ -166,6 +168,7 @@ public abstract class Agent : BaseBehaviour {
 
     public virtual void ForceWrapPosition()
     {
+//        Debug.Log("Force wrap " + this.name);
         position = NeighborhoodCoordinator.WrapPosition(position);
         transform.position = this.position;
         FindNeighborhood();

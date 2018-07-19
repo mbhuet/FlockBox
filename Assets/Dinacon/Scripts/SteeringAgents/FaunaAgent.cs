@@ -141,7 +141,7 @@ public  class FaunaAgent : SteeringAgent {
         other.SetAttribute(energyAttributeName, last_nourishment + energy);
 
         fsm.ChangeState(EcoState.EATEN);
-
+//        Debug.Log(this.name + " Caught By "+ other.name);
     }
 
     protected void ShakeOffSeeds()
@@ -219,12 +219,17 @@ public  class FaunaAgent : SteeringAgent {
 
     protected IEnumerator EATEN_Enter()
     {
+        isDying = true;
+        isAlive = false;
+
         RemoveFromLastNeighborhood();
         velocityThrottle = 0;
         visual.Blink(true);
         yield return new WaitForSeconds(eatTime);
         visual.Blink(false);
         velocityThrottle = 1;
+
+        isDying = false;
 
         Kill();
     }
