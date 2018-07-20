@@ -31,7 +31,7 @@ public  class FaunaAgent : SteeringAgent {
 
     public int idealPopulation = 5;
 
-    protected float reproductionInterval = 10; //how often this agent will attempt to reproduce
+    public float reproductionInterval = 10; //how often this agent will attempt to reproduce
     protected bool readyToReproduce = false;
 
     [vSlider(0, 100)]
@@ -108,6 +108,7 @@ public  class FaunaAgent : SteeringAgent {
     {
         energy -= reproductionCost;
         SpawnOffspring();
+        readyToReproduce = false;
         StartCoroutine(ReproductionCountdown());
     }
     protected virtual void SpawnOffspring()
@@ -154,7 +155,6 @@ public  class FaunaAgent : SteeringAgent {
 
     protected IEnumerator ReproductionCountdown()
     {
-        readyToReproduce = false;
         yield return new WaitForSeconds(reproductionInterval);
         readyToReproduce = true;
     }

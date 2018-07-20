@@ -123,6 +123,7 @@ public abstract class Agent : BaseBehaviour {
 
     protected void FindNeighborhood()
     {
+        if (!isAlive) return;
 //        Debug.Log(this.name +" findNeighborhood");
         Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
         if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
@@ -168,6 +169,7 @@ public abstract class Agent : BaseBehaviour {
 
     public virtual void ForceWrapPosition()
     {
+//        Debug.Log("Force wrap " + this.name);
 //        Debug.Log("Force wrap " + this.name);
         position = NeighborhoodCoordinator.WrapPosition(position);
         transform.position = this.position;
