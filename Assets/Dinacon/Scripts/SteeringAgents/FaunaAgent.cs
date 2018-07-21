@@ -56,6 +56,7 @@ public  class FaunaAgent : SteeringAgent {
         set
         {
             SetAttribute(energyAttributeName, value);
+            //slow down agent based on energy
             energyCounter.text = energy.ToString("0.0");
         }
     }
@@ -69,6 +70,8 @@ public  class FaunaAgent : SteeringAgent {
     
     protected void Update()
     {
+        speedThrottle = Mathf.Clamp01(energy / satisfactionRange.x);
+
         base.Update();
         if (isAlive && !isDying)
         {
@@ -207,7 +210,7 @@ public  class FaunaAgent : SteeringAgent {
         while (t > 0)
         {
             t -= Time.deltaTime;
-            velocityThrottle = t;
+            //velocityThrottle = t;
             yield return null;
         }
         visual.Blink(false);
@@ -223,11 +226,10 @@ public  class FaunaAgent : SteeringAgent {
         isAlive = false;
 
         RemoveFromLastNeighborhood();
-        velocityThrottle = 0;
+        energy = 0;
         visual.Blink(true);
         yield return new WaitForSeconds(eatTime);
         visual.Blink(false);
-        velocityThrottle = 1;
 
         isDying = false;
 
@@ -237,7 +239,7 @@ public  class FaunaAgent : SteeringAgent {
 
     protected IEnumerator EAT_Enter()
     {
-        velocityThrottle = 0;
+        LockPosition(true);
 
         for(float t =0; t<eatTime; t += Time.deltaTime)
         {
@@ -254,7 +256,7 @@ public  class FaunaAgent : SteeringAgent {
 
     protected void EAT_Exit()
     {
-        velocityThrottle = 1;
+        LockPosition(false);
 
     }
 

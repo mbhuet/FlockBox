@@ -16,20 +16,21 @@ public class SteeringAgent : Agent
     
     public Vector3 acceleration { get; protected set; }
 
-    protected float velocityThrottle = 1;
+    protected float speedThrottle = 1;
 
     public BehaviorSettings activeSettings;
+    private bool freezePosition = false;
 
     //Takes a type, returns instance
 
 	
     protected virtual void Update()
     {
-        if (!isAlive) return;
+        if (!isAlive || freezePosition) return;
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood, activeSettings.perceptionDistance));
         velocity += (acceleration) * Time.deltaTime;
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed) * velocityThrottle;
-
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
+        //Debug.Log(velocity * Time.deltaTime);
         position += (velocity * Time.deltaTime);
         position = NeighborhoodCoordinator.WrapPosition(position);
         // Reset accelertion to 0 each cycle
@@ -93,7 +94,8 @@ public class SteeringAgent : Agent
     public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
-        velocityThrottle = 1;
+        LockPosition(false);
+        speedThrottle = 1;
         acceleration = new Vector3(0, 0);
         float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
         velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
@@ -102,6 +104,11 @@ public class SteeringAgent : Agent
     public override bool IsStationary()
     {
         return false;
+    }
+
+    protected void LockPosition(bool isLocked)
+    {
+        freezePosition = isLocked;
     }
 
 

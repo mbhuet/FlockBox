@@ -12,6 +12,7 @@ public class EcosystemInitialSpawn : MonoBehaviour {
 
     private Agent selectedAgent;
 
+    public bool initialSpawn = true;
     public int initialPredators = 1;
     public int initialPrey = 10;
     public int initialFlora = 3;
@@ -20,7 +21,7 @@ public class EcosystemInitialSpawn : MonoBehaviour {
     private void Start()
     {
         SelectAgentForStamping(0);
-        InitialSpawn();
+        if(initialSpawn) InitialSpawn();
     }
 
     private void Update()

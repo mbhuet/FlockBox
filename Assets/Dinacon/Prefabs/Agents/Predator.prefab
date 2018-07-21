@@ -209,20 +209,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1875201363984898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37984d9994658544eb68907d677ca1dc, type: 3}
+  m_Script: {fileID: 11500000, guid: c641bfc80488a294fbe8315e4ddc62fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 59552
   dbg: 0
   Prefs:
-    _Buckets: ffffffffffffffff03000000ffffffffffffffff0100000002000000
-    _HashCodes: f383c163744f2d08fc3b024a4b3c503b000000000000000000000000
-    _Next: ffffffffffffffff00000000ffffffff000000000000000000000000
-    _Count: 4
-    _Version: 7207
+    _Buckets: ffffffffffffffff03000000ffffffffffffffff0400000005000000
+    _HashCodes: f383c163744f2d08fc3b024a4b3c503bb5efdd0fb6efdd0f00000000
+    _Next: ffffffffffffffff00000000ffffffff010000000200000000000000
+    _Count: 6
+    _Version: 9267
     _FreeList: -1
     _FreeCount: 0
-    _Keys: f383c163744f2d88fc3b02ca4b3c50bb000000000000000000000000
+    _Keys: f383c163744f2d88fc3b02ca4b3c50bbb5efdd0fb6efdd0f00000000
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -237,11 +237,11 @@ MonoBehaviour:
       ValueFloat: 0
       Type: 2
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 14
+      Type: 1
     - ValueString: 
-      ValueFloat: 0
-      Type: 0
+      ValueFloat: 238
+      Type: 1
     - ValueString: 
       ValueFloat: 0
       Type: 0
@@ -253,11 +253,12 @@ MonoBehaviour:
   huntSettings: {fileID: 11400000, guid: 56ee157d636b8d74f944ba9e127ff4f7, type: 2}
   wanderSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
   startEnergy: 30
-  reproductionCost: 10
+  reproductionCost: 20
   idealPopulation: 5
+  reproductionInterval: 10
   satisfactionRange: {x: 20, y: 30}
   energyCounter: {fileID: 102547869212754098}
-  base_energyDecayRate: 0.01
+  base_energyDecayRate: 0.03
 --- !u!212 &212752175146748776
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -209,7 +209,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1072889458426260}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37984d9994658544eb68907d677ca1dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a6d33d26791ed241ba2ea9eee7f079d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 59512
@@ -219,7 +219,7 @@ MonoBehaviour:
     _HashCodes: 1b7fc1639c4a2d082437024a730d3e3b8d59dd0f8e59dd0f00000000
     _Next: ffffffffffffffff00000000ffffffffffffffffffffffff00000000
     _Count: 6
-    _Version: 13948
+    _Version: 14122
     _FreeList: -1
     _FreeCount: 0
     _Keys: 1b7fc1639c4a2d88243702ca730d3ebb8d59dd0f8e59dd0f00000000
@@ -255,6 +255,7 @@ MonoBehaviour:
   startEnergy: 2
   reproductionCost: 2
   idealPopulation: 5
+  reproductionInterval: 10
   satisfactionRange: {x: 2, y: 5}
   energyCounter: {fileID: 102702034883954562}
   base_energyDecayRate: 0.01

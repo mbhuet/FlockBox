@@ -421,9 +421,14 @@ MonoBehaviour:
     type: 2}
   floraPrefab: {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13,
     type: 2}
+  stampPalette:
+  - {fileID: 114768154126750936, guid: 95ff547d9f12e734bbcfb9f0dc8afb13, type: 2}
+  - {fileID: 114866401564063706, guid: f4f9261fbcc0edd4eb44c57a4dd620bf, type: 2}
+  - {fileID: 114760367099908784, guid: e04386479251fce4281fb62d260aafe6, type: 2}
+  initialSpawn: 1
   initialPredators: 2
   initialPrey: 30
-  initialFlora: 5
+  initialFlora: 10
 --- !u!1 &1370631403
 GameObject:
   m_ObjectHideFlags: 0
