@@ -161,6 +161,11 @@ public abstract class Agent : BaseBehaviour {
         AddSelfToCache();
     }
 
+    public virtual void Spawn(Vector3 position, params string[] args)
+    {
+        Spawn(position);
+    }
+
     public virtual void Spawn(Vector3 position)
     {
         if (OnSpawn != null) OnSpawn.Invoke(this);

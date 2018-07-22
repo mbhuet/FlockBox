@@ -60,7 +60,7 @@ public  class FaunaAgent : SteeringAgent {
             energyCounter.text = energy.ToString("0.0");
         }
     }
-    public const float eatTime = .5f;
+    public const float eatTime = 1f;
     protected bool isDying = false;
 
     

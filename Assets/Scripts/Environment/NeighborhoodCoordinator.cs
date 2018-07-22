@@ -344,4 +344,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             agent.ForceWrapPosition();
         }
     }
+
+    public static Vector3 RandomPosition()
+    {
+        return new Vector3(Random.Range(minCorner.x, maxCorner.x), Random.Range(minCorner.y, maxCorner.y));
+    }
 }

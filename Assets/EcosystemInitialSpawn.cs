@@ -47,7 +47,7 @@ public class EcosystemInitialSpawn : MonoBehaviour {
     private void StampAgent()
     {
         if (selectedAgent == null) return;
-        SpawnAgent(selectedAgent, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        SpawnAgent(selectedAgent, Camera.main.ScreenToWorldPoint(Input.mousePosition), false);
     }
 
     private void SelectAgentForStamping(int index)
@@ -58,29 +58,36 @@ public class EcosystemInitialSpawn : MonoBehaviour {
 
     void InitialSpawn()
     {
-        float randomSpawnRadius = Camera.main.orthographicSize;
         for (int i = 0; i < initialPredators; i++)
         {
-            SpawnAgent(predatorPrefab, Random.insideUnitCircle * randomSpawnRadius);
+            SpawnAgent(predatorPrefab, NeighborhoodCoordinator.RandomPosition(), true);
         }
         for (int i = 0; i < initialPrey; i++)
         {
-            SpawnAgent(preyPrefab, Random.insideUnitCircle * randomSpawnRadius);
+            SpawnAgent(preyPrefab, NeighborhoodCoordinator.RandomPosition(), true);
         }
 
         for (int i = 0; i < initialFlora; i++)
         {
-            SpawnAgent(floraPrefab, Random.insideUnitCircle * randomSpawnRadius);
+            SpawnAgent(floraPrefab, NeighborhoodCoordinator.RandomPosition(), true);
         }
 
     }
 
 
 
-    void SpawnAgent(Agent prefab, Vector2 pos)
+    Agent SpawnAgent(Agent prefab, Vector2 pos, bool initialSpawn)
     {
         Agent instance = prefab.GetInstance();
-        instance.Spawn(pos);
+        if (initialSpawn)
+        {
+            instance.Spawn(pos, "initial");
+        }
+        else
+        {
+            instance.Spawn(pos);
+        }
+        return instance;
     }
 
     

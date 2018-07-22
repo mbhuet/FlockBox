@@ -90,6 +90,18 @@ public class FloraTarget: Agent {
 
     }
 
+    public override void Spawn(Vector3 position, params string[] args)
+    {
+        bool rapidSpawn = false;
+        foreach(string arg in args) {
+            if (arg == "initial")
+            {
+                rapidSpawn = true;
+            }
+        }
+        Spawn(position, 0, Random.insideUnitCircle.normalized, rapidSpawn? rapidPropogationToGen : 0);
+    }
+
     public override void Spawn(Vector3 position)
     {
         Spawn(position, 0, Random.insideUnitCircle.normalized, 0);     

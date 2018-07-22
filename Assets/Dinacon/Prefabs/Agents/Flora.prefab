@@ -103,7 +103,7 @@ MonoBehaviour:
     _HashCodes: d905635e5ad1ce02e2bda3448faa6c6990aa6c69b1dc981300000000
     _Next: ffffffffffffffff000000000100000002000000ffffffff00000000
     _Count: 6
-    _Version: 10678
+    _Version: 15844
     _FreeList: -1
     _FreeCount: 0
     _Keys: d905635e5ad1ce82e2bda3c48faa6c6990aa6c69b1dc989300000000
@@ -131,7 +131,7 @@ MonoBehaviour:
       Type: 0
   radius: 0.5
   useZLayering: 0
-  maxPursuers: 5
+  maxPursuers: 2
   propagationInterval: 3
   energy: 1
   lifespan: 10
