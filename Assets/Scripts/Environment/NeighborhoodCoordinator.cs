@@ -96,16 +96,16 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
                 if (toDraw.Contains(neighborhoods[r, c]))
                 {
-                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
                 if (neighborhoods[r, c].IsOccupied())
                 {
-                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
-                else
-                {
-                    Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
-                }
+
+
+                Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
+
 
             }
         }

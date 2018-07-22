@@ -127,7 +127,8 @@ public class FloraTarget: Agent {
 
     protected IEnumerator GrowToFullSize(Vector2 position)
     {
-        readyToEat = false;
+        //readyToEat = false;
+        readyToEat = true;
         for(float t = 0; t<1; t+= Time.deltaTime)
         {
             
@@ -136,7 +137,7 @@ public class FloraTarget: Agent {
 
         }
         visual.SetRootSize(1);
-        readyToEat = true;
+        //readyToEat = true;
 
         for (int i = 0; i < numChildren; i++)
         {
@@ -258,26 +259,49 @@ public class FloraTarget: Agent {
     public override bool CanBePursuedBy(Agent agent)
     {
         //roots cannot be eaten
-        if (generation == 0) return false;
+        if (generation == 0)
+        {
+//            Debug.Log(this.name + " is root");
+
+            return false;
+        }
 
         //if not ready to eat, return false
-        if (!readyToEat || isCaught) return false;
+        if (!readyToEat || isCaught)
+        {
+//            Debug.Log(this.name + " not ready or caught");
+
+            return false;
+        }
 
         //if there are no children, return true
-        if (numChildren == 0) return true;
+        if (numChildren == 0)
+        {
+ //           Debug.Log(this.name + " no children");
+
+            return base.CanBePursuedBy(agent);
+        }
 
         //if there are active children, this target should not be eaten
         foreach(FloraChildSlot childSlot in children)
         {
-            if (childSlot.IsOccupied) return false;
+
+            if (childSlot.IsOccupied)
+            {
+  //              Debug.Log(this.name + " has child");
+                return false;
+            }
         }
 
         //default
-        return true;
+//        Debug.Log(this.name + " default case");
+
+        return base.CanBePursuedBy(agent);
     }
 
     public override void CaughtBy(Agent other)
     {
+        Debug.Log(this.name + " caught by " + other.name);
         base.CaughtBy(other);
         NourishAgent(other);
         if (hasSeed) AttachSeedToAgent(other);
@@ -338,7 +362,7 @@ public class FloraTarget: Agent {
         RemoveFromLastNeighborhood();
         readyToEat = false;
         visual.Blink(true);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(FaunaAgent.eatTime);
         visual.Blink(false);
         Kill();
 

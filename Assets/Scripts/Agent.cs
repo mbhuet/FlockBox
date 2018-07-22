@@ -129,16 +129,24 @@ public abstract class Agent : BaseBehaviour {
         if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
         {
             RemoveFromLastNeighborhood();
-            NeighborhoodCoordinator.AddAgent(this, currentNeighborhood);
-            lastNeighborhood.row = currentNeighborhood.row;
-            lastNeighborhood.col = currentNeighborhood.col;
+            //Debug.Log(this.name + " add to neighborhood " + currentNeighborhood);
+            AddToNeighborhood(currentNeighborhood);
         }
+    }
+
+    protected void AddToNeighborhood(Coordinates coords)
+    {
+        NeighborhoodCoordinator.AddAgent(this, coords);
+        lastNeighborhood.row = coords.row;
+        lastNeighborhood.col = coords.col;
     }
 
     protected void RemoveFromLastNeighborhood()
     {
 //        Debug.Log(this.name + " remove from last neighborhood");
         NeighborhoodCoordinator.RemoveAgent(this, lastNeighborhood);
+        lastNeighborhood = Coordinates.nowhere;
+
     }
 
     public virtual void Kill()
@@ -191,8 +199,8 @@ public abstract class Agent : BaseBehaviour {
 
     public virtual bool CanBePursuedBy(Agent agent)
     {
-        int agentTargetID = (int)agent.GetAttribute(SeekBehavior.targetIDAttributeName);
-        return !isCaught && (numPursuers < maxPursuers || agentTargetID == agentID);
+        int agentTargetID = (int)agent.GetAttribute(PursuitBehavior.targetIDAttributeName);
+        return isAlive && !isCaught && (numPursuers < maxPursuers || agentTargetID == agentID);
     }
 
 

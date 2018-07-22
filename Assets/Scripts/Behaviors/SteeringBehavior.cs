@@ -46,6 +46,7 @@ public abstract class SteeringBehavior{
             {
                 foreach (AgentWrapped agent in agentsOut)
                 {
+                    //Debug.Log(agent.agent.name + " in filtered list");
                     filteredAgents.AddLast(agent);
                 }
 

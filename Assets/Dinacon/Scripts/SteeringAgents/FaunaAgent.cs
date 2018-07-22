@@ -60,7 +60,7 @@ public  class FaunaAgent : SteeringAgent {
             energyCounter.text = energy.ToString("0.0");
         }
     }
-    protected float eatTime = 1;
+    public const float eatTime = .5f;
     protected bool isDying = false;
 
     
@@ -80,7 +80,7 @@ public  class FaunaAgent : SteeringAgent {
         }
 
     }
-
+        
     protected void InitStateMachine()
     {
         fsm = StateMachine<EcoState>.Initialize(this);
@@ -101,7 +101,7 @@ public  class FaunaAgent : SteeringAgent {
     public override void Spawn(Vector3 position)
     {
         base.Spawn(position);
-        energy = Random.Range(satisfactionRange.x, satisfactionRange.y);
+        energy = startEnergy;// Random.Range(satisfactionRange.x, satisfactionRange.y);
         InitStateMachine();
         StartCoroutine(ReproductionCountdown());
     }
@@ -250,8 +250,8 @@ public  class FaunaAgent : SteeringAgent {
             }
             yield return null;
         }
-        
-        fsm.ChangeState(EcoState.WANDER);
+        if(isAlive && !isCaught) 
+            fsm.ChangeState(EcoState.WANDER);
     }
 
     protected void EAT_Exit()

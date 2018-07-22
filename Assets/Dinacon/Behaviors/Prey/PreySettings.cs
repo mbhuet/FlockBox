@@ -12,7 +12,7 @@ public class PreySettings : BehaviorSettings {
     public SeparationBehavior separation = new SeparationBehavior();
     public FleeBehavior flee = new FleeBehavior();
     public WanderBehavior wander = new WanderBehavior();
-    public SeekBehavior seek = new SeekBehavior();
+    public PursuitBehavior seek = new PursuitBehavior();
 
 #if UNITY_EDITOR
     [MenuItem("Assets/Create/BehaviorSettings/Prey/Prey_Forage")]

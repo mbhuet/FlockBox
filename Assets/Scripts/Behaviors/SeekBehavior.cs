@@ -79,7 +79,7 @@ public class SeekBehavior : SteeringBehavior {
 
     private static AgentWrapped ClosestPursuableTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
     {
-        int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
+       // int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
 
         float closeDist = float.MaxValue;
         AgentWrapped closeTarget = nearbyTargets.First.Value;

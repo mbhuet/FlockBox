@@ -96,4 +96,9 @@ public struct Coordinates
 {
     public Coordinates(int r, int c) { row = r; col = c; }
     public int col, row;
+    public static Coordinates nowhere = new Coordinates(-1, -1);
+    public override string ToString()
+    {
+        return ("("+row+", " + col + ")");
+    }
 }
