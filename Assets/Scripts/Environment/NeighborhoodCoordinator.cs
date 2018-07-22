@@ -215,18 +215,26 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
+                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
+
                 }
                 else if (r >= neighborhoodRows_static)
                 {
                     r_wrap = r - neighborhoodRows_static;
+                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
+
                 }
                 if (c < 0)
                 {
                     c_wrap = neighborhoodCols_static + c;
+                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
+
                 }
                 else if (c >= neighborhoodCols_static)
                 {
                     c_wrap = c - neighborhoodCols_static;
+                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
+
                 }
 
                 //toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
@@ -241,7 +249,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                         foreach (Agent agent in agentsOut)
                         {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, WrapPosition(agent.position));
+                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
                             allAgents.AddLast(wrappedAgent);
                             if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
                             sortedAgents[tag].AddLast(wrappedAgent);

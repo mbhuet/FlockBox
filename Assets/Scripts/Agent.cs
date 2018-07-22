@@ -168,6 +168,7 @@ public abstract class Agent : BaseBehaviour {
         isAlive = true;
         hasSpawned = true;
         isCaught = false;
+        numPursuers = 0;
         visual.Show();
         this.position = position;
         ForceWrapPosition();

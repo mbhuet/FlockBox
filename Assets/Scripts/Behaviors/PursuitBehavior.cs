@@ -71,7 +71,8 @@ public class PursuitBehavior : SteeringBehavior
 
     static bool HasPursuitTarget(SteeringAgent mine)
     {
-        return (int)mine.GetAttribute(targetIDAttributeName) == -1;
+        if (!mine.HasAttribute(targetIDAttributeName)) return false;
+        return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
     
     }
 
