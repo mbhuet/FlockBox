@@ -20,9 +20,11 @@ public class FloraTarget: Agent {
         public bool IsObstructed { get { return FloraTarget.ChildPositionOverlapsExistingFlora(parent, position); } }
         public bool IsAvailable { get { return !IsOccupied && !IsObstructed; } }
 
-        public FloraChildSlot(FloraTarget parent, Vector3 position, LineRenderer stem)
+        public FloraChildSlot(FloraTarget parent, Vector3 position)// LineRenderer stem)
         {
-            this.parent = parent; this.position = position; this.stem = stem; child = null;
+            this.parent = parent; this.position = position;
+            //this.stem = stem;
+            child = null;
         }
     }
 
@@ -41,8 +43,9 @@ public class FloraTarget: Agent {
 
     protected bool readyToEat = false;
 
+    public int initial_rapidPropogationToGen = 0;
+    protected int rapidPropogationToGen = 0;
 
-    public int rapidPropogationToGen = 0;
     public int cutoffGeneration = 10;
     public float seedChance = .1f;
 
@@ -71,6 +74,7 @@ public class FloraTarget: Agent {
         {
             visual.SetSprite(rootSprite);
             BeginLifeCountdown();
+            RemoveFromLastNeighborhood();
         }
         else if (hasSeed)
         {
@@ -99,7 +103,7 @@ public class FloraTarget: Agent {
                 rapidSpawn = true;
             }
         }
-        Spawn(position, 0, Random.insideUnitCircle.normalized, rapidSpawn? rapidPropogationToGen : 0);
+        Spawn(position, 0, Random.insideUnitCircle.normalized, rapidSpawn? initial_rapidPropogationToGen : 0);
     }
 
     public override void Spawn(Vector3 position)
@@ -115,7 +119,7 @@ public class FloraTarget: Agent {
             foreach (FloraChildSlot slot in children)
             {
                 slot.position = NeighborhoodCoordinator.WrapPosition(slot.position);
-                slot.stem.SetPositions(new Vector3[] { position, NeighborhoodCoordinator.ClosestPositionWithWrap(position, slot.position) });
+                //slot.stem.SetPositions(new Vector3[] { position, NeighborhoodCoordinator.ClosestPositionWithWrap(position, slot.position) });
             }
         }
     }
@@ -203,22 +207,28 @@ public class FloraTarget: Agent {
             Vector3 childDirection = childTurn * forward.normalized;
             Vector3 childPosition = position + childDirection.normalized * radius * 2;
 
-            LineRenderer stem = GameObject.Instantiate(stemPrefab) as LineRenderer;
-            stem.SetPositions(new Vector3[] { position, childPosition});
+            //LineRenderer stem = GameObject.Instantiate(stemPrefab) as LineRenderer;
+            //stem.SetPositions(new Vector3[] { position, childPosition});
 
             //stem.SetPositions(new Vector3[] { NeighborhoodCoordinator.ClosestPositionWithWrap(this.position, childPosition), this.position });
-            stem.enabled = false;
-            children.Add(new FloraChildSlot(this, childPosition, stem));
+            //stem.enabled = false;
+            children.Add(new FloraChildSlot(this, childPosition));//, stem));
         }
     }
 
     protected void ChildWasCaught(Agent child)
     {
         FloraTarget floraChild = child as FloraTarget;
+        bool edibleChild = false;
         foreach(FloraChildSlot slot in children)
         {
-            if (slot.IsOccupied && slot.child == child) EmptyChildSlot(slot);
+            if (slot.IsOccupied)
+            {
+                if (slot.child == child) EmptyChildSlot(slot);
+                else edibleChild = true;
+            }
         }
+        if (!edibleChild) FindNeighborhood();
         StartCoroutine("DelayedPropagationRoutine");
     }
 
@@ -228,8 +238,9 @@ public class FloraTarget: Agent {
         Vector3 childPos = slot.position;
         floraChild.Spawn(childPos, generation + 1, (childPos - position).normalized, rapidPropogationToGen);
         floraChild.OnCaught += ChildWasCaught;
-        slot.stem.enabled = true;
+        //slot.stem.enabled = true;
         slot.child = floraChild;
+        RemoveFromLastNeighborhood();
     }
 
     protected void EmptyChildSlot(FloraChildSlot slot)
@@ -273,24 +284,18 @@ public class FloraTarget: Agent {
         //roots cannot be eaten
         if (generation == 0)
         {
-//            Debug.Log(this.name + " is root");
-
             return false;
         }
 
         //if not ready to eat, return false
         if (!readyToEat || isCaught)
         {
-//            Debug.Log(this.name + " not ready or caught");
-
             return false;
         }
 
         //if there are no children, return true
         if (numChildren == 0)
         {
- //           Debug.Log(this.name + " no children");
-
             return base.CanBePursuedBy(agent);
         }
 
@@ -313,7 +318,6 @@ public class FloraTarget: Agent {
 
     public override void CaughtBy(Agent other)
     {
-        Debug.Log(this.name + " caught by " + other.name);
         base.CaughtBy(other);
         NourishAgent(other);
         if (hasSeed) AttachSeedToAgent(other);
@@ -333,7 +337,7 @@ public class FloraTarget: Agent {
         if (children == null) return;
         foreach(FloraChildSlot childSlot in children)
         {
-            GameObject.Destroy(childSlot.stem.gameObject);
+            //GameObject.Destroy(childSlot.stem.gameObject);
 
             if (!childSlot.IsOccupied) continue;
             if(childSlot.child.isActiveAndEnabled)

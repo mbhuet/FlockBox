@@ -103,7 +103,7 @@ MonoBehaviour:
     _HashCodes: d905635e5ad1ce02e2bda3448faa6c6990aa6c69b1dc981300000000
     _Next: ffffffffffffffff000000000100000002000000ffffffff00000000
     _Count: 6
-    _Version: 15844
+    _Version: 43140
     _FreeList: -1
     _FreeCount: 0
     _Keys: d905635e5ad1ce82e2bda3c48faa6c6990aa6c69b1dc989300000000
@@ -137,7 +137,7 @@ MonoBehaviour:
   lifespan: 10
   stemPrefab: {fileID: 120891990261901178, guid: b9db862c2b14200479ede2d500ac54a9,
     type: 2}
-  rapidPropogationToGen: 5
+  initial_rapidPropogationToGen: 4
   cutoffGeneration: 7
   seedChance: 0.07
   propagationCurve:

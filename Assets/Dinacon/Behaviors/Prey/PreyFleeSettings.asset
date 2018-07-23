@@ -18,7 +18,7 @@ MonoBehaviour:
     _HashCodes: f144de6072104a05fafc1e472c251b30774e5936784e59364c419a444cc4a825afcfd2184c75fb082b7ec657e0676e433da999723de61f1b3d1a044c1d52f729133c867f5626c3355689041e56d5a6090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Next: ffffffffffffffffffffffffffffffff01000000ffffffffffffffffffffffffffffffffffffffff06000000ffffffffffffffffffffffffffffffffffffffff0b000000ffffffff0f000000ffffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     _Count: 20
-    _Version: 81546
+    _Version: 88662
     _FreeList: -1
     _FreeCount: 0
     _Keys: f144de6072104a85fafc1ec72c251bb0774e59b6784e59b64c419a444cc4a825afcfd2184c75fb882b7ec657e0676e433da999723de61f9b3d1a044c1d52f729133c86ff5626c3b55689049e56d5a6090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -137,7 +137,7 @@ MonoBehaviour:
   maxForce: 10
   maxSpeed: 20
   alignmment:
-    isActive: 0
+    isActive: 1
     weight: 1.9
     effectiveRadius: 10
     filterTags:
@@ -153,17 +153,25 @@ MonoBehaviour:
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
   separation:
-    isActive: 0
-    weight: 4.8
+    isActive: 1
+    weight: 4
     effectiveRadius: 5
     filterTags:
     - Prey
     drawVectorLine: 0
     vectorColor: {r: 0, g: 0, b: 0, a: 0}
-  flee:
+  avoid_predators:
     isActive: 1
     weight: 10
     effectiveRadius: 20
+    filterTags:
+    - Predator
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  flee:
+    isActive: 1
+    weight: 0
+    effectiveRadius: 15
     filterTags:
     - Predator
     drawVectorLine: 1

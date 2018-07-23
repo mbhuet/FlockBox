@@ -219,7 +219,7 @@ MonoBehaviour:
     _HashCodes: f383c163744f2d08fc3b024a4b3c503bb5efdd0fb6efdd0f00000000
     _Next: ffffffffffffffff00000000ffffffff010000000200000000000000
     _Count: 6
-    _Version: 9267
+    _Version: 29794
     _FreeList: -1
     _FreeCount: 0
     _Keys: f383c163744f2d88fc3b02ca4b3c50bbb5efdd0fb6efdd0f00000000
@@ -252,13 +252,47 @@ MonoBehaviour:
   fleeSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
   huntSettings: {fileID: 11400000, guid: 56ee157d636b8d74f944ba9e127ff4f7, type: 2}
   wanderSettings: {fileID: 11400000, guid: 02a5c0736079f6d4191e5a00602a62ad, type: 2}
-  startEnergy: 30
-  reproductionCost: 20
-  idealPopulation: 5
+  startEnergy: 10
+  reproductionCost: 10
+  idealPopulation: 4
   reproductionInterval: 10
-  satisfactionRange: {x: 20, y: 30}
+  lifespan: 20
+  speedOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.0067749
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.75251687
+      value: 0.64630246
+      inSlope: -1.502682
+      outSlope: -1.502682
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.0022621155
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  satisfactionRange: {x: 10, y: 20}
   energyCounter: {fileID: 102547869212754098}
-  base_energyDecayRate: 0.03
+  energyBurnRate: 0.01
 --- !u!212 &212752175146748776
 SpriteRenderer:
   m_ObjectHideFlags: 1

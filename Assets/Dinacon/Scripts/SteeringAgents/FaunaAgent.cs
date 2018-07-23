@@ -32,12 +32,15 @@ public  class FaunaAgent : SteeringAgent {
     public int idealPopulation = 5;
 
     public float reproductionInterval = 10; //how often this agent will attempt to reproduce
+    public float lifespan = 3;
+    public AnimationCurve speedOverLifetime;
     protected bool readyToReproduce = false;
 
     [vSlider(0, 100)]
     public Vector2 satisfactionRange;
 
     protected bool isFleeing { get { return (bool)GetAttribute(FleeBehavior.fleeAttributeName); } }
+    protected bool hasPursuitTarget { get { return PursuitBehavior.HasPursuitTarget(this); } }
     protected bool isSatisfied { get { return energy >= energyGoal; } }
     protected float energyGoal { get { return (readyToReproduce ? reproductionEnergyThreshold : satisfactionRange.y); } }
     protected float reproductionEnergyThreshold { get { return satisfactionRange.y + reproductionCost; } }
@@ -45,7 +48,7 @@ public  class FaunaAgent : SteeringAgent {
     public TextMesh energyCounter;
 
 
-    public float base_energyDecayRate = 1;
+    public float energyBurnRate = 1;
     protected float energy
     {
         get
@@ -70,13 +73,12 @@ public  class FaunaAgent : SteeringAgent {
     
     protected void Update()
     {
-        speedThrottle = Mathf.Clamp01(energy / satisfactionRange.x);
 
         base.Update();
         if (isAlive && !isDying)
         {
 //            Debug.Log(this.name + " alive, not dying, energy is " + energy + " " + fsm.State);
-            EnergyDecay();
+            BurnEnergy();
         }
 
     }
@@ -87,11 +89,11 @@ public  class FaunaAgent : SteeringAgent {
         fsm.ChangeState(EcoState.WANDER);
     }
 
-    protected void EnergyDecay()
+    protected void BurnEnergy()
     {
-        energy -= base_energyDecayRate * age * Time.deltaTime;
+        energy -= energyBurnRate * Time.deltaTime;
         //velocityThrottle = energy / startEnergy;
-        visual.SetRootSize(Mathf.Clamp(energy / startEnergy, 1, 2));
+        //visual.SetRootSize(Mathf.Clamp(energy / startEnergy, 1, 2));
         if (energy <= 0)
         {
             fsm.ChangeState(EcoState.DIE);
@@ -102,8 +104,10 @@ public  class FaunaAgent : SteeringAgent {
     {
         base.Spawn(position);
         energy = startEnergy;// Random.Range(satisfactionRange.x, satisfactionRange.y);
+        readyToReproduce = false;
         InitStateMachine();
         StartCoroutine(ReproductionCountdown());
+        StartCoroutine(LifespanCountdown());
     }
     
 
@@ -156,9 +160,26 @@ public  class FaunaAgent : SteeringAgent {
         }
     }
 
+    protected IEnumerator LifespanCountdown()
+    {
+        float life = lifespan + Random.Range(-1f, 1f);
+        float t = 0;
+        while (isAlive && t < life)
+        {
+            t += Time.deltaTime;
+                speedThrottle = speedOverLifetime.Evaluate(t/life);
+            yield return null;
+        }
+        if (isAlive)
+        {
+            fsm.ChangeState(EcoState.DIE);
+        }
+    }
+
     protected IEnumerator ReproductionCountdown()
     {
-        yield return new WaitForSeconds(reproductionInterval);
+        //Debug.Log(this.name + " population " + (GetPopulationOfType(this.GetType())));
+        yield return new WaitForSeconds(reproductionInterval * Mathf.Pow((GetPopulationOfType(this.GetType())/idealPopulation), 2));
         readyToReproduce = true;
     }
 
@@ -177,7 +198,7 @@ public  class FaunaAgent : SteeringAgent {
             BirthOffspring();
         }
 
-        else if (!isSatisfied)
+        else if (!isSatisfied && hasPursuitTarget)
         {
             fsm.ChangeState(EcoState.HUNT);
         }
@@ -194,7 +215,7 @@ public  class FaunaAgent : SteeringAgent {
         {
             fsm.ChangeState(EcoState.FLEE);
         }
-        else if (isSatisfied)
+        else if (isSatisfied || !hasPursuitTarget)
         {
             fsm.ChangeState(EcoState.WANDER);
         }

@@ -10,6 +10,7 @@ public class PreySettings : BehaviorSettings {
     public AlignmentBehavior alignmment = new AlignmentBehavior();
     public CohesionBehavior cohesion = new CohesionBehavior();
     public SeparationBehavior separation = new SeparationBehavior();
+    public SeparationBehavior avoid_predators = new SeparationBehavior();
     public FleeBehavior flee = new FleeBehavior();
     public WanderBehavior wander = new WanderBehavior();
     public PursuitBehavior seek = new PursuitBehavior();

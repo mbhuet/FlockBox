@@ -198,7 +198,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (cachedSurroundings == null) cachedSurroundings = new Dictionary<SurroundingsDefinition, SurroundingsInfo>();
         
         SurroundingsDefinition def = new SurroundingsDefinition(homeNeighborhoodCoords.row, homeNeighborhoodCoords.col, neighborhoodRadius);
-        if (cachedSurroundings.ContainsKey(def)) return cachedSurroundings[def];
+        SurroundingsInfo data;
+        if (cachedSurroundings.TryGetValue(def, out data))
+        {
+            return data;
+        }
 
 
         LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
@@ -250,9 +254,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                         foreach (Agent agent in agentsOut)
                         {
                             AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
-                            allAgents.AddLast(wrappedAgent);
+                            allAgents.AddFirst(wrappedAgent);
                             if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            sortedAgents[tag].AddLast(wrappedAgent);
+                            sortedAgents[tag].AddFirst(wrappedAgent);
                         }
                     }
                 }
@@ -260,7 +264,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allAgents, sortedAgents);
+        data = new SurroundingsInfo(allAgents, sortedAgents);
 
         cachedSurroundings[def] = data;
         return data;

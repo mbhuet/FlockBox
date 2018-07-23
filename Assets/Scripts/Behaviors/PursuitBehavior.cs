@@ -28,7 +28,6 @@ public class PursuitBehavior : SteeringBehavior
         //no targets in neighborhood
         if (allTargets.First == null)
         {
-            Debug.Log("No Target");
             if (HasPursuitTarget(mine))
             {
                 DisengagePursuit(mine, chosenTargetID);
@@ -69,7 +68,7 @@ public class PursuitBehavior : SteeringBehavior
 
     }
 
-    static bool HasPursuitTarget(SteeringAgent mine)
+    public static bool HasPursuitTarget(SteeringAgent mine)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) return false;
         return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
@@ -108,8 +107,8 @@ public class PursuitBehavior : SteeringBehavior
         AgentWrapped closeTarget = nearbyTargets.First.Value;
         foreach (AgentWrapped target in nearbyTargets)
         {
-            Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
-            float dist = Vector3.Distance(target.wrappedPosition, agent.position);
+            //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
+            float dist = (target.wrappedPosition - agent.position).magnitude;
             //if(dist <= target.target.radius) AttemptCatch(agent, target);
             if (dist < closeDist && target.agent.CanBePursuedBy(agent))
             {

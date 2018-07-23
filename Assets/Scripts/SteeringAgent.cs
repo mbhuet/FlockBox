@@ -26,8 +26,9 @@ public class SteeringAgent : Agent
 	
     protected virtual void Update()
     {
-        if (!isAlive || freezePosition) return;
+        if (!isAlive) return;
         flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood, activeSettings.perceptionDistance));
+        if (freezePosition) return;
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
         //Debug.Log(velocity * Time.deltaTime);
