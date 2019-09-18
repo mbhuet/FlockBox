@@ -118,7 +118,7 @@ namespace Vexe.Editor.GUIs
             // GradientField
             {
                 var method = editorGUIType.GetMethod("GradientField",
-                    new Type[] { typeof(GUIContent), typeof(Rect), typeof(Gradient) },
+                    new Type[] { typeof(Rect), typeof(GUIContent), typeof(Gradient) },
                     Flags.StaticAnyVisibility);
 
                 _gradientField = method.DelegateForCall<object, Gradient>();

@@ -37,6 +37,10 @@ public abstract class SteeringBehavior{
     public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, params string[] filterTags)
     {
         Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
+        if(filterTags.Length == 0)
+        {
+            return surroundings.allAgents;
+        }
         LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
 
         LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();

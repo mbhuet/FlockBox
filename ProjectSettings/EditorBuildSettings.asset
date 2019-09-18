@@ -6,12 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Dinacon/Scenes/Dinacon_main.unity
-    guid: 638ce23da525a3d46af6ab97b128f404
-  - enabled: 1
-    path: Assets/Dinacon/Scenes/Vanessa_fish.unity
-    guid: 65fa89950c59f84458296c27281b0b0b
-  - enabled: 1
     path: Assets/Scenes/Basic.unity
-    guid: 5d0c98adeeba3f148b2456882273cdaf
+    guid: e3a86a42fa38d7c4bbeca3681367480a
   m_configObjects: {}

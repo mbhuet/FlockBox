@@ -3,25 +3,26 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b022aed67c26643b76e937fe108f88, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f5240c443e200341b92983b730f09af, type: 3}
   m_Name: BoidFishSettings 1
   m_EditorClassIdentifier: 
-  _id: -1100128
+  _id: 19756
   dbg: 0
   Prefs:
-    _Buckets: 01000000ffffffffffffffff0c000000ffffffff0b000000ffffffffffffffffffffffff05000000000000000a000000ffffffff0800000009000000060000000d000000
-    _HashCodes: f3f59c6174c10806fcaddd473148a964ce3c7f71ceb97010b5bd704db6bd704de2c788733f09b4223f463a4b51dcb75294c6f40894293671000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffffffffffffffffffff0300000004000000ffffffffffffffffffffffff0200000007000000000000000000000000000000
-    _Count: 14
-    _Version: 54273
+    _Buckets: 020000000000000001000000
+    _HashCodes: 5df3fb29d6497d5b00f4e35d
+    _Next: ffffffffffffffffffffffff
+    _Count: 3
+    _Version: 60
     _FreeList: -1
     _FreeCount: 0
-    _Keys: f3f59c6174c10886fcadddc73148a9e4ce3c7ff1ceb97010b5bd70cdb6bd70cde2c788733f09b4a23f463acb51dcb7d294c6f48894293671000000000000000000000000
+    _Keys: 5df3fba9d6497ddb00f4e35d
     _Values:
     - ValueString: 
       ValueFloat: 4
@@ -32,71 +33,41 @@ MonoBehaviour:
     - ValueString: 
       ValueFloat: 0
       Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 14
-      Type: 1
-    - ValueString: 
-      ValueFloat: 53
-      Type: 1
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 1
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  maxForce: 8
-  maxSpeed: 20
+  maxForce: 10
+  maxSpeed: 2
   alignmment:
-    isActive: 1
-    weight: 1.28
-    effectiveRadius: 6
-    filterTags:
-    - Boid
-    drawVectorLine: 1
-    vectorColor: {r: 1, g: 0, b: 0, a: 1}
-  cohesion:
-    isActive: 1
-    weight: 1.06
+    isActive: 0
+    weight: 1
     effectiveRadius: 10
-    filterTags:
-    - Boid
-    drawVectorLine: 1
-    vectorColor: {r: 0, g: 0.28014588, b: 1, a: 1}
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  cohesion:
+    isActive: 0
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
   separation:
-    isActive: 1
-    weight: 1.72
-    effectiveRadius: 5
-    filterTags:
-    - Boid
-    drawVectorLine: 1
-    vectorColor: {r: 0.9951428, g: 1, b: 0, a: 1}
+    isActive: 0
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  wander:
+    isActive: 0
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}
+    wanderScope: 90
+  avoid:
+    isActive: 0
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0, b: 0, a: 0}

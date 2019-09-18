@@ -92,15 +92,15 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         {
             for (int c = 0; c < neighborhoods.GetLength(1); c++)
             {
-                Gizmos.color = Color.red;
+                Gizmos.color = Color.red * .1f;
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
                 if (toDraw.Contains(neighborhoods[r, c]))
                 {
-                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
                 if (neighborhoods[r, c].IsOccupied())
                 {
-                    //Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
 
 
