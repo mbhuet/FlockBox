@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f5240c443e200341b92983b730f09af, type: 3}
+  m_Name: BasicBehavior
+  m_EditorClassIdentifier: 
+  _id: 19768
+  dbg: 0
+  Prefs:
+    _Buckets: 0a00000004000000ffffffff0c0000000f000000ffffffffffffffff030000000100000009000000ffffffffffffffff08000000ffffffff0e0000000d000000ffffffff
+    _HashCodes: d1f4fb294a4b7d5b74f5e35d058ed735ae42a13b2c214147bda8903984aa2e67cc1b4e3c7b34c21fd3c7727abff09744bef097447dfd9f7c14cf704299491a4b00000000
+    _Next: ffffffffffffffffffffffffffffffff02000000ffffffff0000000005000000ffffffff07000000ffffffffffffffffffffffffffffffff060000000b00000000000000
+    _Count: 16
+    _Version: 28516
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: d1f4fba94a4b7ddb74f5e35d058ed735ae42a1bb2c2141c7bda890b984aa2e67cc1b4e3c7b34c29fd3c772fabff09744bef097447dfd9ffc14cf70c299491a4b00000000
+    _Values:
+    - ValueString: 
+      ValueFloat: 4
+      Type: 0
+    - ValueString: 
+      ValueFloat: 10
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 14
+      Type: 1
+    - ValueString: 
+      ValueFloat: 2
+      Type: 1
+    - ValueString: 
+      ValueFloat: 0
+      Type: 2
+    - ValueString: 
+      ValueFloat: 1
+      Type: 2
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+    - ValueString: 
+      ValueFloat: 0
+      Type: 0
+  maxForce: 10
+  maxSpeed: 10
+  alignmment:
+    isActive: 1
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 1, g: 0, b: 0, a: 1}
+  cohesion:
+    isActive: 1
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0, g: 0.71693945, b: 1, a: 1}
+  separation:
+    isActive: 1
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0.988719, g: 1, b: 0.3443396, a: 1}
+  wander:
+    isActive: 1
+    weight: 1
+    effectiveRadius: 10
+    filterTags: []
+    drawVectorLine: 0
+    vectorColor: {r: 0.9597633, g: 1, b: 0, a: 1}
+    wanderScope: 90
+  avoid:
+    isActive: 1
+    weight: 1
+    effectiveRadius: 10
+    filterTags:
+    - Obstacle
+    drawVectorLine: 1
+    vectorColor: {r: 1, g: 0, b: 0, a: 1}

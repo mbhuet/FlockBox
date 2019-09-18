@@ -34,9 +34,13 @@ public abstract class SteeringBehavior{
         if (OnActiveStatusChange != null) OnActiveStatusChange();
     }
 
-    protected LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings)
+    public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, params string[] filterTags)
     {
         Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
+        if(filterTags.Length == 0)
+        {
+            return surroundings.allAgents;
+        }
         LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
 
         LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();
@@ -46,6 +50,7 @@ public abstract class SteeringBehavior{
             {
                 foreach (AgentWrapped agent in agentsOut)
                 {
+                    //Debug.Log(agent.agent.name + " in filtered list");
                     filteredAgents.AddLast(agent);
                 }
 

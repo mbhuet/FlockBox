@@ -70,6 +70,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (trackingTarget!= null && trackingTarget.hasChanged)
         {
             UpdateStaticValues(trackingTarget);
+            WrapStationaryAgentsInEdgeNeighborhoods();
             trackingTarget.hasChanged = false;
         }
     }
@@ -91,7 +92,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         {
             for (int c = 0; c < neighborhoods.GetLength(1); c++)
             {
-                Gizmos.color = Color.red;
+                Gizmos.color = Color.red * .1f;
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
                 if (toDraw.Contains(neighborhoods[r, c]))
                 {
@@ -101,10 +102,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 {
                     Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
                 }
-                else
-                {
-                    Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
-                }
+
+
+                Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
+
 
             }
         }
@@ -192,12 +193,16 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static SurroundingsInfo GetSurroundings(Coordinates homeNeighborhoodCoords, float perceptionDistance)//int neighborhoodRadius)
     {
-        int neighborhoodRadius = (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
+        int neighborhoodRadius = 1+ (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
         if (cachedSurroundings == null) cachedSurroundings = new Dictionary<SurroundingsDefinition, SurroundingsInfo>();
         
         SurroundingsDefinition def = new SurroundingsDefinition(homeNeighborhoodCoords.row, homeNeighborhoodCoords.col, neighborhoodRadius);
-        if (cachedSurroundings.ContainsKey(def)) return cachedSurroundings[def];
+        SurroundingsInfo data;
+        if (cachedSurroundings.TryGetValue(def, out data))
+        {
+            return data;
+        }
 
 
         LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
@@ -214,18 +219,26 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
+                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
+
                 }
                 else if (r >= neighborhoodRows_static)
                 {
                     r_wrap = r - neighborhoodRows_static;
+                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
+
                 }
                 if (c < 0)
                 {
                     c_wrap = neighborhoodCols_static + c;
+                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
+
                 }
                 else if (c >= neighborhoodCols_static)
                 {
                     c_wrap = c - neighborhoodCols_static;
+                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
+
                 }
 
                 //toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
@@ -240,10 +253,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                         foreach (Agent agent in agentsOut)
                         {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, WrapPosition(agent.position));
-                            allAgents.AddLast(wrappedAgent);
+                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
+                            allAgents.AddFirst(wrappedAgent);
                             if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            sortedAgents[tag].AddLast(wrappedAgent);
+                            sortedAgents[tag].AddFirst(wrappedAgent);
                         }
                     }
                 }
@@ -251,7 +264,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 
             }
         }
-        SurroundingsInfo data = new SurroundingsInfo(allAgents, sortedAgents);
+        data = new SurroundingsInfo(allAgents, sortedAgents);
 
         cachedSurroundings[def] = data;
         return data;
@@ -294,11 +307,50 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
         bool mustWrap = false;
         Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y); mustWrap = true; }
+        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
+        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
+        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
+        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
         if (mustWrap) position = wrappedPosition;
         return wrappedPosition;
+    }
+
+    //if two friends are on opposite sides of the screen because one just wrapped around, they should be drawn to the edges of the screen over the wrap, not to the middle of the screen
+    public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
+    {
+
+        if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
+        {
+            //Debug.Log("here " + Mathf.Abs(myPosition.x - otherPosition.x) + " " + NeighborhoodCoordinator.size.x / 2f);
+            otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
+        }
+        if (Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
+        {
+            otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
+        }
+        return otherPosition;
+    }
+
+    public static void WrapStationaryAgentsInEdgeNeighborhoods()
+    {
+        List<Agent> stationaryAgents = new List<Agent>();
+        //iterate over top row
+        for (int c = 0; c < neighborhoodCols_static; c++)
+        {
+            for (int r = 0; r < neighborhoodRows_static; r++)
+            {
+                stationaryAgents.AddRange(neighborhoods[r, c].GetStationaryAgents());
+            }
+        }
+
+        foreach(Agent agent in stationaryAgents)
+        {
+            agent.ForceWrapPosition();
+        }
+    }
+
+    public static Vector3 RandomPosition()
+    {
+        return new Vector3(Random.Range(minCorner.x, maxCorner.x), Random.Range(minCorner.y, maxCorner.y));
     }
 }

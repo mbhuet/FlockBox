@@ -11,7 +11,7 @@ public class SeparationBehavior : SteeringBehavior {
         Vector3 steer = Vector3.zero;
         int count = 0;
         // For every boid in the system, check if it's too close
-        foreach (AgentWrapped other in GetFilteredAgents( surroundings))
+        foreach (AgentWrapped other in GetFilteredAgents( surroundings, filterTags))
         {
 
             float d = Vector3.Distance(mine.position, other.wrappedPosition);
