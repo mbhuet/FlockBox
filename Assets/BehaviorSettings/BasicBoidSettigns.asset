@@ -17,7 +17,7 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
+  drawVectorLine: 1
   vectorColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -36,7 +36,6 @@ MonoBehaviour:
   behaviors:
   - {fileID: -3764127918943891919}
   - {fileID: 9024244430980656014}
-  - {fileID: 4696958716003585818}
 --- !u!114 &1939120406482896287
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -56,7 +55,7 @@ MonoBehaviour:
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &4696958716003585818
+--- !u!114 &4870499806215316934
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,7 +73,7 @@ MonoBehaviour:
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 0
-  vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &9024244430980656014
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -92,5 +91,5 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  drawVectorLine: 1
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
