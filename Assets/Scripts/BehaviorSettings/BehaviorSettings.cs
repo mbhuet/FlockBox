@@ -4,17 +4,18 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.Linq;
-using Vexe.Runtime.Types;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public abstract class BehaviorSettings : BaseScriptableObject {
+public abstract class BehaviorSettings : ScriptableObject {
     public float maxForce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
-                                  // Use this for initialization
 
     public float perceptionDistance { get; protected set; }
+
+    public List<SteeringBehavior> behaviors;
 
     private void Awake()
     {
@@ -25,19 +26,6 @@ public abstract class BehaviorSettings : BaseScriptableObject {
         GetActiveBehaviors();
     }
 
-/*
-#if UNITY_EDITOR
-    [MenuItem("Assets/Create/Behavior Settings")]
-    public static void CreateMyAsset()
-    {
-        BehaviorSettings asset = ScriptableObject.CreateInstance<BehaviorSettings>();
-        AssetDatabase.CreateAsset(asset, "Assets/NewBehaviorSettings.asset");
-        AssetDatabase.SaveAssets();
-        EditorUtility.FocusProjectWindow();
-        Selection.activeObject = asset;
-    }
-#endif
-*/
 
 
     private List<SteeringBehavior> m_allBehaviors;
@@ -45,6 +33,7 @@ public abstract class BehaviorSettings : BaseScriptableObject {
     {
         get
         {
+            //return behaviors;
             if (m_allBehaviors == null) { GetAllBehaviors(); }
             return m_allBehaviors;
         }
@@ -58,6 +47,37 @@ public abstract class BehaviorSettings : BaseScriptableObject {
             if (m_activeBehaviors == null) { GetActiveBehaviors(); }
             return m_activeBehaviors;
         }
+    }
+
+    public void AddBehavior(Type behaviorType)
+    {
+        
+        SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance(behaviorType);
+        newBehavior.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy | HideFlags.NotEditable;
+
+        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath("Assets" + "/" + behaviorType.ToString() + ".asset");
+
+        AssetDatabase.CreateAsset(newBehavior, assetPathAndName);
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+
+        behaviors.Add(newBehavior);
+
+    }
+
+    public void ClearBehaviors()
+    {
+        foreach(SteeringBehavior behavior in behaviors)
+        {
+            string path = AssetDatabase.GetAssetPath(behavior);
+            AssetDatabase.DeleteAsset(path);
+        }
+        AssetDatabase.Refresh();
+
+
+        behaviors.Clear();
     }
 
     private void GetAllBehaviors()

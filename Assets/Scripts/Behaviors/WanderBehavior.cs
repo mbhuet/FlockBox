@@ -2,12 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Vexe.Runtime.Types;
 
 
 [System.Serializable]
 public class WanderBehavior : SteeringBehavior {
-    [VisibleWhen("isActive"), Range(0,360)]
     public float wanderScope = 90;
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)

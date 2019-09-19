@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Vexe.Runtime.Types;
 using UnityEngine;
 
 [System.Serializable]
 public class SocialStatusBehavior : CohesionBehavior
 {
-    [VisibleWhen("isActive")]
     public int maxStatus = 100;
 
-    [fSlider(0,1)]
     public float speedDampening = .1f;
 
     public const string statusAttributeName = "socialStatus";
 
     public static float bankedStatus = 0;
 
-    [VisibleWhen("isActive")]
     public AnimationCurve attractionCurve;
 
     public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)

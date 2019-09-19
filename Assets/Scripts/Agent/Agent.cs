@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Vexe.Runtime.Types;
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
 [RequireComponent(typeof(AgentVisual))]
-public abstract class Agent : BaseBehaviour {
+public abstract class Agent : MonoBehaviour {
 
     public const float forceFieldDistance = 10; //how close can a Boid be before it hits the force field
 

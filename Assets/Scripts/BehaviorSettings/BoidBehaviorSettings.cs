@@ -7,11 +7,6 @@ using UnityEditor;
 
 public class BoidBehaviorSettings : BehaviorSettings {
 
-    public AlignmentBehavior alignmment = new AlignmentBehavior();
-    public CohesionBehavior cohesion = new CohesionBehavior();
-    public SeparationBehavior separation = new SeparationBehavior();
-    public WanderBehavior wander = new WanderBehavior();
-    public AvoidanceBehavior avoid = new AvoidanceBehavior();
 
 #if UNITY_EDITOR
     [MenuItem("Assets/Create/BehaviorSettings/Boid")]

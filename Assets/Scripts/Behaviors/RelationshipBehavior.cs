@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Vexe.Runtime.Types;
 using UnityEngine;
 
 [System.Serializable]
 public class RelationshipBehavior : SteeringBehavior {
 
-    [VisibleWhen("isActive")]   public int maxFriends;
-    [VisibleWhen("isActive")]   public float minFriendshipDuration = 5;
-    [VisibleWhen("isActive")]   public float maxFriendshipDuration = 10;
-    [VisibleWhen("isActive")]   public float maxStatusDifference = 10;
+    public int maxFriends;
+    public float minFriendshipDuration = 5;
+    public float maxFriendshipDuration = 10;
+    public float maxStatusDifference = 10;
 
     const string friendArrayAttributeName = "friends";
     const string friendTimersAttributeName = "friendTimers";

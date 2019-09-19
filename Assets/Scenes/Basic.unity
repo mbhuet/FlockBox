@@ -405,7 +405,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114191054272108188, guid: 1c8654586a152c347b442898352293da,
     type: 3}
-  numStartSpawns: 50
+  numStartSpawns: 100
 --- !u!4 &2079507319
 Transform:
   m_ObjectHideFlags: 0

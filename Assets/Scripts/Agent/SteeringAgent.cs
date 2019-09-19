@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Vexe.Runtime.Types;
 
 
 //Every SteeringAgent uses the same SteeringBehavior instances, there's only one per type and its stored in a static Dictionary
