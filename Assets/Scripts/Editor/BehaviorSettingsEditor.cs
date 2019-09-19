@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Linq;
+using System.Reflection;
+
 
 [CustomEditor(typeof(BehaviorSettings), true)]
 public class BehaviorSettingsEditor : Editor
@@ -20,13 +23,24 @@ public class BehaviorSettingsEditor : Editor
         EditorGUILayout.PropertyField(_behaviors, true);
         if (GUILayout.Button("Add Behavior"))
         {
-            Type behaviorType = typeof(CohesionBehavior);
-            targetSettings.AddBehavior(behaviorType);
+            GenericMenu menu = new GenericMenu();
+
+            foreach (Type type in System.AppDomain.CurrentDomain.GetAllDerivedTypes(typeof(SteeringBehavior)))
+            {
+                menu.AddItem(new GUIContent(type.ToString()), false, AddBehavior, type);
+            }
+            menu.ShowAsContext();
+
         }
 
         if (GUILayout.Button("Clear Behaviors"))
         {
             targetSettings.ClearBehaviors();
         }
+    }
+
+    void AddBehavior(object t)
+    {
+        targetSettings.AddBehavior((Type)t);
     }
 }
