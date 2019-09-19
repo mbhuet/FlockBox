@@ -9,7 +9,7 @@ using System.IO;
 using UnityEditor;
 #endif
 
-public abstract class BehaviorSettings : ScriptableObject {
+public class BehaviorSettings : ScriptableObject {
     public float maxForce = 10;    // Maximum steering force
     public float maxSpeed = 2;    // Maximum speed
 
