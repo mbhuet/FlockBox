@@ -183,8 +183,6 @@ public abstract class Agent : MonoBehaviour {
 
     public virtual void ForceWrapPosition()
     {
-//        Debug.Log("Force wrap " + this.name);
-//        Debug.Log("Force wrap " + this.name);
         position = NeighborhoodCoordinator.WrapPosition(position);
         transform.position = this.position;
         FindNeighborhood();
