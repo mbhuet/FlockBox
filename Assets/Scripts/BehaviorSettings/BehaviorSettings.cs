@@ -55,10 +55,7 @@ public abstract class BehaviorSettings : ScriptableObject {
         SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance(behaviorType);
         newBehavior.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
-        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath("Assets" + "/" + behaviorType.ToString() + ".asset");
-
-        AssetDatabase.CreateAsset(newBehavior, assetPathAndName);
-
+        AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(this));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -71,8 +68,7 @@ public abstract class BehaviorSettings : ScriptableObject {
     {
         foreach(SteeringBehavior behavior in behaviors)
         {
-            string path = AssetDatabase.GetAssetPath(behavior);
-            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.RemoveObjectFromAsset(behavior);
         }
         AssetDatabase.Refresh();
 
