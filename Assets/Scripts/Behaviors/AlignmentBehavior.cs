@@ -11,7 +11,7 @@ public class AlignmentBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
-        foreach (AgentWrapped other in GetFilteredAgents(surroundings, filterTags))
+        foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
         {
 
             float d = Vector3.Distance(mine.position, other.wrappedPosition);

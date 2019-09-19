@@ -15,7 +15,7 @@ public class PursuitBehavior : SteeringBehavior
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
         //        Debug.Log("pursuit");
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, filterTags);
+        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
         
         /*
          * var distance :Vector3D = t.position - position;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 
 //Each SteeringBehavior will be instantiated ONCE
@@ -12,10 +13,11 @@ public abstract class SteeringBehavior : ScriptableObject{
     public delegate void BehaviorEvent();
     public BehaviorEvent OnActiveStatusChange;
 
-    public bool isActive;
+    public bool isActive = true;
 
     public float weight = 1;
     public float effectiveRadius = 10;
+    public bool useTagFilter;
     public string[] filterTags;
     public bool drawVectorLine;
     public Color vectorColor;
@@ -23,22 +25,24 @@ public abstract class SteeringBehavior : ScriptableObject{
     public abstract Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings);
 
 
+
     private void InvokeActiveChangedEvent(bool active)
     {
         if (OnActiveStatusChange != null) OnActiveStatusChange();
     }
 
-    public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, params string[] filterTags)
+
+    public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
     {
         Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
-        if(filterTags.Length == 0)
+        if(!behavior.useTagFilter)
         {
             return surroundings.allAgents;
         }
         LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
 
         LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();
-        foreach (string tag in filterTags)
+        foreach (string tag in behavior.filterTags)
         {
             if (agentDict.TryGetValue(tag, out agentsOut))
             {
@@ -53,6 +57,35 @@ public abstract class SteeringBehavior : ScriptableObject{
         return filteredAgents;
     }
 
-    
+    /// <summary>
+    /// return draw height
+    /// </summary>
+    /// <returns>remove</returns>
+    public virtual bool OnInspectorGUI()
+    {
+        bool remove = false;
+        GUILayout.BeginVertical("BOX");
+        GUILayout.BeginHorizontal();
+        isActive = GUILayout.Toggle(isActive, GetType().ToString());
+        if (GUILayout.Button("Remove"))
+        {
+            remove = true;
+        }
+        GUILayout.EndHorizontal();
+        if (isActive)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(30);
+            GUILayout.BeginVertical("BOX");
+            weight = EditorGUILayout.Slider("Weight", weight, 0, 1);
+            //Texture2D texture = Resources.Load<Texture2D>("Sprites/Icons/" + m_ItemDatabase.itemDatabase[i].itemName);
+            //GUILayout.Label(texture);
+            
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+        }
+        GUILayout.EndVertical();
+        return remove;
+    }
     
 }

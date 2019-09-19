@@ -64,6 +64,13 @@ public abstract class BehaviorSettings : ScriptableObject {
 
     }
 
+    public void RemoveBehavior(SteeringBehavior behavior)
+    {
+        AssetDatabase.RemoveObjectFromAsset(behavior);
+        AssetDatabase.Refresh();
+        behaviors.Remove(behavior);
+    }
+
     public void ClearBehaviors()
     {
         foreach(SteeringBehavior behavior in behaviors)

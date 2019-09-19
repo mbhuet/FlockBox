@@ -41,7 +41,7 @@ public class RelationshipBehavior : SteeringBehavior {
 
         if (friendCount < maxFriends)
         {
-            SearchForNewFriends(mine, friends, GetFilteredAgents(surroundings, filterTags));
+            SearchForNewFriends(mine, friends, GetFilteredAgents(surroundings, this));
         }
 
         if (friendCount > 0)

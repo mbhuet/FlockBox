@@ -12,15 +12,42 @@ public class BehaviorSettingsEditor : Editor
 {
     private BehaviorSettings targetSettings;
     private SerializedProperty _behaviors;
+    private SerializedProperty _maxForce;
+    private SerializedProperty _maxSpeed;
+
+    private List<SteeringBehavior> toRemove = new List<SteeringBehavior>();
 
     private void OnEnable()
     {
         targetSettings = (BehaviorSettings)target;
         _behaviors = serializedObject.FindProperty("behaviors");
+        _maxForce = serializedObject.FindProperty("maxForce");
+        _maxSpeed = serializedObject.FindProperty("maxSpeed");
     }
     public override void OnInspectorGUI()
     {
-        EditorGUILayout.PropertyField(_behaviors, true);
+        EditorGUILayout.PropertyField(_maxSpeed);
+        EditorGUILayout.PropertyField(_maxForce);
+        EditorGUILayout.HelpBox("Create items inside of ItemDatabase.cs", MessageType.Info);
+
+
+
+        foreach (SteeringBehavior behavior in targetSettings.behaviors)
+        {
+            if (behavior.OnInspectorGUI())
+            {
+                toRemove.Add(behavior);
+            }
+            GUILayout.Space(10);
+        }
+
+
+        foreach(SteeringBehavior rem in toRemove)
+        {
+            targetSettings.RemoveBehavior(rem);
+        }
+        toRemove.Clear();
+
         if (GUILayout.Button("Add Behavior"))
         {
             GenericMenu menu = new GenericMenu();
