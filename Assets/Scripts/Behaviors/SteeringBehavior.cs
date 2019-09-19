@@ -65,9 +65,10 @@ public abstract class SteeringBehavior : ScriptableObject{
     {
         bool remove = false;
         GUILayout.BeginVertical("BOX");
+        GUILayout.Space(5);
         GUILayout.BeginHorizontal();
         isActive = GUILayout.Toggle(isActive, GetType().ToString());
-        if (GUILayout.Button("Remove"))
+        if (GUILayout.Button("Remove", GUILayout.Width(60)))
         {
             remove = true;
         }
@@ -84,6 +85,7 @@ public abstract class SteeringBehavior : ScriptableObject{
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
         }
+        GUILayout.Space(5);
         GUILayout.EndVertical();
         return remove;
     }

@@ -28,7 +28,7 @@ public class BehaviorSettingsEditor : Editor
     {
         EditorGUILayout.PropertyField(_maxSpeed);
         EditorGUILayout.PropertyField(_maxForce);
-        EditorGUILayout.HelpBox("Create items inside of ItemDatabase.cs", MessageType.Info);
+        //EditorGUILayout.HelpBox("Create items inside of ItemDatabase.cs", MessageType.Info);
 
 
 
@@ -48,7 +48,11 @@ public class BehaviorSettingsEditor : Editor
         }
         toRemove.Clear();
 
-        if (GUILayout.Button("Add Behavior"))
+        GUILayout.BeginVertical("BOX");
+        GUILayout.Space(10);
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Add Behavior", GUILayout.Width(130)))
         {
             GenericMenu menu = new GenericMenu();
 
@@ -59,11 +63,17 @@ public class BehaviorSettingsEditor : Editor
             menu.ShowAsContext();
 
         }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        GUILayout.Space(10);
+        GUILayout.EndVertical();
 
+        /*
         if (GUILayout.Button("Clear Behaviors"))
         {
             targetSettings.ClearBehaviors();
         }
+        */
     }
 
     void AddBehavior(object t)

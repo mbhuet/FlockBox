@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4330441036589229550
+--- !u!114 &-7638934427277406472
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,6 +20,29 @@ MonoBehaviour:
   drawVectorLine: 0
   vectorColor: {r: 0, g: 0, b: 0, a: 0}
   maxStatus: 100
+--- !u!114 &-485240427171349556
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98f72da989b1d4d4caf5eff768b91a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 0, g: 0, b: 0, a: 0}
+  maxFriends: 0
+  minFriendshipDuration: 5
+  maxFriendshipDuration: 10
+  maxStatusDifference: 10
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35,7 +58,9 @@ MonoBehaviour:
   maxForce: 10
   maxSpeed: 2
   behaviors:
-  - {fileID: 3482489130665101939}
+  - {fileID: -7638934427277406472}
+  - {fileID: -485240427171349556}
+  - {fileID: 8075017096761035181}
 --- !u!114 &1939120406482896287
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -55,7 +80,7 @@ MonoBehaviour:
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &3482489130665101939
+--- !u!114 &8075017096761035181
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1b67182167a28947aa99ac9d046431e, type: 3}
+  m_Script: {fileID: 11500000, guid: a6515e5f50fa1dc46be3990ef4b26bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
