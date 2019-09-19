@@ -1,26 +1,21 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Vexe.Runtime.Types;
+
 
 public class AgentVisual : MonoBehaviour {
 
     public SpriteRenderer sprite;
     public Transform visualRoot;
     protected bool blinking = false;
-    protected Quaternion baseRotation = Quaternion.identity;
     public bool flipYWhenLookingRight = false;
 
-    protected void Start()
-    {
-        //baseRotation = sprite.transform.localRotation;
-    }
+
 
     public virtual void SetRotation(Quaternion rotation)
     {
         if (sprite != null)
         {
-            visualRoot.transform.rotation = baseRotation * rotation;
+            visualRoot.transform.rotation = rotation;
             sprite.flipY = (flipYWhenLookingRight && rotation.eulerAngles.z > 180 || rotation.eulerAngles.z <-180);
         }
     }
