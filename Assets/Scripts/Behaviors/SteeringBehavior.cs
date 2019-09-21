@@ -38,6 +38,7 @@ public abstract class SteeringBehavior : ScriptableObject{
 
     protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
     {
+        if (mine == other.agent) return false;
         return (Vector3.SqrMagnitude(mine.position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
     }
 
