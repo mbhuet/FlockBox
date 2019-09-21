@@ -9,9 +9,8 @@ using UnityEngine;
 
 public struct SurroundingsDefinition
 {
-    public SurroundingsDefinition(int row, int col, int rad) { neighborhoodCol = col;  neighborhoodRow = row; radius = rad; }
-    public int neighborhoodRow;
-    public int neighborhoodCol;
+    public SurroundingsDefinition(int row, int col, int rad) {neighborhoodCoords = new Coordinates(row,col); radius = rad; }
+    public Coordinates neighborhoodCoords;
     public int radius;
 }
 
