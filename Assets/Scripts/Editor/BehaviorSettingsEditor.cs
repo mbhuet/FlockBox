@@ -74,6 +74,8 @@ public class BehaviorSettingsEditor : Editor
             targetSettings.ClearBehaviors();
         }
         */
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     void AddBehavior(object t)
