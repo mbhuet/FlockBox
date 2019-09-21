@@ -124,12 +124,10 @@ public abstract class Agent : MonoBehaviour {
     protected void FindNeighborhood()
     {
         if (!isAlive) return;
-//        Debug.Log(this.name +" findNeighborhood");
         Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
         if (currentNeighborhood.row != myNeighborhood.neighborhoodCoords.row || currentNeighborhood.col != myNeighborhood.neighborhoodCoords.col)
         {
             RemoveFromLastNeighborhood();
-            //Debug.Log(this.name + " add to neighborhood " + currentNeighborhood);
             AddToNeighborhood(currentNeighborhood);
         }
     }
@@ -137,16 +135,13 @@ public abstract class Agent : MonoBehaviour {
     protected void AddToNeighborhood(Coordinates coords)
     {
         NeighborhoodCoordinator.AddAgent(this, coords);
-        myNeighborhood.neighborhoodCoords.row = coords.row;
-        myNeighborhood.neighborhoodCoords.col = coords.col;
+        myNeighborhood.neighborhoodCoords = coords;
     }
 
     protected void RemoveFromLastNeighborhood()
     {
-//        Debug.Log(this.name + " remove from last neighborhood");
         NeighborhoodCoordinator.RemoveAgent(this, myNeighborhood.neighborhoodCoords);
         myNeighborhood.neighborhoodCoords = Coordinates.nowhere;
-
     }
 
     public virtual void Kill()
