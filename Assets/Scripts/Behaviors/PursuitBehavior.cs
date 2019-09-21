@@ -9,7 +9,7 @@ public class PursuitBehavior : SteeringBehavior
     public const string targetIDAttributeName = "seekTargetID";
 
 
-    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
@@ -31,7 +31,8 @@ public class PursuitBehavior : SteeringBehavior
             {
                 DisengagePursuit(mine, chosenTargetID);
             }
-            return Vector3.zero;
+            steer = Vector3.zero;
+            return;
         }
 
         //Debug.Log(allTargets.ToString());
@@ -47,7 +48,8 @@ public class PursuitBehavior : SteeringBehavior
             {
                 DisengagePursuit(mine, chosenTargetID);
             }
-            return Vector3.zero;
+            steer = Vector3.zero;
+            return;
         }
 
 
@@ -63,7 +65,7 @@ public class PursuitBehavior : SteeringBehavior
 
         AttemptCatch(mine, closestTarget);
 
-        return mine.GetSeekVector(predictedInterceptPosition);
+        steer = mine.GetSeekVector(predictedInterceptPosition);
 
     }
 

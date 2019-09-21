@@ -9,7 +9,7 @@ public class SeekBehavior : SteeringBehavior {
     public const string targetIDAttributeName = "seekTargetID";
 
 
-    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
@@ -23,7 +23,8 @@ public class SeekBehavior : SteeringBehavior {
             {
                 DisengagePursuit(mine, chosenTargetID);
             }
-            return Vector3.zero;
+            steer = Vector3.zero;
+            return;
         }
 
         AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
@@ -35,7 +36,8 @@ public class SeekBehavior : SteeringBehavior {
             {
                 DisengagePursuit(mine, chosenTargetID);
             }
-            return Vector3.zero;
+            steer = Vector3.zero;
+            return;
         }
 
 
@@ -47,10 +49,10 @@ public class SeekBehavior : SteeringBehavior {
 
         AttemptCatch(mine, closestTarget);
         Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.position).normalized * mine.activeSettings.maxSpeed;
-        Vector3 steer = desired_velocity - mine.velocity;
+        steer = desired_velocity - mine.velocity;
         steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
-        return steer;
+        
 
     }
 

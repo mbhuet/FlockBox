@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b2f8226ee5f0b428c27b1e01f96119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
   weight: 1
   effectiveRadius: 10
   useTagFilter: 0
@@ -26,16 +25,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4332d8a7607dd74f9cdccb322ddd358, type: 3}
   m_Name: BasicBoidSettigns
   m_EditorClassIdentifier: 
   maxForce: 10
   maxSpeed: 2
-  behaviors:
-  - {fileID: -3764127918943891919}
-  - {fileID: 9024244430980656014}
+  attention: 1
 --- !u!114 &1939120406482896287
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -48,13 +45,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b67182167a28947aa99ac9d046431e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
   weight: 1
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &4593130415731145569
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9b2f8226ee5f0b428c27b1e01f96119, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 1
+  vectorColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &4870499806215316934
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -67,7 +81,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b67182167a28947aa99ac9d046431e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &6259922382174554102
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b67182167a28947aa99ac9d046431e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &7509454527298782767
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e71e76147b0912846b0c23fda24f21b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   weight: 1
   effectiveRadius: 10
   useTagFilter: 0
@@ -86,7 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cff726b0ce7bbd745954f11601b2c5c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
   weight: 1
   effectiveRadius: 10
   useTagFilter: 0

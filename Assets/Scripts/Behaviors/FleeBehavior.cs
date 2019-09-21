@@ -7,7 +7,7 @@ public class FleeBehavior : SteeringBehavior
 {
     public const string fleeAttributeName = "fleeing";
 
-    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Dictionary<string, LinkedList<AgentWrapped>> sourroundingTargets = surroundings.sortedAgents;
 
@@ -33,17 +33,16 @@ public class FleeBehavior : SteeringBehavior
         {
             fleeMidpoint /= (count);
             Vector3 desired_velocity = (fleeMidpoint - mine.position).normalized * -1 * mine.activeSettings.maxSpeed;
-            Vector3 steer = desired_velocity - mine.velocity;
+            steer = desired_velocity - mine.velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
             mine.SetAttribute(fleeAttributeName, true);
 
-            return steer;
         }
         else
         {
             mine.SetAttribute(fleeAttributeName, false);
-            return new Vector3(0, 0);
+            steer = Vector3.zero;
         }
 
     }

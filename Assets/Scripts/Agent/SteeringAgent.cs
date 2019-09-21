@@ -46,13 +46,13 @@ public class SteeringAgent : Agent
     }
 
 
-    void ApplyForce(Vector3 force, SteeringBehavior behavior)
+    void ApplyForce(Vector3 force)
     {
-        Debug.Log(force);
         // We could add mass here if we want A = F / M
         acceleration +=(force);
-        if (behavior.drawVectorLine) Debug.DrawRay(position, force, behavior.vectorColor);
     }
+
+    private Vector3 steer = Vector3.zero;
 
     // We accumulate a new acceleration each time based on three rules
     //private Vector3 steer = Vector3.zero; //reuse the same Vector3 for optimization,
@@ -60,8 +60,11 @@ public class SteeringAgent : Agent
     {
         foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
         {
-            Vector3 steer = Vector3.zero;
-            ApplyForce(behavior.GetSteeringBehaviorVector(ref steer, this, surroundings) * behavior.weight, behavior);
+            behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
+            steer *= behavior.weight;
+            if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
+
+            ApplyForce(steer);
         }
     }
 

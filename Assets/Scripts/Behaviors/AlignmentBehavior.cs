@@ -7,7 +7,7 @@ public class AlignmentBehavior : SteeringBehavior {
 
     // Alignment
     // For every nearby boid in the system, calculate the average velocity
-    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
@@ -30,13 +30,13 @@ public class AlignmentBehavior : SteeringBehavior {
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
             sum *= (mine.activeSettings.maxSpeed);
-            Vector3 steer = sum - mine.velocity;
+            steer = sum - mine.velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-            return steer * weight;
+            
         }
         else
         {
-            return new Vector3(0, 0);
+            steer = Vector3.zero;
         }
     }
 }

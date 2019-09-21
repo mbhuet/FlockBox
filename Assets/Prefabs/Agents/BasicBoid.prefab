@@ -45,74 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb9f4d4503002d46b75db65a577e71f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 10738
-  dbg: 0
-  Prefs:
-    _Buckets: 05000000ffffffffffffffffffffffffffffffffffffffff0400000000000000ffffffffffffffff06000000ffffffffffffffff030000000100000007000000ffffffff
-    _HashCodes: e16caa6362381608ea24eb49b9a1a26457aff729d005795bfaafdf5d2775ff2e000000000000000000000000000000000000000000000000000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffffffffffff02000000ffffffffffffffff000000000000000000000000000000000000000000000000000000000000000000000000
-    _Count: 8
-    _Version: 4415
-    _FreeList: -1
-    _FreeCount: 0
-    _Keys: e16caa6362381688ea24ebc9b9a1a26457aff7a9d00579dbfaafdf5d2775ffae000000000000000000000000000000000000000000000000000000000000000000000000
-    _Values:
-    - ValueString: 
-      ValueFloat: 4
-      Type: 0
-    - ValueString: 
-      ValueFloat: 10
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 4
-      Type: 0
-    - ValueString: 
-      ValueFloat: 10
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
   radius: 10
   useZLayering: 0
-  maxPursuers: 10
-  activeSettings: {fileID: 11400000, guid: 9e0e7dd19d7268546a4491509c3d3fbc, type: 2}
   drawDebug: 1
+  maxPursuers: 10
+  activeSettings: {fileID: 11400000, guid: 0a15644189ef28d4492f4db6564323f8, type: 2}
 --- !u!114 &114762736815519660
 MonoBehaviour:
   m_ObjectHideFlags: 0

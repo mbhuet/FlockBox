@@ -34,7 +34,7 @@ public abstract class SteeringBehavior : ScriptableObject{
     public bool drawVectorLine;
     public Color vectorColor = Color.white;
 
-    public abstract Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
+    public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
 
     protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
     {
