@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  neighborhoodCols: 10
-  neighborhoodRows: 10
+  neighborhoodCols: 50
+  neighborhoodRows: 50
   neighborhoodSize: {x: 10, y: 10}
 --- !u!4 &806428431
 Transform:
@@ -241,7 +241,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 40
+  orthographic size: 50
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 114191054272108188, guid: 1c8654586a152c347b442898352293da,
     type: 3}
-  numStartSpawns: 100
+  numStartSpawns: 1000
 --- !u!4 &2079507319
 Transform:
   m_ObjectHideFlags: 0

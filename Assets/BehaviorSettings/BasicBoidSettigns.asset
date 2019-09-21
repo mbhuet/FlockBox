@@ -213,6 +213,24 @@ MonoBehaviour:
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &6610002682130627110
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9b2f8226ee5f0b428c27b1e01f96119, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &7509454527298782767
 MonoBehaviour:
   m_ObjectHideFlags: 11
