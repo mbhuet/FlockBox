@@ -185,27 +185,30 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         return coords;
     }
 
+    private static Vector3 wrap_positionOffset = Vector3.zero;
 
-    public static SurroundingsInfo GetSurroundings(Coordinates homeNeighborhoodCoords, float perceptionDistance)//int neighborhoodRadius)
+    public static void GetSurroundings(ref SurroundingsInfo data, SurroundingsDefinition def, float perceptionDistance)//int neighborhoodRadius)
     {
-        int neighborhoodRadius = 1+ (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
+
+        def.radius = (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        
-        SurroundingsDefinition def = new SurroundingsDefinition(homeNeighborhoodCoords.row, homeNeighborhoodCoords.col, neighborhoodRadius);
-        SurroundingsInfo data;
 
+        if (data.allAgents == null) data.allAgents = new LinkedList<AgentWrapped>();
+        if (data.sortedAgents == null) data.sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
+ 
 
-        LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
-       Dictionary<string, LinkedList<AgentWrapped>> sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
+        data.allAgents.Clear();
+        data.sortedAgents.Clear();
 
-        for (int r = homeNeighborhoodCoords.row - neighborhoodRadius; r <= homeNeighborhoodCoords.row + neighborhoodRadius; r++)
+        int r_wrap = 0;
+        int c_wrap = 0;
+        for (int r = def.neighborhoodCoords.row - def.radius; r <= def.neighborhoodCoords.row + def.radius; r++)
         {
-            for (int c = homeNeighborhoodCoords.col - neighborhoodRadius; c <= homeNeighborhoodCoords.col + neighborhoodRadius; c++)
+            
+            for (int c = def.neighborhoodCoords.col - def.radius; c <= def.neighborhoodCoords.col + def.radius; c++)
             {
-                int r_wrap = r;
-                int c_wrap = c;
+                
 
-                Vector3 wrap_positionOffset = Vector3.zero;
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
@@ -233,7 +236,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                 //toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
 
-
+                
                 Dictionary<string, List<Agent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetAgents();
                 foreach (string tag in sourceAgents.Keys)
                 {
@@ -243,20 +246,23 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                         foreach (Agent agent in agentsOut)
                         {
+                            
                             AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
-                            allAgents.AddFirst(wrappedAgent);
-                            if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            sortedAgents[tag].AddFirst(wrappedAgent);
+                            data.allAgents.AddFirst(wrappedAgent);
+                            if (!data.sortedAgents.ContainsKey(tag)) data.sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
+                            data.sortedAgents[tag].AddFirst(wrappedAgent);
+                            
                         }
                     }
                 }
+                
 
                 
             }
+            
         }
-        data = new SurroundingsInfo(allAgents, sortedAgents);
+        
 
-        return data;
     }
 
     public static void AddZoneToNeighborhoods(Agent agent)

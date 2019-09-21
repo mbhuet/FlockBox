@@ -21,11 +21,12 @@ public class SteeringAgent : Agent
     private bool freezePosition = false;
     //Takes a type, returns instance
 
-	
+    private SurroundingsInfo mySurroundings = new SurroundingsInfo(new LinkedList<AgentWrapped>(), new Dictionary<string, LinkedList<AgentWrapped>>());
     protected virtual void Update()
     {
         if (!isAlive) return;
-        flock(NeighborhoodCoordinator.GetSurroundings(lastNeighborhood, activeSettings.perceptionDistance));
+        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, myNeighborhood, activeSettings.perceptionDistance);
+        Flock(mySurroundings);
         if (freezePosition) return;
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
@@ -45,36 +46,35 @@ public class SteeringAgent : Agent
     }
 
 
-    void applyForce(Vector3 force)
+    void ApplyForce(Vector3 force, SteeringBehavior behavior)
     {
+        Debug.Log(force);
         // We could add mass here if we want A = F / M
         acceleration +=(force);
+        if (behavior.drawVectorLine) Debug.DrawRay(position, force, behavior.vectorColor);
     }
 
     // We accumulate a new acceleration each time based on three rules
-    void flock(SurroundingsInfo surroundings)
+    //private Vector3 steer = Vector3.zero; //reuse the same Vector3 for optimization,
+    void Flock(SurroundingsInfo surroundings)
     {
         foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
         {
-            Vector3 steer = (behavior.GetSteeringBehaviorVector(this, surroundings));
-            if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
-            applyForce(steer);
+            Vector3 steer = Vector3.zero;
+            ApplyForce(behavior.GetSteeringBehaviorVector(ref steer, this, surroundings) * behavior.weight, behavior);
         }
     }
 
+    private Vector3 _steer;
 
-    public Vector3 seek(Vector3 target)
+    public Vector3 GetSeekVector(Vector3 target)
     {
-        Vector3 desired = target - position;  // A vector pointing from the position to the target
-        // Scale to maximum speed
-        desired = desired.normalized * (activeSettings.maxSpeed);
-
 
         // Steering = Desired minus Velocity
-        Vector3 steer = desired - velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
+        _steer = ((target - position).normalized * activeSettings.maxSpeed - velocity).normalized ;
+        _steer = _steer.normalized * Mathf.Min(_steer.magnitude, activeSettings.maxForce);
          // Limit to maximum steering force
-        return steer;
+        return _steer;
     }
 
     void UpdateTransform()
@@ -109,14 +109,4 @@ public class SteeringAgent : Agent
     {
         freezePosition = isLocked;
     }
-
-
-    // Wraparound
-
-
-
-
-
-
-
 }
