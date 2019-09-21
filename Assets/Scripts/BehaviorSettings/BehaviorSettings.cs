@@ -14,39 +14,27 @@ public class BehaviorSettings : ScriptableObject {
     public float maxSpeed = 2;    // Maximum speed
 
     public float perceptionDistance { get; protected set; }
-
-    public List<SteeringBehavior> behaviors;
+    public float attention = 1;
 
     private void Awake()
     {
-        GetActiveBehaviors();
+        RefreshActiveBehaviors();
     }
     private void OnEnable()
     {
-        GetActiveBehaviors();
+        RefreshActiveBehaviors();
     }
 
 
-
-    private List<SteeringBehavior> m_allBehaviors;
-    public List<SteeringBehavior> allBehaviors
+    public List<SteeringBehavior> behaviors
     {
-        get
-        {
-            //return behaviors;
-            if (m_allBehaviors == null) { GetAllBehaviors(); }
-            return m_allBehaviors;
-        }
+        get; private set;
     }
 
-    private List<SteeringBehavior> m_activeBehaviors;
+
     public List<SteeringBehavior> activeBehaviors
     {
-        get
-        {
-            if (m_activeBehaviors == null) { GetActiveBehaviors(); }
-            return m_activeBehaviors;
-        }
+        get; private set;
     }
 
     public void AddBehavior(Type behaviorType)
@@ -59,16 +47,19 @@ public class BehaviorSettings : ScriptableObject {
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-
+        newBehavior.OnActiveStatusChange += OnBehaviorActiveChange;
         behaviors.Add(newBehavior);
-
+        RefreshActiveBehaviors();
     }
+
+
 
     public void RemoveBehavior(SteeringBehavior behavior)
     {
         AssetDatabase.RemoveObjectFromAsset(behavior);
         AssetDatabase.Refresh();
         behaviors.Remove(behavior);
+        RefreshActiveBehaviors();
     }
 
     public void ClearBehaviors()
@@ -79,38 +70,17 @@ public class BehaviorSettings : ScriptableObject {
         }
         AssetDatabase.Refresh();
 
-
         behaviors.Clear();
+        RefreshActiveBehaviors();
     }
 
-    private void GetAllBehaviors()
+    private void OnBehaviorActiveChange(bool isActive)
     {
-        m_allBehaviors = new List<SteeringBehavior>();
-        FieldInfo[] fields = this.GetType().GetFields();
-        foreach (FieldInfo field in fields)
-        {
-            //Debug.Log(field.Name + " " + field.FieldType.ToString());
-            if (field.FieldType.IsSubclassOf(typeof(SteeringBehavior)))
-            {
-                //Debug.Log("is behavior");
-                SteeringBehavior behavior = (SteeringBehavior)field.GetValue(this);
-                behavior.OnActiveStatusChange += GetActiveBehaviors;
-                m_allBehaviors.Add(behavior);
-            }
-        }
+        RefreshActiveBehaviors();
     }
 
-    private void GetActiveBehaviors()
+    private void RefreshActiveBehaviors()
     {
-        m_activeBehaviors = new List<SteeringBehavior>();
-        perceptionDistance = 0;
-        foreach (SteeringBehavior behavior in allBehaviors)
-        {
-            if (behavior.isActive)
-            {
-                m_activeBehaviors.Add(behavior);
-                perceptionDistance = Mathf.Max(perceptionDistance, behavior.effectiveRadius);
-            }
-        }
+       activeBehaviors = behaviors.Where(x => x.isActive).ToList();
     }
 }
