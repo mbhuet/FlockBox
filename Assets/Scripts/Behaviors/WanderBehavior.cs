@@ -15,7 +15,7 @@ public class WanderBehavior : SteeringBehavior {
         //wanderRotation *= Mathf.Deg2Rad;
         Vector3 wanderVector = Quaternion.AngleAxis(wanderRotation, Vector3.forward) * lastForward;
 
-        return wanderVector * mine.activeSettings.maxForce * weight;
+        return steer * mine.activeSettings.maxForce;
     }
 
 

@@ -63,7 +63,7 @@ public class PursuitBehavior : SteeringBehavior
 
         AttemptCatch(mine, closestTarget);
 
-        return mine.seek(predictedInterceptPosition) * weight;
+        return mine.GetSeekVector(predictedInterceptPosition);
 
     }
 

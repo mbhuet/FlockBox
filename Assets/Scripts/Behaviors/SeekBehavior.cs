@@ -50,7 +50,7 @@ public class SeekBehavior : SteeringBehavior {
         Vector3 steer = desired_velocity - mine.velocity;
         steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
-        return steer * weight;
+        return steer;
 
     }
 

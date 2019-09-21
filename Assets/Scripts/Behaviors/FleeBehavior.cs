@@ -38,7 +38,7 @@ public class FleeBehavior : SteeringBehavior
 
             mine.SetAttribute(fleeAttributeName, true);
 
-            return steer * weight;
+            return steer;
         }
         else
         {
