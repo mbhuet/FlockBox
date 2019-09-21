@@ -210,6 +210,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                 r_wrap = r;
                 c_wrap = c;
+                wrap_positionOffset = Vector3.zero;
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
@@ -241,25 +242,17 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     List<Agent> agentsOut;
                     if (sourceAgents.TryGetValue(tag, out agentsOut))
                     {
-
                         foreach (Agent agent in agentsOut)
                         {
                             AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
                             data.allAgents.AddFirst(wrappedAgent);
                             if (!data.sortedAgents.ContainsKey(tag)) data.sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
                             data.sortedAgents[tag].AddFirst(wrappedAgent);
-                            
                         }
                     }
-                }
-                
-
-                
-            }
-            
+                }   
+            }  
         }
-        
-
     }
 
     public static void AddZoneToNeighborhoods(Agent agent)
