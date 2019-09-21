@@ -21,11 +21,14 @@ public abstract class SteeringBehavior : ScriptableObject{
         {
             if(value != m_isActive)
             {
-                if (OnActiveStatusChange != null) OnActiveStatusChange.Invoke(value);
+                activeDirtyFlag = true;
             }
             m_isActive = value;
         }
     }
+
+    [HideInInspector]
+    public bool activeDirtyFlag;
 
     public float weight = 1;
     public float effectiveRadius = 10;

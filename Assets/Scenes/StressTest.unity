@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  neighborhoodCols: 50
-  neighborhoodRows: 50
+  neighborhoodCols: 60
+  neighborhoodRows: 45
   neighborhoodSize: {x: 10, y: 10}
 --- !u!4 &806428431
 Transform:
@@ -241,7 +241,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 50
+  orthographic size: 140
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

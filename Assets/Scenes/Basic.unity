@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  neighborhoodCols: 10
-  neighborhoodRows: 10
+  neighborhoodCols: 30
+  neighborhoodRows: 30
   neighborhoodSize: {x: 10, y: 10}
 --- !u!4 &806428431
 Transform:

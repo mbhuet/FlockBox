@@ -9,9 +9,10 @@ using System.IO;
 using UnityEditor;
 #endif
 
+[CreateAssetMenu(menuName = "BehaviorSettings")]
 public class BehaviorSettings : ScriptableObject {
     public float maxForce = 10;    // Maximum steering force
-    public float maxSpeed = 2;    // Maximum speed
+    public float maxSpeed = 15;    // Maximum speed
 
     public float perceptionDistance { get; protected set; }
     public float attention = 1;
@@ -25,31 +26,58 @@ public class BehaviorSettings : ScriptableObject {
         RefreshActiveBehaviors();
     }
 
-
+    [SerializeField]
+    private List<SteeringBehavior> m_behaviors;
     public List<SteeringBehavior> behaviors
     {
-        get; private set;
+        get
+        {
+            if (m_behaviors == null) m_behaviors = new List<SteeringBehavior>();
+            return m_behaviors;
+        }
+        private set
+        {
+            m_behaviors = value;
+            RefreshActiveBehaviors();
+        }
     }
 
-
+    private List<SteeringBehavior> m_activeBehaviors;
     public List<SteeringBehavior> activeBehaviors
     {
-        get; private set;
+        get
+        {
+            if (m_activeBehaviors == null) m_activeBehaviors = new List<SteeringBehavior>();
+            bool refresh = false;
+            foreach (SteeringBehavior behavior in behaviors)
+            {
+                if (behavior.activeDirtyFlag)
+                {
+                    refresh = true;
+                    behavior.activeDirtyFlag = false;
+                }
+            }
+            if (refresh) { RefreshActiveBehaviors(); }
+            return m_activeBehaviors;
+        }
+        private set
+        {
+            m_activeBehaviors = value;
+        }
     }
+
 
     public void AddBehavior(Type behaviorType)
     {
         
         SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance(behaviorType);
-        newBehavior.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy | HideFlags.NotEditable;
+        behaviors.Add(newBehavior);
 
         AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(this));
+        AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-
-        newBehavior.OnActiveStatusChange += OnBehaviorActiveChange;
-        behaviors.Add(newBehavior);
-        RefreshActiveBehaviors();
     }
 
 
@@ -59,7 +87,6 @@ public class BehaviorSettings : ScriptableObject {
         AssetDatabase.RemoveObjectFromAsset(behavior);
         AssetDatabase.Refresh();
         behaviors.Remove(behavior);
-        RefreshActiveBehaviors();
     }
 
     public void ClearBehaviors()
@@ -71,13 +98,8 @@ public class BehaviorSettings : ScriptableObject {
         AssetDatabase.Refresh();
 
         behaviors.Clear();
-        RefreshActiveBehaviors();
     }
 
-    private void OnBehaviorActiveChange(bool isActive)
-    {
-        RefreshActiveBehaviors();
-    }
 
     private void RefreshActiveBehaviors()
     {
