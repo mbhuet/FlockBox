@@ -7,7 +7,7 @@ using UnityEngine;
 public class AvoidanceBehavior : SteeringBehavior {
 
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
+    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings, this);
         if (obstacles.First == null) return Vector3.zero;

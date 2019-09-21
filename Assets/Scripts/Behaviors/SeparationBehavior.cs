@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class SeparationBehavior : SteeringBehavior {
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
+    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Vector3 steer = Vector3.zero;
         int count = 0;

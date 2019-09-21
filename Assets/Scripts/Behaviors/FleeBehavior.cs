@@ -7,7 +7,7 @@ public class FleeBehavior : SteeringBehavior
 {
     public const string fleeAttributeName = "fleeing";
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
+    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         Dictionary<string, LinkedList<AgentWrapped>> sourroundingTargets = surroundings.sortedAgents;
 

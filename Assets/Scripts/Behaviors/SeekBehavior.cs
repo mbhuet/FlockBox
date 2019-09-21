@@ -9,7 +9,7 @@ public class SeekBehavior : SteeringBehavior {
     public const string targetIDAttributeName = "seekTargetID";
 
 
-    public override Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings)
+    public override Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
