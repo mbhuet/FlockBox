@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 
 //Each SteeringBehavior will be instantiated ONCE
@@ -10,10 +11,21 @@ using UnityEditor;
 //[DefineCategory("Debug", 3f, "drawVectorLine", "vectorColor")]
 [System.Serializable]
 public abstract class SteeringBehavior : ScriptableObject{
-    public delegate void BehaviorEvent();
-    public BehaviorEvent OnActiveStatusChange;
+    public Action<bool> OnActiveStatusChange;
 
-    public bool isActive = true;
+    private bool m_isActive = true;
+    public bool isActive
+    {
+        get { return m_isActive; }
+        private set
+        {
+            if(value != m_isActive)
+            {
+                if (OnActiveStatusChange != null) OnActiveStatusChange.Invoke(value);
+            }
+            m_isActive = value;
+        }
+    }
 
     public float weight = 1;
     public float effectiveRadius = 10;
@@ -22,15 +34,12 @@ public abstract class SteeringBehavior : ScriptableObject{
     public bool drawVectorLine;
     public Color vectorColor = Color.white;
 
-    public abstract Vector3 GetSteeringBehaviorVector(SteeringAgent mine, SurroundingsInfo surroundings);
+    public abstract Vector3 GetSteeringBehaviorVector(ref Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
 
-
-
-    private void InvokeActiveChangedEvent(bool active)
+    protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
     {
-        if (OnActiveStatusChange != null) OnActiveStatusChange();
+        return (Vector3.SqrMagnitude(mine.position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
     }
-
 
     public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
     {
