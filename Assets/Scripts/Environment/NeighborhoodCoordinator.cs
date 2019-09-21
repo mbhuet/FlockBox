@@ -189,7 +189,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static void GetSurroundings(ref SurroundingsInfo data, SurroundingsDefinition def, float perceptionDistance)//int neighborhoodRadius)
     {
-
         def.radius = 1+(Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
 
@@ -233,11 +232,8 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
 
                 }
-
-                //toDraw.Add(neighborhoods[r_wrap, c_wrap]);//.neighborhoodCenter, neighborhoodSize_static);
-
                 
-                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetAgents();
+                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetSortedAgents();
                 foreach (string tag in sourceAgents.Keys)
                 {
                     List<Agent> agentsOut;
@@ -246,7 +242,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
                         foreach (Agent agent in agentsOut)
                         {
-                            
                             AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
                             data.allAgents.AddFirst(wrappedAgent);
                             if (!data.sortedAgents.ContainsKey(tag)) data.sortedAgents.Add(tag, new LinkedList<AgentWrapped>());

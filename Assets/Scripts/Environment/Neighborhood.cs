@@ -55,20 +55,21 @@ public class Neighborhood
         if (agent.IsStationary()) stationaryAgents.Remove(agent);
 
     }
-    public Dictionary<string, List<Agent>> GetAgents()
+    public Dictionary<string, List<Agent>> GetSortedAgents()
     {
         return sortedAgents;
     }
-    public List<Agent> GetAgents(string tag)
+
+    public void GetAgentsWithTag(string tag, out List<Agent> agentsOut)
     {
-        List<Agent> agentsOut;
+        
         if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            return agentsOut;
+            return;
         }
         else
         {
-            return new List<Agent>();
+            agentsOut = new List<Agent>();
         }
     }
 
