@@ -12,9 +12,7 @@ public class CohesionBehavior : SteeringBehavior {
         float count = 0;
         foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
         {
-
-            float d = Vector3.Distance(mine.position, other.wrappedPosition);
-            if ((d > 0) && (d < effectiveRadius))
+            if (WithinEffectiveRadius(mine, other))
             {
                 float modFactor = 1;
                 sum += (other.wrappedPosition); // Add position
