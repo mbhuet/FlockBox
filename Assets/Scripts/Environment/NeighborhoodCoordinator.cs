@@ -190,7 +190,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static void GetSurroundings(ref SurroundingsInfo data, SurroundingsDefinition def, float perceptionDistance)//int neighborhoodRadius)
     {
 
-        def.radius = (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
+        def.radius = 1+(Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
 
         if (data.allAgents == null) data.allAgents = new LinkedList<AgentWrapped>();
