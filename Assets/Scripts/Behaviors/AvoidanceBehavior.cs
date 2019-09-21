@@ -42,7 +42,7 @@ public class AvoidanceBehavior : SteeringBehavior {
         Vector3 steer = closestHitPoint - mostThreateningObstacle.position;
 
         steer = steer.normalized * mine.activeSettings.maxForce;
-        return steer * weight;
+        return steer;
     }
 
     
