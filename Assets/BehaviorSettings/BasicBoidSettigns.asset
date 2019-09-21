@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7831778746045899666
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b67182167a28947aa99ac9d046431e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &-7399341795839993278
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -102,9 +120,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4332d8a7607dd74f9cdccb322ddd358, type: 3}
   m_Name: BasicBoidSettigns
   m_EditorClassIdentifier: 
-  maxForce: 10
-  maxSpeed: 10
+  maxForce: 40
+  maxSpeed: 60
   attention: 1
+--- !u!114 &432162865311064849
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e71e76147b0912846b0c23fda24f21b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 0.712
+  effectiveRadius: 10
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &783471226606858659
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -225,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b2f8226ee5f0b428c27b1e01f96119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 1
+  weight: 0.168
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
