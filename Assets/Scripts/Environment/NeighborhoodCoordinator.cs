@@ -45,7 +45,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static Vector2 minCorner { get; private set; }
     public static Vector2 size { get; private set; }
 
-    public static Dictionary<SurroundingsDefinition, SurroundingsInfo> cachedSurroundings;
 
     private static List<Neighborhood> toDraw = new List<Neighborhood>();
 
@@ -75,10 +74,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
     }
 
-    private void LateUpdate()
-    {
-        if(cachedSurroundings != null) cachedSurroundings.Clear();
-    }
+
 
     private void OnDrawGizmos()
     {
@@ -195,14 +191,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
         int neighborhoodRadius = 1+ (Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (cachedSurroundings == null) cachedSurroundings = new Dictionary<SurroundingsDefinition, SurroundingsInfo>();
         
         SurroundingsDefinition def = new SurroundingsDefinition(homeNeighborhoodCoords.row, homeNeighborhoodCoords.col, neighborhoodRadius);
         SurroundingsInfo data;
-        if (cachedSurroundings.TryGetValue(def, out data))
-        {
-            return data;
-        }
 
 
         LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
@@ -266,7 +257,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
         data = new SurroundingsInfo(allAgents, sortedAgents);
 
-        cachedSurroundings[def] = data;
         return data;
     }
 
