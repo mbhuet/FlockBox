@@ -65,6 +65,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private void Update()
     {
+
         if (trackingTarget!= null && trackingTarget.hasChanged)
         {
             UpdateStaticValues(trackingTarget);
@@ -206,8 +207,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             
             for (int c = def.neighborhoodCoords.col - def.radius; c <= def.neighborhoodCoords.col + def.radius; c++)
             {
-                
 
+                r_wrap = r;
+                c_wrap = c;
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
