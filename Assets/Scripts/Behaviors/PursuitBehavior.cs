@@ -109,7 +109,7 @@ public class PursuitBehavior : SteeringBehavior
         foreach (AgentWrapped target in nearbyTargets)
         {
             //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
-            float dist = (target.wrappedPosition - agent.position).magnitude;
+            float dist = (target.wrappedPosition - agent.position).sqrMagnitude;
             //if(dist <= target.target.radius) AttemptCatch(agent, target);
             if (dist < closeDist && target.agent.CanBePursuedBy(agent))
             {
