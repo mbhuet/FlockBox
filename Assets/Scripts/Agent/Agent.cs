@@ -17,7 +17,7 @@ public abstract class Agent : MonoBehaviour {
     public bool useZLayering;
     public bool drawDebug = false;
 
-    protected Coordinates lastNeighborhood = new Coordinates(0, 0);
+    protected SurroundingsDefinition myNeighborhood = new SurroundingsDefinition(0,0,0);
 
     private AgentVisual m_visual;
     public AgentVisual visual
@@ -126,7 +126,7 @@ public abstract class Agent : MonoBehaviour {
         if (!isAlive) return;
 //        Debug.Log(this.name +" findNeighborhood");
         Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
-        if (currentNeighborhood.row != lastNeighborhood.row || currentNeighborhood.col != lastNeighborhood.col)
+        if (currentNeighborhood.row != myNeighborhood.neighborhoodCoords.row || currentNeighborhood.col != myNeighborhood.neighborhoodCoords.col)
         {
             RemoveFromLastNeighborhood();
             //Debug.Log(this.name + " add to neighborhood " + currentNeighborhood);
@@ -137,15 +137,15 @@ public abstract class Agent : MonoBehaviour {
     protected void AddToNeighborhood(Coordinates coords)
     {
         NeighborhoodCoordinator.AddAgent(this, coords);
-        lastNeighborhood.row = coords.row;
-        lastNeighborhood.col = coords.col;
+        myNeighborhood.neighborhoodCoords.row = coords.row;
+        myNeighborhood.neighborhoodCoords.col = coords.col;
     }
 
     protected void RemoveFromLastNeighborhood()
     {
 //        Debug.Log(this.name + " remove from last neighborhood");
-        NeighborhoodCoordinator.RemoveAgent(this, lastNeighborhood);
-        lastNeighborhood = Coordinates.nowhere;
+        NeighborhoodCoordinator.RemoveAgent(this, myNeighborhood.neighborhoodCoords);
+        myNeighborhood.neighborhoodCoords = Coordinates.nowhere;
 
     }
 
