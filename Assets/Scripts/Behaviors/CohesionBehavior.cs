@@ -22,7 +22,7 @@ public class CohesionBehavior : SteeringBehavior {
         if (count > 0)
         {
             sum /= (count);
-            steer = mine.GetSeekVector(sum);  // Steer towards the position
+            mine.GetSeekVector(out steer, sum);  // Steer towards the position
         }
         else
         {

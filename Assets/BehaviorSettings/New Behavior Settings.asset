@@ -18,7 +18,7 @@ MonoBehaviour:
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 1
-  vectorColor: {r: 0, g: 0.7241845, b: 1, a: 1}
+  vectorColor: {r: 0, g: 0.47505808, b: 1, a: 1}
 --- !u!114 &-7301183284218897065
 MonoBehaviour:
   m_ObjectHideFlags: 1

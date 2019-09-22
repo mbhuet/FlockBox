@@ -11,8 +11,6 @@ using UnityEngine;
 [System.Serializable]
 public class SteeringAgent : Agent
 {
-
-    
     public Vector3 acceleration { get; protected set; }
 
     protected float speedThrottle = 1;
@@ -27,13 +25,14 @@ public class SteeringAgent : Agent
         if (!isAlive) return;
         NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, myNeighborhood, activeSettings.perceptionDistance);
         Flock(mySurroundings);
+
         if (freezePosition) return;
+
         velocity += (acceleration) * Time.deltaTime;
         velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
-        //Debug.Log(velocity * Time.deltaTime);
+
         position += (velocity * Time.deltaTime);
         position = NeighborhoodCoordinator.WrapPosition(position);
-        // Reset accelertion to 0 each cycle
         acceleration *= 0;
 
         UpdateTransform();
@@ -54,8 +53,6 @@ public class SteeringAgent : Agent
 
     private Vector3 steer = Vector3.zero;
 
-    // We accumulate a new acceleration each time based on three rules
-    //private Vector3 steer = Vector3.zero; //reuse the same Vector3 for optimization,
     void Flock(SurroundingsInfo surroundings)
     {
         foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
@@ -68,16 +65,11 @@ public class SteeringAgent : Agent
         }
     }
 
-    private Vector3 _steer;
-
-    public Vector3 GetSeekVector(Vector3 target)
+    public void GetSeekVector(out Vector3 steer, Vector3 target)
     {
-
         // Steering = Desired minus Velocity
-        _steer = ((target - position).normalized * activeSettings.maxSpeed - velocity).normalized ;
-        _steer = _steer.normalized * Mathf.Min(_steer.magnitude, activeSettings.maxForce);
-         // Limit to maximum steering force
-        return _steer;
+        steer = (target - position).normalized * activeSettings.maxSpeed - velocity;
+        steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
     }
 
     void UpdateTransform()

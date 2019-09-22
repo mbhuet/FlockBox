@@ -65,7 +65,7 @@ public class PursuitBehavior : SteeringBehavior
 
         AttemptCatch(mine, closestTarget);
 
-        steer = mine.GetSeekVector(predictedInterceptPosition);
+        mine.GetSeekVector(out steer, predictedInterceptPosition);
 
     }
 
