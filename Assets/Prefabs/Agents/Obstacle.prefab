@@ -94,40 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b0b6f1a66090554699d905b0b3f7a49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 24354
-  dbg: 0
-  Prefs:
-    _Buckets: ffffffff0200000000000000ffffffff0100000003000000ffffffff
-    _HashCodes: 2720fe29a0767f5bca20e65df7f12c47000000000000000000000000
-    _Next: ffffffffffffffffffffffffffffffff000000000000000000000000
-    _Count: 4
-    _Version: 5528
-    _FreeList: -1
-    _FreeCount: 0
-    _Keys: 2720fea9a0767fdbca20e65df7f12cc7000000000000000000000000
-    _Values:
-    - ValueString: 
-      ValueFloat: 4
-      Type: 0
-    - ValueString: 
-      ValueFloat: 10
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 2
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-    - ValueString: 
-      ValueFloat: 0
-      Type: 0
-  radius: 10
+  radius: 12
   useZLayering: 0
   drawDebug: 1
   maxPursuers: 10
@@ -140,7 +107,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1421210762913360}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b0d7bd778ac9214ab6496561221bd95, type: 3}
+  m_Script: {fileID: 11500000, guid: 9af78760bfac03c4395125dbfbb4de86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sprite: {fileID: 212102296226401466}

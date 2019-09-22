@@ -17,7 +17,7 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 0, g: 0.47505808, b: 1, a: 1}
 --- !u!114 &-7301183284218897065
 MonoBehaviour:
@@ -36,7 +36,7 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 0.9670751, g: 1, b: 0, a: 1}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -48,14 +48,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40a65f79797f9a148a9a3285d7e776b3, type: 3}
-  m_Name: New Behavior Settings
+  m_Name: AvoidObstacle
   m_EditorClassIdentifier: 
-  maxForce: 10
+  maxForce: 16.71
   maxSpeed: 15
   behaviors:
   - {fileID: 7466780212334318948}
   - {fileID: -7656317792789693306}
   - {fileID: -7301183284218897065}
+  - {fileID: 871545787793108914}
+--- !u!114 &871545787793108914
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cff726b0ce7bbd745954f11601b2c5c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  effectiveRadius: 10
+  useTagFilter: 1
+  filterTags:
+  - Obstacle
+  drawVectorLine: 1
+  vectorColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &7466780212334318948
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -73,5 +94,5 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 1, g: 0, b: 0, a: 1}
