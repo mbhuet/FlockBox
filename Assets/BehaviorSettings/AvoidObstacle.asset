@@ -93,6 +93,8 @@ MonoBehaviour:
   weight: 1
   effectiveRadius: 10
   useTagFilter: 0
-  filterTags: []
+  filterTags:
+  - 
+  - 
   drawVectorLine: 0
   vectorColor: {r: 1, g: 0, b: 0, a: 1}
