@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.619
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.725
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
@@ -50,8 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a65f79797f9a148a9a3285d7e776b3, type: 3}
   m_Name: ClassicBoid
   m_EditorClassIdentifier: 
-  maxForce: 10
-  maxSpeed: 15
+  maxForce: 20
+  maxSpeed: 30
   behaviors:
   - {fileID: 7466780212334318948}
   - {fileID: -7656317792789693306}
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.343
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []

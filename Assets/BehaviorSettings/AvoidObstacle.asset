@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.619
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.725
   effectiveRadius: 10
   useTagFilter: 1
   filterTags:
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 0.343
   effectiveRadius: 10
   useTagFilter: 0
   filterTags:
