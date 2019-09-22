@@ -15,10 +15,11 @@ public class SteeringBehaviorDrawer : PropertyDrawer
 
         // Using BeginProperty / EndProperty on the parent property means that
         // prefab override logic works on the entire property.
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("isActive"));
+        SerializedProperty isActiveProp = serializedObject.FindProperty("isActive");
+        EditorGUILayout.PropertyField(isActiveProp);
 
 
-        if (behavior.IsActive)
+        if (isActiveProp.boolValue)
         {
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(20);
@@ -28,54 +29,54 @@ public class SteeringBehaviorDrawer : PropertyDrawer
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("effectiveRadius"));
 
-
-            bool useTagFilter = true;// GUILayout.Toggle(useTagFilter, "Use Tag Filter");
-            if (useTagFilter)
+            SerializedProperty useTag = serializedObject.FindProperty("useTagFilter");
+            EditorGUILayout.PropertyField(useTag);
+            if (useTag.boolValue)
             {
                 SerializedProperty tags = serializedObject.FindProperty("filterTags");
-                GUILayout.BeginVertical("BOX");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+                GUILayout.BeginVertical("BOX", GUILayout.ExpandWidth(true));
 
                 for (int i=0; i<tags.arraySize; i++)
                 {
                     GUILayout.BeginHorizontal();
 
                     tags.GetArrayElementAtIndex(i).stringValue = EditorGUILayout.TagField(tags.GetArrayElementAtIndex(i).stringValue);
-                    if (GUILayout.Button("X", GUILayout.Width(20)))
+                    if (GUILayout.Button("X", GUILayout.Width(20), GUILayout.Height(14)))
                     {
                         behavior.RemoveTag(i);
                     }
                     GUILayout.EndHorizontal();
 
                 }
-                if (GUILayout.Button("Add Tag"))
+                if (GUILayout.Button("+ Add Tag", GUILayout.Width(80)))
                 {
                     behavior.AddTag();
-                    //tags.InsertArrayElementAtIndex(tags.arraySize);
                 }
+
                 GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
             }
-           
 
 
 
-            GUILayout.Space(10);
-            bool drawVectorLine = false;// GUILayout.Toggle(drawVectorLine, "Draw Steering Vector");
-            if (drawVectorLine)
+            SerializedProperty drawVectorProp = serializedObject.FindProperty("drawVectorLine");
+            EditorGUILayout.PropertyField(drawVectorProp);
+            if (drawVectorProp.boolValue)
             {
-                //vectorColor = EditorGUILayout.ColorField("Vector Color", vectorColor);
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+                SerializedProperty color = serializedObject.FindProperty("vectorColor");
+                color.colorValue = EditorGUILayout.ColorField(color.colorValue);
+                EditorGUILayout.EndHorizontal();
             }
-             
 
-
-            //Texture2D texture = Resources.Load<Texture2D>("Sprites/Icons/" + m_ItemDatabase.itemDatabase[i].itemName);
-            //GUILayout.Label(texture);
+            GUILayout.Space(5);
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
         }
-        // Draw label
-        //position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
-
         serializedObject.ApplyModifiedProperties();
     }
 
