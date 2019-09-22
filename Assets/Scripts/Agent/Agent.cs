@@ -121,7 +121,7 @@ public abstract class Agent : MonoBehaviour {
 
     }
 
-    protected void FindNeighborhood()
+    protected virtual void FindNeighborhood()
     {
         if (!isAlive) return;
         Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
@@ -140,8 +140,13 @@ public abstract class Agent : MonoBehaviour {
 
     protected void RemoveFromLastNeighborhood()
     {
-        NeighborhoodCoordinator.RemoveAgent(this, myNeighborhood.neighborhoodCoords);
+        RemoveFromNeighborhood(myNeighborhood.neighborhoodCoords);
         myNeighborhood.neighborhoodCoords = Coordinates.nowhere;
+    }
+
+    protected void RemoveFromNeighborhood(Coordinates coords)
+    {
+        NeighborhoodCoordinator.RemoveAgent(this, coords);
     }
 
     public virtual void Kill()

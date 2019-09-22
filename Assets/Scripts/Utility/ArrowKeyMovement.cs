@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ArrowKeyMovement : MonoBehaviour {
-    public float speed;
+    public float speed = 10;
     public bool useZLayering = false;
 	// Update is called once per frame
 	void Update () {

@@ -27,16 +27,16 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private static Neighborhood[,] neighborhoods;
 
     private static bool neighborhoodsInitialized = false;
-    private const float defaultNeighborhoodDimension = 10;
+    private const float defaultNeighborhoodSize = 10;
 
     public bool displayGizmos;
     public int neighborhoodCols = 10;
     public int neighborhoodRows = 10;
-    public Vector2 neighborhoodSize = Vector2.one * defaultNeighborhoodDimension;
+    public float neighborhoodSize = 10;
 
     private static int neighborhoodCols_static;
     private static int neighborhoodRows_static;
-    private static Vector2 neighborhoodSize_static;
+    private static float neighborhoodSize_static;
     private static Vector2 neighborhoodsCenter_static;
     private Transform trackingTarget;
 
@@ -92,15 +92,15 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
                 if (toDraw.Contains(neighborhoods[r, c]))
                 {
-                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
                 }
                 if (neighborhoods[r, c].IsOccupied())
                 {
-                    Gizmos.DrawCube(neighborhoodPos, neighborhoodSize);
+                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
                 }
 
 
-                Gizmos.DrawWireCube(neighborhoodPos, neighborhoodSize);
+                Gizmos.DrawWireCube(neighborhoodPos, Vector2.one * neighborhoodSize);
 
 
             }
@@ -115,22 +115,21 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         Vector2 viewExtents = new Vector2(Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize);
         float wrappingPadding = 1;
         
-        Vector2 neighborhoodSize = Vector2.one * defaultNeighborhoodDimension;
-        int neighborhoodCols = Mathf.FloorToInt((viewExtents.x + wrappingPadding) * 2 / neighborhoodSize.x) + 1;
-        int neighborhoodRows = Mathf.FloorToInt((viewExtents.y + wrappingPadding) * 2 / neighborhoodSize.y) + 1;
+        int neighborhoodCols = Mathf.FloorToInt((viewExtents.x + wrappingPadding) * 2 / defaultNeighborhoodSize) + 1;
+        int neighborhoodRows = Mathf.FloorToInt((viewExtents.y + wrappingPadding) * 2 / defaultNeighborhoodSize) + 1;
 
-        InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, Camera.main.transform);
+        InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, defaultNeighborhoodSize, Camera.main.transform);
     }
 
     private static void UpdateStaticValues(Transform target)
     {
         neighborhoodsCenter_static = target.position;
-        maxCorner = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
-        minCorner = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static.x) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static.y) / 2f;
+        maxCorner = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
+        minCorner = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
     }
 
 
-    private static void InitializeNeighborhoods(int rows, int cols, Vector2 neighborhood_size, Transform centerTarget)
+    private static void InitializeNeighborhoods(int rows, int cols, float neighborhood_size, Transform centerTarget)
     {
         Debug.Log("NeighborhoodCoordinator Init " + rows + " " + cols + " " + neighborhood_size);
 
@@ -145,7 +144,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         {
             for (int c = 0; c < cols; c++)
             {
-                Vector2 neighborhoodPos = neighborhoodsCenter_static + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size.x, ((r - rows / 2f) + .5f) * neighborhood_size.y);
+                Vector2 neighborhoodPos = neighborhoodsCenter_static + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size, ((r - rows / 2f) + .5f) * neighborhood_size);
                 neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
             }
         }
@@ -179,8 +178,8 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
         Coordinates coords = new Coordinates();
         position = WrapPosition(position);
-        coords.col = Mathf.FloorToInt((position.x - neighborhoodsCenter_static.x + neighborhoodCols_static / 2f * neighborhoodSize_static.x) / neighborhoodSize_static.x);
-        coords.row = Mathf.FloorToInt((position.y - neighborhoodsCenter_static.y + neighborhoodRows_static / 2f * neighborhoodSize_static.y) / neighborhoodSize_static.y);
+        coords.col = Mathf.FloorToInt((position.x - neighborhoodsCenter_static.x + neighborhoodCols_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
+        coords.row = Mathf.FloorToInt((position.y - neighborhoodsCenter_static.y + neighborhoodRows_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
         coords.col = Mathf.Clamp(coords.col, 0, neighborhoodCols_static-1);
         coords.row = Mathf.Clamp(coords.row, 0, neighborhoodRows_static-1);
         return coords;
@@ -190,7 +189,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static void GetSurroundings(ref SurroundingsInfo data, SurroundingsDefinition def, float perceptionDistance)//int neighborhoodRadius)
     {
-        def.radius = 1+(Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static.x));
+        def.radius = 1+(Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
 
         if (data.allAgents == null) data.allAgents = new LinkedList<AgentWrapped>();
@@ -214,25 +213,25 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 if (r < 0)
                 {
                     r_wrap = neighborhoodRows_static + r;
-                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static.y;
+                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static;
 
                 }
                 else if (r >= neighborhoodRows_static)
                 {
                     r_wrap = r - neighborhoodRows_static;
-                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static.y;
+                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static;
 
                 }
                 if (c < 0)
                 {
                     c_wrap = neighborhoodCols_static + c;
-                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static.x;
+                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static;
 
                 }
                 else if (c >= neighborhoodCols_static)
                 {
                     c_wrap = c - neighborhoodCols_static;
-                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static.x;
+                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static;
 
                 }
                 
@@ -255,10 +254,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
     }
 
-    public static void AddZoneToNeighborhoods(Agent agent)
+    public static List<Coordinates> AddZoneToNeighborhoods(Agent agent)
     {
+        List<Coordinates> occupyingCoordinates = new List<Coordinates>();
         Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(agent.position);
-        int radius = 1 + Mathf.FloorToInt((agent.radius + Agent.forceFieldDistance) / neighborhoodSize_static.x);
+        int radius = 1 + Mathf.FloorToInt((agent.radius + Agent.forceFieldDistance) / neighborhoodSize_static);
         //        Debug.Log((obs.radius + Obstacle.forceFieldDistance) + " " + radius);
         for (int r = centerCoords.row - radius; r <= centerCoords.row + radius; r++)
         {
@@ -269,11 +269,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     Neighborhood checkNeighborhood = neighborhoods[r, c];
                     // Find the closest point to the circle within the rectangle
                     float closestX = Mathf.Clamp(agent.position.x,
-                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static.x / 2f,
-                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static.x / 2f);
+                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static / 2f,
+                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static / 2f);
                     float closestY = Mathf.Clamp(agent.position.y,
-                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static.y / 2f,
-                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static.y / 2f);
+                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
+                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f);
 
                     // Calculate the distance between the circle's center and this closest point
                     float distanceX = agent.position.x - closestX;
@@ -282,20 +282,24 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     // If the distance is less than the circle's radius, an intersection occurs
                     float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
                     if (distanceSquared < ((agent.radius + Agent.forceFieldDistance) * (agent.radius + Agent.forceFieldDistance)))
+                    {
                         neighborhoods[r, c].AddAgent(agent);
+                        occupyingCoordinates.Add(new Coordinates(r, c));
+                    }
                 }
             }
         }
+        return occupyingCoordinates;
     }
 
     public static Vector3 WrapPosition(Vector3 position)
     {
         bool mustWrap = false;
         Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static.x * neighborhoodCols_static); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static.y * neighborhoodRows_static); mustWrap = true; }
+        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
+        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
+        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
+        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
         if (mustWrap) position = wrappedPosition;
         return wrappedPosition;
     }

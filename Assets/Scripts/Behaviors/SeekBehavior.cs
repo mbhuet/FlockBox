@@ -65,7 +65,7 @@ public class SeekBehavior : SteeringBehavior {
     static void DisengagePursuit(SteeringAgent mine, int targetID)
     {
         mine.SetAttribute(targetIDAttributeName, -1);
-        Target.InformOfPursuit(false, mine, targetID);
+        Agent.InformOfPursuit(false, mine, targetID);
     }
 
     static void AttemptCatch(SteeringAgent mine, AgentWrapped chosenTargetWrapped)

@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AgentSpawner : MonoBehaviour {
-    public Agent boidPrefab;
+    public Agent prefab;
     public int numStartSpawns;
 
     // Use this for initialization
     void Start() {
         Spawn(numStartSpawns);
     }
-
-    // Update is called once per frame
     
 
     void Spawn(int numBoids)
     {
+        if (prefab == null)
+        {
+            Debug.LogWarning("AgentSpawner.prefab is null");
+            return;
+        }
         float randomSpawnRadius = Camera.main.orthographicSize / 2f;
         for (int i = 0; i < numBoids; i++)
         {
@@ -25,9 +28,13 @@ public class AgentSpawner : MonoBehaviour {
 
     void Spawn(int numBoids, Vector2 pos)
     {
+        if(prefab == null)
+        {
+            return;
+        }
         for (int i = 0; i < numBoids; i++)
         {
-            GameObject.Instantiate<Agent>(boidPrefab, pos, Quaternion.identity);
+            GameObject.Instantiate<Agent>(prefab, pos, Quaternion.identity);
         }
     }
 
