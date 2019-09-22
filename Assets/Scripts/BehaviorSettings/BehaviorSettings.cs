@@ -15,7 +15,6 @@ public class BehaviorSettings : ScriptableObject {
     public float maxSpeed = 15;    // Maximum speed
 
     public float perceptionDistance { get; protected set; }
-    public float attention = 1;
 
     private void Awake()
     {
@@ -26,39 +25,19 @@ public class BehaviorSettings : ScriptableObject {
         RefreshActiveBehaviors();
     }
 
-    [SerializeField]
-    private List<SteeringBehavior> m_behaviors;
-    public List<SteeringBehavior> behaviors
+    public int NumBehaviors
     {
-        get
-        {
-            if (m_behaviors == null) m_behaviors = new List<SteeringBehavior>();
-            return m_behaviors;
-        }
-        private set
-        {
-            m_behaviors = value;
-            RefreshActiveBehaviors();
-        }
+        get { return behaviors.Length; }
     }
+    [SerializeField]
+    private SteeringBehavior[] behaviors = new SteeringBehavior[0];
 
     private List<SteeringBehavior> m_activeBehaviors;
     public List<SteeringBehavior> activeBehaviors
     {
         get
         {
-            if (m_activeBehaviors == null) m_activeBehaviors = new List<SteeringBehavior>();
-            bool refresh = false;
-            foreach (SteeringBehavior behavior in behaviors)
-            {
-                if (behavior.activeDirtyFlag)
-                {
-                    refresh = true;
-                    behavior.activeDirtyFlag = false;
-                }
-            }
-            if (refresh) { RefreshActiveBehaviors(); }
-            return m_activeBehaviors;
+            return behaviors.Where(x => x.IsActive).ToList();
         }
         private set
         {
@@ -67,11 +46,19 @@ public class BehaviorSettings : ScriptableObject {
     }
 
 
+    public SteeringBehavior GetBehavior(int index)
+    {
+        if (index < 0 || index >= behaviors.Length) return null;
+        return behaviors[index];
+    }
+
     public void AddBehavior(Type behaviorType)
     {
         
         SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance(behaviorType);
-        behaviors.Add(newBehavior);
+        newBehavior.hideFlags = HideFlags.HideInHierarchy;
+        Array.Resize(ref behaviors, behaviors.Length + 1);
+        behaviors[behaviors.Length - 1] = newBehavior;
 
         AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(this));
         AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
@@ -83,26 +70,33 @@ public class BehaviorSettings : ScriptableObject {
 
 
     public void RemoveBehavior(SteeringBehavior behavior)
-    {
-        AssetDatabase.RemoveObjectFromAsset(behavior);
-        AssetDatabase.Refresh();
-        behaviors.Remove(behavior);
+    { 
+        if (behaviors.Length == 0) return;
+        int remIndex = Array.IndexOf(behaviors, behavior);
+        if (remIndex< 0) return;
+
+        RemoveBehavior(remIndex);
     }
 
-    public void ClearBehaviors()
+    public void RemoveBehavior(int index)
     {
-        foreach(SteeringBehavior behavior in behaviors)
+        AssetDatabase.RemoveObjectFromAsset(behaviors[index]);
+        AssetDatabase.Refresh();
+
+        SteeringBehavior[] newBehaviors = new SteeringBehavior[behaviors.Length - 1];
+        for (int i = 0; i < behaviors.Length; i++)
         {
-            AssetDatabase.RemoveObjectFromAsset(behavior);
+            if (i == index) { }
+            else if (i > index) { newBehaviors[i - 1] = behaviors[i]; }
+            else { newBehaviors[i] = behaviors[i]; }
         }
-        AssetDatabase.Refresh();
-
-        behaviors.Clear();
+        behaviors = newBehaviors;
     }
+
 
 
     private void RefreshActiveBehaviors()
     {
-       activeBehaviors = behaviors.Where(x => x.isActive).ToList();
+       activeBehaviors = behaviors.Where(x => x.IsActive).ToList();
     }
 }

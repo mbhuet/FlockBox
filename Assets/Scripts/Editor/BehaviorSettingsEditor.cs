@@ -10,6 +10,9 @@ using System.Reflection;
 [CustomEditor(typeof(BehaviorSettings), true)]
 public class BehaviorSettingsEditor : Editor
 {
+    const string activeStyle = "ProgressBarBar";
+    const string inactiveStyle = "ProgressBarBack";
+
     private BehaviorSettings targetSettings;
     private SerializedProperty _behaviors;
     private SerializedProperty _maxForce;
@@ -28,26 +31,31 @@ public class BehaviorSettingsEditor : Editor
     {
         EditorGUILayout.PropertyField(_maxSpeed);
         EditorGUILayout.PropertyField(_maxForce);
-        //EditorGUILayout.HelpBox("Create items inside of ItemDatabase.cs", MessageType.Info);
-
-
-
-        foreach (SteeringBehavior behavior in targetSettings.behaviors)
+        
+        for (int i = 0; i<targetSettings.NumBehaviors; i++)
         {
-            if (behavior.OnInspectorGUI())
+            SteeringBehavior behavior = targetSettings.GetBehavior(i);
+
+            EditorGUILayout.BeginVertical("BOX");
+            EditorGUILayout.BeginHorizontal(behavior.IsActive? activeStyle : inactiveStyle);
+            EditorGUILayout.LabelField(behavior.GetType().ToString());
+            if (GUILayout.Button("Remove", GUILayout.Width(60)))
             {
-                toRemove.Add(behavior);
+                targetSettings.RemoveBehavior(behavior);
             }
-            GUILayout.Space(10);
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(-20);
+            EditorGUILayout.PropertyField(_behaviors.GetArrayElementAtIndex(i));
+            
+
+            GUILayout.Space(5);
+
+            EditorGUILayout.EndVertical();
         }
+        
 
-
-        foreach(SteeringBehavior rem in toRemove)
-        {
-            targetSettings.RemoveBehavior(rem);
-        }
-        toRemove.Clear();
-
+        
         GUILayout.BeginVertical("BOX");
         GUILayout.Space(10);
         GUILayout.BeginHorizontal();

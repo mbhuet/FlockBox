@@ -13,22 +13,9 @@ using System;
 public abstract class SteeringBehavior : ScriptableObject{
     public Action<bool> OnActiveStatusChange;
 
-    private bool m_isActive = true;
-    public bool isActive
-    {
-        get { return m_isActive; }
-        private set
-        {
-            if(value != m_isActive)
-            {
-                activeDirtyFlag = true;
-            }
-            m_isActive = value;
-        }
-    }
-
-    [HideInInspector]
-    public bool activeDirtyFlag;
+    public bool IsActive => isActive;
+    [SerializeField]
+    private bool isActive = true;
 
     public float weight = 1;
     public float effectiveRadius = 10;
@@ -71,6 +58,7 @@ public abstract class SteeringBehavior : ScriptableObject{
     }
 
 #if UNITY_EDITOR
+
     /// <summary>
     /// return draw height
     /// </summary>
