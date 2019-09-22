@@ -20,7 +20,7 @@ public abstract class SteeringBehavior : ScriptableObject{
     public float weight = 1;
     public float effectiveRadius = 10;
     public bool useTagFilter;
-    public List<string> filterTags;
+    public string[] filterTags = new string[0];
     public bool drawVectorLine;
     public Color vectorColor = Color.white;
 
@@ -57,70 +57,23 @@ public abstract class SteeringBehavior : ScriptableObject{
         return filteredAgents;
     }
 
-#if UNITY_EDITOR
-
-    /// <summary>
-    /// return draw height
-    /// </summary>
-    /// <returns>remove</returns>
-    public virtual bool OnInspectorGUI()
+    public void AddTag()
     {
-        bool remove = false;
-        GUILayout.BeginVertical("BOX");
-        GUILayout.Space(5);
-        GUILayout.BeginHorizontal();
-        isActive = EditorGUILayout.Toggle(GetType().ToString(), isActive);
-
-        if (GUILayout.Button("Remove", GUILayout.Width(60)))
-        {
-            remove = true;
-        }
-        GUILayout.EndHorizontal();
-        if (isActive)
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(30);
-            GUILayout.BeginVertical("BOX");
-            weight = EditorGUILayout.Slider("Weight", weight, 0, 1);
-            effectiveRadius = EditorGUILayout.FloatField("Effective Radius ",effectiveRadius);
-
-            useTagFilter = GUILayout.Toggle(useTagFilter, "Use Tag Filter");
-            if (useTagFilter)
-            {
-                GUILayout.BeginVertical("BOX");
-                if (filterTags == null) filterTags = new List<string>();
-                for(int i = 0; i< filterTags.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    filterTags[i] = EditorGUILayout.TagField(filterTags[i]);
-                    if (GUILayout.Button("X"))
-                    {
-                        filterTags.RemoveAt(i);
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                if(GUILayout.Button("Add Tag"))
-                {
-                    filterTags.Add("");
-                }
-                GUILayout.EndVertical();
-            }
-            GUILayout.Space(10);
-            drawVectorLine = GUILayout.Toggle(drawVectorLine, "Draw Steering Vector");
-            if (drawVectorLine)
-            {
-                vectorColor = EditorGUILayout.ColorField("Vector Color", vectorColor);
-            }
-            //Texture2D texture = Resources.Load<Texture2D>("Sprites/Icons/" + m_ItemDatabase.itemDatabase[i].itemName);
-            //GUILayout.Label(texture);
-            
-            GUILayout.EndVertical();
-            GUILayout.EndHorizontal();
-        }
-        GUILayout.Space(5);
-        GUILayout.EndVertical();
-        return remove;
+        Array.Resize(ref filterTags, filterTags.Length + 1);
     }
-#endif
+
+    public void RemoveTag(int index)
+    {
+        string[] newTags = new string[filterTags.Length - 1];
+        for (int i = 0; i < filterTags.Length; i++)
+        {
+            if (i == index) { }
+            else if (i > index) { newTags[i - 1] = filterTags[i]; }
+            else { newTags[i] = filterTags[i]; }
+        }
+        filterTags = newTags;
+    }
+
+
 
 }

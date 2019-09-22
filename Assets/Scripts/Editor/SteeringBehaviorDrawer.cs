@@ -21,7 +21,7 @@ public class SteeringBehaviorDrawer : PropertyDrawer
         if (behavior.IsActive)
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(30);
+            GUILayout.Space(20);
             EditorGUILayout.BeginVertical("BOX");
             EditorGUILayout.Slider(serializedObject.FindProperty("weight"), 0f,1f);
             //EditorGUILayout.Toggle()
@@ -29,25 +29,28 @@ public class SteeringBehaviorDrawer : PropertyDrawer
             EditorGUILayout.PropertyField(serializedObject.FindProperty("effectiveRadius"));
 
 
-            bool useTagFilter = false;// GUILayout.Toggle(useTagFilter, "Use Tag Filter");
-            List<string> filterTags = new List<string>();
+            bool useTagFilter = true;// GUILayout.Toggle(useTagFilter, "Use Tag Filter");
             if (useTagFilter)
             {
+                SerializedProperty tags = serializedObject.FindProperty("filterTags");
                 GUILayout.BeginVertical("BOX");
-                if (filterTags == null) filterTags = new List<string>();
-                for (int i = 0; i < filterTags.Count; i++)
+
+                for (int i=0; i<tags.arraySize; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    filterTags[i] = EditorGUILayout.TagField(filterTags[i]);
-                    if (GUILayout.Button("X"))
+
+                    tags.GetArrayElementAtIndex(i).stringValue = EditorGUILayout.TagField(tags.GetArrayElementAtIndex(i).stringValue);
+                    if (GUILayout.Button("X", GUILayout.Width(20)))
                     {
-                        filterTags.RemoveAt(i);
+                        behavior.RemoveTag(i);
                     }
                     GUILayout.EndHorizontal();
+
                 }
                 if (GUILayout.Button("Add Tag"))
                 {
-                    filterTags.Add("");
+                    behavior.AddTag();
+                    //tags.InsertArrayElementAtIndex(tags.arraySize);
                 }
                 GUILayout.EndVertical();
             }
