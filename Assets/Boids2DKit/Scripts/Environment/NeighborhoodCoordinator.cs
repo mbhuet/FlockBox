@@ -123,6 +123,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         neighborhoodsCenter_static = target.position;
         maxCorner = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
         minCorner = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
+        Debug.Log(neighborhoodsCenter_static);
     }
 
 
@@ -288,6 +289,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static Vector3 WrapPosition(Vector3 position)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
+
         bool mustWrap = false;
         Vector3 wrappedPosition = position;
         if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
