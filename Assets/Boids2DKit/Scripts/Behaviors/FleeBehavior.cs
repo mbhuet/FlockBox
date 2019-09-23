@@ -32,8 +32,8 @@ public class FleeBehavior : SteeringBehavior
         if (count > 0)
         {
             fleeMidpoint /= (count);
-            Vector3 desired_velocity = (fleeMidpoint - mine.position).normalized * -1 * mine.activeSettings.maxSpeed;
-            steer = desired_velocity - mine.velocity;
+            Vector3 desired_velocity = (fleeMidpoint - mine.Position).normalized * -1 * mine.activeSettings.maxSpeed;
+            steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
             mine.SetAttribute(fleeAttributeName, true);

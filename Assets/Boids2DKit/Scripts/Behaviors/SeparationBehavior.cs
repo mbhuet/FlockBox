@@ -16,7 +16,7 @@ public class SeparationBehavior : SteeringBehavior {
             if(WithinEffectiveRadius(mine, other))
             {
                 // Calculate vector pointing away from neighbor
-                Vector3 diff = mine.position - other.wrappedPosition;
+                Vector3 diff = mine.Position - other.wrappedPosition;
                 //weighted by distance
                 steer += (diff.normalized/diff.magnitude);
                 count++;            // Keep track of how many
@@ -37,7 +37,7 @@ public class SeparationBehavior : SteeringBehavior {
 
             // Implement Reynolds: Steering = Desired - Velocity
             steer = steer.normalized * (mine.activeSettings.maxSpeed);
-            steer -= (mine.velocity);
+            steer -= (mine.Velocity);
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
     }

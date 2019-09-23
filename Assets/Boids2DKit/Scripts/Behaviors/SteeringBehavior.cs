@@ -29,7 +29,7 @@ public abstract class SteeringBehavior : ScriptableObject{
     protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
     {
         if (mine == other.agent) return false;
-        return (Vector3.SqrMagnitude(mine.position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
+        return (Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
     }
 
     public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)

@@ -49,15 +49,16 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
         //If there is an instance of NeighborhoodCoordinator in the scene, it will assign itself 
         if (Instance != null && Instance != this) GameObject.Destroy(this);
-        else Instance = this;
+        else
+        {
+            Instance = this;
+            InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, this.transform);
+        }
     }
 
     void Start()
     {
         trackingTarget = this.transform;
-        if (!neighborhoodsInitialized) { 
-            InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, this.transform);
-    }
     }
 
     private void Update()
@@ -163,6 +164,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private static bool ValidCoordinates(Coordinates coords)
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         return (coords.row < neighborhoodRows_static && coords.col < neighborhoodCols_static && coords.row >= 0 && coords.col >= 0);
     }
 
@@ -197,7 +199,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     {
                         foreach (Agent agent in agentsOut)
                         {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + (Vector3)wrap_positionOffset));
+                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.Position + (Vector3)wrap_positionOffset));
                             allAgents.AddFirst(wrappedAgent);
                             if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
                             sortedAgents[tag].AddFirst(wrappedAgent);
@@ -214,6 +216,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private static Vector2 wrap_positionOffset = Vector2.zero;
     public static void VisitNeighborhoodsWithinCircle(Vector2 center, float radius, Action<Coordinates> visitFunc)
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / neighborhoodSize_static);
         Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(center);
 
@@ -270,8 +273,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static List<Coordinates> AddAreaToNeighborhoods(Agent agent)
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         List<Coordinates> addedCoords = new List<Coordinates>();
-        VisitNeighborhoodsWithinCircle(agent.position, agent.radius,
+        VisitNeighborhoodsWithinCircle(agent.Position, agent.Radius,
             delegate (Coordinates coords)
             {
                 addedCoords.Add(coords);
@@ -283,6 +287,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static Vector3 WrapPosition(Vector3 position)
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         bool mustWrap = false;
         Vector3 wrappedPosition = position;
         if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
@@ -295,6 +300,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
         {
             otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
@@ -309,6 +315,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public static Vector3 RandomPosition()
     {
+        if (!neighborhoodsInitialized) InitializeNeighborhoods();
         return new Vector3(UnityEngine.Random.Range(minCorner.x, maxCorner.x), UnityEngine.Random.Range(minCorner.y, maxCorner.y));
     }
 }

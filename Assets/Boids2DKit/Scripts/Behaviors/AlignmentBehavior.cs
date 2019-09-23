@@ -16,7 +16,7 @@ public class AlignmentBehavior : SteeringBehavior {
             if (WithinEffectiveRadius(mine, other))
             {
                 float modFactor = 1;
-                sum += (other.agent.velocity) * modFactor;
+                sum += (other.agent.Velocity) * modFactor;
                 count++;
             }
         }
@@ -30,7 +30,7 @@ public class AlignmentBehavior : SteeringBehavior {
             // Implement Reynolds: Steering = Desired - Velocity
             sum.Normalize();
             sum *= (mine.activeSettings.maxSpeed);
-            steer = sum - mine.velocity;
+            steer = sum - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
             
         }

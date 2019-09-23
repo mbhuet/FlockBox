@@ -59,9 +59,9 @@ public class PursuitBehavior : SteeringBehavior
             EngagePursuit(mine, closestTarget.agent);
         }
 
-        Vector3 distance = closestTarget.wrappedPosition - mine.position;
+        Vector3 distance = closestTarget.wrappedPosition - mine.Position;
         float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
-        Vector3 predictedInterceptPosition = closestTarget.wrappedPosition + closestTarget.agent.velocity * est_timeToIntercept;
+        Vector3 predictedInterceptPosition = closestTarget.wrappedPosition + closestTarget.agent.Velocity * est_timeToIntercept;
 
         AttemptCatch(mine, closestTarget);
 
@@ -91,8 +91,8 @@ public class PursuitBehavior : SteeringBehavior
 
     static void AttemptCatch(Agent mine, AgentWrapped chosenQuaryWrapped)
     {
-        float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.position);
-        if (distAway <= (chosenQuaryWrapped.agent.radius + mine.radius) && chosenQuaryWrapped.agent.CanBePursuedBy(mine))
+        float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.Position);
+        if (distAway <= (chosenQuaryWrapped.agent.Radius + mine.Radius) && chosenQuaryWrapped.agent.CanBePursuedBy(mine))
         {
             mine.CatchAgent(chosenQuaryWrapped.agent);
 //            Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
@@ -109,7 +109,7 @@ public class PursuitBehavior : SteeringBehavior
         foreach (AgentWrapped target in nearbyTargets)
         {
             //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
-            float dist = (target.wrappedPosition - agent.position).sqrMagnitude;
+            float dist = (target.wrappedPosition - agent.Position).sqrMagnitude;
             //if(dist <= target.target.radius) AttemptCatch(agent, target);
             if (dist < closeDist && target.agent.CanBePursuedBy(agent))
             {

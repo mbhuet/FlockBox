@@ -23,16 +23,16 @@ public class SteeringAgent : Agent
     protected virtual void Update()
     {
         if (!isAlive) return;
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, position, activeSettings.PerceptionDistance);
+        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
         Flock(mySurroundings);
 
         if (freezePosition) return;
 
-        velocity += (acceleration) * Time.deltaTime;
-        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
+        Velocity += (acceleration) * Time.deltaTime;
+        Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
 
-        position += (velocity * Time.deltaTime);
-        position = NeighborhoodCoordinator.WrapPosition(position);
+        Position += (Velocity * Time.deltaTime);
+        Position = NeighborhoodCoordinator.WrapPosition(Position);
         acceleration *= 0;
 
         UpdateTransform();
@@ -59,7 +59,7 @@ public class SteeringAgent : Agent
         {
             behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;
-            if (behavior.drawVectorLine) Debug.DrawRay(position, steer, behavior.vectorColor);
+            if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
 
             ApplyForce(steer);
         }
@@ -68,18 +68,18 @@ public class SteeringAgent : Agent
     public void GetSeekVector(out Vector3 steer, Vector3 target)
     {
         // Steering = Desired minus Velocity
-        steer = (target - position).normalized * activeSettings.maxSpeed - velocity;
+        steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
         steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
     }
 
     void UpdateTransform()
     {
 
-        this.transform.position = position;
-        if (velocity.magnitude > 0) forward = velocity.normalized;
+        this.transform.position = Position;
+        if (Velocity.magnitude > 0) Forward = Velocity.normalized;
 
             visual.SetRotation(Quaternion.identity);
-            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(forward.y, forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(Forward.y, Forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
         
     }
 
@@ -92,7 +92,7 @@ public class SteeringAgent : Agent
         speedThrottle = 1;
         acceleration = new Vector3(0, 0);
         float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
+        Velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
     }
 
     public override bool IsStationary

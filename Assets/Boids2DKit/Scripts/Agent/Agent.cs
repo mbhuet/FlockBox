@@ -13,13 +13,15 @@ public class Agent : MonoBehaviour {
         AREA //occupy all neighborhoods within radius
     }
 
-    public const float forceFieldDistance = 10; //how close can a Boid be before it hits the force field
+    public Vector3 Position { get; protected set; } = Vector3.zero;
+    public Vector3 Velocity { get; protected set; } = Vector3.zero;
+    public Vector3 Forward { get; protected set; } = Vector3.zero;
 
-    public Vector3 position { get; protected set; }
-    public Vector3 velocity { get; protected set; }
-    public Vector3 forward { get; protected set; }
+    [SerializeField]
+    private float _radius = 1f;
+    public float Radius => _radius;
 
-    public float radius = 1f;
+
     public NeighborType neighborType;
     public bool drawDebug = false;
 
@@ -141,7 +143,7 @@ public class Agent : MonoBehaviour {
         if (!isAlive) return;
         switch (neighborType) {
             case (NeighborType.POINT):
-                Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
+                Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(Position);
                 if (!CurrentlyOccupyingNeighborhood(currentNeighborhood))
                 {
                     RemoveFromAllNeighborhoods();
@@ -209,7 +211,7 @@ public class Agent : MonoBehaviour {
         isCaught = false;
         numPursuers = 0;
         visual.Show();
-        this.position = position;
+        this.Position = position;
         ForceWrapPosition();
         AddSelfToActivePopulation();
 
@@ -217,8 +219,8 @@ public class Agent : MonoBehaviour {
 
     public virtual void ForceWrapPosition()
     {
-        position = NeighborhoodCoordinator.WrapPosition(position);
-        transform.position = this.position;
+        Position = NeighborhoodCoordinator.WrapPosition(Position);
+        transform.position = this.Position;
         FindNeighborhood();
     }
 
@@ -334,7 +336,7 @@ public class Agent : MonoBehaviour {
         if (drawDebug)
         {
             UnityEditor.Handles.color = Color.grey;
-            UnityEditor.Handles.DrawWireDisc(this.transform.position, Vector3.forward, radius);
+            UnityEditor.Handles.DrawWireDisc(this.transform.position, Vector3.forward, Radius);
         }
     }
 #endif

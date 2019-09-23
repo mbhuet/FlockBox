@@ -23,12 +23,12 @@ public class AvoidanceBehavior : SteeringBehavior {
         foreach (AgentWrapped obs_wrapped in obstacles)
         {
             Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < obs_wrapped.agent.radius)
+            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < obs_wrapped.agent.Radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
 
-                float distanceToClosestPoint = Vector3.Distance(closestPoint, mine.position);
+                float distanceToClosestPoint = Vector3.Distance(closestPoint, mine.Position);
                 if (distanceToClosestPoint < closestHitDistance)
                 {
                     closestHitDistance = distanceToClosestPoint;
@@ -44,13 +44,13 @@ public class AvoidanceBehavior : SteeringBehavior {
             steer = Vector3.zero;
             return;
         }
-        float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.position, mostThreateningObstacle.position) - mostThreateningObstacle.radius, 1);
+        float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.Radius, 1);
         if (distanceToObstacleEdge > effectiveRadius)
         {
             steer = Vector3.zero;
             return;
         }
-        steer = closestHitPoint - mostThreateningObstacle.position;
+        steer = closestHitPoint - mostThreateningObstacle.Position;
         steer = steer.normalized * mine.activeSettings.maxForce;
     }
 
@@ -58,10 +58,10 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     Vector3 ClosestPointPathToObstacle(SteeringAgent mine, AgentWrapped obstacle)
     {
-        Vector3 agentPos = mine.position;
+        Vector3 agentPos = mine.Position;
         Vector3 agentToObstacle = obstacle.wrappedPosition - agentPos;
-        Vector3 projection = Vector3.Project(agentToObstacle, mine.velocity.normalized);
-        if (projection.normalized == mine.velocity.normalized)
+        Vector3 projection = Vector3.Project(agentToObstacle, mine.Velocity.normalized);
+        if (projection.normalized == mine.Velocity.normalized)
             return agentPos + projection;
         else return agentPos;
     }
