@@ -152,7 +152,7 @@ MonoBehaviour:
   displayGizmos: 1
   neighborhoodCols: 24
   neighborhoodRows: 16
-  neighborhoodSize: {x: 10, y: 10}
+  neighborhoodSize: 10
 --- !u!4 &806428431
 Transform:
   m_ObjectHideFlags: 0
@@ -180,7 +180,6 @@ GameObject:
   - component: {fileID: 1150902058}
   - component: {fileID: 1150902057}
   - component: {fileID: 1150902056}
-  - component: {fileID: 1150902063}
   - component: {fileID: 1150902064}
   m_Layer: 0
   m_Name: Main Camera
@@ -271,22 +270,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1150902063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150902055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 880c1e25c4062154aafcebfa1aa638f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayGizmos: 0
-  neighborhoodCols: 18
-  neighborhoodRows: 11
-  neighborhoodSize: {x: 10, y: 10}
 --- !u!114 &1150902064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,10 +279,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1150902055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6c8f23bd08a5a849a545c3395cac6e7, type: 3}
+  m_Script: {fileID: 11500000, guid: be52e13ad05e4824c8e776698a1c23cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  speed: 10
   useZLayering: 0
 --- !u!1 &2079507317
 GameObject:
@@ -330,8 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e14ae125ebd474e91cac66f70b5d47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidPrefab: {fileID: 114191054272108188, guid: 1c8654586a152c347b442898352293da,
-    type: 3}
+  prefab: {fileID: 0}
   numStartSpawns: 100
 --- !u!4 &2079507319
 Transform:
