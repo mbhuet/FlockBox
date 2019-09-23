@@ -17,6 +17,7 @@ public class SeparationBehavior : SteeringBehavior {
             {
                 // Calculate vector pointing away from neighbor
                 Vector3 diff = mine.Position - other.wrappedPosition;
+                if (diff.sqrMagnitude<.001f) diff = UnityEngine.Random.insideUnitCircle * .001f;
                 //weighted by distance
                 steer += (diff.normalized/diff.magnitude);
                 count++;            // Keep track of how many
