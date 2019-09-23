@@ -7,19 +7,36 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(AgentVisual))]
 public class Agent : MonoBehaviour {
 
+    public static Dictionary<int, Agent> Registry { get; private set; }
+    private static int agentCount_static = 0;
+    protected static Dictionary<System.Type, List<Agent>> agentCache;
+    protected static Dictionary<System.Type, List<Agent>> activePopulations;
+    private static AgentUpdater updater;
+
     public enum NeighborType
     {
         POINT, //occupy only one point, one neighborhood
         AREA //occupy all neighborhoods within radius
     }
+    public BehaviorSettings activeSettings;
 
     public Vector3 Position { get; protected set; } = Vector3.zero;
     public Vector3 Velocity { get; protected set; } = Vector3.zero;
+    public Vector3 Forward { get; protected set; } = Vector3.zero;
+    public Vector3 Acceleration { get; protected set; } = Vector3.zero;
 
 
     [SerializeField]
     private float _radius = 1f;
     public float Radius => _radius;
+
+    public float Throttle => speedThrottle;
+    protected float speedThrottle = 1;
+
+    public bool Frozen => freezePosition;
+    private bool freezePosition = false;
+
+
 
 
     public NeighborType neighborType;
@@ -38,19 +55,16 @@ public class Agent : MonoBehaviour {
         }
     }
 
-    protected static Dictionary<int, Agent> agentRegistry;
-    protected static int agentCount_static = 0;
+   
+
+
     public int agentID { get; protected set; }
     public bool isRegistered { get; protected set; }
-
-    protected static Dictionary<System.Type, List<Agent>> agentCache;
-    protected static Dictionary<System.Type, List<Agent>> activePopulations;
-
-
     public bool isAlive { get; protected set; }
     public bool isCaught { get; protected set; }
-    protected bool hasSpawned = false;
 
+
+    protected bool hasSpawned = false;
     private float spawnTime;
     protected float age { get { return Time.time - spawnTime; } }
 
@@ -90,6 +104,19 @@ public class Agent : MonoBehaviour {
        get { return true; }
     }
 
+    protected void LockPosition(bool isLocked)
+    {
+        freezePosition = isLocked;
+    }
+
+
+    public void GetSeekVector(out Vector3 steer, Vector3 target)
+    {
+        // Steering = Desired minus Velocity
+        steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
+        steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
+    }
+
 
 
     public delegate void AgentEvent(Agent agent);
@@ -125,10 +152,13 @@ public class Agent : MonoBehaviour {
 
     protected void RegisterNewAgent()
     {
+        //add to registry
         agentCount_static++;
         agentID = agentCount_static;
-        if (agentRegistry == null) agentRegistry = new Dictionary<int, Agent>();
-        agentRegistry.Add(agentID, this);
+        if (Registry == null) Registry = new Dictionary<int, Agent>();
+        Registry.Add(agentID, this);
+        
+        //clean up name
         string name = this.name;
         name = name.Replace("(Clone)", "");
         int underscoreIndex = name.IndexOf('_');
@@ -136,7 +166,15 @@ public class Agent : MonoBehaviour {
         name += "_" + agentID;
         this.name = name;
 
+        //create AgentUpdater if there isn't one
+        if (updater == null)
+        {
+            GameObject updaterObj = new GameObject();
+            updaterObj.hideFlags = HideFlags.HideInHierarchy;
+            updater = updaterObj.AddComponent<AgentUpdater>();
+        }
     }
+
 
     protected void FindNeighborhood()
     {
@@ -247,7 +285,7 @@ public class Agent : MonoBehaviour {
     public static void InformOfPursuit(bool isBeingPursued, Agent agent, int agentID)
     {
         Agent agentOut;
-        if (agentRegistry.TryGetValue(agentID, out agentOut))
+        if (Registry.TryGetValue(agentID, out agentOut))
         {
             agentOut.InformOfPursuit(isBeingPursued, agent);
         }

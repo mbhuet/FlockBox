@@ -6,7 +6,7 @@ using UnityEngine;
 public class CohesionBehavior : SteeringBehavior {
     // Cohesion
     // For the average position (i.e. center) of all nearby boids, calculate steering vector towards that position
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         Vector3 sum = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;

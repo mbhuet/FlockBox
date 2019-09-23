@@ -9,7 +9,7 @@ public class SeekBehavior : SteeringBehavior {
     public const string targetIDAttributeName = "seekTargetID";
 
 
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
@@ -56,19 +56,19 @@ public class SeekBehavior : SteeringBehavior {
 
     }
 
-    static void EngagePursuit(SteeringAgent mine, Agent target)
+    static void EngagePursuit(Agent mine, Agent target)
     {
         mine.SetAttribute(targetIDAttributeName, target.agentID);
         target.InformOfPursuit(true, mine);
     }
 
-    static void DisengagePursuit(SteeringAgent mine, int targetID)
+    static void DisengagePursuit(Agent mine, int targetID)
     {
         mine.SetAttribute(targetIDAttributeName, -1);
         Agent.InformOfPursuit(false, mine, targetID);
     }
 
-    static void AttemptCatch(SteeringAgent mine, AgentWrapped chosenTargetWrapped)
+    static void AttemptCatch(Agent mine, AgentWrapped chosenTargetWrapped)
     {
         float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, mine.Position);
         if (distAway <= chosenTargetWrapped.agent.Radius && chosenTargetWrapped.agent.CanBePursuedBy(mine))

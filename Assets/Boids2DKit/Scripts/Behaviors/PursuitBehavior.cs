@@ -9,7 +9,7 @@ public class PursuitBehavior : SteeringBehavior
     public const string targetIDAttributeName = "seekTargetID";
 
 
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
@@ -69,20 +69,20 @@ public class PursuitBehavior : SteeringBehavior
 
     }
 
-    public static bool HasPursuitTarget(SteeringAgent mine)
+    public static bool HasPursuitTarget(Agent mine)
     {
         if (!mine.HasAttribute(targetIDAttributeName)) return false;
         return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
     
     }
 
-    static void EngagePursuit(SteeringAgent mine, Agent target)
+    static void EngagePursuit(Agent mine, Agent target)
     {
         mine.SetAttribute(targetIDAttributeName, target.agentID);
         target.InformOfPursuit(true, mine);
     }
 
-    static void DisengagePursuit(SteeringAgent mine, int targetID)
+    static void DisengagePursuit(Agent mine, int targetID)
     {
         mine.SetAttribute(targetIDAttributeName, -1);
         Agent.InformOfPursuit(false, mine, targetID);

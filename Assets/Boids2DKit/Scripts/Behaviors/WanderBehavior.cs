@@ -8,7 +8,7 @@ using UnityEngine;
 public class WanderBehavior : SteeringBehavior {
     public float wanderScope = 90;
 
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         Vector3 lastForward = mine.Forward.normalized;
         float wanderRotation = (Mathf.PerlinNoise(Time.time, mine.gameObject.GetInstanceID()) -.5f) * wanderScope;

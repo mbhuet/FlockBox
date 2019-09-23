@@ -7,7 +7,7 @@ using UnityEngine;
 public class AvoidanceBehavior : SteeringBehavior {
 
 
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings, this);
         if (obstacles.First == null)
@@ -56,7 +56,7 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     
 
-    Vector3 ClosestPointPathToObstacle(SteeringAgent mine, AgentWrapped obstacle)
+    Vector3 ClosestPointPathToObstacle(Agent mine, AgentWrapped obstacle)
     {
         Vector3 agentPos = mine.Position;
         Vector3 agentToObstacle = obstacle.wrappedPosition - agentPos;

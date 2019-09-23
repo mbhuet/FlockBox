@@ -7,7 +7,7 @@ public class AlignmentBehavior : SteeringBehavior {
 
     // Alignment
     // For every nearby boid in the system, calculate the average velocity
-    public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+    public override void GetSteeringBehaviorVector(out Vector3 steer, Agent mine, SurroundingsInfo surroundings)
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
