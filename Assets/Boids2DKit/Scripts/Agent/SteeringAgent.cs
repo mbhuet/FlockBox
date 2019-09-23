@@ -11,7 +11,10 @@ using UnityEngine;
 [System.Serializable]
 public class SteeringAgent : Agent
 {
-    public Vector3 acceleration { get; protected set; }
+
+    public Vector3 Velocity { get; protected set; } = Vector3.zero;
+    public Vector3 Forward { get; protected set; } = Vector3.zero;
+    public Vector3 Acceleration { get; protected set; } = Vector3.zero;
 
     protected float speedThrottle = 1;
 
@@ -23,17 +26,19 @@ public class SteeringAgent : Agent
     protected virtual void Update()
     {
         if (!isAlive) return;
+        if (activeSettings == null) return;
+
         NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
         Flock(mySurroundings);
 
         if (freezePosition) return;
 
-        Velocity += (acceleration) * Time.deltaTime;
+        Velocity += (Acceleration) * Time.deltaTime;
         Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
 
         Position += (Velocity * Time.deltaTime);
         Position = NeighborhoodCoordinator.WrapPosition(Position);
-        acceleration *= 0;
+        Acceleration *= 0;
 
         UpdateTransform();
     }
@@ -48,15 +53,16 @@ public class SteeringAgent : Agent
     void ApplyForce(Vector3 force)
     {
         // We could add mass here if we want A = F / M
-        acceleration +=(force);
+        Acceleration +=(force);
     }
 
     private Vector3 steer = Vector3.zero;
 
     void Flock(SurroundingsInfo surroundings)
     {
-        foreach (SteeringBehavior behavior in activeSettings.ActiveBehaviors)
+        foreach (SteeringBehavior behavior in activeSettings.Behaviors)
         {
+            if (!behavior.IsActive) continue;
             behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;
             if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
@@ -90,7 +96,7 @@ public class SteeringAgent : Agent
         base.Spawn(position);
         LockPosition(false);
         speedThrottle = 1;
-        acceleration = new Vector3(0, 0);
+        Acceleration = Vector3.zero;
         float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
         Velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
     }

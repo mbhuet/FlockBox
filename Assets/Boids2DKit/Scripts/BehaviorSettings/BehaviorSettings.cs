@@ -17,15 +17,8 @@ public class BehaviorSettings : ScriptableObject {
     [SerializeField]
     private SteeringBehavior[] behaviors = new SteeringBehavior[0];
 
-    public List<SteeringBehavior> ActiveBehaviors
-    {
-        get
-        {
-            //TODO optimize this
-            return behaviors.Where(x => x.IsActive).ToList();
-        }
-    }
 
+    public SteeringBehavior[] Behaviors => behaviors;
     public int NumBehaviors
     {
         get { return behaviors.Length; }
