@@ -7,8 +7,6 @@ public class AgentVisual : MonoBehaviour {
     public SpriteRenderer sprite;
     public Transform visualRoot;
     protected bool blinking = false;
-    public bool flipYWhenLookingRight = false;
-
 
 
     public virtual void SetRotation(Quaternion rotation)
@@ -16,7 +14,6 @@ public class AgentVisual : MonoBehaviour {
         if (sprite != null)
         {
             visualRoot.transform.rotation = rotation;
-            sprite.flipY = (flipYWhenLookingRight && rotation.eulerAngles.z > 180 || rotation.eulerAngles.z <-180);
         }
     }
 

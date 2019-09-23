@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,13 +7,6 @@ using UnityEngine;
 //Should not be a static class because I want to be able to define boundaries without editing the script
 //Class will manage itself if there are no instances by creating an instance
 //
-
-public struct SurroundingsDefinition
-{
-    public SurroundingsDefinition(int row, int col, int rad) {neighborhoodCoords = new Coordinates(row,col); radius = rad; }
-    public Coordinates neighborhoodCoords;
-    public int radius;
-}
 
 public struct AgentWrapped
 {
@@ -46,7 +40,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
 
     private static List<Neighborhood> toDraw = new List<Neighborhood>();
-
+    public static bool HasMoved
+    {
+        get; private set;
+    }
 
     void Awake()
     {
@@ -65,12 +62,15 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private void Update()
     {
-
         if (trackingTarget!= null && trackingTarget.hasChanged)
         {
+            HasMoved = true;
             UpdateStaticValues(trackingTarget);
-            WrapStationaryAgentsInEdgeNeighborhoods();
             trackingTarget.hasChanged = false;
+        }
+        else
+        {
+            HasMoved = false;
         }
     }
 
@@ -98,11 +98,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 {
                     Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
                 }
-
-
                 Gizmos.DrawWireCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-
-
             }
         }
         toDraw.Clear();
@@ -138,7 +134,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         neighborhoodRows_static = rows;
         UpdateStaticValues(centerTarget);
 
-
         neighborhoods = new Neighborhood[rows, cols];
         for (int r = 0; r < rows; r++)
         {
@@ -150,7 +145,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
 
         size = maxCorner - minCorner;
-
         neighborhoodsInitialized = true;
     }
 
@@ -185,57 +179,18 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         return coords;
     }
 
-    private static Vector3 wrap_positionOffset = Vector3.zero;
 
-    public static void GetSurroundings(ref SurroundingsInfo data, SurroundingsDefinition def, float perceptionDistance)//int neighborhoodRadius)
+    public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
     {
-        def.radius = 1+(Mathf.FloorToInt(perceptionDistance / neighborhoodSize_static));
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
 
-        if (data.allAgents == null) data.allAgents = new LinkedList<AgentWrapped>();
-        if (data.sortedAgents == null) data.sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
- 
+        LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
+        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
 
-        data.allAgents.Clear();
-        data.sortedAgents.Clear();
-
-        int r_wrap = 0;
-        int c_wrap = 0;
-        for (int r = def.neighborhoodCoords.row - def.radius; r <= def.neighborhoodCoords.row + def.radius; r++)
-        {
-            
-            for (int c = def.neighborhoodCoords.col - def.radius; c <= def.neighborhoodCoords.col + def.radius; c++)
+        VisitNeighborhoodsWithinCircle(position, perceptionDistance, 
+            delegate(Coordinates coords)
             {
-
-                r_wrap = r;
-                c_wrap = c;
-                wrap_positionOffset = Vector3.zero;
-                if (r < 0)
-                {
-                    r_wrap = neighborhoodRows_static + r;
-                    wrap_positionOffset += Vector3.down * neighborhoodRows_static * neighborhoodSize_static;
-
-                }
-                else if (r >= neighborhoodRows_static)
-                {
-                    r_wrap = r - neighborhoodRows_static;
-                    wrap_positionOffset += Vector3.up * neighborhoodRows_static * neighborhoodSize_static;
-
-                }
-                if (c < 0)
-                {
-                    c_wrap = neighborhoodCols_static + c;
-                    wrap_positionOffset += Vector3.left * neighborhoodCols_static * neighborhoodSize_static;
-
-                }
-                else if (c >= neighborhoodCols_static)
-                {
-                    c_wrap = c - neighborhoodCols_static;
-                    wrap_positionOffset += Vector3.right * neighborhoodCols_static * neighborhoodSize_static;
-
-                }
-                
-                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[r_wrap, c_wrap].GetSortedAgents();
+                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[coords.row, coords.col].GetSortedAgents();
                 foreach (string tag in sourceAgents.Keys)
                 {
                     List<Agent> agentsOut;
@@ -243,53 +198,89 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     {
                         foreach (Agent agent in agentsOut)
                         {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + wrap_positionOffset));
-                            data.allAgents.AddFirst(wrappedAgent);
-                            if (!data.sortedAgents.ContainsKey(tag)) data.sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            data.sortedAgents[tag].AddFirst(wrappedAgent);
+                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.position + (Vector3)wrap_positionOffset));
+                            allAgents.AddFirst(wrappedAgent);
+                            if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
+                            sortedAgents[tag].AddFirst(wrappedAgent);
                         }
-                    }
-                }   
-            }  
-        }
-    }
-
-    public static List<Coordinates> AddZoneToNeighborhoods(Agent agent)
-    {
-        List<Coordinates> occupyingCoordinates = new List<Coordinates>();
-        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(agent.position);
-        int radius = 1 + Mathf.FloorToInt((agent.radius + Agent.forceFieldDistance) / neighborhoodSize_static);
-        //        Debug.Log((obs.radius + Obstacle.forceFieldDistance) + " " + radius);
-        for (int r = centerCoords.row - radius; r <= centerCoords.row + radius; r++)
-        {
-            for (int c = centerCoords.col - radius; c <= centerCoords.col + radius; c++)
-            {
-                if (r >= 0 && r < neighborhoodRows_static && c >= 0 && c < neighborhoodCols_static)
-                {
-                    Neighborhood checkNeighborhood = neighborhoods[r, c];
-                    // Find the closest point to the circle within the rectangle
-                    float closestX = Mathf.Clamp(agent.position.x,
-                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static / 2f);
-                    float closestY = Mathf.Clamp(agent.position.y,
-                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f);
-
-                    // Calculate the distance between the circle's center and this closest point
-                    float distanceX = agent.position.x - closestX;
-                    float distanceY = agent.position.y - closestY;
-
-                    // If the distance is less than the circle's radius, an intersection occurs
-                    float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
-                    if (distanceSquared < ((agent.radius + Agent.forceFieldDistance) * (agent.radius + Agent.forceFieldDistance)))
-                    {
-                        neighborhoods[r, c].AddAgent(agent);
-                        occupyingCoordinates.Add(new Coordinates(r, c));
                     }
                 }
             }
+            );
+
+        data.allAgents = allAgents;
+        data.sortedAgents = sortedAgents;
+    }
+
+    private static Vector2 wrap_positionOffset = Vector2.zero;
+    public static void VisitNeighborhoodsWithinCircle(Vector2 center, float radius, Action<Coordinates> visitFunc)
+    {
+        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / neighborhoodSize_static);
+        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(center);
+
+        int r_wrap = 0;
+        int c_wrap = 0;
+        for (int r = centerCoords.row - neighborhoodRadius; r <= centerCoords.row + neighborhoodRadius; r++)
+        {
+            for (int c = centerCoords.col - neighborhoodRadius; c <= centerCoords.col + neighborhoodRadius; c++)
+            {
+                r_wrap = r;
+                c_wrap = c;
+                wrap_positionOffset = Vector3.zero;
+                if (r < 0)
+                {
+                    r_wrap = neighborhoodRows_static + r;
+                    wrap_positionOffset += Vector2.down * neighborhoodRows_static * neighborhoodSize_static;
+                }
+                else if (r >= neighborhoodRows_static)
+                {
+                    r_wrap = r - neighborhoodRows_static;
+                    wrap_positionOffset += Vector2.up * neighborhoodRows_static * neighborhoodSize_static;
+                }
+                if (c < 0)
+                {
+                    c_wrap = neighborhoodCols_static + c;
+                    wrap_positionOffset += Vector2.left * neighborhoodCols_static * neighborhoodSize_static;
+                }
+                else if (c >= neighborhoodCols_static)
+                {
+                    c_wrap = c - neighborhoodCols_static;
+                    wrap_positionOffset += Vector2.right * neighborhoodCols_static * neighborhoodSize_static;
+                }
+
+                Neighborhood checkNeighborhood = neighborhoods[r_wrap, c_wrap];
+                // Find the closest point to the center within the cell
+                Vector2 closestPointInNeighborhood = new Vector2
+                    (Mathf.Clamp(center.x - wrap_positionOffset.x,
+                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static / 2f,
+                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static / 2f),
+                    Mathf.Clamp(center.y - wrap_positionOffset.y,
+                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
+                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f));
+
+                Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
+
+                if((center - (closestPointInNeighborhood + wrap_positionOffset)).sqrMagnitude < radius * radius)
+                {
+                    visitFunc(new Coordinates(r_wrap, c_wrap));
+                }
+
+            }
         }
-        return occupyingCoordinates;
+    }
+
+
+    public static List<Coordinates> AddAreaToNeighborhoods(Agent agent)
+    {
+        List<Coordinates> addedCoords = new List<Coordinates>();
+        VisitNeighborhoodsWithinCircle(agent.position, agent.radius,
+            delegate (Coordinates coords)
+            {
+                addedCoords.Add(coords);
+                neighborhoods[coords.row, coords.col].AddAgent(agent);
+            }
+            );
+        return addedCoords;
     }
 
     public static Vector3 WrapPosition(Vector3 position)
@@ -304,13 +295,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         return wrappedPosition;
     }
 
-    //if two friends are on opposite sides of the screen because one just wrapped around, they should be drawn to the edges of the screen over the wrap, not to the middle of the screen
     public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
     {
-
         if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
         {
-            //Debug.Log("here " + Mathf.Abs(myPosition.x - otherPosition.x) + " " + NeighborhoodCoordinator.size.x / 2f);
             otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
         }
         if (Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
@@ -320,26 +308,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         return otherPosition;
     }
 
-    public static void WrapStationaryAgentsInEdgeNeighborhoods()
-    {
-        List<Agent> stationaryAgents = new List<Agent>();
-        //iterate over top row
-        for (int c = 0; c < neighborhoodCols_static; c++)
-        {
-            for (int r = 0; r < neighborhoodRows_static; r++)
-            {
-                stationaryAgents.AddRange(neighborhoods[r, c].GetStationaryAgents());
-            }
-        }
-
-        foreach(Agent agent in stationaryAgents)
-        {
-            agent.ForceWrapPosition();
-        }
-    }
 
     public static Vector3 RandomPosition()
     {
-        return new Vector3(Random.Range(minCorner.x, maxCorner.x), Random.Range(minCorner.y, maxCorner.y));
+        return new Vector3(UnityEngine.Random.Range(minCorner.x, maxCorner.x), UnityEngine.Random.Range(minCorner.y, maxCorner.y));
     }
 }

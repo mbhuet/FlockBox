@@ -5,7 +5,13 @@ using UnityEngine.SceneManagement;
 
 [System.Serializable]
 [RequireComponent(typeof(AgentVisual))]
-public abstract class Agent : MonoBehaviour {
+public class Agent : MonoBehaviour {
+
+    public enum NeighborType
+    {
+        POINT, //occupy only one point, one neighborhood
+        AREA //occupy all neighborhoods within radius
+    }
 
     public const float forceFieldDistance = 10; //how close can a Boid be before it hits the force field
 
@@ -14,10 +20,11 @@ public abstract class Agent : MonoBehaviour {
     public Vector3 forward { get; protected set; }
 
     public float radius = 1f;
-    public bool useZLayering;
+    public NeighborType neighborType;
     public bool drawDebug = false;
 
-    protected SurroundingsDefinition myNeighborhood = new SurroundingsDefinition(0,0,0);
+    protected List<Coordinates> myNeighborhoodCoords = new List<Coordinates>();
+
 
     private AgentVisual m_visual;
     public AgentVisual visual
@@ -76,9 +83,9 @@ public abstract class Agent : MonoBehaviour {
     }
 
 
-    public virtual bool IsStationary()
+    public virtual bool IsStationary
     {
-        return true;
+       get { return true; }
     }
 
 
@@ -93,6 +100,14 @@ public abstract class Agent : MonoBehaviour {
     {
         DontDestroyOnLoad(this.gameObject);
         SceneManager.sceneUnloaded += OnSceneChange;
+    }
+
+    protected virtual void LateUpdate()
+    {
+        if(isAlive && IsStationary && NeighborhoodCoordinator.HasMoved)
+        {
+            ForceWrapPosition();
+        }
     }
 
     protected void OnSceneChange(Scene before)
@@ -121,32 +136,51 @@ public abstract class Agent : MonoBehaviour {
 
     }
 
-    protected virtual void FindNeighborhood()
+    protected void FindNeighborhood()
     {
         if (!isAlive) return;
-        Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
-        if (currentNeighborhood.row != myNeighborhood.neighborhoodCoords.row || currentNeighborhood.col != myNeighborhood.neighborhoodCoords.col)
-        {
-            RemoveFromLastNeighborhood();
-            AddToNeighborhood(currentNeighborhood);
+        switch (neighborType) {
+            case (NeighborType.POINT):
+                Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(position);
+                if (!CurrentlyOccupyingNeighborhood(currentNeighborhood))
+                {
+                    RemoveFromAllNeighborhoods();
+                    AddToNeighborhood(currentNeighborhood);
+                }
+                break;
+            case (NeighborType.AREA):
+                RemoveFromAllNeighborhoods();
+                myNeighborhoodCoords = NeighborhoodCoordinator.AddAreaToNeighborhoods(this);
+
+                break;
         }
+    }
+
+    protected bool CurrentlyOccupyingNeighborhood(Coordinates coords)
+    {
+        return myNeighborhoodCoords.Contains(coords);
     }
 
     protected void AddToNeighborhood(Coordinates coords)
     {
         NeighborhoodCoordinator.AddAgent(this, coords);
-        myNeighborhood.neighborhoodCoords = coords;
+        myNeighborhoodCoords.Add(coords);
     }
 
-    protected void RemoveFromLastNeighborhood()
+    protected void RemoveFromAllNeighborhoods()
     {
-        RemoveFromNeighborhood(myNeighborhood.neighborhoodCoords);
-        myNeighborhood.neighborhoodCoords = Coordinates.nowhere;
+        foreach(Coordinates coords in myNeighborhoodCoords)
+        {
+            NeighborhoodCoordinator.RemoveAgent(this, coords);
+        }
+        myNeighborhoodCoords.Clear();
     }
+
 
     protected void RemoveFromNeighborhood(Coordinates coords)
     {
         NeighborhoodCoordinator.RemoveAgent(this, coords);
+        myNeighborhoodCoords.Remove(coords);
     }
 
     public virtual void Kill()
@@ -156,7 +190,7 @@ public abstract class Agent : MonoBehaviour {
         hasSpawned = false;
         visual.Hide();
         numPursuers = 0;
-        RemoveFromLastNeighborhood();
+        RemoveFromAllNeighborhoods();
         RemoveSelfFromActivePopulation();
         AddSelfToCache();
     }

@@ -42,14 +42,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1143379499884764}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93f50c5d87205bb42a3cc59d829d59c4, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e3d5c48aed5ac642878dc1a71af6cb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 10
-  useZLayering: 0
-  drawDebug: 1
+  radius: 1
+  neighborType: 0
+  drawDebug: 0
   maxPursuers: 10
-  activeSettings: {fileID: 11400000, guid: 24debaefe2e80904da9eedb4a7ac7934, type: 2}
+  activeSettings: {fileID: 11400000, guid: 8f926ab4804a1eb4493fb3f6a01a16b8, type: 2}
 --- !u!114 &114762736815519660
 MonoBehaviour:
   m_ObjectHideFlags: 0

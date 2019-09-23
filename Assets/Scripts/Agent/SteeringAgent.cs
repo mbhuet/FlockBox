@@ -23,7 +23,7 @@ public class SteeringAgent : Agent
     protected virtual void Update()
     {
         if (!isAlive) return;
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, myNeighborhood, activeSettings.perceptionDistance);
+        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, position, activeSettings.perceptionDistance);
         Flock(mySurroundings);
 
         if (freezePosition) return;
@@ -75,7 +75,7 @@ public class SteeringAgent : Agent
     void UpdateTransform()
     {
 
-        this.transform.position = new Vector3(position.x, position.y, (useZLayering? ZLayering.YtoZPosition(position.y) : 0));
+        this.transform.position = position;
         if (velocity.magnitude > 0) forward = velocity.normalized;
 
             visual.SetRotation(Quaternion.identity);
@@ -95,9 +95,9 @@ public class SteeringAgent : Agent
         velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
     }
 
-    public override bool IsStationary()
+    public override bool IsStationary
     {
-        return false;
+        get{ return false; }
     }
 
     protected void LockPosition(bool isLocked)

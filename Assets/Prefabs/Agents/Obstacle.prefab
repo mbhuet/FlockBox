@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4367799409095294}
   - component: {fileID: 212102296226401466}
-  - component: {fileID: 114578589664992764}
   - component: {fileID: 3014103839361990417}
+  - component: {fileID: 2357448250416023208}
   m_Layer: 0
   m_Name: Obstacle
   m_TagString: Obstacle
@@ -82,22 +82,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &114578589664992764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1421210762913360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b0b6f1a66090554699d905b0b3f7a49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 12
-  useZLayering: 0
-  drawDebug: 1
-  maxPursuers: 10
 --- !u!114 &3014103839361990417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,3 +97,19 @@ MonoBehaviour:
   sprite: {fileID: 212102296226401466}
   visualRoot: {fileID: 4367799409095294}
   flipYWhenLookingRight: 0
+--- !u!114 &2357448250416023208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421210762913360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f0f92e7a098fd547b02d55e4f1ab3f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 12
+  neighborType: 1
+  drawDebug: 0
+  maxPursuers: 10

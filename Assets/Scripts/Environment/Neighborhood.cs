@@ -41,7 +41,6 @@ public class Neighborhood
             sortedAgents.Add(tag, newAgents);
         }
         allAgents.Add(occupant);
-        if (occupant.IsStationary()) stationaryAgents.Add(occupant);
     }
     public void RemoveAgent(Agent agent)
     {
@@ -52,8 +51,6 @@ public class Neighborhood
             agentsOut.Remove(agent);
         }
         allAgents.Remove(agent);
-        if (agent.IsStationary()) stationaryAgents.Remove(agent);
-
     }
     public Dictionary<string, List<Agent>> GetSortedAgents()
     {
