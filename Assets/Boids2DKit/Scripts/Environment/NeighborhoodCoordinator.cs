@@ -123,7 +123,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         neighborhoodsCenter_static = target.position;
         maxCorner = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
         minCorner = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
-        Debug.Log(neighborhoodsCenter_static);
     }
 
 

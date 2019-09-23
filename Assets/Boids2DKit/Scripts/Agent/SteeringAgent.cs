@@ -12,7 +12,6 @@ using UnityEngine;
 public class SteeringAgent : Agent
 {
 
-    public Vector3 Velocity { get; protected set; } = Vector3.zero;
     public Vector3 Forward { get; protected set; } = Vector3.zero;
     public Vector3 Acceleration { get; protected set; } = Vector3.zero;
 
