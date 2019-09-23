@@ -23,7 +23,7 @@ public class SteeringAgent : Agent
     protected virtual void Update()
     {
         if (!isAlive) return;
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, position, activeSettings.perceptionDistance);
+        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, position, activeSettings.PerceptionDistance);
         Flock(mySurroundings);
 
         if (freezePosition) return;
@@ -38,7 +38,7 @@ public class SteeringAgent : Agent
         UpdateTransform();
     }
 
-    protected void LateUpdate()
+    protected override void LateUpdate()
     {
         if (!isAlive) return;
         FindNeighborhood();
@@ -55,7 +55,7 @@ public class SteeringAgent : Agent
 
     void Flock(SurroundingsInfo surroundings)
     {
-        foreach (SteeringBehavior behavior in activeSettings.activeBehaviors)
+        foreach (SteeringBehavior behavior in activeSettings.ActiveBehaviors)
         {
             behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;

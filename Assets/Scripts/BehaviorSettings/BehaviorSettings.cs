@@ -12,36 +12,31 @@ using UnityEditor;
 [CreateAssetMenu(menuName = "BehaviorSettings")]
 public class BehaviorSettings : ScriptableObject {
     public float maxForce = 10;    // Maximum steering force
-    public float maxSpeed = 15;    // Maximum speed
+    public float maxSpeed = 15;    // Maximum speed 
 
-    public float perceptionDistance { get; protected set; }
+    [SerializeField]
+    private SteeringBehavior[] behaviors = new SteeringBehavior[0];
 
-    private void Awake()
+    public List<SteeringBehavior> ActiveBehaviors
     {
-        RefreshActiveBehaviors();
-    }
-    private void OnEnable()
-    {
-        RefreshActiveBehaviors();
+        get
+        {
+            //TODO optimize this
+            return behaviors.Where(x => x.IsActive).ToList();
+        }
     }
 
     public int NumBehaviors
     {
         get { return behaviors.Length; }
     }
-    [SerializeField]
-    private SteeringBehavior[] behaviors = new SteeringBehavior[0];
 
-    private List<SteeringBehavior> m_activeBehaviors;
-    public List<SteeringBehavior> activeBehaviors
+    public float PerceptionDistance
     {
         get
         {
-            return behaviors.Where(x => x.IsActive).ToList();
-        }
-        private set
-        {
-            m_activeBehaviors = value;
+            //TODO optimize this
+            return behaviors.Max(x => x.effectiveRadius);
         }
     }
 
@@ -59,7 +54,6 @@ public class BehaviorSettings : ScriptableObject {
         newBehavior.hideFlags = HideFlags.HideInHierarchy;
         Array.Resize(ref behaviors, behaviors.Length + 1);
         behaviors[behaviors.Length - 1] = newBehavior;
-
         AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(this));
         AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
 
@@ -93,10 +87,4 @@ public class BehaviorSettings : ScriptableObject {
         behaviors = newBehaviors;
     }
 
-
-
-    private void RefreshActiveBehaviors()
-    {
-       activeBehaviors = behaviors.Where(x => x.IsActive).ToList();
-    }
 }

@@ -22,9 +22,8 @@ public class AvoidanceBehavior : SteeringBehavior {
 
         foreach (AgentWrapped obs_wrapped in obstacles)
         {
-            Agent zone = obs_wrapped.agent;
             Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < zone.radius)
+            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < obs_wrapped.agent.radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
@@ -34,7 +33,7 @@ public class AvoidanceBehavior : SteeringBehavior {
                 {
                     closestHitDistance = distanceToClosestPoint;
                     closestHitPoint = closestPoint;
-                    mostThreateningObstacle = zone;
+                    mostThreateningObstacle = obs_wrapped.agent;
                 }
 
             }

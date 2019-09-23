@@ -183,7 +183,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-
         LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
         Dictionary<string, LinkedList<AgentWrapped>> sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
 
@@ -258,8 +257,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                         checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
                         checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f));
 
-                Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
-
+                //Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
                 if((center - (closestPointInNeighborhood + wrap_positionOffset)).sqrMagnitude < radius * radius)
                 {
                     visitFunc(new Coordinates(r_wrap, c_wrap));
