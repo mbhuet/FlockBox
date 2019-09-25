@@ -69,10 +69,17 @@ public class BehaviorSettingsEditor : Editor
         if (GUILayout.Button("Add Behavior", GUILayout.Width(130)))
         {
             GenericMenu menu = new GenericMenu();
-
+            List<SteeringBehavior> behaviors = targetSettings.Behaviors.ToList();
             foreach (Type type in System.AppDomain.CurrentDomain.GetAllDerivedTypes(typeof(SteeringBehavior)))
             {
-                menu.AddItem(new GUIContent(type.ToString()), false, AddBehavior, type);
+                if (behaviors.Any(x => x.GetType() == type))
+                {
+                    menu.AddDisabledItem(new GUIContent(type.ToString()), false);
+                }
+                else
+                {
+                    menu.AddItem(new GUIContent(type.ToString()), false, AddBehavior, type);
+                }
             }
             menu.ShowAsContext();
 
