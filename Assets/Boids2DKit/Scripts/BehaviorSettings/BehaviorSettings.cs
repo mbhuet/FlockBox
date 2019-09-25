@@ -40,18 +40,11 @@ public class BehaviorSettings : ScriptableObject {
         return behaviors[index];
     }
 
-    public void AddBehavior(Type behaviorType)
+    public SteeringBehavior[] AddBehavior(Type behaviorType)
     {
         
-        SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance(behaviorType);
-        newBehavior.hideFlags = HideFlags.HideInHierarchy;
-        Array.Resize(ref behaviors, behaviors.Length + 1);
-        behaviors[behaviors.Length - 1] = newBehavior;
-        AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(this));
-        AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+        
+        return behaviors;
     }
 
 
@@ -67,8 +60,7 @@ public class BehaviorSettings : ScriptableObject {
 
     public void RemoveBehavior(int index)
     {
-        AssetDatabase.RemoveObjectFromAsset(behaviors[index]);
-        AssetDatabase.Refresh();
+
 
         SteeringBehavior[] newBehaviors = new SteeringBehavior[behaviors.Length - 1];
         for (int i = 0; i < behaviors.Length; i++)

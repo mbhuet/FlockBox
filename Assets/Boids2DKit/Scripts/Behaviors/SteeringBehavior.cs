@@ -57,23 +57,6 @@ public abstract class SteeringBehavior : ScriptableObject{
         return filteredAgents;
     }
 
-    public void AddTag()
-    {
-        Array.Resize(ref filterTags, filterTags.Length + 1);
-    }
-
-    public void RemoveTag(int index)
-    {
-        string[] newTags = new string[filterTags.Length - 1];
-        for (int i = 0; i < filterTags.Length; i++)
-        {
-            if (i == index) { }
-            else if (i > index) { newTags[i - 1] = filterTags[i]; }
-            else { newTags[i] = filterTags[i]; }
-        }
-        filterTags = newTags;
-    }
-
 
 
 }
