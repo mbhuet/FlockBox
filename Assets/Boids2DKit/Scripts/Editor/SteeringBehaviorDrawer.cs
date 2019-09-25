@@ -40,14 +40,17 @@ public class SteeringBehaviorDrawer : PropertyDrawer
                     tags.GetArrayElementAtIndex(i).stringValue = EditorGUILayout.TagField(tags.GetArrayElementAtIndex(i).stringValue);
                     if (GUILayout.Button("X", GUILayout.Width(20), GUILayout.Height(14)))
                     {
-                        behavior.RemoveTag(i);
+                        tags.DeleteArrayElementAtIndex(i);
+                        //tags.DeleteArrayElementAtIndex(i);
+                        //i--;
                     }
                     GUILayout.EndHorizontal();
 
                 }
                 if (GUILayout.Button("+ Add Tag", GUILayout.Width(80)))
                 {
-                    behavior.AddTag();
+                    tags.arraySize = tags.arraySize + 1;
+                    //tags.GetArrayElementAtIndex(tags.arraySize - 1).stringValue = "(none)";
                 }
 
                 GUILayout.EndVertical();

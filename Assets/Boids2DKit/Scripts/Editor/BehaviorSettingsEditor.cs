@@ -32,7 +32,7 @@ public class BehaviorSettingsEditor : Editor
         EditorGUILayout.PropertyField(_maxSpeed);
         EditorGUILayout.PropertyField(_maxForce);
         
-        for (int i = 0; i<targetSettings.NumBehaviors; i++)
+        for (int i = 0; i<_behaviors.arraySize; i++)
         {
             SteeringBehavior behavior = targetSettings.GetBehavior(i);
 
@@ -41,7 +41,13 @@ public class BehaviorSettingsEditor : Editor
             EditorGUILayout.LabelField(behavior.GetType().ToString());
             if (GUILayout.Button("Remove", GUILayout.Width(60)))
             {
-                targetSettings.RemoveBehavior(behavior);
+                AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(i).objectReferenceValue);
+                AssetDatabase.Refresh();
+
+                _behaviors.DeleteArrayElementAtIndex(i);
+                _behaviors.DeleteArrayElementAtIndex(i);
+                i--;
+                continue;
             }
             EditorGUILayout.EndHorizontal();
 
@@ -86,8 +92,18 @@ public class BehaviorSettingsEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    void AddBehavior(object t)
+    void AddBehavior(object behaviorType)
     {
-        targetSettings.AddBehavior((Type)t);
+
+        //_behaviors.InsertArrayElementAtIndex(_behaviors.arraySize);
+        _behaviors.arraySize = _behaviors.arraySize + 1;
+        SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance((Type)behaviorType);
+        //newBehavior.hideFlags = HideFlags.HideInHierarchy;
+        _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = newBehavior;
+        AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(target));
+        AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 }
