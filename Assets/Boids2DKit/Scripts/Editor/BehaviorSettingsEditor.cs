@@ -35,7 +35,7 @@ public class BehaviorSettingsEditor : Editor
         for (int i = 0; i<_behaviors.arraySize; i++)
         {
             SteeringBehavior behavior = targetSettings.GetBehavior(i);
-
+            if (!behavior) continue;
             EditorGUILayout.BeginVertical("BOX");
             EditorGUILayout.BeginHorizontal(behavior.IsActive? activeStyle : inactiveStyle);
             EditorGUILayout.LabelField(behavior.GetType().ToString());
@@ -82,13 +82,6 @@ public class BehaviorSettingsEditor : Editor
         GUILayout.Space(10);
         GUILayout.EndVertical();
 
-        /*
-        if (GUILayout.Button("Clear Behaviors"))
-        {
-            targetSettings.ClearBehaviors();
-        }
-        */
-
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -99,11 +92,16 @@ public class BehaviorSettingsEditor : Editor
         _behaviors.arraySize = _behaviors.arraySize + 1;
         SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance((Type)behaviorType);
         //newBehavior.hideFlags = HideFlags.HideInHierarchy;
-        _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = newBehavior;
+        
         AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(target));
         AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+
+        _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
+
+        serializedObject.ApplyModifiedProperties();
+
     }
 }

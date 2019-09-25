@@ -40,36 +40,4 @@ public class BehaviorSettings : ScriptableObject {
         return behaviors[index];
     }
 
-    public SteeringBehavior[] AddBehavior(Type behaviorType)
-    {
-        
-        
-        return behaviors;
-    }
-
-
-
-    public void RemoveBehavior(SteeringBehavior behavior)
-    { 
-        if (behaviors.Length == 0) return;
-        int remIndex = Array.IndexOf(behaviors, behavior);
-        if (remIndex< 0) return;
-
-        RemoveBehavior(remIndex);
-    }
-
-    public void RemoveBehavior(int index)
-    {
-
-
-        SteeringBehavior[] newBehaviors = new SteeringBehavior[behaviors.Length - 1];
-        for (int i = 0; i < behaviors.Length; i++)
-        {
-            if (i == index) { }
-            else if (i > index) { newBehaviors[i - 1] = behaviors[i]; }
-            else { newBehaviors[i] = behaviors[i]; }
-        }
-        behaviors = newBehaviors;
-    }
-
 }

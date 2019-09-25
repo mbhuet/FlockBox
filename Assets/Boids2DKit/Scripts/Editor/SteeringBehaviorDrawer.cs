@@ -41,8 +41,6 @@ public class SteeringBehaviorDrawer : PropertyDrawer
                     if (GUILayout.Button("X", GUILayout.Width(20), GUILayout.Height(14)))
                     {
                         tags.DeleteArrayElementAtIndex(i);
-                        //tags.DeleteArrayElementAtIndex(i);
-                        //i--;
                     }
                     GUILayout.EndHorizontal();
 
@@ -50,7 +48,6 @@ public class SteeringBehaviorDrawer : PropertyDrawer
                 if (GUILayout.Button("+ Add Tag", GUILayout.Width(80)))
                 {
                     tags.arraySize = tags.arraySize + 1;
-                    //tags.GetArrayElementAtIndex(tags.arraySize - 1).stringValue = "(none)";
                 }
 
                 GUILayout.EndVertical();
