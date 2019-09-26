@@ -14,8 +14,8 @@ public class Agent : MonoBehaviour {
         AREA //occupy all neighborhoods within radius
     }
 
-    public Vector3 Position { get; protected set; } = Vector3.zero;
-    public Vector3 Velocity { get; protected set; } = Vector3.zero;
+    public Vector3 Position = Vector3.zero;
+    public Vector3 Velocity = Vector3.zero;
 
     [SerializeField]
     private float _radius = 1f;
@@ -99,11 +99,6 @@ public class Agent : MonoBehaviour {
     public AgentEvent OnKill;
     public AgentEvent OnSpawn;
 
-    protected void Awake()
-    {
-        DontDestroyOnLoad(this.gameObject);
-        SceneManager.sceneUnloaded += OnSceneChange;
-    }
 
 
     protected void OnSceneChange(Scene before)
@@ -173,7 +168,7 @@ public class Agent : MonoBehaviour {
 
     public virtual void ForceWrapPosition()
     {
-        Position = NeighborhoodCoordinator.WrapPosition(Position);
+        NeighborhoodCoordinator.WrapPosition(ref Position);
         transform.position = this.Position;
         FindNeighborhood();
     }

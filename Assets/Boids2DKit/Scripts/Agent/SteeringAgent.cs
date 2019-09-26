@@ -23,12 +23,19 @@ public class SteeringAgent : Agent
 
     private float threadStart;
     private bool threadRunning = false;
+    private WaitCallback callback;
     //Takes a type, returns instance
 
     private SurroundingsInfo mySurroundings = new SurroundingsInfo();
 
+    protected void Awake()
+    {
+        callback = new WaitCallback(ThreadFlock);
+    }
+
     protected virtual void Update()
     {
+        
         if (!isAlive) return;
         if (activeSettings == null) return;
         if (freezePosition) return;
@@ -39,16 +46,21 @@ public class SteeringAgent : Agent
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             Acceleration *= 0;
             threadStart = Time.time;
-            ThreadPool.QueueUserWorkItem(ThreadFlock, mySurroundings);
+            ThreadPool.QueueUserWorkItem(callback);
         }   
 
 
         Position += (Velocity * Time.deltaTime);
-        Position = NeighborhoodCoordinator.WrapPosition(Position);
+        NeighborhoodCoordinator.WrapPosition(ref Position);
 
-        UpdateTransform();
+        this.transform.position = Position;
+        if (Velocity.magnitude > 0)
+        {
+            Forward = Velocity.normalized;
+            transform.rotation = (Quaternion.Euler(0, 0, (Mathf.Atan2(Forward.y, Forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
+        }
+
     }
-
 
 
 
@@ -56,8 +68,18 @@ public class SteeringAgent : Agent
 
     void ThreadFlock(System.Object obj)
     {
+
         NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius);
-        Flock((List<Agent>)obj);
+        foreach (SteeringBehavior behavior in activeSettings.Behaviors)
+        {
+            if (!behavior.IsActive) continue;
+            behavior.GetSteeringBehaviorVector(out steer, this, mySurroundings);
+            steer *= behavior.weight;
+            //if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
+
+            // We could add mass here if we want A = F / M
+            Acceleration += (steer);
+        }
         FindNeighborhood();
 
         threadRunning = false;
@@ -65,6 +87,8 @@ public class SteeringAgent : Agent
 
     void Flock(List<Agent> surroundings)
     {
+        Debug.Log("flock");
+
         foreach (SteeringBehavior behavior in activeSettings.Behaviors)
         {
             if (!behavior.IsActive) continue;
@@ -87,11 +111,6 @@ public class SteeringAgent : Agent
     void UpdateTransform()
     {
 
-        this.transform.position = Position;
-        if (Velocity.magnitude > 0) Forward = Velocity.normalized;
-
-            visual.SetRotation(Quaternion.identity);
-            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(Forward.y, Forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
         
     }
 

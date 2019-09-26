@@ -32,7 +32,6 @@ public class AlignmentBehavior : SteeringBehavior {
             sum *= (mine.activeSettings.maxSpeed);
             steer = sum - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-            
         }
         else
         {

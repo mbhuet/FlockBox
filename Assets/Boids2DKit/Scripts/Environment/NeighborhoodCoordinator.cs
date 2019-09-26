@@ -171,18 +171,14 @@ void DrawNeighborHoods()
     }
 
 
-    public static Vector3 WrapPosition(Vector3 position)
+    public static void WrapPosition(ref Vector3 position)
     {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
+        if (!neighborhoodsInitialized) return;
+        if (position.x < NeighborhoodCoordinator.minCorner.x) { position.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static);}
+        if (position.y < NeighborhoodCoordinator.minCorner.y) { position.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static * neighborhoodRows_static);}
+        if (position.x > NeighborhoodCoordinator.maxCorner.x) { position.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static * neighborhoodCols_static);}
+        if (position.y > NeighborhoodCoordinator.maxCorner.y) { position.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static * neighborhoodRows_static);}
 
-        bool mustWrap = false;
-        Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
-        if (mustWrap) position = wrappedPosition;
-        return wrappedPosition;
     }
 
     public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
