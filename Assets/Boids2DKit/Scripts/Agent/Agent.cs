@@ -127,9 +127,11 @@ public class Agent : MonoBehaviour {
 
     }
 
+
+    protected List<int> positionBuckets = new List<int>();
     protected void FindNeighborhood()
     {
-        NeighborhoodCoordinator.UpdateAgentPosition(this);
+        NeighborhoodCoordinator.UpdateAgentPosition(this, ref positionBuckets);
     }
 
     

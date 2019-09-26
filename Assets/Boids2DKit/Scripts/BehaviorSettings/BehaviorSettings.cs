@@ -13,6 +13,7 @@ using UnityEditor;
 public class BehaviorSettings : ScriptableObject {
     public float maxForce = 10;    // Maximum steering force
     public float maxSpeed = 15;    // Maximum speed 
+    public bool useThreading = false;
 
     [SerializeField]
     private SteeringBehavior[] behaviors = new SteeringBehavior[0];

@@ -27,6 +27,7 @@ public class SteeringAgent : Agent
     //Takes a type, returns instance
 
     private SurroundingsInfo mySurroundings = new SurroundingsInfo();
+    private List<int> neighborBuckets = new List<int>();
 
     protected void Awake()
     {
@@ -47,8 +48,16 @@ public class SteeringAgent : Agent
             Acceleration *= 0;
             threadStart = Time.time;
             threadRunning = true;
-            NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius);
-            ThreadPool.QueueUserWorkItem(callback, mySurroundings);
+            NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius, ref neighborBuckets);
+            if (activeSettings.useThreading)
+            {
+                ThreadPool.QueueUserWorkItem(callback, mySurroundings);
+
+            }
+            else
+            {
+                Flock();
+            }
         }   
 
 
@@ -89,10 +98,8 @@ public class SteeringAgent : Agent
         threadRunning = false;
     }
 
-    void Flock(List<Agent> surroundings)
+    void Flock()
     {
-        Debug.Log("flock");
-
         foreach (SteeringBehavior behavior in activeSettings.Behaviors)
         {
             if (!behavior.IsActive) continue;
@@ -103,6 +110,7 @@ public class SteeringAgent : Agent
             // We could add mass here if we want A = F / M
             Acceleration += (steer);
         }
+        threadRunning = false;
     }
 
     public void GetSeekVector(out Vector3 steer, Vector3 target)

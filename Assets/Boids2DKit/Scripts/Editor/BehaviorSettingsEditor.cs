@@ -17,6 +17,7 @@ public class BehaviorSettingsEditor : Editor
     private SerializedProperty _behaviors;
     private SerializedProperty _maxForce;
     private SerializedProperty _maxSpeed;
+    private SerializedProperty _threading;
 
     private List<SteeringBehavior> toRemove = new List<SteeringBehavior>();
 
@@ -26,11 +27,13 @@ public class BehaviorSettingsEditor : Editor
         _behaviors = serializedObject.FindProperty("behaviors");
         _maxForce = serializedObject.FindProperty("maxForce");
         _maxSpeed = serializedObject.FindProperty("maxSpeed");
+        _threading = serializedObject.FindProperty("useThreading");
     }
     public override void OnInspectorGUI()
     {
         EditorGUILayout.PropertyField(_maxSpeed);
         EditorGUILayout.PropertyField(_maxForce);
+        EditorGUILayout.PropertyField(_threading);
         
         for (int i = 0; i<_behaviors.arraySize; i++)
         {

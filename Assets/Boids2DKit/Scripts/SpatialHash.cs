@@ -30,9 +30,9 @@ public class SpatialHash<T>
         }
     }
 
-    private void Insert(Vector3 vector, float radius, T obj)
+    private void Insert(Vector3 vector, float radius, T obj, out List<int> keys)
     {
-        var keys = GetIdForObj(vector, radius);
+        GetOverlappingBuckets(vector, radius, out keys);
         for(int i=0; i<keys.Count; i++)
         {
             int key = keys[i];
@@ -48,23 +48,22 @@ public class SpatialHash<T>
         objects[obj] = keys;
     }
 
-    public void UpdatePosition(Vector3 vector, float radius, T obj)
+    public void UpdatePosition(Vector3 vector, float radius, T obj, out List<int> buckets)
     {
         Remove(obj);
-        Insert(vector, radius, obj);
+        Insert(vector, radius, obj, out buckets);
     }
 
-    public List<T> QueryPosition(Vector3 vector, float radius)
+    public void QueryPosition(Vector3 vector, float radius, out List<T> objects, out List<int> keys)
     {
-        List<int> keys = GetIdForObj(vector, radius);
-        List<T> output = new List<T>();
+        GetOverlappingBuckets(vector, radius, out keys);
+        objects = new List<T>();
 
         for(int i =0; i<keys.Count; i++)
         {
             int key = keys[i];
-            if (dict.ContainsKey(key)) output.AddRange(dict[key]);
+            if (dict.ContainsKey(key)) objects.AddRange(dict[key]);
         }
-        return output;
     }
 
     public bool ContainsKey(Vector3 vector)
@@ -72,9 +71,9 @@ public class SpatialHash<T>
         return dict.ContainsKey(Key(vector));
     }
 
-    private List<int> GetIdForObj(Vector3 vector, float radius)
+    private void GetOverlappingBuckets(Vector3 vector, float radius, out List<int> bucketsObjIsIn)
     {
-        List<int> bucketsObjIsIn = new List<int>();
+        bucketsObjIsIn = new List<int>();
 
         Vector3 min = vector - Vector3.one * radius;
         min.x = min.x - min.x % cellSize;
@@ -96,9 +95,6 @@ public class SpatialHash<T>
                 }
             }
         }
-
-
-        return bucketsObjIsIn;
     }
 
 

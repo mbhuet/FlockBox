@@ -151,10 +151,10 @@ void DrawNeighborHoods()
         neighborhoodsInitialized = true;
     }
 
-    public static void UpdateAgentPosition(Agent agent)
+    public static void UpdateAgentPosition(Agent agent, ref List<int> buckets)
     {
         if (neighborhoodHash==null) return;
-        neighborhoodHash.UpdatePosition(agent.Position, agent.Radius, agent);
+        neighborhoodHash.UpdatePosition(agent.Position, agent.Radius, agent, out buckets);
     }
 
     public static void RemoveFromAllNeighborhoods(Agent agent)
@@ -163,10 +163,10 @@ void DrawNeighborHoods()
         neighborhoodHash.Remove(agent);
     }
 
-    public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
+    public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance, ref List<int> buckets)
     {
         if (neighborhoodHash == null) return;
-        data.allAgents = neighborhoodHash.QueryPosition(position, perceptionDistance);
+        neighborhoodHash.QueryPosition(position, perceptionDistance, out data.allAgents, out buckets);
 
     }
 
