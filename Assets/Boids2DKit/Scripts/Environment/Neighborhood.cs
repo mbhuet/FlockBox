@@ -6,51 +6,60 @@ public class Neighborhood
 {
     Dictionary<string, List<Agent>> sortedAgents;
 
-    List<Agent> allAgents;
-    List<Agent> stationaryAgents;
-
+    //List<Agent> allAgents;
+    //List<Agent> stationaryAgents;
+    private int agentCount;
     public Vector2 neighborhoodCenter {
-    get { return (Vector2)Camera.main.transform.position + m_neighborhoodCenter; }
+    get { return m_neighborhoodCenter; }
     }
     private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
-        allAgents = new List<Agent>();
-        stationaryAgents = new List<Agent>();
+        //allAgents = new List<Agent>();
+        //stationaryAgents = new List<Agent>();
         sortedAgents = new Dictionary<string, List<Agent>>();
     }
     public Neighborhood(Vector2 pos) : this()
     {
         m_neighborhoodCenter = pos;
     }
-    public void ClearAgents() { sortedAgents.Clear(); allAgents.Clear(); }
-    public bool IsOccupied() { return allAgents.Count > 0; }
+    public void ClearAgents() { sortedAgents.Clear(); } //allAgents.Clear(); 
+    public bool IsOccupied() { return agentCount>0; }// allAgents.Count > 0; }
 
     public void AddAgent(Agent occupant)
     {
+        if (occupant == null) return;
         string tag = occupant.gameObject.tag;
         List<Agent> agentsOut;
         if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            agentsOut.Add(occupant);
+            if (!agentsOut.Contains(occupant)){
+                agentsOut.Add(occupant);
+                agentCount++;
+            }
         }
         else
         {
             List<Agent> newAgents = new List<Agent>();
             newAgents.Add(occupant);
             sortedAgents.Add(tag, newAgents);
+            agentCount++;
         }
-        allAgents.Add(occupant);
+        //allAgents.Add(occupant);
     }
     public void RemoveAgent(Agent agent)
     {
+        if (agent == null) return;
         string tag = agent.gameObject.tag;
         List<Agent> agentsOut;
         if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            agentsOut.Remove(agent);
+            if (agentsOut.Remove(agent))
+            {
+                agentCount--;
+            }
         }
-        allAgents.Remove(agent);
+        //allAgents.Remove(agent);
     }
     public Dictionary<string, List<Agent>> GetSortedAgents()
     {
@@ -58,8 +67,7 @@ public class Neighborhood
     }
 
     public void GetAgentsWithTag(string tag, out List<Agent> agentsOut)
-    {
-        
+    {   
         if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
             return;
@@ -69,12 +77,6 @@ public class Neighborhood
             agentsOut = new List<Agent>();
         }
     }
-
-    public List<Agent> GetStationaryAgents()
-    {
-        return stationaryAgents;
-    }
-
     
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 [System.Serializable]
 [RequireComponent(typeof(AgentVisual))]
@@ -15,7 +16,6 @@ public class Agent : MonoBehaviour {
 
     public Vector3 Position { get; protected set; } = Vector3.zero;
     public Vector3 Velocity { get; protected set; } = Vector3.zero;
-
 
     [SerializeField]
     private float _radius = 1f;
@@ -151,8 +151,7 @@ public class Agent : MonoBehaviour {
                 }
                 break;
             case (NeighborType.AREA):
-                RemoveFromAllNeighborhoods();
-                myNeighborhoodCoords = NeighborhoodCoordinator.AddAreaToNeighborhoods(this);
+                NeighborhoodCoordinator.AddAreaToNeighborhoods(this, ref myNeighborhoodCoords);
 
                 break;
         }

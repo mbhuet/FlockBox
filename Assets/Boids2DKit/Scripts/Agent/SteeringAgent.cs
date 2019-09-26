@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 
 //Every SteeringAgent uses the same SteeringBehavior instances, there's only one per type and its stored in a static Dictionary
@@ -19,6 +20,9 @@ public class SteeringAgent : Agent
 
     public BehaviorSettings activeSettings;
     private bool freezePosition = false;
+
+    private float threadStart;
+    private bool threadRunning = false;
     //Takes a type, returns instance
 
     private SurroundingsInfo mySurroundings = new SurroundingsInfo(new LinkedList<AgentWrapped>(), new Dictionary<string, LinkedList<AgentWrapped>>());
@@ -26,14 +30,18 @@ public class SteeringAgent : Agent
     {
         if (!isAlive) return;
         if (activeSettings == null) return;
-
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
-        Flock(mySurroundings);
-
         if (freezePosition) return;
 
-        Velocity += (Acceleration) * Time.deltaTime;
-        Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
+        if (!threadRunning)
+        {
+            Velocity += (Acceleration) * (Time.time-threadStart);
+            Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
+            Acceleration *= 0;
+            threadStart = Time.time;
+            NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
+            ThreadPool.QueueUserWorkItem(ThreadFlock, mySurroundings);
+        }   
+
 
         Position += (Velocity * Time.deltaTime);
         Position = NeighborhoodCoordinator.WrapPosition(Position);
@@ -49,13 +57,14 @@ public class SteeringAgent : Agent
     }
 
 
-    void ApplyForce(Vector3 force)
-    {
-        // We could add mass here if we want A = F / M
-        Acceleration +=(force);
-    }
 
     private Vector3 steer = Vector3.zero;
+
+    void ThreadFlock(System.Object obj)
+    {
+        Flock((SurroundingsInfo)obj);
+        threadRunning = false;
+    }
 
     void Flock(SurroundingsInfo surroundings)
     {
@@ -64,9 +73,10 @@ public class SteeringAgent : Agent
             if (!behavior.IsActive) continue;
             behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;
-            if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
+            //if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
 
-            ApplyForce(steer);
+            // We could add mass here if we want A = F / M
+            Acceleration += (steer);
         }
     }
 

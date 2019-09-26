@@ -185,40 +185,31 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
-        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
-
-        VisitNeighborhoodsWithinCircle(position, perceptionDistance, 
-            delegate(Coordinates coords)
+        List<Coordinates> surroundingCoords;
+        GetCoordinatesWithinCircle(position, perceptionDistance, out surroundingCoords);
+        foreach(Coordinates coords in surroundingCoords)
+        {
+            foreach (var pair in neighborhoods[coords.row, coords.col].GetSortedAgents())
             {
-                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[coords.row, coords.col].GetSortedAgents();
-                foreach (string tag in sourceAgents.Keys)
+                foreach (Agent agent in pair.Value)
                 {
-                    List<Agent> agentsOut;
-                    if (sourceAgents.TryGetValue(tag, out agentsOut))
-                    {
-                        foreach (Agent agent in agentsOut)
-                        {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.Position + (Vector3)wrap_positionOffset));
-                            allAgents.AddFirst(wrappedAgent);
-                            if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            sortedAgents[tag].AddFirst(wrappedAgent);
-                        }
-                    }
+                    AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.Position + (Vector3)wrap_positionOffset));
+                    data.allAgents.AddFirst(wrappedAgent);
+                    if (!data.sortedAgents.ContainsKey(pair.Key)) data.sortedAgents.Add(pair.Key, new LinkedList<AgentWrapped>());
+                    data.sortedAgents[pair.Key].AddFirst(wrappedAgent);
                 }
+                
             }
-            );
-
-        data.allAgents = allAgents;
-        data.sortedAgents = sortedAgents;
+        }
     }
 
     private static Vector2 wrap_positionOffset = Vector2.zero;
-    public static void VisitNeighborhoodsWithinCircle(Vector2 center, float radius, Action<Coordinates> visitFunc)
+    public static void GetCoordinatesWithinCircle(Vector2 center, float radius, out List<Coordinates> coordinates)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
         int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / neighborhoodSize_static);
         Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(center);
+        coordinates = new List<Coordinates>();
 
         int r_wrap = 0;
         int c_wrap = 0;
@@ -263,26 +254,30 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                 //Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
                 if((center - (closestPointInNeighborhood + wrap_positionOffset)).sqrMagnitude < radius * radius)
                 {
-                    visitFunc(new Coordinates(r_wrap, c_wrap));
+                    coordinates.Add (new Coordinates(r_wrap, c_wrap));
                 }
 
             }
         }
+       
     }
 
 
-    public static List<Coordinates> AddAreaToNeighborhoods(Agent agent)
+    public static void AddAreaToNeighborhoods(Agent agent, ref List<Coordinates> occupyingNeighborhoods)
     {
         if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        List<Coordinates> addedCoords = new List<Coordinates>();
-        VisitNeighborhoodsWithinCircle(agent.Position, agent.Radius,
-            delegate (Coordinates coords)
+        if(occupyingNeighborhoods != null)
+        {
+            foreach(Coordinates cell in occupyingNeighborhoods)
             {
-                addedCoords.Add(coords);
-                neighborhoods[coords.row, coords.col].AddAgent(agent);
+                neighborhoods[cell.row, cell.col].RemoveAgent(agent);
             }
-            );
-        return addedCoords;
+        }
+        GetCoordinatesWithinCircle(agent.Position, agent.Radius, out occupyingNeighborhoods);
+        foreach(Coordinates cell in occupyingNeighborhoods)
+        {
+            neighborhoods[cell.row, cell.col].AddAgent(agent);
+        }
     }
 
     public static Vector3 WrapPosition(Vector3 position)
