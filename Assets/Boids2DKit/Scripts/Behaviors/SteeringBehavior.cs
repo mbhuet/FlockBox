@@ -26,35 +26,29 @@ public abstract class SteeringBehavior : ScriptableObject{
 
     public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
 
-    protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
+    protected bool WithinEffectiveRadius(SteeringAgent mine, Agent other)
     {
-        if (mine == other.agent) return false;
-        return (Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
+        if (mine == other) return false;
+        return (Vector3.SqrMagnitude(mine.Position - other.Position) < effectiveRadius * effectiveRadius);
     }
 
-    public static LinkedList<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
+    public static List<Agent> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
     {
-        Dictionary<string, LinkedList<AgentWrapped>> agentDict = surroundings.sortedAgents;
         if(!behavior.useTagFilter)
         {
             return surroundings.allAgents;
         }
-        LinkedList<AgentWrapped> filteredAgents = new LinkedList<AgentWrapped>();
+        List<Agent> filteredAgents = new List<Agent>();
 
-        LinkedList<AgentWrapped> agentsOut = new LinkedList<AgentWrapped>();
-        foreach (string tag in behavior.filterTags)
+        foreach(Agent agent in surroundings.allAgents)
         {
-            if (agentDict.TryGetValue(tag, out agentsOut))
-            {
-                foreach (AgentWrapped agent in agentsOut)
-                {
-                    //Debug.Log(agent.agent.name + " in filtered list");
-                    filteredAgents.AddLast(agent);
-                }
-
+            if(Array.IndexOf(behavior.filterTags, agent.tag) >= 0){
+                filteredAgents.Add(agent);
             }
         }
         return filteredAgents;
+
+       
     }
 
 

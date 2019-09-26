@@ -9,8 +9,8 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        LinkedList<AgentWrapped> obstacles = GetFilteredAgents(surroundings, this);
-        if (obstacles.First == null)
+        List<Agent> obstacles = GetFilteredAgents(surroundings, this);
+        if (obstacles.Count == 0)
         {
             steer = Vector3.zero;
             return;
@@ -18,12 +18,12 @@ public class AvoidanceBehavior : SteeringBehavior {
         bool foundObstacleInPath = false;
         float closestHitDistance = float.MaxValue;
         Vector3 closestHitPoint = Vector3.zero;
-        Agent mostThreateningObstacle = obstacles.First.Value.agent;
+        Agent mostThreateningObstacle = obstacles[0];
 
-        foreach (AgentWrapped obs_wrapped in obstacles)
+        foreach (Agent obs_wrapped in obstacles)
         {
             Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-            if (Vector3.Distance(closestPoint, obs_wrapped.wrappedPosition) < obs_wrapped.agent.Radius)
+            if (Vector3.Distance(closestPoint, obs_wrapped.Position) < obs_wrapped.Radius)
             {
                 //found obstacle directly in path
                 foundObstacleInPath = true;
@@ -33,7 +33,8 @@ public class AvoidanceBehavior : SteeringBehavior {
                 {
                     closestHitDistance = distanceToClosestPoint;
                     closestHitPoint = closestPoint;
-                    mostThreateningObstacle = obs_wrapped.agent;
+                    mostThreateningObstacle = obs_wrapped;
+                    mostThreateningObstacle = obs_wrapped;
                 }
 
             }
@@ -56,10 +57,10 @@ public class AvoidanceBehavior : SteeringBehavior {
 
     
 
-    Vector3 ClosestPointPathToObstacle(SteeringAgent mine, AgentWrapped obstacle)
+    Vector3 ClosestPointPathToObstacle(SteeringAgent mine, Agent obstacle)
     {
         Vector3 agentPos = mine.Position;
-        Vector3 agentToObstacle = obstacle.wrappedPosition - agentPos;
+        Vector3 agentToObstacle = obstacle.Position - agentPos;
         Vector3 projection = Vector3.Project(agentToObstacle, mine.Velocity.normalized);
         if (projection.normalized == mine.Velocity.normalized)
             return agentPos + projection;

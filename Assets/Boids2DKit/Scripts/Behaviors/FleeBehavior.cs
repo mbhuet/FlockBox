@@ -9,12 +9,10 @@ public class FleeBehavior : SteeringBehavior
 
     public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        Dictionary<string, LinkedList<AgentWrapped>> sourroundingTargets = surroundings.sortedAgents;
-
         Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;
 
-        foreach(AgentWrapped other in GetFilteredAgents(surroundings, this))
+        foreach(Agent other in GetFilteredAgents(surroundings, this))
         {
 
             if (WithinEffectiveRadius(mine, other))
@@ -22,7 +20,7 @@ public class FleeBehavior : SteeringBehavior
                 
 
                 float modFactor = 1;
-                fleeMidpoint += (other.wrappedPosition); // Add position
+                fleeMidpoint += (other.Position); // Add position
                 count += modFactor; //getting midpoint of weighted positions means dividing total by sum of those weights. Not necessary when getting average of vectors
 
             }

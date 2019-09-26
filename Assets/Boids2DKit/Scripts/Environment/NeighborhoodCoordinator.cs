@@ -8,17 +8,25 @@ using UnityEngine;
 //Class will manage itself if there are no instances by creating an instance
 //
 
+    /*
 public struct AgentWrapped
 {
     public AgentWrapped(Agent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
     public Agent agent;
     public Vector3 wrappedPosition;
 }
+*/
+
+public struct SurroundingsInfo
+{
+    public List<Agent> allAgents;
+}
 
 
 public class NeighborhoodCoordinator : MonoBehaviour {
     private static NeighborhoodCoordinator Instance;
-    private static Neighborhood[,] neighborhoods;
+    //private static Neighborhood[,] neighborhoods;
+    private static SpatialHash<Agent> neighborhoodHash;
 
     private static bool neighborhoodsInitialized = false;
     private const float defaultNeighborhoodSize = 10;
@@ -76,34 +84,36 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     }
 
 
+    /*
+private void OnDrawGizmos()
+{
+    if(displayGizmos)DrawNeighborHoods();
+}
 
-    private void OnDrawGizmos()
-    {
-        if(displayGizmos)DrawNeighborHoods();
-    }
 
-    void DrawNeighborHoods()
+void DrawNeighborHoods()
+{
+    if (neighborhoods == null) return;
+    for (int r = 0; r < neighborhoods.GetLength(0); r++)
     {
-        if (neighborhoods == null) return;
-        for (int r = 0; r < neighborhoods.GetLength(0); r++)
+        for (int c = 0; c < neighborhoods.GetLength(1); c++)
         {
-            for (int c = 0; c < neighborhoods.GetLength(1); c++)
+            Gizmos.color = Color.red * .1f;
+            Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
+            if (toDraw.Contains(neighborhoods[r, c]))
             {
-                Gizmos.color = Color.red * .1f;
-                Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
-                if (toDraw.Contains(neighborhoods[r, c]))
-                {
-                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-                }
-                if (neighborhoods[r, c].IsOccupied())
-                {
-                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-                }
-                Gizmos.DrawWireCube(neighborhoodPos, Vector2.one * neighborhoodSize);
+                Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
             }
+            if (neighborhoods[r, c].IsOccupied())
+            {
+                Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
+            }
+            Gizmos.DrawWireCube(neighborhoodPos, Vector2.one * neighborhoodSize);
         }
-        toDraw.Clear();
     }
+    toDraw.Clear();
+}
+*/
 
 
     private static void InitializeNeighborhoods()
@@ -135,150 +145,31 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         neighborhoodRows_static = rows;
         UpdateStaticValues(centerTarget);
 
-        neighborhoods = new Neighborhood[rows, cols];
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                Vector2 neighborhoodPos = neighborhoodsCenter_static + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size, ((r - rows / 2f) + .5f) * neighborhood_size);
-                neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
-            }
-        }
+        neighborhoodHash = new SpatialHash<Agent>(neighborhoodSize_static);
 
         size = maxCorner - minCorner;
         neighborhoodsInitialized = true;
     }
 
-    public static void AddAgent(Agent agent, Coordinates coords)
+    public static void UpdateAgentPosition(Agent agent)
     {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (ValidCoordinates(coords))neighborhoods[coords.row, coords.col].AddAgent(agent);
+        if (neighborhoodHash==null) return;
+        neighborhoodHash.UpdatePosition(agent.Position, agent.Radius, agent);
     }
 
-    public static void RemoveAgent(Agent agent, Coordinates coords)
+    public static void RemoveFromAllNeighborhoods(Agent agent)
     {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (ValidCoordinates(coords)) neighborhoods[coords.row, coords.col].RemoveAgent(agent);
+        if (neighborhoodHash == null) return;
+        neighborhoodHash.Remove(agent);
     }
-
-
-    private static bool ValidCoordinates(Coordinates coords)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        return (coords.row < neighborhoodRows_static && coords.col < neighborhoodCols_static && coords.row >= 0 && coords.col >= 0);
-    }
-
-
-    public static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        Coordinates coords = new Coordinates();
-        position = WrapPosition(position);
-        coords.col = Mathf.FloorToInt((position.x - neighborhoodsCenter_static.x + neighborhoodCols_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
-        coords.row = Mathf.FloorToInt((position.y - neighborhoodsCenter_static.y + neighborhoodRows_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
-        coords.col = Mathf.Clamp(coords.col, 0, neighborhoodCols_static-1);
-        coords.row = Mathf.Clamp(coords.row, 0, neighborhoodRows_static-1);
-        return coords;
-    }
-
 
     public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
     {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        List<Coordinates> surroundingCoords;
-        GetCoordinatesWithinCircle(position, perceptionDistance, out surroundingCoords);
-        foreach(Coordinates coords in surroundingCoords)
-        {
-            foreach (var pair in neighborhoods[coords.row, coords.col].GetSortedAgents())
-            {
-                foreach (Agent agent in pair.Value)
-                {
-                    AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.Position + (Vector3)wrap_positionOffset));
-                    data.allAgents.AddFirst(wrappedAgent);
-                    if (!data.sortedAgents.ContainsKey(pair.Key)) data.sortedAgents.Add(pair.Key, new LinkedList<AgentWrapped>());
-                    data.sortedAgents[pair.Key].AddFirst(wrappedAgent);
-                }
-                
-            }
-        }
+        if (neighborhoodHash == null) return;
+        data.allAgents = neighborhoodHash.QueryPosition(position, perceptionDistance);
+
     }
 
-    private static Vector2 wrap_positionOffset = Vector2.zero;
-    public static void GetCoordinatesWithinCircle(Vector2 center, float radius, out List<Coordinates> coordinates)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / neighborhoodSize_static);
-        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(center);
-        coordinates = new List<Coordinates>();
-
-        int r_wrap = 0;
-        int c_wrap = 0;
-        for (int r = centerCoords.row - neighborhoodRadius; r <= centerCoords.row + neighborhoodRadius; r++)
-        {
-            for (int c = centerCoords.col - neighborhoodRadius; c <= centerCoords.col + neighborhoodRadius; c++)
-            {
-                r_wrap = r;
-                c_wrap = c;
-                wrap_positionOffset = Vector3.zero;
-                if (r < 0)
-                {
-                    r_wrap = neighborhoodRows_static + r;
-                    wrap_positionOffset += Vector2.down * neighborhoodRows_static * neighborhoodSize_static;
-                }
-                else if (r >= neighborhoodRows_static)
-                {
-                    r_wrap = r - neighborhoodRows_static;
-                    wrap_positionOffset += Vector2.up * neighborhoodRows_static * neighborhoodSize_static;
-                }
-                if (c < 0)
-                {
-                    c_wrap = neighborhoodCols_static + c;
-                    wrap_positionOffset += Vector2.left * neighborhoodCols_static * neighborhoodSize_static;
-                }
-                else if (c >= neighborhoodCols_static)
-                {
-                    c_wrap = c - neighborhoodCols_static;
-                    wrap_positionOffset += Vector2.right * neighborhoodCols_static * neighborhoodSize_static;
-                }
-
-                Neighborhood checkNeighborhood = neighborhoods[r_wrap, c_wrap];
-                // Find the closest point to the center within the cell
-                Vector2 closestPointInNeighborhood = new Vector2
-                    (Mathf.Clamp(center.x - wrap_positionOffset.x,
-                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static / 2f),
-                    Mathf.Clamp(center.y - wrap_positionOffset.y,
-                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f));
-
-                //Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
-                if((center - (closestPointInNeighborhood + wrap_positionOffset)).sqrMagnitude < radius * radius)
-                {
-                    coordinates.Add (new Coordinates(r_wrap, c_wrap));
-                }
-
-            }
-        }
-       
-    }
-
-
-    public static void AddAreaToNeighborhoods(Agent agent, ref List<Coordinates> occupyingNeighborhoods)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if(occupyingNeighborhoods != null)
-        {
-            foreach(Coordinates cell in occupyingNeighborhoods)
-            {
-                neighborhoods[cell.row, cell.col].RemoveAgent(agent);
-            }
-        }
-        GetCoordinatesWithinCircle(agent.Position, agent.Radius, out occupyingNeighborhoods);
-        foreach(Coordinates cell in occupyingNeighborhoods)
-        {
-            neighborhoods[cell.row, cell.col].AddAgent(agent);
-        }
-    }
 
     public static Vector3 WrapPosition(Vector3 position)
     {

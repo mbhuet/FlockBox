@@ -14,10 +14,10 @@ public class SeekBehavior : SteeringBehavior {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+        List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
         //no targets in neighborhood
-        if (allTargets.First == null)
+        if (allTargets.Count ==0)
         {
             if(chosenTargetID != -1)
             {
@@ -27,10 +27,10 @@ public class SeekBehavior : SteeringBehavior {
             return;
         }
 
-        AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
+        Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
         //no pursuable targets nearby
-        if (!closestTarget.agent.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+        if (!closestTarget.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
         {
             if (chosenTargetID != -1)
             {
@@ -41,14 +41,14 @@ public class SeekBehavior : SteeringBehavior {
         }
 
 
-        if (closestTarget.agent.agentID != chosenTargetID) 
+        if (closestTarget.agentID != chosenTargetID) 
         {
             DisengagePursuit(mine, chosenTargetID);
-            EngagePursuit(mine, closestTarget.agent);
+            EngagePursuit(mine, closestTarget);
         }
 
         AttemptCatch(mine, closestTarget);
-        Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.Position).normalized * mine.activeSettings.maxSpeed;
+        Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
         steer = desired_velocity - mine.Velocity;
         steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
@@ -68,27 +68,27 @@ public class SeekBehavior : SteeringBehavior {
         Agent.InformOfPursuit(false, mine, targetID);
     }
 
-    static void AttemptCatch(SteeringAgent mine, AgentWrapped chosenTargetWrapped)
+    static void AttemptCatch(SteeringAgent mine, Agent chosenTargetWrapped)
     {
-        float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, mine.Position);
-        if (distAway <= chosenTargetWrapped.agent.Radius && chosenTargetWrapped.agent.CanBePursuedBy(mine))
+        float distAway = Vector3.Distance(chosenTargetWrapped.Position, mine.Position);
+        if (distAway <= chosenTargetWrapped.Radius && chosenTargetWrapped.CanBePursuedBy(mine))
         {
-            mine.CatchAgent(chosenTargetWrapped.agent);
+            mine.CatchAgent(chosenTargetWrapped);
         }
     }
 
 
-    private static AgentWrapped ClosestPursuableTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
+    private static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
     {
-       // int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
-
+        // int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
+        if (nearbyTargets.Count == 0) return null;
         float closeDist = float.MaxValue;
-        AgentWrapped closeTarget = nearbyTargets.First.Value;
-        foreach(AgentWrapped target in nearbyTargets)
+        Agent closeTarget = nearbyTargets[0];
+        foreach(Agent target in nearbyTargets)
         {
-            float sqrDist = Vector3.SqrMagnitude(target.wrappedPosition - agent.Position);
+            float sqrDist = Vector3.SqrMagnitude(target.Position - agent.Position);
             //if(dist <= target.target.radius) AttemptCatch(agent, target);
-            if (sqrDist < closeDist && (target.agent.CanBePursuedBy(agent))){
+            if (sqrDist < closeDist && (target.CanBePursuedBy(agent))){
                 closeDist = sqrDist;
                 closeTarget = target;
             }

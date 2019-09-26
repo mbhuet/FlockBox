@@ -25,7 +25,8 @@ public class SteeringAgent : Agent
     private bool threadRunning = false;
     //Takes a type, returns instance
 
-    private SurroundingsInfo mySurroundings = new SurroundingsInfo(new LinkedList<AgentWrapped>(), new Dictionary<string, LinkedList<AgentWrapped>>());
+    private SurroundingsInfo mySurroundings = new SurroundingsInfo();
+
     protected virtual void Update()
     {
         if (!isAlive) return;
@@ -38,23 +39,16 @@ public class SteeringAgent : Agent
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             Acceleration *= 0;
             threadStart = Time.time;
-            NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
             ThreadPool.QueueUserWorkItem(ThreadFlock, mySurroundings);
         }   
 
 
         Position += (Velocity * Time.deltaTime);
         Position = NeighborhoodCoordinator.WrapPosition(Position);
-        Acceleration *= 0;
 
         UpdateTransform();
     }
 
-    protected override void LateUpdate()
-    {
-        if (!isAlive) return;
-        FindNeighborhood();
-    }
 
 
 
@@ -62,16 +56,19 @@ public class SteeringAgent : Agent
 
     void ThreadFlock(System.Object obj)
     {
-        Flock((SurroundingsInfo)obj);
+        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius);
+        Flock((List<Agent>)obj);
+        FindNeighborhood();
+
         threadRunning = false;
     }
 
-    void Flock(SurroundingsInfo surroundings)
+    void Flock(List<Agent> surroundings)
     {
         foreach (SteeringBehavior behavior in activeSettings.Behaviors)
         {
             if (!behavior.IsActive) continue;
-            behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
+            behavior.GetSteeringBehaviorVector(out steer, this, mySurroundings);
             steer *= behavior.weight;
             //if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
 

@@ -25,7 +25,8 @@ public class Agent : MonoBehaviour {
     public NeighborType neighborType;
     public bool drawDebug = false;
 
-    protected List<Coordinates> myNeighborhoodCoords = new List<Coordinates>();
+
+    //protected List<Coordinates> myNeighborhoodCoords = new List<Coordinates>();
 
 
     private AgentVisual m_visual;
@@ -104,13 +105,6 @@ public class Agent : MonoBehaviour {
         SceneManager.sceneUnloaded += OnSceneChange;
     }
 
-    protected virtual void LateUpdate()
-    {
-        if(isAlive && IsStationary && NeighborhoodCoordinator.HasMoved)
-        {
-            ForceWrapPosition();
-        }
-    }
 
     protected void OnSceneChange(Scene before)
     {
@@ -140,49 +134,10 @@ public class Agent : MonoBehaviour {
 
     protected void FindNeighborhood()
     {
-        if (!isAlive) return;
-        switch (neighborType) {
-            case (NeighborType.POINT):
-                Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(Position);
-                if (!CurrentlyOccupyingNeighborhood(currentNeighborhood))
-                {
-                    RemoveFromAllNeighborhoods();
-                    AddToNeighborhood(currentNeighborhood);
-                }
-                break;
-            case (NeighborType.AREA):
-                NeighborhoodCoordinator.AddAreaToNeighborhoods(this, ref myNeighborhoodCoords);
-
-                break;
-        }
+        NeighborhoodCoordinator.UpdateAgentPosition(this);
     }
 
-    protected bool CurrentlyOccupyingNeighborhood(Coordinates coords)
-    {
-        return myNeighborhoodCoords.Contains(coords);
-    }
-
-    protected void AddToNeighborhood(Coordinates coords)
-    {
-        NeighborhoodCoordinator.AddAgent(this, coords);
-        myNeighborhoodCoords.Add(coords);
-    }
-
-    protected void RemoveFromAllNeighborhoods()
-    {
-        foreach(Coordinates coords in myNeighborhoodCoords)
-        {
-            NeighborhoodCoordinator.RemoveAgent(this, coords);
-        }
-        myNeighborhoodCoords.Clear();
-    }
-
-
-    protected void RemoveFromNeighborhood(Coordinates coords)
-    {
-        NeighborhoodCoordinator.RemoveAgent(this, coords);
-        myNeighborhoodCoords.Remove(coords);
-    }
+    
 
     public virtual void Kill()
     {
@@ -191,7 +146,7 @@ public class Agent : MonoBehaviour {
         hasSpawned = false;
         visual.Hide();
         numPursuers = 0;
-        RemoveFromAllNeighborhoods();
+        NeighborhoodCoordinator.RemoveFromAllNeighborhoods(this);
         RemoveSelfFromActivePopulation();
         AddSelfToCache();
     }

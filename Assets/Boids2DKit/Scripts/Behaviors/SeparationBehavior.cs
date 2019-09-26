@@ -10,13 +10,13 @@ public class SeparationBehavior : SteeringBehavior {
         steer = Vector3.zero;
         int count = 0;
         // For every boid in the system, check if it's too close
-        foreach (AgentWrapped other in GetFilteredAgents( surroundings, this))
+        foreach (Agent other in GetFilteredAgents( surroundings, this))
         {
 
             if(WithinEffectiveRadius(mine, other))
             {
                 // Calculate vector pointing away from neighbor
-                Vector3 diff = mine.Position - other.wrappedPosition;
+                Vector3 diff = mine.Position - other.Position;
                 if (diff.sqrMagnitude<.001f) diff = UnityEngine.Random.insideUnitCircle * .01f;
                 //weighted by distance
                 steer += (diff.normalized/diff.magnitude);

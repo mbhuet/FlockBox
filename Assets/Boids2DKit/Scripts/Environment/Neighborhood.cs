@@ -10,9 +10,8 @@ public class Neighborhood
     //List<Agent> stationaryAgents;
     private int agentCount;
     public Vector2 neighborhoodCenter {
-    get { return m_neighborhoodCenter; }
+        get; protected set;
     }
-    private Vector2 m_neighborhoodCenter;
     public Neighborhood()
     {
         //allAgents = new List<Agent>();
@@ -21,7 +20,7 @@ public class Neighborhood
     }
     public Neighborhood(Vector2 pos) : this()
     {
-        m_neighborhoodCenter = pos;
+        neighborhoodCenter = pos;
     }
     public void ClearAgents() { sortedAgents.Clear(); } //allAgents.Clear(); 
     public bool IsOccupied() { return agentCount>0; }// allAgents.Count > 0; }
@@ -66,39 +65,19 @@ public class Neighborhood
         return sortedAgents;
     }
 
-    public void GetAgentsWithTag(string tag, out List<Agent> agentsOut)
+    public bool GetAgentsWithTag(string tag, out List<Agent> agentsOut)
     {   
         if (sortedAgents.TryGetValue(tag, out agentsOut))
         {
-            return;
+            return true;
         }
         else
         {
             agentsOut = new List<Agent>();
+            return false;
         }
     }
     
 }
 
-[System.Serializable]
-public struct SurroundingsInfo
-{
-    public SurroundingsInfo(
-        LinkedList<AgentWrapped> allAgents,
-        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents)
-        { this.allAgents = allAgents; this.sortedAgents = sortedAgents;}
-    public LinkedList<AgentWrapped> allAgents;
-    public Dictionary<string, LinkedList<AgentWrapped>> sortedAgents;
-}
 
-[System.Serializable]
-public struct Coordinates
-{
-    public Coordinates(int r, int c) { row = r; col = c; }
-    public int col, row;
-    public static Coordinates nowhere = new Coordinates(-1, -1);
-    public override string ToString()
-    {
-        return ("("+row+", " + col + ")");
-    }
-}

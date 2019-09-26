@@ -15,7 +15,7 @@ public class PursuitBehavior : SteeringBehavior
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
         //        Debug.Log("pursuit");
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+        List<Agent> allTargets = GetFilteredAgents(surroundings, this);
         
         /*
          * var distance :Vector3D = t.position - position;
@@ -25,7 +25,7 @@ public class PursuitBehavior : SteeringBehavior
          */
 
         //no targets in neighborhood
-        if (allTargets.First == null)
+        if (allTargets.Count==0)
         {
             if (HasPursuitTarget(mine))
             {
@@ -37,10 +37,10 @@ public class PursuitBehavior : SteeringBehavior
 
         //Debug.Log(allTargets.ToString());
 
-        AgentWrapped closestTarget = ClosestTarget(allTargets, mine);
+        Agent closestTarget = ClosestTarget(allTargets, mine);
 
         //no pursuable targets nearby
-        if (!closestTarget.agent.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+        if (!closestTarget.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
         {
 //            Debug.Log("No Pursuable Target");
 
@@ -53,15 +53,15 @@ public class PursuitBehavior : SteeringBehavior
         }
 
 
-        if (closestTarget.agent.agentID != chosenTargetID)
+        if (closestTarget.agentID != chosenTargetID)
         {
             DisengagePursuit(mine, chosenTargetID);
-            EngagePursuit(mine, closestTarget.agent);
+            EngagePursuit(mine, closestTarget);
         }
 
-        Vector3 distance = closestTarget.wrappedPosition - mine.Position;
+        Vector3 distance = closestTarget.Position - mine.Position;
         float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
-        Vector3 predictedInterceptPosition = closestTarget.wrappedPosition + closestTarget.agent.Velocity * est_timeToIntercept;
+        Vector3 predictedInterceptPosition = closestTarget.Position + closestTarget.Velocity * est_timeToIntercept;
 
         AttemptCatch(mine, closestTarget);
 
@@ -89,29 +89,31 @@ public class PursuitBehavior : SteeringBehavior
 
     }
 
-    static void AttemptCatch(Agent mine, AgentWrapped chosenQuaryWrapped)
+    static void AttemptCatch(Agent mine, Agent chosenQuaryWrapped)
     {
-        float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.Position);
-        if (distAway <= (chosenQuaryWrapped.agent.Radius + mine.Radius) && chosenQuaryWrapped.agent.CanBePursuedBy(mine))
+        float distAway = Vector3.Distance(chosenQuaryWrapped.Position, mine.Position);
+        if (distAway <= (chosenQuaryWrapped.Radius + mine.Radius) && chosenQuaryWrapped.CanBePursuedBy(mine))
         {
-            mine.CatchAgent(chosenQuaryWrapped.agent);
+            mine.CatchAgent(chosenQuaryWrapped);
 //            Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
         }
     }
 
 
-    private static AgentWrapped ClosestTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
+    private static Agent ClosestTarget(List<Agent> nearbyTargets, Agent agent)
     {
+        if (nearbyTargets.Count == 0) return null;
+
         int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
 
         float closeDist = float.MaxValue;
-        AgentWrapped closeTarget = nearbyTargets.First.Value;
-        foreach (AgentWrapped target in nearbyTargets)
+        Agent closeTarget = nearbyTargets[0];
+        foreach (Agent target in nearbyTargets)
         {
             //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
-            float dist = (target.wrappedPosition - agent.Position).sqrMagnitude;
+            float dist = (target.Position - agent.Position).sqrMagnitude;
             //if(dist <= target.target.radius) AttemptCatch(agent, target);
-            if (dist < closeDist && target.agent.CanBePursuedBy(agent))
+            if (dist < closeDist && target.CanBePursuedBy(agent))
             {
                 closeDist = dist;
                 closeTarget = target;

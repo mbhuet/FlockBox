@@ -11,12 +11,12 @@ public class AlignmentBehavior : SteeringBehavior {
     {
         Vector3 sum = Vector3.zero;
         int count = 0;
-        foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
+        foreach (Agent other in GetFilteredAgents(surroundings, this))
         {
             if (WithinEffectiveRadius(mine, other))
             {
                 float modFactor = 1;
-                sum += (other.agent.Velocity) * modFactor;
+                sum += (other.Velocity) * modFactor;
                 count++;
             }
         }
