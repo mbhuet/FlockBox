@@ -46,7 +46,9 @@ public class SteeringAgent : Agent
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             Acceleration *= 0;
             threadStart = Time.time;
-            ThreadPool.QueueUserWorkItem(callback);
+            threadRunning = true;
+            NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius);
+            ThreadPool.QueueUserWorkItem(callback, mySurroundings);
         }   
 
 
@@ -62,25 +64,27 @@ public class SteeringAgent : Agent
 
     }
 
+    private void LateUpdate()
+    {
+        FindNeighborhood();
 
+    }
 
     private Vector3 steer = Vector3.zero;
 
     void ThreadFlock(System.Object obj)
     {
-
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, Radius);
+        SurroundingsInfo surroundings = (SurroundingsInfo)obj;
         foreach (SteeringBehavior behavior in activeSettings.Behaviors)
         {
             if (!behavior.IsActive) continue;
-            behavior.GetSteeringBehaviorVector(out steer, this, mySurroundings);
+            behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;
             //if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
 
             // We could add mass here if we want A = F / M
             Acceleration += (steer);
         }
-        FindNeighborhood();
 
         threadRunning = false;
     }
