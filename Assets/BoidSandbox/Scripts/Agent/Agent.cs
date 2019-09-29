@@ -13,7 +13,7 @@ public struct SurroundingsInfo
     public List<AgentWrapped> allAgents;
 }
 
-
+[System.Serializable]
 public struct AgentWrapped
 {
     public AgentWrapped(Agent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }

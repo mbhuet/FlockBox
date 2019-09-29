@@ -22,7 +22,7 @@ public class AgentSpawner : MonoBehaviour {
         float randomSpawnRadius = Camera.main.orthographicSize / 2f;
         for (int i = 0; i < numBoids; i++)
         {
-            Spawn(1, Random.insideUnitSphere * randomSpawnRadius);
+            Spawn(1, NeighborhoodCoordinator.Instance.RandomPosition());
         }
     }
 

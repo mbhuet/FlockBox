@@ -16,14 +16,13 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
     private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
 
-    private static bool neighborhoodsInitialized = false;
-
     public bool displayGizmos;
-    public Vector3Int dimensions = Vector3Int.one * 10;
-    public float cellSize = 10;
+    [SerializeField]
+    private Vector3Int dimensions = Vector3Int.one * 10;
+    [SerializeField]
+    private float cellSize = 10;
 
-    private Vector3 neighborhoodsCenter;
-    private Transform trackingTarget;
+    public bool wrapEdges = true;
 
     public static bool HasMoved
     {
@@ -154,11 +153,46 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public Vector3 WrapPosition(Vector3 position)
     {
-        position = new Vector3(
-            dimensions.x == 0? 0 : Mathf.Repeat(position.x, dimensions.x * cellSize),
-            dimensions.y == 0? 0 : Mathf.Repeat(position.y, dimensions.y * cellSize),
-            dimensions.z == 0? 0 : Mathf.Repeat(position.z, dimensions.z * cellSize)
-            );
+        if (dimensions.x == 0)
+        {
+            position.x = 0;
+        }
+        else if (position.x < 0)
+        {
+            position.x = dimensions.x * cellSize + position.x;
+        }
+        else if (position.x > dimensions.x * cellSize)
+        {
+            position.x = position.x % dimensions.x * cellSize;
+        }
+
+        if (dimensions.y == 0)
+        {
+            position.y = 0;
+        }
+        else if (position.y < 0)
+        {
+            position.y = dimensions.y * cellSize + position.y;
+        }
+        else if (position.y > dimensions.y * cellSize)
+        {
+            position.y = position.y % dimensions.y * cellSize;
+        }
+
+        if (dimensions.z == 0)
+        {
+            position.z = 0;
+        }
+        else if (position.z < 0)
+        {
+            position.z = dimensions.z * cellSize + position.z;
+        }
+        else if (position.z > dimensions.z * cellSize)
+        {
+            position.z = position.z % dimensions.z * cellSize;
+        }
+
+
         return position;
     }
 
@@ -197,7 +231,12 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     void DrawNeighborHoods()
     {
         if (bucketToAgents == null) return;
-        Gizmos.color = Color.red * .1f;
+        Gizmos.color = Color.grey;
+
+        Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
+        Gizmos.color = Color.grey * .1f;
+
+
         for (int x = 0; x < dimensions.x; x++)
         {
             for (int y = 0; y < dimensions.y; y++)
