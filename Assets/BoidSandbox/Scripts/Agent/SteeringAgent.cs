@@ -79,10 +79,9 @@ public class SteeringAgent : Agent
         steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
     }
 
-    void UpdateTransform()
+    protected override void UpdateTransform()
     {
-        
-        this.transform.position = Position;
+        base.UpdateTransform();
         if (Velocity.magnitude > 0)
         {
             Forward = Velocity.normalized;
@@ -99,11 +98,6 @@ public class SteeringAgent : Agent
         Acceleration = Vector3.zero;
         Forward = UnityEngine.Random.insideUnitSphere;
         Velocity = Forward * activeSettings.maxSpeed;
-    }
-
-    public override bool IsStationary
-    {
-        get{ return false; }
     }
 
     protected void LockPosition(bool isLocked)

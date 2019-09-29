@@ -62,10 +62,6 @@ public class Agent : MonoBehaviour {
     public int agentID { get; protected set; }
     public bool isRegistered { get; protected set; }
 
-    protected static Dictionary<System.Type, List<Agent>> agentCache;
-    protected static Dictionary<System.Type, List<Agent>> activePopulations;
-
-
     public bool isAlive { get; protected set; }
     public bool isCaught { get; protected set; }
     protected bool hasSpawned = false;
@@ -104,13 +100,6 @@ public class Agent : MonoBehaviour {
     }
 
 
-    public virtual bool IsStationary
-    {
-       get { return true; }
-    }
-
-
-
     public delegate void AgentEvent(Agent agent);
     public AgentEvent OnCaught;
     public AgentEvent OnCatch;
@@ -121,9 +110,11 @@ public class Agent : MonoBehaviour {
 
     protected virtual void LateUpdate()
     {
-        if(isAlive && IsStationary && NeighborhoodCoordinator.HasMoved)
+        if(isAlive && transform.hasChanged)
         {
+            Position = transform.localPosition;
             ForceUpdatePosition();
+            transform.hasChanged = false;
         }
     }
 
@@ -172,8 +163,6 @@ public class Agent : MonoBehaviour {
         isAlive = false;
         hasSpawned = false;
         RemoveFromAllNeighborhoods();
-        RemoveSelfFromActivePopulation();
-        AddSelfToCache();
         this.gameObject.SetActive(false);
     }
 
@@ -190,17 +179,22 @@ public class Agent : MonoBehaviour {
         isAlive = true;
         hasSpawned = true;
         isCaught = false;
+        transform.SetParent(NeighborhoodCoordinator.Instance.transform);
         this.Position = position;
         ForceUpdatePosition();
-        AddSelfToActivePopulation();
-
     }
 
-    public virtual void ForceUpdatePosition()
+    protected virtual void ForceUpdatePosition()
     {
         ValidatePosition();
-        transform.position = this.Position;
+        UpdateTransform();
         FindNeighborhood();
+    }
+
+    protected virtual void UpdateTransform()
+    {
+
+        this.transform.localPosition = Position;
     }
 
     public virtual void CatchAgent(Agent other)
@@ -240,74 +234,6 @@ public class Agent : MonoBehaviour {
     }
 
 
-    private void AddSelfToCache()
-    {
-        if (agentCache == null) agentCache = new Dictionary<System.Type, List<Agent>>();
-        System.Type myType = this.GetType();
-        if (!agentCache.ContainsKey(myType))
-        {
-            agentCache.Add(myType, new List<Agent>());
-        }
-
-        if(!agentCache[myType].Contains(this)) agentCache[myType].Add(this);
-        this.gameObject.SetActive(false);
-    }
-
-    protected void AddSelfToActivePopulation()
-    {
-        System.Type myType = this.GetType();
-        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
-        if (!activePopulations.ContainsKey(myType))
-        {
-            activePopulations.Add(myType, new List<Agent>());
-        }
-        if (!activePopulations[myType].Contains(this)) activePopulations[myType].Add(this);
-    }
-
-    protected void RemoveSelfFromActivePopulation()
-    {
-        System.Type myType = this.GetType();
-        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
-        if (!activePopulations.ContainsKey(myType))
-        {
-            activePopulations.Add(myType, new List<Agent>());
-        }
-        activePopulations[myType].Remove(this);
-    }
-
-    protected int GetPopulationOfType(System.Type type)
-    {
-        if (activePopulations == null) activePopulations = new Dictionary<System.Type, List<Agent>>();
-        if (!activePopulations.ContainsKey(type))
-        {
-            return 0;
-        }
-        return activePopulations[type].Count;
-    }
-
-
-
-    public Agent GetInstance()
-    {
-        if (agentCache == null) agentCache = new Dictionary<System.Type, List<Agent>>();
-        System.Type myType = this.GetType();
-        
-        if (!agentCache.ContainsKey(myType))
-        {
-            agentCache.Add(myType, new List<Agent>());
-        }
-        List<Agent> cachedAgents = agentCache[myType];
-        if (cachedAgents.Count == 0)
-        {
-            return GameObject.Instantiate(this) as Agent;
-        }
-        else{
-                Agent cachedAgent = cachedAgents[0];
-                cachedAgents.RemoveAt(0);
-            cachedAgent.gameObject.SetActive(true);
-                return cachedAgent;
-            }
-    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

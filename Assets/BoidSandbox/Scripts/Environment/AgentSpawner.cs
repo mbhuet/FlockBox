@@ -34,7 +34,7 @@ public class AgentSpawner : MonoBehaviour {
         }
         for (int i = 0; i < numBoids; i++)
         {
-            GameObject.Instantiate<Agent>(prefab, pos, Quaternion.identity);
+            GameObject.Instantiate<Agent>(prefab, pos, Quaternion.identity, this.transform);
         }
     }
 

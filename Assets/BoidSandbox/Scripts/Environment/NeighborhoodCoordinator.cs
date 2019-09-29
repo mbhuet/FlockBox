@@ -327,7 +327,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     {
         if (bucketToAgents == null) return;
         Gizmos.color = Color.grey;
-
+        Gizmos.matrix = this.transform.localToWorldMatrix;
         Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
         Gizmos.color = Color.grey * .1f;
 
