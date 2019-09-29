@@ -8,38 +8,23 @@ using UnityEngine;
 //Class will manage itself if there are no instances by creating an instance
 //
 
-public struct AgentWrapped
-{
-    public AgentWrapped(Agent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
-    public Agent agent;
-    public Vector3 wrappedPosition;
-}
 
 
 public class NeighborhoodCoordinator : MonoBehaviour {
-    private static NeighborhoodCoordinator Instance;
-    private static Neighborhood[,] neighborhoods;
+    public static NeighborhoodCoordinator Instance;
+
+    private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
+    private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
 
     private static bool neighborhoodsInitialized = false;
-    private const float defaultNeighborhoodSize = 10;
 
     public bool displayGizmos;
-    public int neighborhoodCols = 10;
-    public int neighborhoodRows = 10;
-    public float neighborhoodSize = 10;
+    public Vector3Int dimensions = Vector3Int.one * 10;
+    public float cellSize = 10;
 
-    private static int neighborhoodCols_static;
-    private static int neighborhoodRows_static;
-    private static float neighborhoodSize_static;
-    private static Vector2 neighborhoodsCenter_static;
+    private Vector3 neighborhoodsCenter;
     private Transform trackingTarget;
 
-    public static Vector2 maxCorner { get; private set; }
-    public static Vector2 minCorner { get; private set; }
-    public static Vector2 size { get; private set; }
-
-
-    private static List<Neighborhood> toDraw = new List<Neighborhood>();
     public static bool HasMoved
     {
         get; private set;
@@ -52,271 +37,158 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         else
         {
             Instance = this;
-            InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, neighborhoodSize, this.transform);
         }
     }
 
-    void Start()
+
+
+
+
+    public void GetSurroundingsWrapped(Vector3 position, float perceptionDistance, out List<int> buckets, out List<AgentWrapped> neighbors)
     {
-        trackingTarget = this.transform;
+        neighbors = new List<AgentWrapped>();
+
+        GetBucketsOverlappingSphere(position, perceptionDistance, out buckets);
+
+        for (int i = 0; i < buckets.Count; i++)
+        {
+            if (bucketToAgents.ContainsKey(i))
+            {
+                foreach(Agent agent in bucketToAgents[i])
+                {
+                    neighbors.Add(new AgentWrapped(agent, WrapPositionRelative(agent.Position, position)));
+                }
+            }
+        }
     }
 
-    private void Update()
+
+
+    public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
     {
-        if (trackingTarget!= null && trackingTarget.hasChanged)
+        RemoveAgentFromBuckets(agent, out buckets);
+        GetBucketsOverlappingSphere(agent.Position, agent.Radius, out buckets);
+        for(int i = 0; i<buckets.Count; i++)
         {
-            HasMoved = true;
-            UpdateStaticValues(trackingTarget);
-            trackingTarget.hasChanged = false;
+            if (!bucketToAgents.ContainsKey(i))
+            {
+                bucketToAgents.Add(i, new List<Agent>());
+            }
+            bucketToAgents[i].Add(agent);
         }
-        else
+    }
+
+    public void RemoveAgentFromBuckets(Agent agent, out List<int> buckets)
+    {
+        if (agentToBuckets.TryGetValue(agent, out buckets))
         {
-            HasMoved = false;
+            for (int i = 0; i < buckets.Count; i++)
+            {
+                if (bucketToAgents.ContainsKey(i))
+                {
+                    bucketToAgents[i].Remove(agent);
+                }
+            }
         }
     }
 
 
+    public void GetBucketsOverlappingSphere(Vector3 center, float radius, out List<int> buckets)
+    {
+        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / cellSize);
+        buckets = new List<int>();
+        Vector3 positionContainer;
+
+        for (int xOff = -neighborhoodRadius; xOff <= neighborhoodRadius; xOff++)
+        {
+            for (int yOff = -neighborhoodRadius; yOff <= neighborhoodRadius; yOff++)
+            {
+                for (int zOff = -neighborhoodRadius; zOff <= neighborhoodRadius; zOff++)
+                {
+                    positionContainer.x = (center.x + xOff * cellSize);
+                    positionContainer.y = (center.y + yOff * cellSize);
+                    positionContainer.z = (center.z + zOff * cellSize);
+                    Debug.Log(positionContainer + "\n" + WrapPosition(positionContainer) + "\n" + GetHash(WrapPosition(positionContainer)));
+                    buckets.Add(GetHash(WrapPosition(positionContainer)));
+                }
+            }
+        }
+
+    }
+
+
+    public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
+    {
+        return position;
+    }
+
+    public Vector3 WrapPosition(Vector3 position)
+    {
+        position = new Vector3(
+            Mathf.Repeat(position.x, dimensions.x * cellSize),
+            Mathf.Repeat(position.y, dimensions.y * cellSize),
+            Mathf.Repeat(position.z, dimensions.z * cellSize)
+            );
+        return position;
+    }
+
+
+    public Vector3 RandomPosition()
+    {
+        return new Vector3(
+           UnityEngine.Random.Range(0, dimensions.x * cellSize),
+           UnityEngine.Random.Range(0, dimensions.y * cellSize),
+           UnityEngine.Random.Range(0, dimensions.z * cellSize)
+         );
+    }
+
+
+
+    private int GetHash(float x, float y, float z)
+    {
+        return 
+             Mathf.FloorToInt(x / cellSize)
+           + Mathf.FloorToInt(y / cellSize) * dimensions.x
+           + Mathf.FloorToInt(z / cellSize) * dimensions.x * dimensions.y;
+    }
+
+    private int GetHash(Vector3 position)
+    {
+        return GetHash(position.x, position.y, position.z);
+    }
+
+#if UNITY_EDITOR
 
     private void OnDrawGizmos()
     {
-        if(displayGizmos)DrawNeighborHoods();
+        if (displayGizmos) DrawNeighborHoods();
     }
 
     void DrawNeighborHoods()
     {
-        if (neighborhoods == null) return;
-        for (int r = 0; r < neighborhoods.GetLength(0); r++)
+        if (bucketToAgents == null) return;
+        Gizmos.color = Color.red * .1f;
+        for (int x = 0; x < dimensions.x; x++)
         {
-            for (int c = 0; c < neighborhoods.GetLength(1); c++)
+            for (int y = 0; y < dimensions.y; y++)
             {
-                Gizmos.color = Color.red * .1f;
-                Vector2 neighborhoodPos = neighborhoods[r, c].neighborhoodCenter;
-                if (toDraw.Contains(neighborhoods[r, c]))
+                for (int z = 0; z < dimensions.z; z++)
                 {
-                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-                }
-                if (neighborhoods[r, c].IsOccupied())
-                {
-                    Gizmos.DrawCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-                }
-                Gizmos.DrawWireCube(neighborhoodPos, Vector2.one * neighborhoodSize);
-            }
-        }
-        toDraw.Clear();
-    }
-
-
-    private static void InitializeNeighborhoods()
-    {
-
-        Vector2 viewExtents = new Vector2(Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize);
-        float wrappingPadding = 1;
-        
-        int neighborhoodCols = Mathf.FloorToInt((viewExtents.x + wrappingPadding) * 2 / defaultNeighborhoodSize) + 1;
-        int neighborhoodRows = Mathf.FloorToInt((viewExtents.y + wrappingPadding) * 2 / defaultNeighborhoodSize) + 1;
-
-        InitializeNeighborhoods(neighborhoodRows, neighborhoodCols, defaultNeighborhoodSize, Camera.main.transform);
-    }
-
-    private static void UpdateStaticValues(Transform target)
-    {
-        neighborhoodsCenter_static = target.position;
-        maxCorner = neighborhoodsCenter_static + Vector2.right * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.up * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
-        minCorner = neighborhoodsCenter_static + Vector2.left * (neighborhoodCols_static * neighborhoodSize_static) / 2f + Vector2.down * (neighborhoodRows_static * neighborhoodSize_static) / 2f;
-    }
-
-
-    private static void InitializeNeighborhoods(int rows, int cols, float neighborhood_size, Transform centerTarget)
-    {
-        Debug.Log("NeighborhoodCoordinator Init " + rows + " " + cols + " " + neighborhood_size);
-
-        neighborhoodSize_static = neighborhood_size;
-        neighborhoodCols_static = cols;
-        neighborhoodRows_static = rows;
-        UpdateStaticValues(centerTarget);
-
-        neighborhoods = new Neighborhood[rows, cols];
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                Vector2 neighborhoodPos = neighborhoodsCenter_static + new Vector2(((c - cols / 2f) + .5f) * neighborhood_size, ((r - rows / 2f) + .5f) * neighborhood_size);
-                neighborhoods[r, c] = new Neighborhood(neighborhoodPos);
-            }
-        }
-
-        size = maxCorner - minCorner;
-        neighborhoodsInitialized = true;
-    }
-
-    public static void AddAgent(Agent agent, Coordinates coords)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (ValidCoordinates(coords))neighborhoods[coords.row, coords.col].AddAgent(agent);
-    }
-
-    public static void RemoveAgent(Agent agent, Coordinates coords)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (ValidCoordinates(coords)) neighborhoods[coords.row, coords.col].RemoveAgent(agent);
-    }
-
-
-    private static bool ValidCoordinates(Coordinates coords)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        return (coords.row < neighborhoodRows_static && coords.col < neighborhoodCols_static && coords.row >= 0 && coords.col >= 0);
-    }
-
-
-    public static Coordinates WorldPosToNeighborhoodCoordinates(Vector2 position)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        Coordinates coords = new Coordinates();
-        position = WrapPosition(position);
-        coords.col = Mathf.FloorToInt((position.x - neighborhoodsCenter_static.x + neighborhoodCols_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
-        coords.row = Mathf.FloorToInt((position.y - neighborhoodsCenter_static.y + neighborhoodRows_static / 2f * neighborhoodSize_static) / neighborhoodSize_static);
-        coords.col = Mathf.Clamp(coords.col, 0, neighborhoodCols_static-1);
-        coords.row = Mathf.Clamp(coords.row, 0, neighborhoodRows_static-1);
-        return coords;
-    }
-
-
-    public static void GetSurroundings(ref SurroundingsInfo data, Vector2 position, float perceptionDistance)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        LinkedList<AgentWrapped> allAgents = new LinkedList<AgentWrapped>();
-        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents = new Dictionary<string, LinkedList<AgentWrapped>>();
-
-        VisitNeighborhoodsWithinCircle(position, perceptionDistance, 
-            delegate(Coordinates coords)
-            {
-                Dictionary<string, List<Agent>> sourceAgents = neighborhoods[coords.row, coords.col].GetSortedAgents();
-                foreach (string tag in sourceAgents.Keys)
-                {
-                    List<Agent> agentsOut;
-                    if (sourceAgents.TryGetValue(tag, out agentsOut))
+                    Vector3 corner = new Vector3(x, y, z) * cellSize;
+                    int bucket = GetHash(corner);
+                    if (bucketToAgents.ContainsKey(bucket) && bucketToAgents[bucket].Count > 0)
                     {
-                        foreach (Agent agent in agentsOut)
-                        {
-                            AgentWrapped wrappedAgent = new AgentWrapped(agent, (agent.Position + (Vector3)wrap_positionOffset));
-                            allAgents.AddFirst(wrappedAgent);
-                            if (!sortedAgents.ContainsKey(tag)) sortedAgents.Add(tag, new LinkedList<AgentWrapped>());
-                            sortedAgents[tag].AddFirst(wrappedAgent);
-                        }
+                        Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
+                    }
+                    else
+                    {
+                        //Gizmos.DrawWireCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
+
                     }
                 }
             }
-            );
-
-        data.allAgents = allAgents;
-        data.sortedAgents = sortedAgents;
-    }
-
-    private static Vector2 wrap_positionOffset = Vector2.zero;
-    public static void VisitNeighborhoodsWithinCircle(Vector2 center, float radius, Action<Coordinates> visitFunc)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / neighborhoodSize_static);
-        Coordinates centerCoords = WorldPosToNeighborhoodCoordinates(center);
-
-        int r_wrap = 0;
-        int c_wrap = 0;
-        for (int r = centerCoords.row - neighborhoodRadius; r <= centerCoords.row + neighborhoodRadius; r++)
-        {
-            for (int c = centerCoords.col - neighborhoodRadius; c <= centerCoords.col + neighborhoodRadius; c++)
-            {
-                r_wrap = r;
-                c_wrap = c;
-                wrap_positionOffset = Vector3.zero;
-                if (r < 0)
-                {
-                    r_wrap = neighborhoodRows_static + r;
-                    wrap_positionOffset += Vector2.down * neighborhoodRows_static * neighborhoodSize_static;
-                }
-                else if (r >= neighborhoodRows_static)
-                {
-                    r_wrap = r - neighborhoodRows_static;
-                    wrap_positionOffset += Vector2.up * neighborhoodRows_static * neighborhoodSize_static;
-                }
-                if (c < 0)
-                {
-                    c_wrap = neighborhoodCols_static + c;
-                    wrap_positionOffset += Vector2.left * neighborhoodCols_static * neighborhoodSize_static;
-                }
-                else if (c >= neighborhoodCols_static)
-                {
-                    c_wrap = c - neighborhoodCols_static;
-                    wrap_positionOffset += Vector2.right * neighborhoodCols_static * neighborhoodSize_static;
-                }
-
-                Neighborhood checkNeighborhood = neighborhoods[r_wrap, c_wrap];
-                // Find the closest point to the center within the cell
-                Vector2 closestPointInNeighborhood = new Vector2
-                    (Mathf.Clamp(center.x - wrap_positionOffset.x,
-                        checkNeighborhood.neighborhoodCenter.x - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.x + neighborhoodSize_static / 2f),
-                    Mathf.Clamp(center.y - wrap_positionOffset.y,
-                        checkNeighborhood.neighborhoodCenter.y - neighborhoodSize_static / 2f,
-                        checkNeighborhood.neighborhoodCenter.y + neighborhoodSize_static / 2f));
-
-                //Debug.DrawLine(closestPointInNeighborhood + wrap_positionOffset, center, Color.yellow);
-                if((center - (closestPointInNeighborhood + wrap_positionOffset)).sqrMagnitude < radius * radius)
-                {
-                    visitFunc(new Coordinates(r_wrap, c_wrap));
-                }
-
-            }
         }
     }
+#endif
 
-
-    public static List<Coordinates> AddAreaToNeighborhoods(Agent agent)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        List<Coordinates> addedCoords = new List<Coordinates>();
-        VisitNeighborhoodsWithinCircle(agent.Position, agent.Radius,
-            delegate (Coordinates coords)
-            {
-                addedCoords.Add(coords);
-                neighborhoods[coords.row, coords.col].AddAgent(agent);
-            }
-            );
-        return addedCoords;
-    }
-
-    public static Vector3 WrapPosition(Vector3 position)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-
-        bool mustWrap = false;
-        Vector3 wrappedPosition = position;
-        if (position.x < NeighborhoodCoordinator.minCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.maxCorner.x + (position.x - NeighborhoodCoordinator.minCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
-        if (position.y < NeighborhoodCoordinator.minCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.maxCorner.y + (position.y - NeighborhoodCoordinator.minCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
-        if (position.x > NeighborhoodCoordinator.maxCorner.x) { wrappedPosition.x = NeighborhoodCoordinator.minCorner.x + (position.x - NeighborhoodCoordinator.maxCorner.x) % (neighborhoodSize_static * neighborhoodCols_static); mustWrap = true; }
-        if (position.y > NeighborhoodCoordinator.maxCorner.y) { wrappedPosition.y = NeighborhoodCoordinator.minCorner.y + (position.y - NeighborhoodCoordinator.maxCorner.y) % (neighborhoodSize_static * neighborhoodRows_static); mustWrap = true; }
-        if (mustWrap) position = wrappedPosition;
-        return wrappedPosition;
-    }
-
-    public static Vector3 ClosestPositionWithWrap(Vector3 myPosition, Vector3 otherPosition)
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        if (Mathf.Abs(myPosition.x - otherPosition.x) > NeighborhoodCoordinator.size.x / 2f)
-        {
-            otherPosition.x += NeighborhoodCoordinator.size.x * (myPosition.x > otherPosition.x ? 1 : -1);
-        }
-        if (Mathf.Abs(myPosition.y - otherPosition.y) > NeighborhoodCoordinator.size.y / 2f)
-        {
-            otherPosition.y += NeighborhoodCoordinator.size.y * (myPosition.y > otherPosition.y ? 1 : -1);
-        }
-        return otherPosition;
-    }
-
-
-    public static Vector3 RandomPosition()
-    {
-        if (!neighborhoodsInitialized) InitializeNeighborhoods();
-        return new Vector3(UnityEngine.Random.Range(minCorner.x, maxCorner.x), UnityEngine.Random.Range(minCorner.y, maxCorner.y));
-    }
 }

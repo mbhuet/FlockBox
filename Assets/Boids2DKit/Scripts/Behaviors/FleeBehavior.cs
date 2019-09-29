@@ -9,7 +9,6 @@ public class FleeBehavior : SteeringBehavior
 
     public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
     {
-        Dictionary<string, LinkedList<AgentWrapped>> sourroundingTargets = surroundings.sortedAgents;
 
         Vector3 fleeMidpoint = Vector3.zero;   // Start with empty vector to accumulate all positions
         float count = 0;

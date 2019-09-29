@@ -21,13 +21,13 @@ public class SteeringAgent : Agent
     private bool freezePosition = false;
     //Takes a type, returns instance
 
-    private SurroundingsInfo mySurroundings = new SurroundingsInfo(new LinkedList<AgentWrapped>(), new Dictionary<string, LinkedList<AgentWrapped>>());
+    private SurroundingsInfo mySurroundings = new SurroundingsInfo();
     protected virtual void Update()
     {
         if (!isAlive) return;
         if (activeSettings == null) return;
 
-        NeighborhoodCoordinator.GetSurroundings(ref mySurroundings, Position, activeSettings.PerceptionDistance);
+        NeighborhoodCoordinator.Instance.GetSurroundingsWrapped(Position, activeSettings.PerceptionDistance, out buckets, out mySurroundings.allAgents);
         Flock(mySurroundings);
 
         if (freezePosition) return;
@@ -36,7 +36,7 @@ public class SteeringAgent : Agent
         Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
 
         Position += (Velocity * Time.deltaTime);
-        Position = NeighborhoodCoordinator.WrapPosition(Position);
+        Position = NeighborhoodCoordinator.Instance.WrapPosition(Position);
         Acceleration *= 0;
 
         UpdateTransform();
@@ -81,13 +81,13 @@ public class SteeringAgent : Agent
     {
 
         this.transform.position = Position;
-        if (Velocity.magnitude > 0) Forward = Velocity.normalized;
+        if (Velocity.magnitude > 0)
+        {
+            Forward = Velocity.normalized;
+            transform.rotation = Quaternion.LookRotation(Forward, Vector3.up);
+        }
 
-            visual.SetRotation(Quaternion.identity);
-            visual.SetRotation(Quaternion.Euler(0, 0, (Mathf.Atan2(Forward.y, Forward.x) - Mathf.PI * .5f) * Mathf.Rad2Deg));
-        
     }
-
 
 
     public override void Spawn(Vector3 position)
@@ -96,8 +96,8 @@ public class SteeringAgent : Agent
         LockPosition(false);
         speedThrottle = 1;
         Acceleration = Vector3.zero;
-        float forwardAngle = UnityEngine.Random.Range(0, Mathf.PI * 2);
-        Velocity = new Vector3(Mathf.Cos(forwardAngle), Mathf.Sin(forwardAngle)) * activeSettings.maxSpeed;
+        Forward = UnityEngine.Random.insideUnitSphere;
+        Velocity = Forward * activeSettings.maxSpeed;
     }
 
     public override bool IsStationary

@@ -3,8 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 [System.Serializable]
-[RequireComponent(typeof(AgentVisual))]
+public struct SurroundingsInfo
+{
+    public SurroundingsInfo(
+        List<AgentWrapped> allAgents)
+    { this.allAgents = allAgents;}
+    public List<AgentWrapped> allAgents;
+}
+
+
+public struct AgentWrapped
+{
+    public AgentWrapped(Agent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
+    public Agent agent;
+    public Vector3 wrappedPosition;
+}
+
+[System.Serializable]
 public class Agent : MonoBehaviour {
 
     public enum NeighborType
@@ -25,18 +42,8 @@ public class Agent : MonoBehaviour {
     public NeighborType neighborType;
     public bool drawDebug = false;
 
-    protected List<Coordinates> myNeighborhoodCoords = new List<Coordinates>();
-
-
-    private AgentVisual m_visual;
-    public AgentVisual visual
-    {
-        get
-        {
-            if (m_visual == null) m_visual = GetComponent<AgentVisual>();
-            return m_visual;
-        }
-    }
+    protected List<int> buckets;
+    protected List<Agent> neighbors;
 
     protected static Dictionary<int, Agent> agentRegistry;
     protected static int agentCount_static = 0;
@@ -98,11 +105,7 @@ public class Agent : MonoBehaviour {
     public AgentEvent OnKill;
     public AgentEvent OnSpawn;
 
-    protected void Awake()
-    {
-        DontDestroyOnLoad(this.gameObject);
-        SceneManager.sceneUnloaded += OnSceneChange;
-    }
+
 
     protected virtual void LateUpdate()
     {
@@ -112,10 +115,6 @@ public class Agent : MonoBehaviour {
         }
     }
 
-    protected void OnSceneChange(Scene before)
-    {
-        Kill();
-    }
 
     protected void Start()
     {
@@ -140,61 +139,25 @@ public class Agent : MonoBehaviour {
 
     protected void FindNeighborhood()
     {
-        if (!isAlive) return;
-        switch (neighborType) {
-            case (NeighborType.POINT):
-                Coordinates currentNeighborhood = NeighborhoodCoordinator.WorldPosToNeighborhoodCoordinates(Position);
-                if (!CurrentlyOccupyingNeighborhood(currentNeighborhood))
-                {
-                    RemoveFromAllNeighborhoods();
-                    AddToNeighborhood(currentNeighborhood);
-                }
-                break;
-            case (NeighborType.AREA):
-                RemoveFromAllNeighborhoods();
-                myNeighborhoodCoords = NeighborhoodCoordinator.AddAreaToNeighborhoods(this);
-
-                break;
-        }
+        NeighborhoodCoordinator.Instance.UpdateAgentBuckets(this, out buckets);
     }
 
-    protected bool CurrentlyOccupyingNeighborhood(Coordinates coords)
-    {
-        return myNeighborhoodCoords.Contains(coords);
-    }
-
-    protected void AddToNeighborhood(Coordinates coords)
-    {
-        NeighborhoodCoordinator.AddAgent(this, coords);
-        myNeighborhoodCoords.Add(coords);
-    }
 
     protected void RemoveFromAllNeighborhoods()
     {
-        foreach(Coordinates coords in myNeighborhoodCoords)
-        {
-            NeighborhoodCoordinator.RemoveAgent(this, coords);
-        }
-        myNeighborhoodCoords.Clear();
+        NeighborhoodCoordinator.Instance.RemoveAgentFromBuckets(this, out buckets);
     }
 
-
-    protected void RemoveFromNeighborhood(Coordinates coords)
-    {
-        NeighborhoodCoordinator.RemoveAgent(this, coords);
-        myNeighborhoodCoords.Remove(coords);
-    }
 
     public virtual void Kill()
     {
         if (OnKill != null) OnKill.Invoke(this);
         isAlive = false;
         hasSpawned = false;
-        visual.Hide();
-        numPursuers = 0;
         RemoveFromAllNeighborhoods();
         RemoveSelfFromActivePopulation();
         AddSelfToCache();
+        this.gameObject.SetActive(false);
     }
 
     public virtual void Spawn(Vector3 position, params string[] args)
@@ -205,12 +168,11 @@ public class Agent : MonoBehaviour {
     public virtual void Spawn(Vector3 position)
     {
         if (OnSpawn != null) OnSpawn.Invoke(this);
+        gameObject.SetActive(true);
         spawnTime = Time.time;
         isAlive = true;
         hasSpawned = true;
         isCaught = false;
-        numPursuers = 0;
-        visual.Show();
         this.Position = position;
         ForceWrapPosition();
         AddSelfToActivePopulation();
@@ -219,7 +181,7 @@ public class Agent : MonoBehaviour {
 
     public virtual void ForceWrapPosition()
     {
-        Position = NeighborhoodCoordinator.WrapPosition(Position);
+        Position = NeighborhoodCoordinator.Instance.WrapPosition(Position);
         transform.position = this.Position;
         FindNeighborhood();
     }

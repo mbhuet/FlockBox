@@ -15,7 +15,7 @@ public class PursuitBehavior : SteeringBehavior
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
         //        Debug.Log("pursuit");
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+        List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
         
         /*
          * var distance :Vector3D = t.position - position;
@@ -25,7 +25,7 @@ public class PursuitBehavior : SteeringBehavior
          */
 
         //no targets in neighborhood
-        if (allTargets.First == null)
+        if (allTargets.Count >0)
         {
             if (HasPursuitTarget(mine))
             {
@@ -100,12 +100,12 @@ public class PursuitBehavior : SteeringBehavior
     }
 
 
-    private static AgentWrapped ClosestTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
+    private static AgentWrapped ClosestTarget(List<AgentWrapped> nearbyTargets, Agent agent)
     {
         int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
 
         float closeDist = float.MaxValue;
-        AgentWrapped closeTarget = nearbyTargets.First.Value;
+        AgentWrapped closeTarget = nearbyTargets[0];
         foreach (AgentWrapped target in nearbyTargets)
         {
             //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);

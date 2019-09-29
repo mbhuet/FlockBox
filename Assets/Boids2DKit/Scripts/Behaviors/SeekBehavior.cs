@@ -14,10 +14,10 @@ public class SeekBehavior : SteeringBehavior {
         if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
         int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-        LinkedList<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+        List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
 
         //no targets in neighborhood
-        if (allTargets.First == null)
+        if (allTargets.Count>0)
         {
             if(chosenTargetID != -1)
             {
@@ -78,12 +78,12 @@ public class SeekBehavior : SteeringBehavior {
     }
 
 
-    private static AgentWrapped ClosestPursuableTarget(LinkedList<AgentWrapped> nearbyTargets, Agent agent)
+    private static AgentWrapped ClosestPursuableTarget(List<AgentWrapped> nearbyTargets, Agent agent)
     {
        // int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
 
         float closeDist = float.MaxValue;
-        AgentWrapped closeTarget = nearbyTargets.First.Value;
+        AgentWrapped closeTarget = nearbyTargets[0];
         foreach(AgentWrapped target in nearbyTargets)
         {
             float sqrDist = Vector3.SqrMagnitude(target.wrappedPosition - agent.Position);

@@ -78,25 +78,4 @@ public class Neighborhood
     
 }
 
-[System.Serializable]
-public struct SurroundingsInfo
-{
-    public SurroundingsInfo(
-        LinkedList<AgentWrapped> allAgents,
-        Dictionary<string, LinkedList<AgentWrapped>> sortedAgents)
-        { this.allAgents = allAgents; this.sortedAgents = sortedAgents;}
-    public LinkedList<AgentWrapped> allAgents;
-    public Dictionary<string, LinkedList<AgentWrapped>> sortedAgents;
-}
 
-[System.Serializable]
-public struct Coordinates
-{
-    public Coordinates(int r, int c) { row = r; col = c; }
-    public int col, row;
-    public static Coordinates nowhere = new Coordinates(-1, -1);
-    public override string ToString()
-    {
-        return ("("+row+", " + col + ")");
-    }
-}
