@@ -30,13 +30,25 @@ public class Agent : MonoBehaviour {
         SHERE //occupy all neighborhoods within radius
     }
 
-    public Vector3 Position { get; protected set; } = Vector3.zero;
-    public Vector3 Velocity { get; protected set; } = Vector3.zero;
-
-
+    private Vector3 m_position = Vector3.zero;
+    public Vector3 Position
+    {
+        get { return m_position; }
+        protected set { m_position = value; }
+    }
+    private Vector3 m_velocity = Vector3.zero;
+    public Vector3 Velocity
+    {
+        get { return m_velocity; }
+        protected set { m_velocity = value; }
+    }
     [SerializeField]
-    private float _radius = 1f;
-    public float Radius => _radius;
+    private float m_radius = 1f;
+    public float Radius
+    {
+        get { return m_radius; }
+        protected set { m_radius = value; }
+    }
 
 
     public NeighborType neighborType;
@@ -111,7 +123,7 @@ public class Agent : MonoBehaviour {
     {
         if(isAlive && IsStationary && NeighborhoodCoordinator.HasMoved)
         {
-            ForceWrapPosition();
+            ForceUpdatePosition();
         }
     }
 
@@ -135,6 +147,11 @@ public class Agent : MonoBehaviour {
         name += "_" + agentID;
         this.name = name;
 
+    }
+
+    protected void ValidatePosition()
+    {
+        NeighborhoodCoordinator.Instance.ValidatePosition(ref m_position);
     }
 
     protected void FindNeighborhood()
@@ -174,14 +191,14 @@ public class Agent : MonoBehaviour {
         hasSpawned = true;
         isCaught = false;
         this.Position = position;
-        ForceWrapPosition();
+        ForceUpdatePosition();
         AddSelfToActivePopulation();
 
     }
 
-    public virtual void ForceWrapPosition()
+    public virtual void ForceUpdatePosition()
     {
-        Position = NeighborhoodCoordinator.Instance.WrapPosition(Position);
+        ValidatePosition();
         transform.position = this.Position;
         FindNeighborhood();
     }

@@ -27,7 +27,7 @@ public class SteeringAgent : Agent
         if (!isAlive) return;
         if (activeSettings == null) return;
 
-        NeighborhoodCoordinator.Instance.GetSurroundingsWrapped(Position, activeSettings.PerceptionDistance, out buckets, out mySurroundings.allAgents);
+        NeighborhoodCoordinator.Instance.GetSurroundings(Position, activeSettings.PerceptionDistance, out buckets, out mySurroundings.allAgents);
         Flock(mySurroundings);
 
         if (freezePosition) return;
@@ -36,7 +36,7 @@ public class SteeringAgent : Agent
         Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
 
         Position += (Velocity * Time.deltaTime);
-        Position = NeighborhoodCoordinator.Instance.WrapPosition(Position);
+        ValidatePosition();
         Acceleration *= 0;
 
         UpdateTransform();

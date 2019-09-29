@@ -55,7 +55,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     }
 
 
-    public void GetSurroundingsWrapped(Vector3 position, float perceptionDistance, out List<int> buckets, out List<AgentWrapped> neighbors)
+    public void GetSurroundings(Vector3 position, float perceptionDistance, out List<int> buckets, out List<AgentWrapped> neighbors)
     {
         neighbors = new List<AgentWrapped>();
 
@@ -206,7 +206,22 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         return position;
     }
 
-    public Vector3 WrapPosition(Vector3 position)
+
+    public void ValidatePosition(ref Vector3 position)
+    {
+        if (wrapEdges) position = WrapPosition(position);
+        else
+        {
+            if (position.x < 0) position.x = 0;
+            else if (position.x > dimensions.x * cellSize) position.x = dimensions.x * cellSize;
+            if (position.y < 0) position.y = 0;
+            else if (position.y > dimensions.y * cellSize) position.y = dimensions.y * cellSize;
+            if (position.z < 0) position.z = 0;
+            else if (position.z > dimensions.z * cellSize) position.z = dimensions.z * cellSize;
+        }
+    }
+
+    private Vector3 WrapPosition(Vector3 position)
     {
         if (dimensions.x == 0)
         {
