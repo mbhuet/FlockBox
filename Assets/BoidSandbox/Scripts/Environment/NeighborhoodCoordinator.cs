@@ -51,9 +51,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
         for (int i = 0; i < buckets.Count; i++)
         {
-            if (bucketToAgents.ContainsKey(i))
+            if (bucketToAgents.ContainsKey(buckets[i]))
             {
-                foreach(Agent agent in bucketToAgents[i])
+                foreach(Agent agent in bucketToAgents[buckets[i]])
                 {
                     neighbors.Add(new AgentWrapped(agent, WrapPositionRelative(agent.Position, position)));
                 }
@@ -124,8 +124,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public void GetBucketsOverlappingSphere(Vector3 center, float radius, out List<int> buckets)
     {
-        //if radius == cellSize, save some time
-        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / cellSize);
+        int neighborhoodRadius = 1 + Mathf.FloorToInt((radius-.01f) / cellSize);
         buckets = new List<int>();
         Vector3 positionContainer;
 
@@ -163,7 +162,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
         else if (position.x > dimensions.x * cellSize)
         {
-            position.x = position.x % dimensions.x * cellSize;
+            position.x = position.x % (dimensions.x * cellSize);
         }
 
         if (dimensions.y == 0)
@@ -176,7 +175,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
         else if (position.y > dimensions.y * cellSize)
         {
-            position.y = position.y % dimensions.y * cellSize;
+            position.y = position.y % (dimensions.y * cellSize);
         }
 
         if (dimensions.z == 0)
@@ -189,7 +188,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         }
         else if (position.z > dimensions.z * cellSize)
         {
-            position.z = position.z % dimensions.z * cellSize;
+            position.z = position.z % (dimensions.z * cellSize);
         }
 
 
@@ -210,10 +209,10 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private int GetHash(float x, float y, float z)
     {
-        return 
-             Mathf.FloorToInt(x / cellSize)
-           + Mathf.FloorToInt(y / cellSize) * dimensions.x
-           + Mathf.FloorToInt(z / cellSize) * dimensions.x * dimensions.y;
+        return (int)(
+             Mathf.Floor(x / cellSize)
+           + Mathf.Floor(y / cellSize) * dimensions.x
+           + Mathf.Floor(z / cellSize) * dimensions.x * dimensions.y);
     }
 
     private int GetHash(Vector3 position)
@@ -248,11 +247,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     if (bucketToAgents.ContainsKey(bucket) && bucketToAgents[bucket].Count > 0)
                     {
                         Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
-                    }
-                    else
-                    {
-                        //Gizmos.DrawWireCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
-
                     }
                 }
             }
