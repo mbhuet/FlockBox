@@ -280,7 +280,7 @@ MonoBehaviour:
   displayGizmos: 1
   dimensions: {x: 20, y: 20, z: 20}
   cellSize: 10
-  wrapEdges: 0
+  wrapEdges: 1
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0

@@ -314,8 +314,8 @@ public class Agent : MonoBehaviour {
     {
         if (drawDebug)
         {
-            UnityEditor.Handles.color = Color.grey;
-            UnityEditor.Handles.DrawWireDisc(this.transform.position, Vector3.forward, Radius);
+            Gizmos.color = Color.grey;
+            Gizmos.DrawWireSphere(this.transform.position, Radius);
         }
     }
 #endif

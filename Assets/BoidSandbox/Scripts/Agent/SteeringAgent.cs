@@ -26,11 +26,10 @@ public class SteeringAgent : Agent
     {
         if (!isAlive) return;
         if (activeSettings == null) return;
+        if (freezePosition) return;
 
         NeighborhoodCoordinator.Instance.GetSurroundings(Position, activeSettings.PerceptionDistance, out buckets, out mySurroundings.allAgents);
         Flock(mySurroundings);
-
-        if (freezePosition) return;
 
         Velocity += (Acceleration) * Time.deltaTime;
         Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle) ;
@@ -82,6 +81,7 @@ public class SteeringAgent : Agent
 
     void UpdateTransform()
     {
+        
         this.transform.position = Position;
         if (Velocity.magnitude > 0)
         {

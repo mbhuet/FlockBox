@@ -82,17 +82,19 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             return;
         }
         Vector3 futurePosition = agent.Position + agent.Velocity;
-        futurePosition.x = Mathf.Clamp(futurePosition.x, cellSize, dimensions.x * cellSize - cellSize);
-        futurePosition.y = Mathf.Clamp(futurePosition.y, cellSize, dimensions.y * cellSize - cellSize);
-        futurePosition.z = Mathf.Clamp(futurePosition.z, cellSize, dimensions.z * cellSize - cellSize);
+        futurePosition.x = dimensions.x > 0? Mathf.Clamp(futurePosition.x, cellSize, dimensions.x * cellSize - cellSize) : 0;
+        futurePosition.y = dimensions.y > 0? Mathf.Clamp(futurePosition.y, cellSize, dimensions.y * cellSize - cellSize) : 0;
+        futurePosition.z = dimensions.z > 0? Mathf.Clamp(futurePosition.z, cellSize, dimensions.z * cellSize - cellSize) : 0;
 
         float distanceToBorder = Mathf.Min(
-            agent.Position.x,
-            agent.Position.y,
-            agent.Position.z,
-            dimensions.x * cellSize - agent.Position.x,
-            dimensions.y * cellSize - agent.Position.y,
-            dimensions.z * cellSize - agent.Position.z);
+            dimensions.x > 0 ? agent.Position.x : float.MaxValue,
+            dimensions.y > 0 ? agent.Position.y : float.MaxValue,
+            dimensions.z > 0 ? agent.Position.z : float.MaxValue,
+            dimensions.x > 0 ? dimensions.x * cellSize - agent.Position.x : float.MaxValue,
+            dimensions.y > 0 ? dimensions.y * cellSize - agent.Position.y : float.MaxValue,
+            dimensions.z > 0 ? dimensions.z * cellSize - agent.Position.z : float.MaxValue);
+        if (distanceToBorder <= 0) distanceToBorder = .001f;
+
         agent.GetSeekVector(out steer, futurePosition);
         steer *= cellSize / distanceToBorder;
     }
@@ -163,11 +165,11 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         buckets = new List<int>();
         Vector3 positionContainer;
 
-        for (int xOff = -neighborhoodRadius; xOff <= neighborhoodRadius; xOff++)
+        for (int xOff = -neighborhoodRadius; xOff < neighborhoodRadius; xOff++)
         {
-            for (int yOff = -neighborhoodRadius; yOff <= neighborhoodRadius; yOff++)
+            for (int yOff = -neighborhoodRadius; yOff < neighborhoodRadius; yOff++)
             {
-                for (int zOff = -neighborhoodRadius; zOff <= neighborhoodRadius; zOff++)
+                for (int zOff = -neighborhoodRadius; zOff < neighborhoodRadius; zOff++)
                 {
 
                     positionContainer.x = (center.x + xOff * cellSize);
