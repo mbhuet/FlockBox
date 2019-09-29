@@ -11,7 +11,26 @@ using UnityEngine;
 
 
 public class NeighborhoodCoordinator : MonoBehaviour {
-    public static NeighborhoodCoordinator Instance;
+    private static NeighborhoodCoordinator m_instance;
+    public static NeighborhoodCoordinator Instance
+    {
+        get {
+            if (m_instance == null)
+            {
+                m_instance = FindObjectOfType<NeighborhoodCoordinator>();
+                if(m_instance == null)
+                {
+                    GameObject neighborhoodObj = new GameObject("NeighborhoodCoordinator");
+                    m_instance = neighborhoodObj.AddComponent<NeighborhoodCoordinator>();
+                }
+            }
+            return m_instance;
+        }
+        private set
+        {
+            m_instance = value;
+        }
+    }
 
     private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
     private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
@@ -31,16 +50,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     void Awake()
     {
-        //If there is an instance of NeighborhoodCoordinator in the scene, it will assign itself 
         if (Instance != null && Instance != this) GameObject.Destroy(this);
-        else
-        {
-            Instance = this;
-        }
+        else Instance = this;
     }
-
-
-
 
 
     public void GetSurroundingsWrapped(Vector3 position, float perceptionDistance, out List<int> buckets, out List<AgentWrapped> neighbors)
@@ -55,11 +67,12 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             {
                 foreach(Agent agent in bucketToAgents[buckets[i]])
                 {
-                    neighbors.Add(new AgentWrapped(agent, WrapPositionRelative(agent.Position, position)));
+                    neighbors.Add(new AgentWrapped(agent, wrapEdges? WrapPositionRelative(agent.Position, position) : agent.Position));
                 }
             }
         }
     }
+
 
 
 
@@ -119,7 +132,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public int GetBucketOverlappingPoint(Vector3 point)
     {
-        return GetHash(WrapPosition(point));
+        return GetHash(wrapEdges? WrapPosition(point) : point);
     }
 
     public void GetBucketsOverlappingSphere(Vector3 center, float radius, out List<int> buckets)
@@ -134,10 +147,27 @@ public class NeighborhoodCoordinator : MonoBehaviour {
             {
                 for (int zOff = -neighborhoodRadius; zOff <= neighborhoodRadius; zOff++)
                 {
+
                     positionContainer.x = (center.x + xOff * cellSize);
                     positionContainer.y = (center.y + yOff * cellSize);
                     positionContainer.z = (center.z + zOff * cellSize);
-                    buckets.Add(GetHash(WrapPosition(positionContainer)));
+                    if (!wrapEdges)
+                    {
+                        if (   positionContainer.x < 0 || positionContainer.x > dimensions.x * cellSize
+                            || positionContainer.y < 0 || positionContainer.y > dimensions.y * cellSize
+                            || positionContainer.z < 0 || positionContainer.z > dimensions.z * cellSize)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            buckets.Add(GetHash(positionContainer));
+                        }
+                    }
+                    else
+                    {
+                        buckets.Add(GetHash(WrapPosition(positionContainer)));
+                    }
                 }
             }
         }
@@ -147,6 +177,32 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
     {
+        // |-* |   |   |   | *-|
+        if (relativeTo.x > position.x && (relativeTo.x - position.x > (position.x + dimensions.x * cellSize) - relativeTo.x)){
+            position.x = position.x + dimensions.x * cellSize;
+        }
+        else if(relativeTo.x < position.x && (position.x - relativeTo.x > (relativeTo.x + dimensions.x * cellSize) - position.x))
+        {
+            position.x = position.x - dimensions.x * cellSize;
+        }
+
+        if (relativeTo.y > position.y && (relativeTo.y - position.y > (position.y + dimensions.y * cellSize) - relativeTo.y))
+        {
+            position.y = position.y + dimensions.y * cellSize;
+        }
+        else if (relativeTo.y < position.y && (position.y - relativeTo.y > (relativeTo.y + dimensions.y * cellSize) - position.y))
+        {
+            position.y = position.y - dimensions.y * cellSize;
+        }
+
+        if (relativeTo.z > position.z && (relativeTo.z - position.z > (position.z + dimensions.z * cellSize) - relativeTo.z))
+        {
+            position.z = position.z + dimensions.z * cellSize;
+        }
+        else if (relativeTo.z < position.z && (position.z - relativeTo.z > (relativeTo.z + dimensions.z * cellSize) - position.z))
+        {
+            position.z = position.z - dimensions.z * cellSize;
+        }
         return position;
     }
 
@@ -209,6 +265,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
 
     private int GetHash(float x, float y, float z)
     {
+        if (x < 0 || y < 0 || z < 0) return -1;
         return (int)(
              Mathf.Floor(x / cellSize)
            + Mathf.Floor(y / cellSize) * dimensions.x

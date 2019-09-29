@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  effectiveRadius: 10
+  effectiveRadius: 5
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 1
