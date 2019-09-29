@@ -17,7 +17,7 @@ MonoBehaviour:
   effectiveRadius: 5
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 1, g: 0.87771446, b: 0, a: 1}
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
@@ -36,7 +36,7 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 0, g: 0.6075771, b: 1, a: 1}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -73,5 +73,5 @@ MonoBehaviour:
   effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 0.8301887, g: 0.18278572, b: 0.14489143, a: 1}

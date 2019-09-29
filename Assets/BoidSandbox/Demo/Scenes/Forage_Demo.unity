@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8, type: 3}
-  numStartSpawns: 50
+  numStartSpawns: 100
 --- !u!4 &910646375
 Transform:
   m_ObjectHideFlags: 0
@@ -248,7 +248,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1509633203
+--- !u!1 &1385211391
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,40 +256,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1509633205}
-  - component: {fileID: 1509633204}
+  - component: {fileID: 1385211393}
+  - component: {fileID: 1385211392}
   m_Layer: 0
-  m_Name: Neighborhood
+  m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1509633204
+--- !u!114 &1385211392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1509633203}
+  m_GameObject: {fileID: 1385211391}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 327ff1812ac0af74d975a4bc65c3be66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  dimensions: {x: 10, y: 10, z: 10}
+  dimensions: {x: 5, y: 5, z: 5}
   cellSize: 10
-  wrapEdges: 1
---- !u!4 &1509633205
+  wrapEdges: 0
+--- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1509633203}
+  m_GameObject: {fileID: 1385211391}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -89.41467, y: -54.287624, z: 0}
+  m_LocalPosition: {x: 0.87775636, y: 67.785324, z: 93.60619}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

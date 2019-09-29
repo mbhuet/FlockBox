@@ -74,6 +74,28 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     }
 
 
+    public void BorderRepelForce(out Vector3 steer, SteeringAgent agent)
+    {
+        if (wrapEdges)
+        {
+            steer = Vector3.zero;
+            return;
+        }
+        Vector3 futurePosition = agent.Position + agent.Velocity;
+        futurePosition.x = Mathf.Clamp(futurePosition.x, cellSize, dimensions.x * cellSize - cellSize);
+        futurePosition.y = Mathf.Clamp(futurePosition.y, cellSize, dimensions.y * cellSize - cellSize);
+        futurePosition.z = Mathf.Clamp(futurePosition.z, cellSize, dimensions.z * cellSize - cellSize);
+
+        float distanceToBorder = Mathf.Min(
+            agent.Position.x,
+            agent.Position.y,
+            agent.Position.z,
+            dimensions.x * cellSize - agent.Position.x,
+            dimensions.y * cellSize - agent.Position.y,
+            dimensions.z * cellSize - agent.Position.z);
+        agent.GetSeekVector(out steer, futurePosition);
+        steer *= cellSize / distanceToBorder;
+    }
 
 
     public void UpdateAgentBuckets(Agent agent, out List<int> buckets)

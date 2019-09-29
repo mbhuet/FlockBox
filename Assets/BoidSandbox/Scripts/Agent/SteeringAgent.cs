@@ -69,6 +69,8 @@ public class SteeringAgent : Agent
             if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
             ApplyForce(steer);
         }
+        NeighborhoodCoordinator.Instance.BorderRepelForce(out steer, this);
+        ApplyForce(steer);
     }
 
     public void GetSeekVector(out Vector3 steer, Vector3 target)
