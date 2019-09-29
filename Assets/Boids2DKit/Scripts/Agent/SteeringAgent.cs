@@ -42,6 +42,7 @@ public class SteeringAgent : Agent
         UpdateTransform();
     }
 
+
     protected override void LateUpdate()
     {
         if (!isAlive) return;
@@ -55,6 +56,7 @@ public class SteeringAgent : Agent
         Acceleration +=(force);
     }
 
+
     private Vector3 steer = Vector3.zero;
 
     void Flock(SurroundingsInfo surroundings)
@@ -65,7 +67,6 @@ public class SteeringAgent : Agent
             behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
             steer *= behavior.weight;
             if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
-
             ApplyForce(steer);
         }
     }
@@ -79,14 +80,12 @@ public class SteeringAgent : Agent
 
     void UpdateTransform()
     {
-
         this.transform.position = Position;
         if (Velocity.magnitude > 0)
         {
             Forward = Velocity.normalized;
             transform.rotation = Quaternion.LookRotation(Forward, Vector3.up);
         }
-
     }
 
 

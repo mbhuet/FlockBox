@@ -27,7 +27,7 @@ public class Agent : MonoBehaviour {
     public enum NeighborType
     {
         POINT, //occupy only one point, one neighborhood
-        AREA //occupy all neighborhoods within radius
+        SHERE //occupy all neighborhoods within radius
     }
 
     public Vector3 Position { get; protected set; } = Vector3.zero;

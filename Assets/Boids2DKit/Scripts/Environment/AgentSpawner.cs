@@ -22,11 +22,11 @@ public class AgentSpawner : MonoBehaviour {
         float randomSpawnRadius = Camera.main.orthographicSize / 2f;
         for (int i = 0; i < numBoids; i++)
         {
-            Spawn(1, Random.insideUnitCircle * randomSpawnRadius);
+            Spawn(1, Random.insideUnitSphere * randomSpawnRadius);
         }
     }
 
-    void Spawn(int numBoids, Vector2 pos)
+    void Spawn(int numBoids, Vector3 pos)
     {
         if(prefab == null)
         {

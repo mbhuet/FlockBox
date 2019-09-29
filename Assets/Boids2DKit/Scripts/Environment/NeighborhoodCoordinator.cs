@@ -67,15 +67,7 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
     {
         RemoveAgentFromBuckets(agent, out buckets);
-        GetBucketsOverlappingSphere(agent.Position, agent.Radius, out buckets);
-        for(int i = 0; i<buckets.Count; i++)
-        {
-            if (!bucketToAgents.ContainsKey(i))
-            {
-                bucketToAgents.Add(i, new List<Agent>());
-            }
-            bucketToAgents[i].Add(agent);
-        }
+        AddAgentToBuckets(agent, out buckets);
     }
 
     public void RemoveAgentFromBuckets(Agent agent, out List<int> buckets)
@@ -84,17 +76,56 @@ public class NeighborhoodCoordinator : MonoBehaviour {
         {
             for (int i = 0; i < buckets.Count; i++)
             {
-                if (bucketToAgents.ContainsKey(i))
+                if (bucketToAgents.ContainsKey(buckets[i]))
                 {
-                    bucketToAgents[i].Remove(agent);
+                    bucketToAgents[buckets[i]].Remove(agent);
                 }
             }
+            agentToBuckets[agent].Clear();
         }
+
     }
 
+    private void AddAgentToBuckets(Agent agent, out List<int> buckets)
+    {
+        if (!agentToBuckets.ContainsKey(agent))
+        {
+            agentToBuckets.Add(agent, new List<int>());
+        }
+
+        switch (agent.neighborType)
+        {
+            case Agent.NeighborType.SHERE:
+                GetBucketsOverlappingSphere(agent.Position, agent.Radius, out buckets);
+                break;
+            case Agent.NeighborType.POINT:
+                buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
+                break;
+            default:
+                buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
+                break;
+        }
+        for (int i = 0; i < buckets.Count; i++)
+            {
+                if (!bucketToAgents.ContainsKey(buckets[i]))
+                {
+                    bucketToAgents.Add(buckets[i], new List<Agent>());
+                }
+                bucketToAgents[buckets[i]].Add(agent);
+                agentToBuckets[agent].Add(buckets[i]);
+            }
+        
+        
+    }
+
+    public int GetBucketOverlappingPoint(Vector3 point)
+    {
+        return GetHash(WrapPosition(point));
+    }
 
     public void GetBucketsOverlappingSphere(Vector3 center, float radius, out List<int> buckets)
     {
+        //if radius == cellSize, save some time
         int neighborhoodRadius = 1 + Mathf.FloorToInt((radius) / cellSize);
         buckets = new List<int>();
         Vector3 positionContainer;
@@ -108,7 +139,6 @@ public class NeighborhoodCoordinator : MonoBehaviour {
                     positionContainer.x = (center.x + xOff * cellSize);
                     positionContainer.y = (center.y + yOff * cellSize);
                     positionContainer.z = (center.z + zOff * cellSize);
-                    Debug.Log(positionContainer + "\n" + WrapPosition(positionContainer) + "\n" + GetHash(WrapPosition(positionContainer)));
                     buckets.Add(GetHash(WrapPosition(positionContainer)));
                 }
             }
@@ -125,9 +155,9 @@ public class NeighborhoodCoordinator : MonoBehaviour {
     public Vector3 WrapPosition(Vector3 position)
     {
         position = new Vector3(
-            Mathf.Repeat(position.x, dimensions.x * cellSize),
-            Mathf.Repeat(position.y, dimensions.y * cellSize),
-            Mathf.Repeat(position.z, dimensions.z * cellSize)
+            dimensions.x == 0? 0 : Mathf.Repeat(position.x, dimensions.x * cellSize),
+            dimensions.y == 0? 0 : Mathf.Repeat(position.y, dimensions.y * cellSize),
+            dimensions.z == 0? 0 : Mathf.Repeat(position.z, dimensions.z * cellSize)
             );
         return position;
     }
