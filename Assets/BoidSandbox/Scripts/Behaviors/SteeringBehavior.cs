@@ -4,50 +4,52 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
+namespace CloudFine
+{
+    //Each SteeringBehavior will be instantiated ONCE
+    //That instance will be used by all SteeringAgents
 
-//Each SteeringBehavior will be instantiated ONCE
-//That instance will be used by all SteeringAgents
-
-//[DefineCategory("Debug", 3f, "drawVectorLine", "vectorColor")]
-[System.Serializable]
-public abstract class SteeringBehavior : ScriptableObject{
-    public Action<bool> OnActiveStatusChange;
-
-    public bool IsActive => isActive;
-    [SerializeField]
-    private bool isActive = true;
-
-    public float weight = 1;
-    public float effectiveRadius = 10;
-    public bool useTagFilter;
-    public string[] filterTags = new string[0];
-    public bool drawVectorLine;
-    public Color vectorColor = Color.white;
-
-    public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
-
-    protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
+    //[DefineCategory("Debug", 3f, "drawVectorLine", "vectorColor")]
+    [System.Serializable]
+    public abstract class SteeringBehavior : ScriptableObject
     {
-        if (mine == other.agent) return false;
-        return (Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
-    }
+        public Action<bool> OnActiveStatusChange;
 
-    public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
-    {
-        if (!behavior.useTagFilter) return surroundings.allAgents;
+        public bool IsActive => isActive;
+        [SerializeField]
+        private bool isActive = true;
 
-        List<AgentWrapped> filtered = new List<AgentWrapped>();
-        foreach(AgentWrapped other in surroundings.allAgents)
+        public float weight = 1;
+        public float effectiveRadius = 10;
+        public bool useTagFilter;
+        public string[] filterTags = new string[0];
+        public bool drawVectorLine;
+        public Color vectorColor = Color.white;
+
+        public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
+
+        protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
         {
-            if(Array.IndexOf(behavior.filterTags, other.agent.tag) >= 0)
-            {
-                filtered.Add(other);
-            }
+            if (mine == other.agent) return false;
+            return (Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
         }
-        return filtered;
-        
+
+        public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
+        {
+            if (!behavior.useTagFilter) return surroundings.allAgents;
+
+            List<AgentWrapped> filtered = new List<AgentWrapped>();
+            foreach (AgentWrapped other in surroundings.allAgents)
+            {
+                if (Array.IndexOf(behavior.filterTags, other.agent.tag) >= 0)
+                {
+                    filtered.Add(other);
+                }
+            }
+            return filtered;
+
+        }
+
+
     }
-
-
-
 }

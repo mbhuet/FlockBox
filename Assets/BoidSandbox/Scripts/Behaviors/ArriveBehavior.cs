@@ -6,10 +6,11 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeekBehavior : SteeringBehavior
+    public class ArriveBehavior : SteeringBehavior
     {
 
-        public const string targetIDAttributeName = "seekTargetID";
+        public const string targetIDAttributeName = "arriveTargetID";
+
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
@@ -49,10 +50,12 @@ namespace CloudFine
                 EngagePursuit(mine, closestTarget.agent);
             }
 
-        AttemptCatch(mine, closestTarget);
-        Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.Position).normalized * mine.activeSettings.maxSpeed;
-        steer = desired_velocity - mine.Velocity;
-        steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
+            AttemptCatch(mine, closestTarget);
+            Vector3 desired_velocity =
+                (closestTarget.wrappedPosition - mine.Position).normalized
+                * Mathf.Lerp(mine.activeSettings.maxSpeed, 0, (closestTarget.wrappedPosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+            steer = desired_velocity - mine.Velocity;
+            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 
 
 
