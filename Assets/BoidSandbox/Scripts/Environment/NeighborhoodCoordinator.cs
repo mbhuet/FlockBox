@@ -65,19 +65,19 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, float radius, float secondsAhead, ref List<int> buckets, out List<AgentWrapped> neighbors)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, ref SurroundingsInfo surroundings)
         {
-            neighbors = new List<AgentWrapped>();
+            surroundings.allAgents = new List<AgentWrapped>();
             if(buckets == null) buckets = new List<int>();
             else buckets.Clear();
 
-            if (radius > 0)
+            if (surroundings.perceptionRadius > 0)
             {
-                GetBucketsOverlappingSphere(position, radius, ref buckets);
+                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, ref buckets);
             }
-            if (secondsAhead > 0)
+            if (surroundings.lookAheadSeconds > 0)
             {
-                GetBucketsOverlappingLine(position, position + velocity * secondsAhead, 0, ref buckets);
+                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, ref buckets);
             }
 
             for (int i = 0; i < buckets.Count; i++)
@@ -86,7 +86,7 @@ namespace CloudFine
                 {
                     foreach (Agent agent in bucketToAgents[buckets[i]])
                     {
-                        neighbors.Add(new AgentWrapped(agent, wrapEdges ? WrapPositionRelative(agent.Position, position) : agent.Position));
+                        surroundings.allAgents.Add(new AgentWrapped(agent, wrapEdges ? WrapPositionRelative(agent.Position, position) : agent.Position));
                     }
                 }
             }
@@ -225,7 +225,7 @@ namespace CloudFine
                         ));
 
                 }
-                bucketsToDraw.Add(bucket);
+                //bucketsToDraw.Add(bucket);
                 buckets.Add(bucket);
 
                 if (i-- == 0) break;

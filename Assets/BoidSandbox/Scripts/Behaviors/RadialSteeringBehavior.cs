@@ -17,6 +17,15 @@ namespace CloudFine
                 Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius //inside radius
                 && Vector3.Angle(mine.Forward, other.wrappedPosition - mine.Position) <= fov); // inside fov
         }
+
+        public override void AddPerception(ref SurroundingsInfo surroundings)
+        {
+            base.AddPerception(ref surroundings);
+            if(effectiveRadius > surroundings.perceptionRadius)
+            {
+                surroundings.perceptionRadius = effectiveRadius;
+            }
+        }
     }
 
    

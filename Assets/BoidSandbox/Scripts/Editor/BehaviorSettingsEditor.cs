@@ -39,7 +39,7 @@ namespace CloudFine
                 if (!behavior) continue;
                 EditorGUILayout.BeginVertical("BOX");
                 EditorGUILayout.BeginHorizontal(behavior.IsActive ? activeStyle : inactiveStyle);
-                EditorGUILayout.LabelField(behavior.GetType().ToString());
+                EditorGUILayout.LabelField(behavior.GetType().Name);
                 if (GUILayout.Button("Remove", GUILayout.Width(60)))
                 {
                     AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(i).objectReferenceValue);

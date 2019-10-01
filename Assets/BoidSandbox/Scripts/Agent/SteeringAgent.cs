@@ -27,7 +27,8 @@ namespace CloudFine
             if (activeSettings == null) return;
             if (freezePosition) return;
 
-            NeighborhoodCoordinator.Instance.GetSurroundings(Position, Velocity, activeSettings.PerceptionRadius, activeSettings.PerceptionSecondsAhead, ref buckets, out mySurroundings.allAgents);
+            activeSettings.AddPerceptions(ref mySurroundings);
+            NeighborhoodCoordinator.Instance.GetSurroundings(Position, Velocity, ref buckets, ref mySurroundings);
             Flock(mySurroundings);
 
             Velocity += (Acceleration) * Time.deltaTime;

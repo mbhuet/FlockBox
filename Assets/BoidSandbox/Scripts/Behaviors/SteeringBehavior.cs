@@ -27,7 +27,10 @@ namespace CloudFine
         public Color vectorColor = Color.white;
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
+        public virtual void AddPerception(ref SurroundingsInfo surroundings)
+        {
 
+        }
 
 
         public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
@@ -45,6 +48,8 @@ namespace CloudFine
             return filtered;
 
         }
+
+
 
 
     }
