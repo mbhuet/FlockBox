@@ -59,6 +59,11 @@ namespace CloudFine
             else Instance = this;
         }
 
+        private void Update()
+        {
+            bucketsToDraw.Clear();
+        }
+
 
         public void GetSurroundings(Vector3 position, Vector3 velocity, float radius, float secondsAhead, ref List<int> buckets, out List<AgentWrapped> neighbors)
         {
@@ -174,7 +179,7 @@ namespace CloudFine
 
         public int GetBucketOverlappingPoint(Vector3 point)
         {
-            return GetHash(wrapEdges ? WrapPosition(point) : point);
+            return WorldPositionToHash(wrapEdges ? WrapPosition(point) : point);
         }
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
@@ -189,8 +194,7 @@ namespace CloudFine
             int z1 = CellFloor(end.z);
 
             float wd = thickness;
-            Debug.Log(x0 + " " + y0 + " " + z0 + GetHash(x0, y0, z0));
-            buckets.Add(GetHash(x0, y0, z0));
+            buckets.Add(CellPositionToHash(x0, y0, z0));
 
             if (buckets == null) buckets = new List<int>();
 
@@ -202,26 +206,39 @@ namespace CloudFine
 
             for (; ; )
             {  /* loop */
+                int bucket = -1;
                 if (!wrapEdges)
                 {
                     if (x0 < 0 || x0 >= dimensions.x) break;
                     if (y0 < 0 || y0 >= dimensions.y) break;
                     if (z0 < 0 || z0 >= dimensions.z) break;
+                    bucket = CellPositionToHash(x0, y0, z0);
                 }
-                else {
-                    //make sure values wrap
-                }
-            buckets.Add(GetHash(x0, y0, z0));
-            bucketsToDraw.Add(GetHash(x0, y0, z0));
 
-            if (i-- == 0) break;
+                else
+                {
+                    
+                    bucket = (CellPositionToHash(
+                        (int)Mathf.Repeat(x0, dimensions.x),
+                        (int)Mathf.Repeat(y0, dimensions.y),
+                        (int)Mathf.Repeat(z0, dimensions.z)
+                        ));
+
+                }
+                bucketsToDraw.Add(bucket);
+                buckets.Add(bucket);
+
+                if (i-- == 0) break;
+
+
                 x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
                 y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
                 z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
-            }
-            
 
-            //line rasterization here
+               // Debug.Log("After " + x1 + " " + y1 + " " + z1 + " " + GetHash(x0, y0, z0));
+
+            }
+
         }
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, ref List<int> buckets)
@@ -250,12 +267,12 @@ namespace CloudFine
                             }
                             else
                             {
-                                buckets.Add(GetHash(positionContainer));
+                                buckets.Add(WorldPositionToHash(positionContainer));
                             }
                         }
                         else
                         {
-                            buckets.Add(GetHash(WrapPosition(positionContainer)));
+                            buckets.Add(WorldPositionToHash(WrapPosition(positionContainer)));
                         }
                     }
                 }
@@ -371,7 +388,7 @@ namespace CloudFine
             return Mathf.FloorToInt(p / cellSize);
         }
 
-        private int GetHash(int x, int y, int z)
+        private int CellPositionToHash(int x, int y, int z)
         {
             if (x < 0 || y < 0 || z < 0) return -1;
 
@@ -381,7 +398,7 @@ namespace CloudFine
                + z * (dimensions.x + 1) * (dimensions.y + 1));
         }
 
-        private int GetHash(float x, float y, float z)
+        private int WorldPositionToHash(float x, float y, float z)
         {
             if (x < 0 || y < 0 || z < 0) return -1;
             return (int)(
@@ -390,9 +407,9 @@ namespace CloudFine
                + Mathf.Floor(z / cellSize) * (dimensions.x + 1) * (dimensions.y + 1));
         }
 
-        private int GetHash(Vector3 position)
+        private int WorldPositionToHash(Vector3 position)
         {
-            return GetHash(position.x, position.y, position.z);
+            return WorldPositionToHash(position.x, position.y, position.z);
         }
 
 #if UNITY_EDITOR
@@ -419,7 +436,7 @@ namespace CloudFine
                     {
 
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
-                        int bucket = GetHash(corner);
+                        int bucket = WorldPositionToHash(corner);
 
                         if (bucketsToDraw.Contains(bucket))
                         {
@@ -434,7 +451,6 @@ namespace CloudFine
                     }
                 }
             }
-            bucketsToDraw.Clear();
         }
 #endif
 

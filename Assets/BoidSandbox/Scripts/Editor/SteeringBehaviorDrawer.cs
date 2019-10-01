@@ -25,7 +25,7 @@ namespace CloudFine
                 EditorGUILayout.BeginVertical("BOX");
                 EditorGUILayout.Slider(serializedObject.FindProperty("weight"), 0f, 1f);
 
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("effectiveRadius"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("effectiveRadius"));
 
                 SerializedProperty useTag = serializedObject.FindProperty("useTagFilter");
                 EditorGUILayout.PropertyField(useTag);
