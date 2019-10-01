@@ -51,6 +51,8 @@ namespace CloudFine
             get; private set;
         }
 
+        private List<int> bucketsToDraw = new List<int>();
+
         void Awake()
         {
             if (Instance != null && Instance != this) GameObject.Destroy(this);
@@ -58,11 +60,20 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, float perceptionDistance, out List<int> buckets, out List<AgentWrapped> neighbors)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, float radius, float secondsAhead, ref List<int> buckets, out List<AgentWrapped> neighbors)
         {
             neighbors = new List<AgentWrapped>();
+            if(buckets == null) buckets = new List<int>();
+            else buckets.Clear();
 
-            GetBucketsOverlappingSphere(position, perceptionDistance, out buckets);
+            if (radius > 0)
+            {
+                GetBucketsOverlappingSphere(position, radius, ref buckets);
+            }
+            if (secondsAhead > 0)
+            {
+                GetBucketsOverlappingLine(position, position + velocity * secondsAhead, 0, ref buckets);
+            }
 
             for (int i = 0; i < buckets.Count; i++)
             {
@@ -131,14 +142,18 @@ namespace CloudFine
             {
                 agentToBuckets.Add(agent, new List<int>());
             }
+            buckets = new List<int>();
 
             switch (agent.neighborType)
             {
                 case Agent.NeighborType.SHERE:
-                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, out buckets);
+                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, ref buckets);
                     break;
                 case Agent.NeighborType.POINT:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
+                    break;
+                case Agent.NeighborType.LINE:
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward, agent.Radius, ref buckets);
                     break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
@@ -162,10 +177,57 @@ namespace CloudFine
             return GetHash(wrapEdges ? WrapPosition(point) : point);
         }
 
-        public void GetBucketsOverlappingSphere(Vector3 center, float radius, out List<int> buckets)
+        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
+        {
+            int x0 = CellFloor(start.x);
+            int x1 = CellFloor(end.x);
+
+            int y0 = CellFloor(start.y);
+            int y1 = CellFloor(end.y);
+
+            int z0 = CellFloor(start.z);
+            int z1 = CellFloor(end.z);
+
+            float wd = thickness;
+            Debug.Log(x0 + " " + y0 + " " + z0 + GetHash(x0, y0, z0));
+            buckets.Add(GetHash(x0, y0, z0));
+
+            if (buckets == null) buckets = new List<int>();
+
+            int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+            int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+            int dz = Math.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
+            int dm = Mathf.Max(dx, dy, dz), i = dm; /* maximum difference */
+            x1 = y1 = z1 = dm / 2; /* error offset */
+
+            for (; ; )
+            {  /* loop */
+                if (!wrapEdges)
+                {
+                    if (x0 < 0 || x0 >= dimensions.x) break;
+                    if (y0 < 0 || y0 >= dimensions.y) break;
+                    if (z0 < 0 || z0 >= dimensions.z) break;
+                }
+                else {
+                    //make sure values wrap
+                }
+            buckets.Add(GetHash(x0, y0, z0));
+            bucketsToDraw.Add(GetHash(x0, y0, z0));
+
+            if (i-- == 0) break;
+                x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
+                y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
+                z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
+            }
+            
+
+            //line rasterization here
+        }
+
+        public void GetBucketsOverlappingSphere(Vector3 center, float radius, ref List<int> buckets)
         {
             int neighborhoodRadius = 1 + Mathf.FloorToInt((radius - .01f) / cellSize);
-            buckets = new List<int>();
+            if(buckets == null) buckets = new List<int>();
             Vector3 positionContainer;
 
             for (int xOff = -neighborhoodRadius; xOff < neighborhoodRadius; xOff++)
@@ -304,7 +366,20 @@ namespace CloudFine
              );
         }
 
+        private int CellFloor(float p)
+        {
+            return Mathf.FloorToInt(p / cellSize);
+        }
 
+        private int GetHash(int x, int y, int z)
+        {
+            if (x < 0 || y < 0 || z < 0) return -1;
+
+            return (
+                 x
+               + y * (dimensions.x + 1) // +1 in case dimension is 0, will still produce unique hash
+               + z * (dimensions.x + 1) * (dimensions.y + 1));
+        }
 
         private int GetHash(float x, float y, float z)
         {
@@ -342,15 +417,24 @@ namespace CloudFine
                 {
                     for (int z = 0; z < (dimensions.z > 0 ? dimensions.z : 1); z++)
                     {
+
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
                         int bucket = GetHash(corner);
-                        if (bucketToAgents.ContainsKey(bucket) && bucketToAgents[bucket].Count > 0)
+
+                        if (bucketsToDraw.Contains(bucket))
                         {
+                            Gizmos.color = Color.red * .8f;
+                            Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
+                        }
+                        else if (bucketToAgents.ContainsKey(bucket) && bucketToAgents[bucket].Count > 0)
+                        {
+                            Gizmos.color = Color.grey * .1f;
                             Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
                         }
                     }
                 }
             }
+            bucketsToDraw.Clear();
         }
 #endif
 

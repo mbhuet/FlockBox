@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class AvoidanceBehavior : SteeringBehavior
+    public class AvoidanceBehavior : ForecastSteeringBehavior
     {
 
 
@@ -47,11 +47,13 @@ namespace CloudFine
                 return;
             }
             float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.Radius, 1);
+            /*
             if (distanceToObstacleEdge > effectiveRadius)
             {
                 steer = Vector3.zero;
                 return;
             }
+            */
             steer = closestHitPoint - mostThreateningObstacle.Position;
             steer = steer.normalized * mine.activeSettings.maxForce;
         }

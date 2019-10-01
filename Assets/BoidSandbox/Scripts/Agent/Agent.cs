@@ -29,7 +29,8 @@ namespace CloudFine
         public enum NeighborType
         {
             POINT, //occupy only one point, one neighborhood
-            SHERE //occupy all neighborhoods within radius
+            SHERE, //occupy all neighborhoods within radius
+            LINE, //occupy all neighborhoods along line
         }
 
         private Vector3 m_position = Vector3.zero;
@@ -38,12 +39,28 @@ namespace CloudFine
             get { return m_position; }
             protected set { m_position = value; }
         }
+
         private Vector3 m_velocity = Vector3.zero;
         public Vector3 Velocity
         {
             get { return m_velocity; }
             protected set { m_velocity = value; }
         }
+
+        private Vector3 m_forward = Vector3.zero;
+        public Vector3 Forward
+        {
+            get { return m_forward; }
+            protected set { m_forward = value; }
+        }
+
+        private Vector3 m_acceleration = Vector3.zero;
+        public Vector3 Acceleration
+        {
+            get { return m_acceleration; }
+            protected set { m_acceleration = value; }
+        }
+
         [SerializeField]
         private float m_radius = 1f;
         public float Radius

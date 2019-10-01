@@ -27,20 +27,27 @@ namespace CloudFine
             get { return behaviors.Length; }
         }
 
-        public float PerceptionDistance
-        {
-            get
-            {
-                //TODO optimize this
-                return behaviors.Max(x => x.effectiveRadius);
-            }
-        }
-
 
         public SteeringBehavior GetBehavior(int index)
         {
             if (index < 0 || index >= behaviors.Length) return null;
             return behaviors[index];
+        }
+
+        public float PerceptionRadius
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public float PerceptionSecondsAhead
+        {
+            get
+            {
+                return 3;
+            }
         }
 
     }

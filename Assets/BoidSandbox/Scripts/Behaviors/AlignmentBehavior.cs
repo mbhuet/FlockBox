@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class AlignmentBehavior : SteeringBehavior
+    public class AlignmentBehavior : RadialSteeringBehavior
     {
 
         // Alignment

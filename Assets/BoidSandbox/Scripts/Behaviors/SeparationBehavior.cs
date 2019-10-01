@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeparationBehavior : SteeringBehavior
+    public class SeparationBehavior : RadialSteeringBehavior
     {
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)

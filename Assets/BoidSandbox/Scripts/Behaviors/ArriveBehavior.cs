@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class ArriveBehavior : SteeringBehavior
+    public class ArriveBehavior : RadialSteeringBehavior
     {
 
         public const string targetIDAttributeName = "arriveTargetID";
@@ -53,7 +53,7 @@ namespace CloudFine
             AttemptCatch(mine, closestTarget);
             Vector3 desired_velocity =
                 (closestTarget.wrappedPosition - mine.Position).normalized
-                * Mathf.Lerp(mine.activeSettings.maxSpeed, 0, (closestTarget.wrappedPosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (closestTarget.wrappedPosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
 

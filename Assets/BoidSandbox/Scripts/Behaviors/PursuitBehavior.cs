@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class PursuitBehavior : SteeringBehavior
+    public class PursuitBehavior : RadialSteeringBehavior
     {
         public const string targetIDAttributeName = "seekTargetID";
 

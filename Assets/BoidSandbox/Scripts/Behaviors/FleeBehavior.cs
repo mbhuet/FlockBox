@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class FleeBehavior : SteeringBehavior
+    public class FleeBehavior : RadialSteeringBehavior
     {
         public const string fleeAttributeName = "fleeing";
 

@@ -20,7 +20,7 @@ namespace CloudFine
         private bool isActive = true;
 
         public float weight = 1;
-        public float effectiveRadius = 10;
+        
         public bool useTagFilter;
         public string[] filterTags = new string[0];
         public bool drawVectorLine;
@@ -28,11 +28,7 @@ namespace CloudFine
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
 
-        protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
-        {
-            if (mine == other.agent) return false;
-            return (Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius);
-        }
+
 
         public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
         {

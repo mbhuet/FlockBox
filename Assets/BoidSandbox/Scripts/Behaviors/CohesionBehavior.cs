@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class CohesionBehavior : SteeringBehavior
+    public class CohesionBehavior : RadialSteeringBehavior
     {
         // Cohesion
         // For the average position (i.e. center) of all nearby boids, calculate steering vector towards that position

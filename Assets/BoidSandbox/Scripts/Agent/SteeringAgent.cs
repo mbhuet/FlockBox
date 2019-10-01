@@ -13,8 +13,6 @@ namespace CloudFine
     public class SteeringAgent : Agent
     {
 
-        public Vector3 Forward { get; protected set; } = Vector3.zero;
-        public Vector3 Acceleration { get; protected set; } = Vector3.zero;
 
         protected float speedThrottle = 1;
 
@@ -29,7 +27,7 @@ namespace CloudFine
             if (activeSettings == null) return;
             if (freezePosition) return;
 
-            NeighborhoodCoordinator.Instance.GetSurroundings(Position, activeSettings.PerceptionDistance, out buckets, out mySurroundings.allAgents);
+            NeighborhoodCoordinator.Instance.GetSurroundings(Position, Velocity, activeSettings.PerceptionRadius, activeSettings.PerceptionSecondsAhead, ref buckets, out mySurroundings.allAgents);
             Flock(mySurroundings);
 
             Velocity += (Acceleration) * Time.deltaTime;
