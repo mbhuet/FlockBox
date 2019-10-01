@@ -6,6 +6,7 @@ namespace CloudFine
 {
     public class AgentSpawner : MonoBehaviour
     {
+        public NeighborhoodCoordinator neighborhood;
         public Agent prefab;
         public int numStartSpawns;
 
@@ -23,25 +24,16 @@ namespace CloudFine
                 Debug.LogWarning("AgentSpawner.prefab is null");
                 return;
             }
-            float randomSpawnRadius = Camera.main.orthographicSize / 2f;
-            for (int i = 0; i < numBoids; i++)
-            {
-                Spawn(1, NeighborhoodCoordinator.Instance.RandomPosition());
-            }
-        }
-
-        void Spawn(int numBoids, Vector3 pos)
-        {
-            if (prefab == null)
+            if(neighborhood == null)
             {
                 return;
             }
             for (int i = 0; i < numBoids; i++)
             {
-                GameObject.Instantiate<Agent>(prefab, pos, Quaternion.identity, this.transform);
+                Agent agent = GameObject.Instantiate<Agent>(prefab);
+                agent.Spawn(neighborhood);
             }
         }
-
 
     }
 }

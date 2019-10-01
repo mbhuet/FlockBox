@@ -28,7 +28,7 @@ namespace CloudFine
             if (freezePosition) return;
 
             activeSettings.AddPerceptions(ref mySurroundings);
-            NeighborhoodCoordinator.Instance.GetSurroundings(Position, Velocity, ref buckets, ref mySurroundings);
+            myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, ref mySurroundings);
             Flock(mySurroundings);
 
             Velocity += (Acceleration) * Time.deltaTime;
@@ -45,7 +45,7 @@ namespace CloudFine
         protected override void LateUpdate()
         {
             if (!isAlive) return;
-            FindNeighborhood();
+            FindNeighborhoodBuckets();
         }
 
 
@@ -68,7 +68,7 @@ namespace CloudFine
                 if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
                 ApplyForce(steer);
             }
-            NeighborhoodCoordinator.Instance.BorderRepelForce(out steer, this);
+            myNeighborhood.BorderRepelForce(out steer, this);
             ApplyForce(steer);
         }
 
@@ -90,9 +90,9 @@ namespace CloudFine
         }
 
 
-        public override void Spawn(Vector3 position)
+        public override void Spawn(NeighborhoodCoordinator neighborhood)
         {
-            base.Spawn(position);
+            base.Spawn(neighborhood);
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;

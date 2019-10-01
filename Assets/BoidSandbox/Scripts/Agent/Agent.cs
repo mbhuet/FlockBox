@@ -72,6 +72,7 @@ namespace CloudFine
         }
 
 
+        protected NeighborhoodCoordinator myNeighborhood;
         public NeighborType neighborType;
         public bool drawDebug = false;
 
@@ -139,11 +140,17 @@ namespace CloudFine
             }
         }
 
-
         protected void Start()
         {
             if (!isRegistered) RegisterNewAgent();
-            if (!hasSpawned) Spawn(transform.position);
+            if (!hasSpawned)
+            {
+                myNeighborhood = GetComponentInParent<NeighborhoodCoordinator>();
+                if (myNeighborhood)
+                {
+                    Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
+                }
+            }
         }
 
         protected void RegisterNewAgent()
@@ -163,20 +170,21 @@ namespace CloudFine
 
         protected void ValidatePosition()
         {
-            NeighborhoodCoordinator.Instance.ValidatePosition(ref m_position);
+            if(myNeighborhood)
+            myNeighborhood.ValidatePosition(ref m_position);
         }
 
-        protected void FindNeighborhood()
+        protected void FindNeighborhoodBuckets()
         {
-            NeighborhoodCoordinator.Instance.UpdateAgentBuckets(this, out buckets);
+            if(myNeighborhood)
+            myNeighborhood.UpdateAgentBuckets(this, out buckets);
         }
-
 
         protected void RemoveFromAllNeighborhoods()
         {
-            NeighborhoodCoordinator.Instance.RemoveAgentFromBuckets(this, out buckets);
+            if(myNeighborhood)
+            myNeighborhood.RemoveAgentFromBuckets(this, out buckets);
         }
-
 
         public virtual void Kill()
         {
@@ -187,12 +195,7 @@ namespace CloudFine
             this.gameObject.SetActive(false);
         }
 
-        public virtual void Spawn(Vector3 position, params string[] args)
-        {
-            Spawn(position);
-        }
-
-        public virtual void Spawn(Vector3 position)
+        public virtual void Spawn(NeighborhoodCoordinator neighborhood, Vector3 position)
         {
             if (OnSpawn != null) OnSpawn.Invoke(this);
             gameObject.SetActive(true);
@@ -200,21 +203,26 @@ namespace CloudFine
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            transform.SetParent(NeighborhoodCoordinator.Instance.transform);
+            myNeighborhood = neighborhood;
+            transform.SetParent(myNeighborhood.transform);
             this.Position = position;
             ForceUpdatePosition();
+        }
+
+        public virtual void Spawn(NeighborhoodCoordinator neighborhood)
+        {
+            Spawn(neighborhood, neighborhood.RandomPosition());
         }
 
         protected virtual void ForceUpdatePosition()
         {
             ValidatePosition();
             UpdateTransform();
-            FindNeighborhood();
+            FindNeighborhoodBuckets();
         }
 
         protected virtual void UpdateTransform()
         {
-
             this.transform.localPosition = Position;
         }
 

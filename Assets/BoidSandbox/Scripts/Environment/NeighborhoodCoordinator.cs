@@ -13,28 +13,6 @@ namespace CloudFine
 {
     public class NeighborhoodCoordinator : MonoBehaviour
     {
-        private static NeighborhoodCoordinator m_instance;
-        public static NeighborhoodCoordinator Instance
-        {
-            get
-            {
-                if (m_instance == null)
-                {
-                    m_instance = FindObjectOfType<NeighborhoodCoordinator>();
-                    if (m_instance == null)
-                    {
-                        GameObject neighborhoodObj = new GameObject("NeighborhoodCoordinator");
-                        m_instance = neighborhoodObj.AddComponent<NeighborhoodCoordinator>();
-                    }
-                }
-                return m_instance;
-            }
-            private set
-            {
-                m_instance = value;
-            }
-        }
-
         private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
 
@@ -44,20 +22,14 @@ namespace CloudFine
         [SerializeField]
         private float cellSize = 10;
 
-        public bool wrapEdges = true;
 
-        public static bool HasMoved
-        {
-            get; private set;
-        }
+        public bool wrapEdges = true;
+        [SerializeField]
+        [Min(0)]
+        public float boundaryBuffer = 10;
+
 
         private List<int> bucketsToDraw = new List<int>();
-
-        void Awake()
-        {
-            if (Instance != null && Instance != this) GameObject.Destroy(this);
-            else Instance = this;
-        }
 
         private void Update()
         {
@@ -100,10 +72,12 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
+
+
             Vector3 futurePosition = agent.Position + agent.Velocity;
-            futurePosition.x = dimensions.x > 0 ? Mathf.Clamp(futurePosition.x, cellSize, dimensions.x * cellSize - cellSize) : 0;
-            futurePosition.y = dimensions.y > 0 ? Mathf.Clamp(futurePosition.y, cellSize, dimensions.y * cellSize - cellSize) : 0;
-            futurePosition.z = dimensions.z > 0 ? Mathf.Clamp(futurePosition.z, cellSize, dimensions.z * cellSize - cellSize) : 0;
+            futurePosition.x = dimensions.x > 0 ? Mathf.Clamp(futurePosition.x, boundaryBuffer, dimensions.x * cellSize - boundaryBuffer) : 0;
+            futurePosition.y = dimensions.y > 0 ? Mathf.Clamp(futurePosition.y, boundaryBuffer, dimensions.y * cellSize - boundaryBuffer) : 0;
+            futurePosition.z = dimensions.z > 0 ? Mathf.Clamp(futurePosition.z, boundaryBuffer, dimensions.z * cellSize - boundaryBuffer) : 0;
 
             float distanceToBorder = Mathf.Min(
                 dimensions.x > 0 ? agent.Position.x : float.MaxValue,
@@ -115,7 +89,7 @@ namespace CloudFine
             if (distanceToBorder <= 0) distanceToBorder = .001f;
 
             agent.GetSeekVector(out steer, futurePosition);
-            steer *= cellSize / distanceToBorder;
+            steer *= boundaryBuffer / distanceToBorder;
         }
 
 
@@ -416,15 +390,24 @@ namespace CloudFine
 
         private void OnDrawGizmos()
         {
-            if (displayGizmos) DrawNeighborHoods();
+            if (displayGizmos)
+            {
+                Gizmos.color = Color.grey;
+                Gizmos.matrix = this.transform.localToWorldMatrix;
+                Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
+                if (!wrapEdges)
+                {
+                    Gizmos.color = Color.yellow * .75f;
+                    Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize - Vector3.one *boundaryBuffer);
+                }
+                DrawNeighborHoods();
+            }
         }
 
         void DrawNeighborHoods()
         {
             if (bucketToAgents == null) return;
-            Gizmos.color = Color.grey;
-            Gizmos.matrix = this.transform.localToWorldMatrix;
-            Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
+            
             Gizmos.color = Color.grey * .1f;
 
 

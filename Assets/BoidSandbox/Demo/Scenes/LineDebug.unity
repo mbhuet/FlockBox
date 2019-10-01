@@ -236,7 +236,8 @@ MonoBehaviour:
   displayGizmos: 1
   dimensions: {x: 10, y: 10, z: 10}
   cellSize: 10
-  wrapEdges: 1
+  wrapEdges: 0
+  boundaryBuffer: 13.83
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0
@@ -264,6 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6679de25b93134548bae277854d14755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  neighborhood: {fileID: 1385211392}
   prefab: {fileID: 3617397216089966378, guid: cb0c23d81e0afe84dacfcae9c87bd37f, type: 3}
   numStartSpawns: 200
 --- !u!1001 &2015354295
