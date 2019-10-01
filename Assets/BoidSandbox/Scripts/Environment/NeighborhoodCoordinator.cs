@@ -398,7 +398,11 @@ namespace CloudFine
                 if (!wrapEdges)
                 {
                     Gizmos.color = Color.yellow * .75f;
-                    Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize - Vector3.one *boundaryBuffer);
+                    Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f),
+                        new Vector3(
+                            Mathf.Max(0, dimensions.x * cellSize - boundaryBuffer),
+                            Mathf.Max(0, dimensions.y * cellSize - boundaryBuffer),
+                            Mathf.Max(0, dimensions.z * cellSize - boundaryBuffer)));
                 }
                 DrawNeighborHoods();
             }

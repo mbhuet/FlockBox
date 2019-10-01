@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 1385211392}
   - component: {fileID: 1385211394}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Neighborhood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -237,6 +237,7 @@ MonoBehaviour:
   dimensions: {x: 10, y: 10, z: 0}
   cellSize: 10
   wrapEdges: 0
+  boundaryBuffer: 10
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0

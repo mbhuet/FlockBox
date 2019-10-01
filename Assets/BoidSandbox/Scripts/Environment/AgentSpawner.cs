@@ -4,12 +4,18 @@ using UnityEngine;
 
 namespace CloudFine
 {
+    [RequireComponent(typeof(NeighborhoodCoordinator))]
     public class AgentSpawner : MonoBehaviour
     {
-        public NeighborhoodCoordinator neighborhood;
+
+        private NeighborhoodCoordinator neighborhood;
         public Agent prefab;
         public int numStartSpawns;
 
+        private void Awake()
+        {
+            neighborhood = GetComponent<NeighborhoodCoordinator>();
+        }
         // Use this for initialization
         void Start()
         {
