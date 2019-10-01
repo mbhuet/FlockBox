@@ -24,7 +24,6 @@ namespace CloudFine
 
 
         public bool wrapEdges = true;
-        [SerializeField]
         [Min(0)]
         public float boundaryBuffer = 10;
 
@@ -400,9 +399,9 @@ namespace CloudFine
                     Gizmos.color = Color.yellow * .75f;
                     Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f),
                         new Vector3(
-                            Mathf.Max(0, dimensions.x * cellSize - boundaryBuffer),
-                            Mathf.Max(0, dimensions.y * cellSize - boundaryBuffer),
-                            Mathf.Max(0, dimensions.z * cellSize - boundaryBuffer)));
+                            Mathf.Max(0, dimensions.x * cellSize - boundaryBuffer * 2f),
+                            Mathf.Max(0, dimensions.y * cellSize - boundaryBuffer * 2f),
+                            Mathf.Max(0, dimensions.z * cellSize - boundaryBuffer * 2f)));
                 }
                 DrawNeighborHoods();
             }
