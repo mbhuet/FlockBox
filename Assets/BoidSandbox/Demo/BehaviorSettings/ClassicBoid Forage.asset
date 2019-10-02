@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 0
   weight: 1
-  effectiveRadius: 8
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 1, g: 0.87771446, b: 0, a: 1}
+  effectiveRadius: 8
+  fov: 360
 --- !u!114 &-4788017938583937551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,13 +33,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
-  effectiveRadius: 10
+  weight: 10
   useTagFilter: 1
   filterTags:
   - Food
-  drawVectorLine: 1
+  drawVectorLine: 0
   vectorColor: {r: 0, g: 1, b: 0.15447211, a: 1}
+  effectiveRadius: 10
+  fov: 360
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -53,11 +55,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 0
   weight: 0.811
-  effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 0, g: 0.6075771, b: 1, a: 1}
+  effectiveRadius: 10
+  fov: 360
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,12 +74,13 @@ MonoBehaviour:
   m_Name: ClassicBoid Forage
   m_EditorClassIdentifier: 
   maxForce: 20
-  maxSpeed: 30
+  maxSpeed: 20
   behaviors:
   - {fileID: 3267645291290633549}
   - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
   - {fileID: -4788017938583937551}
+  - {fileID: 5150285938452103090}
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,8 +95,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 0
   weight: 0.73
-  effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
   drawVectorLine: 0
   vectorColor: {r: 0.8301887, g: 0.18278572, b: 0.14489143, a: 1}
+  effectiveRadius: 10
+  fov: 360
+--- !u!114 &5150285938452103090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawVectorLine: 0
+  vectorColor: {r: 1, g: 1, b: 1, a: 1}
+  wanderScope: 90
+  wanderIntensity: 1

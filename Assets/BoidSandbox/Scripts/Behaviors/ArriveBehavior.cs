@@ -6,11 +6,8 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class ArriveBehavior : RadialSteeringBehavior
+    public class ArriveBehavior : SeekBehavior
     {
-
-        public const string targetIDAttributeName = "arriveTargetID";
-
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
@@ -33,7 +30,7 @@ namespace CloudFine
             AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
 
             //no pursuable targets nearby
-            if (!closestTarget.agent.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+            if (!closestTarget.agent.CanBeCaughtBy(mine)) //double checking because TargetWrapped is a non nullable Struct
             {
                 if (chosenTargetID != -1)
                 {
@@ -61,45 +58,7 @@ namespace CloudFine
 
         }
 
-        static void EngagePursuit(SteeringAgent mine, Agent target)
-        {
-            mine.SetAttribute(targetIDAttributeName, target.agentID);
-            target.InformOfPursuit(true, mine);
-        }
-
-        static void DisengagePursuit(SteeringAgent mine, int targetID)
-        {
-            mine.SetAttribute(targetIDAttributeName, -1);
-            Agent.InformOfPursuit(false, mine, targetID);
-        }
-
-        static void AttemptCatch(SteeringAgent mine, AgentWrapped chosenTargetWrapped)
-        {
-            float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, mine.Position);
-            if (distAway <= chosenTargetWrapped.agent.Radius && chosenTargetWrapped.agent.CanBePursuedBy(mine))
-            {
-                mine.CatchAgent(chosenTargetWrapped.agent);
-            }
-        }
-
-
-        private static AgentWrapped ClosestPursuableTarget(List<AgentWrapped> nearbyTargets, Agent agent)
-        {
-            // int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
-            float closeDist = float.MaxValue;
-            AgentWrapped closeTarget = nearbyTargets[0];
-            foreach (AgentWrapped target in nearbyTargets)
-            {
-                float sqrDist = Vector3.SqrMagnitude(target.wrappedPosition - agent.Position);
-                //if(dist <= target.target.radius) AttemptCatch(agent, target);
-                if (sqrDist < closeDist && (target.agent.CanBePursuedBy(agent)))
-                {
-                    closeDist = sqrDist;
-                    closeTarget = target;
-                }
-            }
-            return closeTarget;
-        }
+        
 
     }
 }

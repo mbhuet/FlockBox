@@ -39,6 +39,7 @@ namespace CloudFine
 
         public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, ref SurroundingsInfo surroundings)
         {
+            surroundings.neighborhoodDimensions = dimensions;
             surroundings.allAgents = new List<AgentWrapped>();
             if(buckets == null) buckets = new List<int>();
             else buckets.Clear();
@@ -204,27 +205,25 @@ namespace CloudFine
 
             for (; ; )
             {  /* loop */
-                int bucket = -1;
                 if (!wrapEdges)
                 {
                     if (x0 < 0 || x0 >= dimensions.x) break;
                     if (y0 < 0 || y0 >= dimensions.y) break;
                     if (z0 < 0 || z0 >= dimensions.z) break;
-                    bucket = CellPositionToHash(x0, y0, z0);
+                    buckets.Add(CellPositionToHash(x0, y0, z0));
                 }
 
                 else
                 {
                     
-                    bucket = (CellPositionToHash(
+                    buckets.Add(CellPositionToHash(
                         (int)Mathf.Repeat(x0, dimensions.x),
                         (int)Mathf.Repeat(y0, dimensions.y),
                         (int)Mathf.Repeat(z0, dimensions.z)
                         ));
 
                 }
-                //bucketsToDraw.Add(bucket);
-                buckets.Add(bucket);
+                //bucketsToDraw.Add(buckets[buckets.Count-1]);
 
                 if (i-- == 0) break;
 
@@ -232,9 +231,6 @@ namespace CloudFine
                 x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
                 y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
                 z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
-
-               // Debug.Log("After " + x1 + " " + y1 + " " + z1 + " " + GetHash(x0, y0, z0));
-
             }
 
         }
@@ -245,11 +241,11 @@ namespace CloudFine
             if(buckets == null) buckets = new List<int>();
             Vector3 positionContainer;
 
-            for (int xOff = -neighborhoodRadius; xOff < neighborhoodRadius; xOff++)
+            for (int xOff = -neighborhoodRadius; xOff <= neighborhoodRadius; xOff++)
             {
-                for (int yOff = -neighborhoodRadius; yOff < neighborhoodRadius; yOff++)
+                for (int yOff = -neighborhoodRadius; yOff <= neighborhoodRadius; yOff++)
                 {
-                    for (int zOff = -neighborhoodRadius; zOff < neighborhoodRadius; zOff++)
+                    for (int zOff = -neighborhoodRadius; zOff <= neighborhoodRadius; zOff++)
                     {
 
                         positionContainer.x = (center.x + xOff * cellSize);
@@ -272,6 +268,8 @@ namespace CloudFine
                         {
                             buckets.Add(WorldPositionToHash(WrapPosition(positionContainer)));
                         }
+
+                        //bucketsToDraw.Add(buckets[buckets.Count - 1]);
                     }
                 }
             }

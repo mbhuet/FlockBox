@@ -238,6 +238,8 @@ MonoBehaviour:
   dimensions: {x: 10, y: 0, z: 10}
   cellSize: 10
   wrapEdges: 1
+  boundaryBuffer: 10
+  boundaryRepelForce: 1
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0
@@ -265,7 +267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 3617397216089966378, guid: c7bdc11281db92b46a3dd0c55b00408d, type: 3}
-  numStartSpawns: 10
+  numStartSpawns: 5
 --- !u!114 &1385211395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,5 +280,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6679de25b93134548bae277854d14755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3617397216089966378, guid: 69b6f1a612abd534e8c5ebcd1df22b03, type: 3}
-  numStartSpawns: 10
+  prefab: {fileID: 1823620649583104859, guid: 69b6f1a612abd534e8c5ebcd1df22b03, type: 3}
+  numStartSpawns: 5

@@ -6,10 +6,8 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class PursuitBehavior : RadialSteeringBehavior
+    public class PursuitBehavior : SeekBehavior
     {
-        public const string targetIDAttributeName = "seekTargetID";
-
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
@@ -39,10 +37,10 @@ namespace CloudFine
 
             //Debug.Log(allTargets.ToString());
 
-            AgentWrapped closestTarget = ClosestTarget(allTargets, mine);
+            AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
 
             //no pursuable targets nearby
-            if (!closestTarget.agent.CanBePursuedBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+            if (!closestTarget.agent.CanBeCaughtBy(mine)) //double checking because TargetWrapped is a non nullable Struct
             {
                 //            Debug.Log("No Pursuable Target");
 
@@ -69,57 +67,6 @@ namespace CloudFine
 
             mine.GetSeekVector(out steer, predictedInterceptPosition);
 
-        }
-
-        public static bool HasPursuitTarget(SteeringAgent mine)
-        {
-            if (!mine.HasAttribute(targetIDAttributeName)) return false;
-            return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
-
-        }
-
-        static void EngagePursuit(SteeringAgent mine, Agent target)
-        {
-            mine.SetAttribute(targetIDAttributeName, target.agentID);
-            target.InformOfPursuit(true, mine);
-        }
-
-        static void DisengagePursuit(SteeringAgent mine, int targetID)
-        {
-            mine.SetAttribute(targetIDAttributeName, -1);
-            Agent.InformOfPursuit(false, mine, targetID);
-
-        }
-
-        static void AttemptCatch(Agent mine, AgentWrapped chosenQuaryWrapped)
-        {
-            float distAway = Vector3.Distance(chosenQuaryWrapped.wrappedPosition, mine.Position);
-            if (distAway <= (chosenQuaryWrapped.agent.Radius + mine.Radius) && chosenQuaryWrapped.agent.CanBePursuedBy(mine))
-            {
-                mine.CatchAgent(chosenQuaryWrapped.agent);
-                //            Debug.Log(chosenQuaryWrapped.agent.name + " successful catch by " + mine.name);
-            }
-        }
-
-
-        private static AgentWrapped ClosestTarget(List<AgentWrapped> nearbyTargets, Agent agent)
-        {
-            int chosenTargetID = (int)agent.GetAttribute(targetIDAttributeName);
-
-            float closeDist = float.MaxValue;
-            AgentWrapped closeTarget = nearbyTargets[0];
-            foreach (AgentWrapped target in nearbyTargets)
-            {
-                //Debug.DrawLine(agent.position, target.wrappedPosition, target.agent.CanBePursuedBy(agent)? Color.blue : Color.yellow);
-                float dist = (target.wrappedPosition - agent.Position).sqrMagnitude;
-                //if(dist <= target.target.radius) AttemptCatch(agent, target);
-                if (dist < closeDist && target.agent.CanBePursuedBy(agent))
-                {
-                    closeDist = dist;
-                    closeTarget = target;
-                }
-            }
-            return closeTarget;
         }
 
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class FoodPellet : Agent
+    public class Food : Agent
     {
         private void Awake()
         {
@@ -13,7 +13,8 @@ namespace CloudFine
 
         void Relocate(Agent other)
         {
-            transform.position = myNeighborhood.RandomPosition();
+            Position = myNeighborhood.RandomPosition();
+            ForceUpdatePosition();
         }
 
     }

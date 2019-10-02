@@ -23,7 +23,8 @@ namespace CloudFine
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(20);
                 EditorGUILayout.BeginVertical("BOX");
-                EditorGUILayout.Slider(serializedObject.FindProperty("weight"), 0f, 1f);
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("weight"));
+                //EditorGUILayout.Slider(serializedObject.FindProperty("weight"), 0f, 1f);
 
                 //EditorGUILayout.PropertyField(serializedObject.FindProperty("effectiveRadius"));
 

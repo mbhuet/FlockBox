@@ -8,11 +8,12 @@ namespace CloudFine
     [System.Serializable]
     public struct SurroundingsInfo
     {
+        public Vector3Int neighborhoodDimensions;
         public float perceptionRadius;
         public float lookAheadSeconds;
         public SurroundingsInfo(
             List<AgentWrapped> allAgents)
-        { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; }
+        { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; neighborhoodDimensions = Vector3Int.zero; }
         public List<AgentWrapped> allAgents;
     }
 
@@ -90,9 +91,6 @@ namespace CloudFine
 
         private float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
-
-        public int maxPursuers = 10;
-        protected int numPursuers = 0;
 
         [SerializeField]
         protected Dictionary<string, object> attributes = new Dictionary<string, object>();
@@ -239,29 +237,12 @@ namespace CloudFine
             if (OnCaught != null) OnCaught.Invoke(this);
         }
 
-        public virtual bool CanBePursuedBy(Agent agent)
+        public virtual bool CanBeCaughtBy(Agent agent)
         {
             return isAlive;
-            int agentTargetID = (int)agent.GetAttribute(PursuitBehavior.targetIDAttributeName);
-            return isAlive && !isCaught && (numPursuers < maxPursuers || agentTargetID == agentID);
         }
 
 
-        public static void InformOfPursuit(bool isBeingPursued, Agent agent, int agentID)
-        {
-            Agent agentOut;
-            if (agentRegistry.TryGetValue(agentID, out agentOut))
-            {
-                agentOut.InformOfPursuit(isBeingPursued, agent);
-            }
-        }
-
-        public void InformOfPursuit(bool isBeingPursued, Agent agent)
-        {
-            if (isBeingPursued) numPursuers++;
-            else numPursuers--;
-            if (numPursuers < 0) numPursuers = 0;
-        }
 
 
 
