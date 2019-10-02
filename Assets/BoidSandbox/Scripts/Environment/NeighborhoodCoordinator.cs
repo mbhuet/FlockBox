@@ -26,7 +26,8 @@ namespace CloudFine
         public bool wrapEdges = true;
         [Min(0)]
         public float boundaryBuffer = 10;
-
+        [Min(0)]
+        public float boundaryRepelForce = 1;
 
         private List<int> bucketsToDraw = new List<int>();
 
@@ -73,22 +74,46 @@ namespace CloudFine
             }
 
 
-            Vector3 futurePosition = agent.Position + agent.Velocity;
-            futurePosition.x = dimensions.x > 0 ? Mathf.Clamp(futurePosition.x, boundaryBuffer, dimensions.x * cellSize - boundaryBuffer) : 0;
-            futurePosition.y = dimensions.y > 0 ? Mathf.Clamp(futurePosition.y, boundaryBuffer, dimensions.y * cellSize - boundaryBuffer) : 0;
-            futurePosition.z = dimensions.z > 0 ? Mathf.Clamp(futurePosition.z, boundaryBuffer, dimensions.z * cellSize - boundaryBuffer) : 0;
+            Vector3 bufferedPosition = agent.Position + agent.Velocity;
+            float distanceToBorder = float.MaxValue;
 
-            float distanceToBorder = Mathf.Min(
-                dimensions.x > 0 ? agent.Position.x : float.MaxValue,
-                dimensions.y > 0 ? agent.Position.y : float.MaxValue,
-                dimensions.z > 0 ? agent.Position.z : float.MaxValue,
-                dimensions.x > 0 ? dimensions.x * cellSize - agent.Position.x : float.MaxValue,
-                dimensions.y > 0 ? dimensions.y * cellSize - agent.Position.y : float.MaxValue,
-                dimensions.z > 0 ? dimensions.z * cellSize - agent.Position.z : float.MaxValue);
+            if (dimensions.x > 0)
+            {
+                distanceToBorder = Mathf.Min(distanceToBorder, agent.Position.x, dimensions.x * cellSize - agent.Position.x);
+                bufferedPosition.x = Mathf.Clamp(bufferedPosition.x, boundaryBuffer, dimensions.x * cellSize - boundaryBuffer);
+            }
+            else
+            {
+                bufferedPosition.x = 0;
+            }
+            if(dimensions.y > 0)
+            {
+                distanceToBorder = Mathf.Min(distanceToBorder, agent.Position.y, dimensions.y * cellSize - agent.Position.y);
+                bufferedPosition.y = Mathf.Clamp(bufferedPosition.y, boundaryBuffer, dimensions.y * cellSize - boundaryBuffer);
+            }
+            else
+            {
+                bufferedPosition.y = 0;
+            }
+            if (dimensions.z > 0)
+            {
+                distanceToBorder = Mathf.Min(distanceToBorder, agent.Position.z, dimensions.z * cellSize - agent.Position.z);
+                bufferedPosition.z = Mathf.Clamp(bufferedPosition.z, boundaryBuffer, dimensions.z * cellSize - boundaryBuffer);
+            }
+            else
+            {
+                bufferedPosition.z = 0;
+            }
+            if(bufferedPosition == agent.Position + agent.Velocity)
+            {
+                steer = Vector3.zero;
+                return;
+            }
             if (distanceToBorder <= 0) distanceToBorder = .001f;
 
-            agent.GetSeekVector(out steer, futurePosition);
+            agent.GetSeekVector(out steer, bufferedPosition);
             steer *= boundaryBuffer / distanceToBorder;
+            steer *= boundaryRepelForce;
         }
 
 
