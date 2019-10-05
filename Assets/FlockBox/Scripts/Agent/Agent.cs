@@ -73,7 +73,7 @@ namespace CloudFine
         }
 
 
-        protected NeighborhoodCoordinator myNeighborhood;
+        protected FlockBox myNeighborhood;
         public NeighborType neighborType;
         public bool drawDebug = false;
 
@@ -143,7 +143,7 @@ namespace CloudFine
             if (!isRegistered) RegisterNewAgent();
             if (!hasSpawned)
             {
-                myNeighborhood = GetComponentInParent<NeighborhoodCoordinator>();
+                myNeighborhood = GetComponentInParent<FlockBox>();
                 if (myNeighborhood)
                 {
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
@@ -193,7 +193,7 @@ namespace CloudFine
             this.gameObject.SetActive(false);
         }
 
-        public virtual void Spawn(NeighborhoodCoordinator neighborhood, Vector3 position)
+        public virtual void Spawn(FlockBox neighborhood, Vector3 position)
         {
             if (OnSpawn != null) OnSpawn.Invoke(this);
             gameObject.SetActive(true);
@@ -207,7 +207,7 @@ namespace CloudFine
             ForceUpdatePosition();
         }
 
-        public virtual void Spawn(NeighborhoodCoordinator neighborhood)
+        public virtual void Spawn(FlockBox neighborhood)
         {
             Spawn(neighborhood, neighborhood.RandomPosition());
         }

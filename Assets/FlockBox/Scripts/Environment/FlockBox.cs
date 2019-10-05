@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class NeighborhoodCoordinator : MonoBehaviour
+    public class FlockBox : MonoBehaviour
     {
         private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in

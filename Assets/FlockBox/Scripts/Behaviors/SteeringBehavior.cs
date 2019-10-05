@@ -12,14 +12,11 @@ namespace CloudFine
     [System.Serializable]
     public abstract class SteeringBehavior : ScriptableObject
     {
-        public Action<bool> OnActiveStatusChange;
-
         public bool IsActive => isActive;
         [SerializeField, HideInInspector]
         private bool isActive = true;
         [HideInInspector]
         public float weight = 1;
-
         [HideInInspector]
         public bool useTagFilter;
         [HideInInspector]
@@ -30,10 +27,7 @@ namespace CloudFine
         public Color debugColor = Color.white;
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
-        public virtual void AddPerception(ref SurroundingsInfo surroundings)
-        {
-
-        }
+        public virtual void AddPerception(ref SurroundingsInfo surroundings) { }
 
 
         public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)

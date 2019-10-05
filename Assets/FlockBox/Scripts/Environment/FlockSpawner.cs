@@ -4,17 +4,17 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    [RequireComponent(typeof(NeighborhoodCoordinator))]
-    public class AgentSpawner : MonoBehaviour
+    [RequireComponent(typeof(FlockBox))]
+    public class FlockSpawner : MonoBehaviour
     {
 
-        private NeighborhoodCoordinator neighborhood;
+        private FlockBox neighborhood;
         public Agent prefab;
         public int numStartSpawns;
 
         private void Awake()
         {
-            neighborhood = GetComponent<NeighborhoodCoordinator>();
+            neighborhood = GetComponent<FlockBox>();
         }
         // Use this for initialization
         void Start()

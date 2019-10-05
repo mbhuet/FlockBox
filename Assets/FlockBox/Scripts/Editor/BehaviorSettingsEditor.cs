@@ -44,6 +44,7 @@ namespace CloudFine
                 {
                     AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(i).objectReferenceValue);
                     AssetDatabase.Refresh();
+                    AssetDatabase.SaveAssets();
 
                     _behaviors.DeleteArrayElementAtIndex(i);
                     _behaviors.DeleteArrayElementAtIndex(i);
@@ -96,10 +97,9 @@ namespace CloudFine
         void AddBehavior(object behaviorType)
         {
 
-            //_behaviors.InsertArrayElementAtIndex(_behaviors.arraySize);
             _behaviors.arraySize = _behaviors.arraySize + 1;
             SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance((Type)behaviorType);
-            //newBehavior.hideFlags = HideFlags.HideInHierarchy;
+            newBehavior.hideFlags = HideFlags.HideInHierarchy;
 
             AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(target));
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));

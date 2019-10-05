@@ -20,27 +20,6 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 8
   fov: 360
---- !u!114 &-4788017938583937551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 794497d99f491984b8cd9ec21a11766f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 10
-  useTagFilter: 0
-  filterTags:
-  - Food
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  effectiveRadius: 10
-  fov: 360
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -61,6 +40,26 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 10
   fov: 360
+--- !u!114 &-120538598497887913
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  wanderScope: 90
+  wanderIntensity: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,7 +70,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b81d4f1c37cfb9b4696d982df08a7441, type: 3}
-  m_Name: ClassicBoid Forage
+  m_Name: ForageFood
   m_EditorClassIdentifier: 
   maxForce: 20
   maxSpeed: 20
@@ -79,8 +78,28 @@ MonoBehaviour:
   - {fileID: 3267645291290633549}
   - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
-  - {fileID: -4788017938583937551}
-  - {fileID: 5150285938452103090}
+  - {fileID: 116264310836130694}
+  - {fileID: -120538598497887913}
+--- !u!114 &116264310836130694
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794497d99f491984b8cd9ec21a11766f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  effectiveRadius: 10
+  fov: 360
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -101,23 +120,3 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 10
   fov: 360
---- !u!114 &5150285938452103090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 1
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  wanderScope: 90
-  wanderIntensity: 1

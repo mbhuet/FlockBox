@@ -90,7 +90,7 @@ namespace CloudFine
         }
 
 
-        public override void Spawn(NeighborhoodCoordinator neighborhood)
+        public override void Spawn(FlockBox neighborhood)
         {
             base.Spawn(neighborhood);
             LockPosition(false);
