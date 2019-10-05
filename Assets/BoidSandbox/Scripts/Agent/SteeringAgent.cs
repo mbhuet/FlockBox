@@ -65,7 +65,7 @@ namespace CloudFine
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
                 steer *= behavior.weight;
-                if (behavior.drawVectorLine) Debug.DrawRay(Position, steer, behavior.vectorColor);
+                if (behavior.drawDebug) Debug.DrawRay(Position, steer, behavior.debugColor);
                 ApplyForce(steer);
             }
             myNeighborhood.BorderRepelForce(out steer, this);

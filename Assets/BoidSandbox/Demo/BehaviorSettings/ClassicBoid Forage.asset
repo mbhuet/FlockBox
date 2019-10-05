@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1bc63d82f81e654f98689920bf1a025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
+  isActive: 1
   weight: 1
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 1, g: 0.87771446, b: 0, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 8
   fov: 360
 --- !u!114 &-4788017938583937551
@@ -34,11 +34,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 10
-  useTagFilter: 1
+  useTagFilter: 0
   filterTags:
   - Food
-  drawVectorLine: 0
-  vectorColor: {r: 0, g: 1, b: 0.15447211, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 10
   fov: 360
 --- !u!114 &-1352800339391299551
@@ -57,8 +57,8 @@ MonoBehaviour:
   weight: 0.811
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 0, g: 0.6075771, b: 1, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 10
   fov: 360
 --- !u!114 &11400000
@@ -97,8 +97,8 @@ MonoBehaviour:
   weight: 0.73
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 0.8301887, g: 0.18278572, b: 0.14489143, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
   effectiveRadius: 10
   fov: 360
 --- !u!114 &5150285938452103090
@@ -117,7 +117,7 @@ MonoBehaviour:
   weight: 1
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 1, g: 1, b: 1, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
   wanderScope: 90
   wanderIntensity: 1

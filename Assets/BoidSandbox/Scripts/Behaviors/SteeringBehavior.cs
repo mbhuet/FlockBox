@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using System;
 
 namespace CloudFine
@@ -16,15 +15,19 @@ namespace CloudFine
         public Action<bool> OnActiveStatusChange;
 
         public bool IsActive => isActive;
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private bool isActive = true;
-
+        [HideInInspector]
         public float weight = 1;
-        
+
+        [HideInInspector]
         public bool useTagFilter;
+        [HideInInspector]
         public string[] filterTags = new string[0];
-        public bool drawVectorLine;
-        public Color vectorColor = Color.white;
+        [HideInInspector]
+        public bool drawDebug;
+        [HideInInspector]
+        public Color debugColor = Color.white;
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
         public virtual void AddPerception(ref SurroundingsInfo surroundings)

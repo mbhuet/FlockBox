@@ -8,6 +8,7 @@ namespace CloudFine
     [System.Serializable]
     public class WanderBehavior : SteeringBehavior
     {
+        [Range(0,360f)]
         public float wanderScope = 90;
         public float wanderIntensity = 1;
 

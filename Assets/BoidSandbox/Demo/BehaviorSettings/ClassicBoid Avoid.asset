@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  effectiveRadius: 8
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 1, g: 0.87771446, b: 0, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  effectiveRadius: 8
+  fov: 360
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33,11 +34,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 0.811
-  effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 0, g: 0.6075771, b: 1, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  effectiveRadius: 10
+  fov: 360
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,12 +73,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  effectiveRadius: 20
-  useTagFilter: 1
+  useTagFilter: 0
   filterTags:
   - Obstacle
-  drawVectorLine: 1
-  vectorColor: {r: 1, g: 0, b: 0, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  lookAheadSeconds: 1
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,8 +93,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 0.73
-  effectiveRadius: 10
   useTagFilter: 0
   filterTags: []
-  drawVectorLine: 0
-  vectorColor: {r: 0.8301887, g: 0.18278572, b: 0.14489143, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  effectiveRadius: 10
+  fov: 360
