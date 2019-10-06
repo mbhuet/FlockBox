@@ -44,7 +44,6 @@ namespace CloudFine
             {
                 behaviors[i].AddPerception(ref surroundings);
             }
-            containmentBehavior.AddPerception(ref surroundings);
         }
 
     }
