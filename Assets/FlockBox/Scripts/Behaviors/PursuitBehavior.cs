@@ -8,23 +8,13 @@ namespace CloudFine
     [System.Serializable]
     public class PursuitBehavior : SeekBehavior
     {
-
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            //        Debug.Log("pursuit");
             List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
 
-            /*
-             * var distance :Vector3D = t.position - position;
-                var T :int = distance.length / MAX_VELOCITY;
-                futurePosition :Vector3D = t.position + t.velocity * T;
-             * 
-             */
-
-            //no targets in neighborhood
             if (allTargets.Count > 0)
             {
                 if (HasPursuitTarget(mine))
@@ -35,15 +25,10 @@ namespace CloudFine
                 return;
             }
 
-            //Debug.Log(allTargets.ToString());
-
             AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            //no pursuable targets nearby
-            if (!closestTarget.agent.CanBeCaughtBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+            if (!closestTarget.agent.CanBeCaughtBy(mine))
             {
-                //            Debug.Log("No Pursuable Target");
-
                 if (HasPursuitTarget(mine))
                 {
                     DisengagePursuit(mine, chosenTargetID);
@@ -51,7 +36,6 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-
 
             if (closestTarget.agent.agentID != chosenTargetID)
             {
@@ -66,8 +50,6 @@ namespace CloudFine
             AttemptCatch(mine, closestTarget);
 
             mine.GetSeekVector(out steer, predictedInterceptPosition);
-
         }
-
     }
 }

@@ -26,7 +26,6 @@ namespace CloudFine
         public bool wrapEdges = true;
         public float boundaryBuffer = 10;
 
-        private List<int> bucketsToDraw = new List<int>();
 
 
         [Serializable]
@@ -53,7 +52,10 @@ namespace CloudFine
 
         private void Update()
         {
+#if UNITY_EDITOR
+            //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
             bucketsToDraw.Clear();
+#endif
         }
 
 
@@ -85,8 +87,6 @@ namespace CloudFine
                 }
             }
         }
-
-
 
         public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
         {
@@ -153,14 +153,14 @@ namespace CloudFine
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
         {
-            int x0 = CellFloor(start.x);
-            int x1 = CellFloor(end.x);
+            int x0 = ToCellFloor(start.x);
+            int x1 = ToCellFloor(end.x);
 
-            int y0 = CellFloor(start.y);
-            int y1 = CellFloor(end.y);
+            int y0 = ToCellFloor(start.y);
+            int y1 = ToCellFloor(end.y);
 
-            int z0 = CellFloor(start.z);
-            int z1 = CellFloor(end.z);
+            int z0 = ToCellFloor(start.z);
+            int z1 = ToCellFloor(end.z);
 
             float wd = thickness;
             buckets.Add(CellPositionToHash(x0, y0, z0));
@@ -246,7 +246,6 @@ namespace CloudFine
 
         }
 
-
         public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
         {
             // |-* |   |   |   | *-|
@@ -278,7 +277,6 @@ namespace CloudFine
             }
             return position;
         }
-
 
         public void ValidatePosition(ref Vector3 position)
         {
@@ -339,7 +337,6 @@ namespace CloudFine
             return position;
         }
 
-
         public Vector3 RandomPosition()
         {
             return new Vector3(
@@ -349,7 +346,7 @@ namespace CloudFine
              );
         }
 
-        private int CellFloor(float p)
+        private int ToCellFloor(float p)
         {
             return Mathf.FloorToInt(p / cellSize);
         }
@@ -379,6 +376,8 @@ namespace CloudFine
         }
 
 #if UNITY_EDITOR
+
+        private List<int> bucketsToDraw = new List<int>(); //useful for debugging
 
         private void OnDrawGizmos()
         {
@@ -431,7 +430,7 @@ namespace CloudFine
                 }
             }
         }
-#endif
 
+#endif
     }
 }

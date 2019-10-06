@@ -21,7 +21,6 @@ namespace CloudFine
         public bool drawDebug;
         [HideInInspector]
         public Color debugColor = Color.white;
-
         [HideInInspector]
         public bool foldout = true;
 
@@ -30,8 +29,7 @@ namespace CloudFine
         public virtual bool CanUseTagFilter => true;
         public virtual bool CanToggleActive => true;
 
-        
-
+       
         public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
@@ -47,9 +45,5 @@ namespace CloudFine
             return filtered;
 
         }
-
-
-
-
     }
 }

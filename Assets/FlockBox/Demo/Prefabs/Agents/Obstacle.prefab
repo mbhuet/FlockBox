@@ -47,7 +47,6 @@ MonoBehaviour:
   m_radius: 25
   neighborType: 1
   drawDebug: 1
-  maxPursuers: 10
 --- !u!1 &5499777258592383400
 GameObject:
   m_ObjectHideFlags: 0

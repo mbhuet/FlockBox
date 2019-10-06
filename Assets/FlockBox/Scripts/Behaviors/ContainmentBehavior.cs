@@ -50,10 +50,6 @@ namespace CloudFine
 
             mine.GetSeekVector(out steer, bufferedPosition);
             steer *= surroundings.containmentBuffer / distanceToBorder;
-
         }
-
-
-
     }
 }

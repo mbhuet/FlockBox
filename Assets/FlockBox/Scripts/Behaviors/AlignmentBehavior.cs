@@ -7,9 +7,6 @@ namespace CloudFine
     [System.Serializable]
     public class AlignmentBehavior : RadialSteeringBehavior
     {
-
-        // Alignment
-        // For every nearby boid in the system, calculate the average velocity
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
             Vector3 sum = Vector3.zero;
@@ -26,11 +23,6 @@ namespace CloudFine
             if (count > 0)
             {
                 sum /= ((float)count);
-                // First two lines of code below could be condensed with new Vector3 setMag() method
-                // Not using this method until Processing.js catches up
-                // sum.setMag(maxspeed);
-
-                // Implement Reynolds: Steering = Desired - Velocity
                 sum.Normalize();
                 sum *= (mine.activeSettings.maxSpeed);
                 steer = sum - mine.Velocity;

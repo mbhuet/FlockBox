@@ -18,6 +18,7 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 0
   lookAheadSeconds: 1
 --- !u!114 &-6742341320620086265
 MonoBehaviour:
@@ -37,8 +38,29 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 0
   effectiveRadius: 8
   fov: 360
+--- !u!114 &-5769737824000778392
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1de813169b09ad449a5980b7e79407d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 0
+  lookAheadSeconds: 1
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -57,6 +79,7 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 0
   effectiveRadius: 10
   fov: 360
 --- !u!114 &11400000
@@ -73,6 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxForce: 20
   maxSpeed: 30
+  containmentBehavior: {fileID: -5769737824000778392}
   behaviors:
   - {fileID: 3267645291290633549}
   - {fileID: -1352800339391299551}
@@ -96,5 +120,6 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 0
   effectiveRadius: 10
   fov: 360

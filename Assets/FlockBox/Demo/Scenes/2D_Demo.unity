@@ -213,9 +213,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1385211393}
   - component: {fileID: 1385211392}
-  - component: {fileID: 1385211394}
   m_Layer: 0
-  m_Name: Neighborhood
+  m_Name: FlockBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -238,6 +237,10 @@ MonoBehaviour:
   cellSize: 10
   wrapEdges: 0
   boundaryBuffer: 10
+  startingPopulations:
+  - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
+      type: 3}
+    population: 100
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0
@@ -252,19 +255,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1385211394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1385211391}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6679de25b93134548bae277854d14755, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startingPopulations:
-  - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
-      type: 3}
-    population: 100

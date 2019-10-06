@@ -4,21 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//Every SteeringAgent uses the same SteeringBehavior instances, there's only one per type and its stored in a static Dictionary
-//SteeringBehaviors will never have instance variables
-//SteeringAgents have 
 namespace CloudFine
 {
     [System.Serializable]
     public class SteeringAgent : Agent
     {
-
-
         protected float speedThrottle = 1;
 
         public BehaviorSettings activeSettings;
         private bool freezePosition = false;
-        //Takes a type, returns instance
 
         private SurroundingsInfo mySurroundings = new SurroundingsInfo();
         protected virtual void Update()
@@ -56,29 +50,28 @@ namespace CloudFine
         }
 
 
-        private Vector3 steer = Vector3.zero;
+        private Vector3 steerCached = Vector3.zero;
 
         void Flock(SurroundingsInfo surroundings)
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
                 if (!behavior.IsActive) continue;
-                behavior.GetSteeringBehaviorVector(out steer, this, surroundings);
-                steer *= behavior.weight;
-                if (behavior.drawDebug) Debug.DrawRay(Position, steer, behavior.debugColor);
-                ApplyForce(steer);
+                behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
+                steerCached *= behavior.weight;
+                if (behavior.drawDebug) Debug.DrawRay(Position, steerCached, behavior.debugColor);
+                ApplyForce(steerCached);
             }
             if (!myNeighborhood.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steer, this, surroundings);
-                if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steer, activeSettings.Containment.debugColor);
-                ApplyForce(steer);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, surroundings);
+                if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steerCached, activeSettings.Containment.debugColor);
+                ApplyForce(steerCached);
             }
         }
 
         public void GetSeekVector(out Vector3 steer, Vector3 target)
         {
-            // Steering = Desired minus Velocity
             steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
         }

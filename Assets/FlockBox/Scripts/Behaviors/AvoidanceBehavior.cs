@@ -7,8 +7,6 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
-
-
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
             List<AgentWrapped> obstacles = GetFilteredAgents(surroundings, this);
@@ -47,18 +45,9 @@ namespace CloudFine
                 return;
             }
             float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.Radius, 1);
-            /*
-            if (distanceToObstacleEdge > effectiveRadius)
-            {
-                steer = Vector3.zero;
-                return;
-            }
-            */
             steer = closestHitPoint - mostThreateningObstacle.Position;
             steer = steer.normalized * mine.activeSettings.maxForce;
         }
-
-
 
         Vector3 ClosestPointPathToObstacle(SteeringAgent mine, AgentWrapped obstacle)
         {
@@ -70,5 +59,4 @@ namespace CloudFine
             else return agentPos;
         }
     }
-
 }

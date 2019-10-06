@@ -8,7 +8,6 @@ namespace CloudFine
     [System.Serializable]
     public class ArriveBehavior : SeekBehavior
     {
-
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
@@ -16,7 +15,6 @@ namespace CloudFine
 
             List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
 
-            //no targets in neighborhood
             if (allTargets.Count == 0)
             {
                 if (chosenTargetID != -1)
@@ -29,8 +27,7 @@ namespace CloudFine
 
             AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            //no pursuable targets nearby
-            if (!closestTarget.agent.CanBeCaughtBy(mine)) //double checking because TargetWrapped is a non nullable Struct
+            if (!closestTarget.agent.CanBeCaughtBy(mine))
             {
                 if (chosenTargetID != -1)
                 {
@@ -39,7 +36,6 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-
 
             if (closestTarget.agent.agentID != chosenTargetID)
             {
@@ -53,12 +49,6 @@ namespace CloudFine
                 * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (closestTarget.wrappedPosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-
-
-
         }
-
-        
-
     }
 }
