@@ -68,8 +68,11 @@ namespace CloudFine
                 if (behavior.drawDebug) Debug.DrawRay(Position, steer, behavior.debugColor);
                 ApplyForce(steer);
             }
-            myNeighborhood.BorderRepelForce(out steer, this);
-            ApplyForce(steer);
+            if (!myNeighborhood.wrapEdges)
+            {
+                activeSettings.Containment.GetSteeringBehaviorVector(out steer, this, surroundings);
+                ApplyForce(steer);
+            }
         }
 
         public void GetSeekVector(out Vector3 steer, Vector3 target)

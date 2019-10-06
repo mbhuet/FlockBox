@@ -18,8 +18,11 @@ namespace CloudFine
         private SerializedProperty _behaviors;
         private SerializedProperty _maxForce;
         private SerializedProperty _maxSpeed;
+        private SerializedProperty _containment;
 
-        private List<SteeringBehavior> toRemove = new List<SteeringBehavior>();
+        private Dictionary<SteeringBehavior, bool> foldoutBehaviors = new Dictionary<SteeringBehavior, bool>();
+
+        private int toRemove = -1;
 
         private void OnEnable()
         {
@@ -27,41 +30,38 @@ namespace CloudFine
             _behaviors = serializedObject.FindProperty("behaviors");
             _maxForce = serializedObject.FindProperty("maxForce");
             _maxSpeed = serializedObject.FindProperty("maxSpeed");
+            _containment = serializedObject.FindProperty("containmentBehavior");
         }
+
         public override void OnInspectorGUI()
         {
+            if(_containment.objectReferenceValue == null)
+            {
+                _containment.objectReferenceValue = CreateBehavior(typeof(ContainmentBehavior));
+            }
+
             EditorGUILayout.PropertyField(_maxSpeed);
             EditorGUILayout.PropertyField(_maxForce);
 
+
+            DrawBehaviorBox(targetSettings.Containment, _containment, -1, false);
+
             for (int i = 0; i < _behaviors.arraySize; i++)
             {
-                SteeringBehavior behavior = targetSettings.GetBehavior(i);
-                if (!behavior) continue;
-                EditorGUILayout.BeginVertical("BOX");
-                EditorGUILayout.BeginHorizontal(behavior.IsActive ? activeStyle : inactiveStyle);
-                EditorGUILayout.LabelField(behavior.GetType().Name);
-                if (GUILayout.Button("Remove", GUILayout.Width(60)))
-                {
-                    AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(i).objectReferenceValue);
-                    AssetDatabase.Refresh();
-                    AssetDatabase.SaveAssets();
-
-                    _behaviors.DeleteArrayElementAtIndex(i);
-                    _behaviors.DeleteArrayElementAtIndex(i);
-                    i--;
-                    continue;
-                }
-                EditorGUILayout.EndHorizontal();
-
-                GUILayout.Space(-20);
-                EditorGUILayout.PropertyField(_behaviors.GetArrayElementAtIndex(i));
-
-
-                GUILayout.Space(5);
-
-                EditorGUILayout.EndVertical();
+                DrawBehaviorBox(targetSettings.GetBehavior(i), _behaviors.GetArrayElementAtIndex(i), i, true);
             }
 
+            if (toRemove >= 0)
+            {
+                foldoutBehaviors.Remove(targetSettings.GetBehavior(toRemove));
+                AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+
+                _behaviors.DeleteArrayElementAtIndex(toRemove);
+                _behaviors.DeleteArrayElementAtIndex(toRemove);
+                toRemove = -1;
+            }
 
 
             GUILayout.BeginVertical("BOX");
@@ -74,13 +74,14 @@ namespace CloudFine
                 List<SteeringBehavior> behaviors = targetSettings.Behaviors.ToList();
                 foreach (Type type in System.AppDomain.CurrentDomain.GetAllDerivedTypes(typeof(SteeringBehavior)))
                 {
-                    if (behaviors.Any(x => x.GetType() == type))
+                    if (type.IsAbstract) continue;
+                    if (behaviors.Any(x => x.GetType() == type) || type == typeof(ContainmentBehavior))
                     {
-                        menu.AddDisabledItem(new GUIContent(type.ToString()), false);
+                        menu.AddDisabledItem(new GUIContent(type.Name), false);
                     }
                     else
                     {
-                        menu.AddItem(new GUIContent(type.ToString()), false, AddBehavior, type);
+                        menu.AddItem(new GUIContent(type.Name), false, AddBehavior, type);
                     }
                 }
                 menu.ShowAsContext();
@@ -94,10 +95,49 @@ namespace CloudFine
             serializedObject.ApplyModifiedProperties();
         }
 
-        void AddBehavior(object behaviorType)
+        void DrawBehaviorBox(SteeringBehavior behavior, SerializedProperty property, int i, bool canRemove)
         {
+            if (!behavior) return;
+            EditorGUILayout.BeginVertical("BOX");
+            EditorGUILayout.BeginHorizontal(behavior.IsActive ? activeStyle : inactiveStyle);
+            GUILayout.Space(20);
 
-            _behaviors.arraySize = _behaviors.arraySize + 1;
+            //EditorGUILayout.LabelField(behavior.GetType().Name);
+            if (!foldoutBehaviors.ContainsKey(behavior))
+            {
+                foldoutBehaviors.Add(behavior, true);
+            }
+            bool foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldoutBehaviors[behavior], behavior.GetType().Name);
+            foldoutBehaviors[behavior] = foldout;
+            EditorGUILayout.EndFoldoutHeaderGroup();
+            GUILayout.FlexibleSpace();
+            if (canRemove)
+            {
+                if (GUILayout.Button("Remove", GUILayout.Width(60)))
+                {
+                    toRemove = i;
+                }
+            }
+            
+            EditorGUILayout.EndHorizontal();
+
+            if (foldout)
+            {
+                GUILayout.Space(-20);
+
+                EditorGUILayout.PropertyField(property);
+            }
+
+
+            GUILayout.Space(5);
+
+            EditorGUILayout.EndVertical();
+            GUILayout.Space(10);
+        }
+
+
+        SteeringBehavior CreateBehavior(object behaviorType)
+        {
             SteeringBehavior newBehavior = (SteeringBehavior)ScriptableObject.CreateInstance((Type)behaviorType);
             newBehavior.hideFlags = HideFlags.HideInHierarchy;
 
@@ -106,10 +146,15 @@ namespace CloudFine
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            return newBehavior;
+        }
 
-            _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
+        void AddBehavior(object behaviorType)
+        {
 
-            serializedObject.ApplyModifiedProperties();
+                _behaviors.arraySize = _behaviors.arraySize + 1;
+                _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)CreateBehavior(behaviorType);
+                serializedObject.ApplyModifiedProperties();
 
         }
     }

@@ -8,12 +8,14 @@ namespace CloudFine
     [System.Serializable]
     public struct SurroundingsInfo
     {
-        public Vector3Int neighborhoodDimensions;
+        public float containmentBuffer;
+        public Vector3 worldDimensions;
+        //public float wrap;
         public float perceptionRadius;
         public float lookAheadSeconds;
         public SurroundingsInfo(
             List<AgentWrapped> allAgents)
-        { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; neighborhoodDimensions = Vector3Int.zero; }
+        { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; worldDimensions = Vector3.zero; containmentBuffer = 0; }
         public List<AgentWrapped> allAgents;
     }
 

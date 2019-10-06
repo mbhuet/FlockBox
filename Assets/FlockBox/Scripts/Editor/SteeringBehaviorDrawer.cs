@@ -24,8 +24,11 @@ namespace CloudFine
             SerializedObject serializedObject = new SerializedObject(wrapped);
 
             SerializedProperty isActiveProp = serializedObject.FindProperty("isActive");
-            EditorGUILayout.PropertyField(isActiveProp);
 
+            if (behavior.CanToggleActive)
+            {
+                EditorGUILayout.PropertyField(isActiveProp);
+            }
 
             if (isActiveProp.boolValue)
             {
@@ -35,7 +38,10 @@ namespace CloudFine
 
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("weight"));
 
-                DrawTagFilters(serializedObject);
+                if (behavior.CanUseTagFilter)
+                {
+                    DrawTagFilters(serializedObject);
+                }
 
                 var editor = Editor.CreateEditor(behavior);
                 editor.DrawDefaultInspectorWithoutScriptField();

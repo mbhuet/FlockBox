@@ -18,9 +18,11 @@ namespace CloudFine
         public float maxSpeed = 15;    // Maximum speed 
 
         [SerializeField]
+        private ContainmentBehavior containmentBehavior;
+        public ContainmentBehavior Containment => containmentBehavior;
+
+        [SerializeField]
         private SteeringBehavior[] behaviors = new SteeringBehavior[0];
-
-
         public SteeringBehavior[] Behaviors => behaviors;
         public int NumBehaviors
         {
