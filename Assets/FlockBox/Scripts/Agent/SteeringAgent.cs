@@ -71,6 +71,7 @@ namespace CloudFine
             if (!myNeighborhood.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steer, this, surroundings);
+                if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steer, activeSettings.Containment.debugColor);
                 ApplyForce(steer);
             }
         }
