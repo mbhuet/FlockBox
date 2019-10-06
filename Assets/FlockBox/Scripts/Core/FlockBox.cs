@@ -26,6 +26,8 @@ namespace CloudFine
         public bool wrapEdges = true;
         public float boundaryBuffer = 10;
 
+        private Vector3 _up;
+        public Vector3 Up => _up;
 
 
         [Serializable]
@@ -52,6 +54,12 @@ namespace CloudFine
 
         private void Update()
         {
+            if (dimensions.x <= 0 && dimensions.y > 0 && dimensions.z > 0)
+                _up = Vector3.right;
+            else if (dimensions.x > 0 && dimensions.y > 0 && dimensions.z <= 0)
+                _up = Vector3.forward;
+            else
+                _up = Vector3.up;
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
             bucketsToDraw.Clear();
