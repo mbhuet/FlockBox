@@ -15,32 +15,52 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
         {
-            Vector3 lastForward = mine.Forward.normalized;
-            Vector3 rotAxis = Vector3.one;
+            Vector3 localForward = mine.Forward;
+
+            int dimensions = 3;
             if (surroundings.worldDimensions.x <= 0)
             {
-                rotAxis.y = 0;
-                rotAxis.z = 0;
-                lastForward.x = 0;
+                dimensions--;
+                localForward.x = 0;
             }
             if (surroundings.worldDimensions.y <= 0)
             {
-                rotAxis.x = 0;
-                rotAxis.z = 0;
-                lastForward.y = 0;
+                dimensions--;
+                localForward.y = 0;
             }
             if (surroundings.worldDimensions.z <= 0)
             {
-                rotAxis.x = 0;
-                rotAxis.y = 0;
-                lastForward.z = 0;
+                dimensions--;
+                localForward.z = 0;
+            }
+            localForward.Normalize();
+
+            if (dimensions < 2)
+            {
+                steer = Vector3.zero;
+                return;
             }
 
-            Vector3 wanderVector = Quaternion.AngleAxis(
-                (Mathf.PerlinNoise(Time.time * wanderIntensity, mine.gameObject.GetInstanceID()) - .5f) * wanderScope, 
-                rotAxis) * lastForward;
+            float wanderYaw = Mathf.PerlinNoise((Time.time * wanderIntensity), mine.gameObject.GetInstanceID()) - .5f;
 
-            steer = wanderVector * mine.activeSettings.maxForce;
+            if (dimensions == 2)
+            {
+                steer = 
+                    Quaternion.AngleAxis(wanderYaw * wanderScope, mine.transform.up) 
+                    * localForward
+                    * mine.activeSettings.maxForce;
+                return;
+            }
+
+            float wanderPitch = Mathf.PerlinNoise((Time.time * wanderIntensity) + 99f, mine.gameObject.GetInstanceID()) - .5f;
+
+            steer = 
+                Quaternion.AngleAxis(wanderYaw * wanderScope, mine.transform.InverseTransformDirection(mine.transform.up)) 
+                * Quaternion.AngleAxis(wanderPitch * wanderScope, mine.transform.InverseTransformDirection(mine.transform.right)) 
+                * localForward
+                * mine.activeSettings.maxForce;
+
+          
         }
 
     }

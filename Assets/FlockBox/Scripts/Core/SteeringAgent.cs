@@ -27,7 +27,9 @@ namespace CloudFine
 
             Velocity += (Acceleration) * Time.deltaTime;
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
-
+            Velocity = new Vector3(mySurroundings.worldDimensions.x > 0 ? Velocity.x : 0,
+                mySurroundings.worldDimensions.y > 0 ? Velocity.y : 0,
+                mySurroundings.worldDimensions.z > 0 ? Velocity.z : 0);
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
             Acceleration *= 0;
@@ -78,6 +80,7 @@ namespace CloudFine
 
         protected override void UpdateTransform()
         {
+            
             base.UpdateTransform();
             if (Velocity.magnitude > 0)
             {
