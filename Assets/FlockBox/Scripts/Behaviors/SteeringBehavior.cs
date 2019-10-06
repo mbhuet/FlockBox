@@ -5,10 +5,6 @@ using System;
 
 namespace CloudFine
 {
-    //Each SteeringBehavior will be instantiated ONCE
-    //That instance will be used by all SteeringAgents
-
-    //[DefineCategory("Debug", 3f, "drawVectorLine", "vectorColor")]
     [System.Serializable]
     public abstract class SteeringBehavior : ScriptableObject
     {
@@ -36,7 +32,7 @@ namespace CloudFine
 
         
 
-        public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
+        public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
 

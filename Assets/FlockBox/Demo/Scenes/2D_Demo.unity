@@ -264,5 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6679de25b93134548bae277854d14755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3617397216089966378, guid: cb0c23d81e0afe84dacfcae9c87bd37f, type: 3}
-  numStartSpawns: 100
+  startingPopulations:
+  - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
+      type: 3}
+    population: 100

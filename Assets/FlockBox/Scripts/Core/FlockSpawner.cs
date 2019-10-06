@@ -1,16 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace CloudFine
 {
+    [Serializable]
+    public struct AgentPopulation
+    {
+        public Agent prefab;
+        public int population;
+    }
+
     [RequireComponent(typeof(FlockBox))]
     public class FlockSpawner : MonoBehaviour
     {
-
         private FlockBox neighborhood;
-        public Agent prefab;
-        public int numStartSpawns;
+        public List<AgentPopulation> startingPopulations;
 
         private void Awake()
         {
@@ -19,24 +25,27 @@ namespace CloudFine
         // Use this for initialization
         void Start()
         {
-            Spawn(numStartSpawns);
+            foreach(AgentPopulation pop in startingPopulations)
+            {
+                Spawn(pop);
+            }
         }
 
 
-        void Spawn(int numBoids)
+        void Spawn(AgentPopulation pop)
         {
-            if (prefab == null)
+            if (pop.prefab == null)
             {
-                Debug.LogWarning("AgentSpawner.prefab is null");
+                Debug.LogWarning("prefab is null");
                 return;
             }
             if(neighborhood == null)
             {
                 return;
             }
-            for (int i = 0; i < numBoids; i++)
+            for (int i = 0; i < pop.population; i++)
             {
-                Agent agent = GameObject.Instantiate<Agent>(prefab);
+                Agent agent = GameObject.Instantiate<Agent>(pop.prefab);
                 agent.Spawn(neighborhood);
             }
         }
