@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
+  useTagFilter: 1
+  filterTags:
+  - Obstacle
+  drawDebug: 1
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 0
+  foldout: 1
   lookAheadSeconds: 1
 --- !u!114 &-6742341320620086265
 MonoBehaviour:
@@ -38,7 +39,7 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 0
+  foldout: 1
   effectiveRadius: 8
   fov: 360
 --- !u!114 &-5769737824000778392
@@ -79,7 +80,7 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 0
+  foldout: 1
   effectiveRadius: 10
   fov: 360
 --- !u!114 &11400000
