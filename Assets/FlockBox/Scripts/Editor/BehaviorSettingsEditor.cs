@@ -20,8 +20,6 @@ namespace CloudFine
         private SerializedProperty _maxSpeed;
         private SerializedProperty _containment;
 
-        private Dictionary<SteeringBehavior, bool> foldoutBehaviors = new Dictionary<SteeringBehavior, bool>();
-
         private int toRemove = -1;
 
         private void OnEnable()
@@ -53,7 +51,6 @@ namespace CloudFine
 
             if (toRemove >= 0)
             {
-                foldoutBehaviors.Remove(targetSettings.GetBehavior(toRemove));
                 AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
@@ -102,14 +99,17 @@ namespace CloudFine
             EditorGUILayout.BeginHorizontal(behavior.IsActive ? activeStyle : inactiveStyle);
             GUILayout.Space(20);
 
-            //EditorGUILayout.LabelField(behavior.GetType().Name);
-            if (!foldoutBehaviors.ContainsKey(behavior))
-            {
-                foldoutBehaviors.Add(behavior, true);
-            }
-            bool foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldoutBehaviors[behavior], behavior.GetType().Name);
-            foldoutBehaviors[behavior] = foldout;
+            SerializedObject behaviorObject = new SerializedObject(property.objectReferenceValue);
+            SerializedProperty foldoutProperty = behaviorObject.FindProperty("foldout");
+
+            bool foldout = foldoutProperty.boolValue;
+
+            foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, behavior.GetType().Name);
             EditorGUILayout.EndFoldoutHeaderGroup();
+            foldoutProperty.boolValue = foldout;
+
+            behaviorObject.ApplyModifiedProperties();
+
             GUILayout.FlexibleSpace();
             if (canRemove)
             {

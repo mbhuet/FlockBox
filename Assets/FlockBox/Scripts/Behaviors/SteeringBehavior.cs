@@ -26,10 +26,15 @@ namespace CloudFine
         [HideInInspector]
         public Color debugColor = Color.white;
 
+        [HideInInspector]
+        public bool foldout = true;
+
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
         public virtual void AddPerception(ref SurroundingsInfo surroundings) { }
         public virtual bool CanUseTagFilter => true;
         public virtual bool CanToggleActive => true;
+
+        
 
         public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)// params string[] filterTags)
         {
