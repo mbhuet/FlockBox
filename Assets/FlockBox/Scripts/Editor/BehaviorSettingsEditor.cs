@@ -33,9 +33,12 @@ namespace CloudFine
 
         public override void OnInspectorGUI()
         {
-            if(_containment.objectReferenceValue == null)
+            if (_containment.objectReferenceValue == null)
             {
-                _containment.objectReferenceValue = CreateBehavior(typeof(ContainmentBehavior));
+                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(target)))
+                {
+                    _containment.objectReferenceValue = CreateBehavior(typeof(ContainmentBehavior));
+                }
             }
 
             EditorGUILayout.PropertyField(_maxSpeed);

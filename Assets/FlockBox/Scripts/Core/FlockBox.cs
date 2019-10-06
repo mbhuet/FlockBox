@@ -24,10 +24,32 @@ namespace CloudFine
 
 
         public bool wrapEdges = true;
-        [Min(0)]
         public float boundaryBuffer = 10;
 
         private List<int> bucketsToDraw = new List<int>();
+
+
+        [Serializable]
+        public struct AgentPopulation
+        {
+            public Agent prefab;
+            public int population;
+        }
+        public List<AgentPopulation> startingPopulations;
+
+
+        void Start()
+        {
+            foreach (AgentPopulation pop in startingPopulations)
+            {
+                if (pop.prefab == null) return;
+                for (int i = 0; i < pop.population; i++)
+                {
+                    Agent agent = GameObject.Instantiate<Agent>(pop.prefab);
+                    agent.Spawn(this);
+                }
+            }
+        }
 
         private void Update()
         {
