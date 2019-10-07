@@ -55,7 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 0.811
-  useTagFilter: 1
+  useTagFilter: 0
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}

@@ -10,12 +10,12 @@ namespace CloudFine
         [Range(0f,360f)]
         public float fov = 360;
 
-        protected bool WithinEffectiveRadius(SteeringAgent mine, AgentWrapped other)
+        protected bool WithinEffectiveRadius(SteeringAgent mine, Agent other)
         {
-            if (mine == other.agent) return false;
+            if (mine == other) return false;
             return (
-                Vector3.SqrMagnitude(mine.Position - other.wrappedPosition) < effectiveRadius * effectiveRadius //inside radius
-                && Vector3.Angle(mine.Forward, other.wrappedPosition - mine.Position) <= fov); // inside fov
+                Vector3.SqrMagnitude(mine.Position - other.Position) < effectiveRadius * effectiveRadius //inside radius
+                && Vector3.Angle(mine.Forward, other.Position - mine.Position) <= fov); // inside fov
         }
 
         public override void AddPerception(ref SurroundingsInfo surroundings)

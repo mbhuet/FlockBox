@@ -13,7 +13,7 @@ namespace CloudFine
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {
@@ -25,9 +25,9 @@ namespace CloudFine
                 return;
             }
 
-            AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
+            Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            if (!closestTarget.agent.CanBeCaughtBy(mine))
+            if (!closestTarget.CanBeCaughtBy(mine))
             {
                 if (chosenTargetID != -1)
                 {
@@ -37,16 +37,16 @@ namespace CloudFine
                 return;
             }
 
-            if (closestTarget.agent.agentID != chosenTargetID)
+            if (closestTarget.agentID != chosenTargetID)
             {
                 DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget.agent);
+                EngagePursuit(mine, closestTarget);
             }
 
             AttemptCatch(mine, closestTarget);
             Vector3 desired_velocity =
-                (closestTarget.wrappedPosition - mine.Position).normalized
-                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (closestTarget.wrappedPosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+                (closestTarget.Position - mine.Position).normalized
+                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (closestTarget.Position - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }

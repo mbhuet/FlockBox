@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Boids2DKit/Demo/Scenes/Basic.unity
-    guid: e3a86a42fa38d7c4bbeca3681367480a
+    path: Assets/FlockBox/Demo/Scenes/StressTest.unity
+    guid: e2927c39cf82ae740aae36373491f8d5
+  - enabled: 1
+    path: Assets/FlockBox/Demo/Scenes/Boid_Demo.unity
+    guid: 30253279b42e1fa489ed4d1d30e5dfae
   m_configObjects: {}

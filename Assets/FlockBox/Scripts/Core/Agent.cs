@@ -14,11 +14,12 @@ namespace CloudFine
         public float perceptionRadius;
         public float lookAheadSeconds;
         public SurroundingsInfo(
-            List<AgentWrapped> allAgents)
+            List<Agent> allAgents)
         { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; worldDimensions = Vector3.zero; containmentBuffer = 0; }
-        public List<AgentWrapped> allAgents;
+        public List<Agent> allAgents;
     }
 
+    /*
     [System.Serializable]
     public struct AgentWrapped
     {
@@ -26,6 +27,7 @@ namespace CloudFine
         public Agent agent;
         public Vector3 wrappedPosition;
     }
+    */
 
     [System.Serializable]
     public class Agent : MonoBehaviour

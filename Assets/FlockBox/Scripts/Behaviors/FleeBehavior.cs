@@ -14,11 +14,11 @@ namespace CloudFine
             Vector3 fleeMidpoint = Vector3.zero;
             float count = 0;
 
-            foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
+            foreach (Agent other in GetFilteredAgents(surroundings, this))
             {
                 if (WithinEffectiveRadius(mine, other))
                 {
-                    fleeMidpoint += (other.wrappedPosition);
+                    fleeMidpoint += (other.Position);
                     count++;
                 }
             }

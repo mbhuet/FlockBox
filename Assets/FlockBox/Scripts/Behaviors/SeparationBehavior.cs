@@ -11,12 +11,12 @@ namespace CloudFine
         {
             steer = Vector3.zero;
             int count = 0;
-            foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
+            foreach (Agent other in GetFilteredAgents(surroundings, this))
             {
 
                 if (WithinEffectiveRadius(mine, other))
                 {
-                    Vector3 diff = mine.Position - other.wrappedPosition;
+                    Vector3 diff = mine.Position - other.Position;
                     if (diff.sqrMagnitude < .001f) diff = UnityEngine.Random.insideUnitCircle * .01f;
                     steer += (diff.normalized / diff.magnitude);
                     count++;

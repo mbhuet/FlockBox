@@ -30,14 +30,14 @@ namespace CloudFine
         public virtual bool CanToggleActive => true;
 
        
-        public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)
+        public static List<Agent> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
 
-            List<AgentWrapped> filtered = new List<AgentWrapped>();
-            foreach (AgentWrapped other in surroundings.allAgents)
+            List<Agent> filtered = new List<Agent>();
+            foreach (Agent other in surroundings.allAgents)
             {
-                if (Array.IndexOf(behavior.filterTags, other.agent.tag) >= 0)
+                if (Array.IndexOf(behavior.filterTags, other.tag) >= 0)
                 {
                     filtered.Add(other);
                 }
