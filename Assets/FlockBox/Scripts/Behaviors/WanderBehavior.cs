@@ -15,10 +15,12 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            float wanderYaw = (Mathf.PerlinNoise((Time.time * wanderIntensity), mine.gameObject.GetInstanceID()) - .5f);
-            float wanderPitch = (Mathf.PerlinNoise((Time.time * wanderIntensity) + 99f, mine.gameObject.GetInstanceID()) - .5f);
-            steer =
-                Quaternion.Euler(wanderYaw * wanderScope, wanderYaw * wanderScope, 0) * mine.Forward * mine.activeSettings.maxForce;
+            steer = Quaternion.Euler(
+                        (Mathf.PerlinNoise((Time.time * wanderIntensity), mine.gameObject.GetInstanceID()) - .5f) * wanderScope,
+                        (Mathf.PerlinNoise((Time.time * wanderIntensity) + 99f, mine.gameObject.GetInstanceID()) - .5f) * wanderScope,
+                        (Mathf.PerlinNoise((Time.time * wanderIntensity) + 199f, mine.gameObject.GetInstanceID()) - .5f) * wanderScope
+                        )
+                    * mine.Forward * mine.activeSettings.maxForce;
         }
 
     }

@@ -61,13 +61,13 @@ namespace CloudFine
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
                 steerCached *= behavior.weight;
-                if (behavior.drawDebug) Debug.DrawRay(Position, steerCached, behavior.debugColor);
+                if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
             if (!myNeighborhood.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steerCached, activeSettings.Containment.debugColor);
+                if (activeSettings.Containment.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
                 ApplyForce(steerCached);
             }
         }
