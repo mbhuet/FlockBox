@@ -233,7 +233,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  dimensions: {x: 10, y: 10, z: 0}
+  dimensions_x: 10
+  dimensions_y: 10
+  dimensions_z: 0
   cellSize: 10
   wrapEdges: 0
   boundaryBuffer: 10

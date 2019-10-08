@@ -14,22 +14,22 @@ namespace CloudFine
         public BehaviorSettings activeSettings;
         private bool freezePosition = false;
 
-        private SurroundingsInfo mySurroundings = new SurroundingsInfo();
+        private SurroundingsContainer mySurroundings = new SurroundingsContainer();
         protected virtual void Update()
         {
             if (!isAlive) return;
             if (activeSettings == null) return;
             if (freezePosition) return;
+            if (UnityEngine.Random.value > activeSettings.sleepChance)
+            {
+                activeSettings.AddPerceptions(mySurroundings);
+                myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, mySurroundings);
+                Flock(mySurroundings);
 
-            activeSettings.AddPerceptions(ref mySurroundings);
-            myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, ref mySurroundings);
-            Flock(mySurroundings);
-
-            Velocity += (Acceleration) * Time.deltaTime;
-            Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
-            Velocity = new Vector3(mySurroundings.worldDimensions.x > 0 ? Velocity.x : 0,
-                mySurroundings.worldDimensions.y > 0 ? Velocity.y : 0,
-                mySurroundings.worldDimensions.z > 0 ? Velocity.z : 0);
+                Velocity += (Acceleration) * Time.deltaTime;
+                Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
+                ValidateVelocity();
+            }
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
             Acceleration *= 0;
@@ -54,20 +54,20 @@ namespace CloudFine
 
         private Vector3 steerCached = Vector3.zero;
 
-        void Flock(SurroundingsInfo surroundings)
+        void Flock(SurroundingsContainer surroundings)
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
                 steerCached *= behavior.weight;
-                if (behavior.drawDebug) Debug.DrawRay(Position, steerCached, behavior.debugColor);
+                if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
             if (!myNeighborhood.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, surroundings);
-                if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steerCached, activeSettings.Containment.debugColor);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
+                if (activeSettings.Containment.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
                 ApplyForce(steerCached);
             }
         }
@@ -85,7 +85,7 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 Forward = Velocity.normalized;
-                transform.localRotation = Quaternion.LookRotation(Forward, myNeighborhood.Up);
+                transform.localRotation = Quaternion.LookRotation(Forward, Vector3.up);
             }
         }
 

@@ -9,16 +9,16 @@ namespace CloudFine
     {
         public const string fleeAttributeName = "fleeing";
 
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             Vector3 fleeMidpoint = Vector3.zero;
             float count = 0;
 
-            foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
+            foreach (Agent other in GetFilteredAgents(surroundings, this))
             {
                 if (WithinEffectiveRadius(mine, other))
                 {
-                    fleeMidpoint += (other.wrappedPosition);
+                    fleeMidpoint += (other.Position);
                     count++;
                 }
             }

@@ -18,6 +18,7 @@ namespace CloudFine
         private SerializedProperty _behaviors;
         private SerializedProperty _maxForce;
         private SerializedProperty _maxSpeed;
+        private SerializedProperty _sleep;
         private SerializedProperty _containment;
 
         private int toRemove = -1;
@@ -28,6 +29,8 @@ namespace CloudFine
             _behaviors = serializedObject.FindProperty("behaviors");
             _maxForce = serializedObject.FindProperty("maxForce");
             _maxSpeed = serializedObject.FindProperty("maxSpeed");
+            _sleep = serializedObject.FindProperty("sleepChance");
+
             _containment = serializedObject.FindProperty("containmentBehavior");
         }
 
@@ -43,7 +46,7 @@ namespace CloudFine
 
             EditorGUILayout.PropertyField(_maxSpeed);
             EditorGUILayout.PropertyField(_maxForce);
-
+            EditorGUILayout.Slider(_sleep, 0, 1);
 
             DrawBehaviorBox(targetSettings.Containment, _containment, -1, false);
 

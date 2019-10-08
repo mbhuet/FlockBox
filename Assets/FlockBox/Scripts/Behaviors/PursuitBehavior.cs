@@ -8,12 +8,12 @@ namespace CloudFine
     [System.Serializable]
     public class PursuitBehavior : SeekBehavior
     {
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count > 0)
             {
@@ -25,9 +25,9 @@ namespace CloudFine
                 return;
             }
 
-            AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
+            Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            if (!closestTarget.agent.CanBeCaughtBy(mine))
+            if (!closestTarget.CanBeCaughtBy(mine))
             {
                 if (HasPursuitTarget(mine))
                 {
@@ -37,15 +37,15 @@ namespace CloudFine
                 return;
             }
 
-            if (closestTarget.agent.agentID != chosenTargetID)
+            if (closestTarget.agentID != chosenTargetID)
             {
                 DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget.agent);
+                EngagePursuit(mine, closestTarget);
             }
 
-            Vector3 distance = closestTarget.wrappedPosition - mine.Position;
+            Vector3 distance = closestTarget.Position - mine.Position;
             float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
-            Vector3 predictedInterceptPosition = closestTarget.wrappedPosition + closestTarget.agent.Velocity * est_timeToIntercept;
+            Vector3 predictedInterceptPosition = closestTarget.Position + closestTarget.Velocity * est_timeToIntercept;
 
             AttemptCatch(mine, closestTarget);
 

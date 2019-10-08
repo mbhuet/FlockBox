@@ -24,22 +24,26 @@ namespace CloudFine
         [HideInInspector]
         public bool foldout = true;
 
-        public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings);
-        public virtual void AddPerception(ref SurroundingsInfo surroundings) { }
+        public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings);
+        public virtual void AddPerception(SurroundingsContainer surroundings) { }
         public virtual bool CanUseTagFilter => true;
         public virtual bool CanToggleActive => true;
 
        
-        public static List<AgentWrapped> GetFilteredAgents(SurroundingsInfo surroundings, SteeringBehavior behavior)
+        public static List<Agent> GetFilteredAgents(SurroundingsContainer surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
 
-            List<AgentWrapped> filtered = new List<AgentWrapped>();
-            foreach (AgentWrapped other in surroundings.allAgents)
+            List<Agent> filtered = new List<Agent>();
+            foreach (Agent other in surroundings.allAgents)
             {
-                if (Array.IndexOf(behavior.filterTags, other.agent.tag) >= 0)
+                for(int i =0; i<behavior.filterTags.Length; i++)
                 {
-                    filtered.Add(other);
+                    if (other.CompareTag(behavior.filterTags[i]))
+                    {
+                        filtered.Add(other);
+                        break;
+                    }
                 }
             }
             return filtered;

@@ -7,22 +7,23 @@ namespace CloudFine
     [System.Serializable]
     public class CohesionBehavior : RadialSteeringBehavior
     {
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            Vector3 sum = Vector3.zero;
+            //steer used as midpoint to prevent garbage
+            steer = Vector3.zero;
             float count = 0;
-            foreach (AgentWrapped other in GetFilteredAgents(surroundings, this))
+            foreach (Agent other in GetFilteredAgents(surroundings, this))
             {
                 if (WithinEffectiveRadius(mine, other))
                 {
-                    sum += (other.wrappedPosition);
+                    steer += (other.Position);
                     count ++;
                 }
             }
             if (count > 0)
             {
-                sum /= (count);
-                mine.GetSeekVector(out steer, sum);
+                steer /= (count);
+                mine.GetSeekVector(out steer, steer);
             }
             else
             {

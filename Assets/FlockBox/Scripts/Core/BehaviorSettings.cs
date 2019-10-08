@@ -16,6 +16,7 @@ namespace CloudFine
     {
         public float maxForce = 10;    // Maximum steering force
         public float maxSpeed = 15;    // Maximum speed 
+        public float sleepChance = 0f;
 
         [SerializeField]
         private ContainmentBehavior containmentBehavior;
@@ -36,13 +37,13 @@ namespace CloudFine
             return behaviors[index];
         }
 
-        public void AddPerceptions(ref SurroundingsInfo surroundings)
+        public void AddPerceptions(SurroundingsContainer surroundings)
         {
             surroundings.perceptionRadius = 0;
             surroundings.lookAheadSeconds = 0;
             for(int i=0; i<behaviors.Length; i++)
             {
-                behaviors[i].AddPerception(ref surroundings);
+                behaviors[i].AddPerception(surroundings);
             }
         }
 

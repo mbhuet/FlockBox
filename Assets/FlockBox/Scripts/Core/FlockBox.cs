@@ -15,19 +15,27 @@ namespace CloudFine
     {
         private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
+        private int defaultBucketCapacity = 10;
 
         public bool displayGizmos;
         [SerializeField]
-        private Vector3Int dimensions = Vector3Int.one * 10;
+        private int dimensions_x = 10;
+        [SerializeField]
+        private int dimensions_y = 10;
+        [SerializeField]
+        private int dimensions_z = 10;
+
+        private Vector3 _worldDimensions = Vector3.zero;
+        public Vector3 WorldDimensions
+        {
+            get { return _worldDimensions; } private set { _worldDimensions = value; }
+        }
         [SerializeField]
         private float cellSize = 10;
 
 
         public bool wrapEdges = true;
         public float boundaryBuffer = 10;
-
-        private Vector3 _up;
-        public Vector3 Up => _up;
 
 
         [Serializable]
@@ -54,12 +62,10 @@ namespace CloudFine
 
         private void Update()
         {
-            if (dimensions.x <= 0 && dimensions.y > 0 && dimensions.z > 0)
-                _up = Vector3.right;
-            else if (dimensions.x > 0 && dimensions.y > 0 && dimensions.z <= 0)
-                _up = Vector3.forward;
-            else
-                _up = Vector3.up;
+            _worldDimensions.x = dimensions_x * cellSize;
+            _worldDimensions.y = dimensions_y * cellSize;
+            _worldDimensions.z = dimensions_z * cellSize;
+
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
             bucketsToDraw.Clear();
@@ -67,11 +73,9 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, ref SurroundingsInfo surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, SurroundingsContainer surroundings)
         {
-            surroundings.worldDimensions = (Vector3)dimensions * cellSize;
-            surroundings.containmentBuffer = boundaryBuffer;
-            surroundings.allAgents = new List<AgentWrapped>();
+            
             if(buckets == null) buckets = new List<int>();
             else buckets.Clear();
 
@@ -84,20 +88,44 @@ namespace CloudFine
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, ref buckets);
             }
 
+            surroundings.allAgents = new List<Agent>(buckets.Count * defaultBucketCapacity);
+
             for (int i = 0; i < buckets.Count; i++)
             {
                 if (bucketToAgents.ContainsKey(buckets[i]))
                 {
-                    foreach (Agent agent in bucketToAgents[buckets[i]])
-                    {
-                        surroundings.allAgents.Add(new AgentWrapped(agent, wrapEdges ? WrapPositionRelative(agent.Position, position) : agent.Position));
-                    }
+                    surroundings.allAgents.AddRange(bucketToAgents[buckets[i]]);
                 }
             }
         }
 
         public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
         {
+            if(agent.neighborType == Agent.NeighborType.POINT)
+            {
+                if(agentToBuckets.TryGetValue(agent, out buckets))
+                {
+                    if (buckets.Count == 1)
+                    {
+                        int currentbucket = GetBucketOverlappingPoint(agent.Position);
+                        int lastBucket = agentToBuckets[agent][0];
+                        if (lastBucket != currentbucket)
+                        {
+                            bucketToAgents[lastBucket].Remove(agent);
+                            if (!bucketToAgents.ContainsKey(currentbucket))
+                            {
+                                bucketToAgents.Add(currentbucket, new List<Agent>(defaultBucketCapacity) { agent });
+                            }
+                            else
+                            {
+                                bucketToAgents[currentbucket].Add(agent);
+                            }
+                            agentToBuckets[agent][0] = currentbucket;
+                        }
+                        return;
+                    }
+                }
+            }
             RemoveAgentFromBuckets(agent, out buckets);
             AddAgentToBuckets(agent, out buckets);
         }
@@ -145,7 +173,7 @@ namespace CloudFine
             {
                 if (!bucketToAgents.ContainsKey(buckets[i]))
                 {
-                    bucketToAgents.Add(buckets[i], new List<Agent>());
+                    bucketToAgents.Add(buckets[i], new List<Agent>(defaultBucketCapacity));
                 }
                 bucketToAgents[buckets[i]].Add(agent);
                 agentToBuckets[agent].Add(buckets[i]);
@@ -156,7 +184,7 @@ namespace CloudFine
 
         public int GetBucketOverlappingPoint(Vector3 point)
         {
-            return WorldPositionToHash(wrapEdges ? WrapPosition(point) : point);
+            return WorldPositionToHash(point);
         }
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
@@ -171,7 +199,7 @@ namespace CloudFine
             int z1 = ToCellFloor(end.z);
 
             float wd = thickness;
-            buckets.Add(CellPositionToHash(x0, y0, z0));
+            
 
             if (buckets == null) buckets = new List<int>();
 
@@ -181,27 +209,17 @@ namespace CloudFine
             int dm = Mathf.Max(dx, dy, dz), i = dm; /* maximum difference */
             x1 = y1 = z1 = dm / 2; /* error offset */
 
+            buckets.Capacity = buckets.Count + dm;
+            buckets.Add(CellPositionToHash(x0, y0, z0));
+
+
             for (; ; )
             {  /* loop */
-                if (!wrapEdges)
-                {
-                    if (x0 < 0 || x0 >= dimensions.x) break;
-                    if (y0 < 0 || y0 >= dimensions.y) break;
-                    if (z0 < 0 || z0 >= dimensions.z) break;
-                    buckets.Add(CellPositionToHash(x0, y0, z0));
-                }
-
-                else
-                {
-                    
-                    buckets.Add(CellPositionToHash(
-                        (int)Mathf.Repeat(x0, dimensions.x),
-                        (int)Mathf.Repeat(y0, dimensions.y),
-                        (int)Mathf.Repeat(z0, dimensions.z)
-                        ));
-
-                }
-                //bucketsToDraw.Add(buckets[buckets.Count-1]);
+                
+                if (x0 < 0 || x0 >= dimensions_x) break;
+                if (y0 < 0 || y0 >= dimensions_y) break;
+                if (z0 < 0 || z0 >= dimensions_z) break;
+                buckets.Add(CellPositionToHash(x0, y0, z0));
 
                 if (i-- == 0) break;
 
@@ -215,39 +233,27 @@ namespace CloudFine
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, ref List<int> buckets)
         {
-            int neighborhoodRadius = 1 + Mathf.FloorToInt((radius - .01f) / cellSize);
+            int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
             if(buckets == null) buckets = new List<int>();
-            Vector3 positionContainer;
+            buckets.Capacity = buckets.Count + ((neighborhoodRadius*2+1) * (neighborhoodRadius*2+1) * (neighborhoodRadius*2+1));
+            int center_x = ToCellFloor(center.x);
+            int center_y = ToCellFloor(center.y);
+            int center_z = ToCellFloor(center.z);
 
-            for (int xOff = -neighborhoodRadius; xOff <= neighborhoodRadius; xOff++)
+            for (int xOff = center_x - neighborhoodRadius; xOff <= center_x + neighborhoodRadius; xOff++)
             {
-                for (int yOff = -neighborhoodRadius; yOff <= neighborhoodRadius; yOff++)
+                for (int yOff = center_y - neighborhoodRadius; yOff <= center_y + neighborhoodRadius; yOff++)
                 {
-                    for (int zOff = -neighborhoodRadius; zOff <= neighborhoodRadius; zOff++)
+                    for (int zOff = center_z - neighborhoodRadius; zOff <= center_z + neighborhoodRadius; zOff++)
                     {
-
-                        positionContainer.x = (center.x + xOff * cellSize);
-                        positionContainer.y = (center.y + yOff * cellSize);
-                        positionContainer.z = (center.z + zOff * cellSize);
-                        if (!wrapEdges)
+                        if (xOff < 0 || xOff > dimensions_x
+                                || yOff < 0 || yOff > dimensions_y
+                                || zOff < 0 || zOff > dimensions_z)
                         {
-                            if (positionContainer.x < 0 || positionContainer.x > dimensions.x * cellSize
-                                || positionContainer.y < 0 || positionContainer.y > dimensions.y * cellSize
-                                || positionContainer.z < 0 || positionContainer.z > dimensions.z * cellSize)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                buckets.Add(WorldPositionToHash(positionContainer));
-                            }
+                            continue;
                         }
-                        else
-                        {
-                            buckets.Add(WorldPositionToHash(WrapPosition(positionContainer)));
-                        }
-
-                        //bucketsToDraw.Add(buckets[buckets.Count - 1]);
+                        buckets.Add(CellPositionToHash(xOff, yOff, zOff));
+                        
                     }
                 }
             }
@@ -257,106 +263,105 @@ namespace CloudFine
         public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
         {
             // |-* |   |   |   | *-|
-            if (relativeTo.x > position.x && (relativeTo.x - position.x > (position.x + dimensions.x * cellSize) - relativeTo.x))
+            if (relativeTo.x > position.x && (relativeTo.x - position.x > (position.x + dimensions_x * cellSize) - relativeTo.x))
             {
-                position.x = position.x + dimensions.x * cellSize;
+                position.x = position.x + dimensions_x * cellSize;
             }
-            else if (relativeTo.x < position.x && (position.x - relativeTo.x > (relativeTo.x + dimensions.x * cellSize) - position.x))
+            else if (relativeTo.x < position.x && (position.x - relativeTo.x > (relativeTo.x + dimensions_x * cellSize) - position.x))
             {
-                position.x = position.x - dimensions.x * cellSize;
-            }
-
-            if (relativeTo.y > position.y && (relativeTo.y - position.y > (position.y + dimensions.y * cellSize) - relativeTo.y))
-            {
-                position.y = position.y + dimensions.y * cellSize;
-            }
-            else if (relativeTo.y < position.y && (position.y - relativeTo.y > (relativeTo.y + dimensions.y * cellSize) - position.y))
-            {
-                position.y = position.y - dimensions.y * cellSize;
+                position.x = position.x - dimensions_x * cellSize;
             }
 
-            if (relativeTo.z > position.z && (relativeTo.z - position.z > (position.z + dimensions.z * cellSize) - relativeTo.z))
+            if (relativeTo.y > position.y && (relativeTo.y - position.y > (position.y + dimensions_y * cellSize) - relativeTo.y))
             {
-                position.z = position.z + dimensions.z * cellSize;
+                position.y = position.y + dimensions_y * cellSize;
             }
-            else if (relativeTo.z < position.z && (position.z - relativeTo.z > (relativeTo.z + dimensions.z * cellSize) - position.z))
+            else if (relativeTo.y < position.y && (position.y - relativeTo.y > (relativeTo.y + dimensions_y * cellSize) - position.y))
             {
-                position.z = position.z - dimensions.z * cellSize;
+                position.y = position.y - dimensions_y * cellSize;
+            }
+
+            if (relativeTo.z > position.z && (relativeTo.z - position.z > (position.z + dimensions_z * cellSize) - relativeTo.z))
+            {
+                position.z = position.z + dimensions_z * cellSize;
+            }
+            else if (relativeTo.z < position.z && (position.z - relativeTo.z > (relativeTo.z + dimensions_z * cellSize) - position.z))
+            {
+                position.z = position.z - dimensions_z * cellSize;
             }
             return position;
         }
 
         public void ValidatePosition(ref Vector3 position)
         {
-            if (wrapEdges) position = WrapPosition(position);
-            else
-            {
-                if (position.x < 0) position.x = 0;
-                else if (position.x > dimensions.x * cellSize) position.x = dimensions.x * cellSize;
-                if (position.y < 0) position.y = 0;
-                else if (position.y > dimensions.y * cellSize) position.y = dimensions.y * cellSize;
-                if (position.z < 0) position.z = 0;
-                else if (position.z > dimensions.z * cellSize) position.z = dimensions.z * cellSize;
-            }
-        }
-
-        private Vector3 WrapPosition(Vector3 position)
-        {
-            if (dimensions.x == 0)
+            if (dimensions_x <= 0)
             {
                 position.x = 0;
             }
-            else if (position.x < 0)
+            else
             {
-                position.x = dimensions.x * cellSize + position.x;
+                if (position.x < 0)
+                {
+                    position.x = wrapEdges ? dimensions_x * cellSize + position.x : 0;
+                }
+                else if (position.x > dimensions_x * cellSize)
+                {
+                    position.x = wrapEdges ? position.x % (dimensions_x * cellSize) : dimensions_x * cellSize;
+                }
             }
-            else if (position.x > dimensions.x * cellSize)
-            {
-                position.x = position.x % (dimensions.x * cellSize);
-            }
-
-            if (dimensions.y == 0)
+            if (dimensions_y <= 0)
             {
                 position.y = 0;
             }
-            else if (position.y < 0)
+            else
             {
-                position.y = dimensions.y * cellSize + position.y;
-            }
-            else if (position.y > dimensions.y * cellSize)
-            {
-                position.y = position.y % (dimensions.y * cellSize);
+                if (position.y < 0)
+                {
+                    position.y = wrapEdges ? dimensions_y * cellSize + position.y : 0;
+                }
+                else if (position.y > dimensions_y * cellSize)
+                {
+                    position.y = wrapEdges ? position.y % (dimensions_y * cellSize) : dimensions_y * cellSize;
+                }
             }
 
-            if (dimensions.z == 0)
+            if (dimensions_z <= 0)
             {
                 position.z = 0;
             }
-            else if (position.z < 0)
-            {
-                position.z = dimensions.z * cellSize + position.z;
+            else { 
+                if (position.z < 0)
+                {
+                    position.z = wrapEdges ? dimensions_z * cellSize + position.z : 0;
+                }
+                else if (position.z > dimensions_z * cellSize)
+                {
+                    position.z = wrapEdges ? position.z % (dimensions_z * cellSize) : dimensions_z * cellSize;
+                }
             }
-            else if (position.z > dimensions.z * cellSize)
-            {
-                position.z = position.z % (dimensions.z * cellSize);
-            }
-
-
-            return position;
         }
+
+        public void ValidateVelocity(ref Vector3 velocity)
+        {
+            if (dimensions_x <= 0) velocity.x = 0;
+            if (dimensions_y <= 0) velocity.y = 0;
+            if (dimensions_z <= 0) velocity.z = 0;
+        }
+
 
         public Vector3 RandomPosition()
         {
+            float buffer = wrapEdges ? 0 : boundaryBuffer;
             return new Vector3(
-               UnityEngine.Random.Range(0, dimensions.x * cellSize),
-               UnityEngine.Random.Range(0, dimensions.y * cellSize),
-               UnityEngine.Random.Range(0, dimensions.z * cellSize)
+               UnityEngine.Random.Range(buffer, dimensions_x * cellSize - buffer),
+               UnityEngine.Random.Range(buffer, dimensions_y * cellSize - buffer),
+               UnityEngine.Random.Range(buffer, dimensions_z * cellSize - buffer)
              );
         }
 
         private int ToCellFloor(float p)
         {
-            return Mathf.FloorToInt(p / cellSize);
+            return (int)(p / cellSize);
         }
 
         private int CellPositionToHash(int x, int y, int z)
@@ -365,17 +370,13 @@ namespace CloudFine
 
             return (
                  x
-               + y * (dimensions.x + 1) // +1 in case dimension is 0, will still produce unique hash
-               + z * (dimensions.x + 1) * (dimensions.y + 1));
+               + y * (dimensions_x + 1) // +1 in case dimension is 0, will still produce unique hash
+               + z * (dimensions_x + 1) * (dimensions_y + 1));
         }
 
         private int WorldPositionToHash(float x, float y, float z)
         {
-            if (x < 0 || y < 0 || z < 0) return -1;
-            return (int)(
-                 Mathf.Floor(x / cellSize)
-               + Mathf.Floor(y / cellSize) * (dimensions.x + 1) // +1 in case dimension is 0, will still produce unique hash
-               + Mathf.Floor(z / cellSize) * (dimensions.x + 1) * (dimensions.y + 1));
+            return CellPositionToHash((int)(x / cellSize), (int)(y / cellSize), (int)(z / cellSize));
         }
 
         private int WorldPositionToHash(Vector3 position)
@@ -393,15 +394,16 @@ namespace CloudFine
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
+                Vector3 dimensions = new Vector3(dimensions_x, dimensions_y, dimensions_z);
                 Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
                 if (!wrapEdges)
                 {
                     Gizmos.color = Color.yellow * .75f;
                     Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f),
                         new Vector3(
-                            Mathf.Max(0, dimensions.x * cellSize - boundaryBuffer * 2f),
-                            Mathf.Max(0, dimensions.y * cellSize - boundaryBuffer * 2f),
-                            Mathf.Max(0, dimensions.z * cellSize - boundaryBuffer * 2f)));
+                            Mathf.Max(0, dimensions_x * cellSize - boundaryBuffer * 2f),
+                            Mathf.Max(0, dimensions_y * cellSize - boundaryBuffer * 2f),
+                            Mathf.Max(0, dimensions_z * cellSize - boundaryBuffer * 2f)));
                 }
                 DrawNeighborHoods();
             }
@@ -414,11 +416,11 @@ namespace CloudFine
             Gizmos.color = Color.grey * .1f;
 
 
-            for (int x = 0; x < (dimensions.x > 0 ? dimensions.x : 1); x++)
+            for (int x = 0; x < (dimensions_x > 0 ? dimensions_x : 1); x++)
             {
-                for (int y = 0; y < (dimensions.y > 0 ? dimensions.y : 1); y++)
+                for (int y = 0; y < (dimensions_y > 0 ? dimensions_y : 1); y++)
                 {
-                    for (int z = 0; z < (dimensions.z > 0 ? dimensions.z : 1); z++)
+                    for (int z = 0; z < (dimensions_z > 0 ? dimensions_z : 1); z++)
                     {
 
                         Vector3 corner = new Vector3(x, y, z) * cellSize;

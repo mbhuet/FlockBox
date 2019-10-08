@@ -233,9 +233,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayGizmos: 1
-  dimensions: {x: 10, y: 0, z: 10}
+  dimensions_x: 10
+  dimensions_y: 0
+  dimensions_z: 10
   cellSize: 10
-  wrapEdges: 1
+  wrapEdges: 0
   boundaryBuffer: 10
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: c7bdc11281db92b46a3dd0c55b00408d,

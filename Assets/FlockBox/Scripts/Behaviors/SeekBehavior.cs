@@ -10,12 +10,12 @@ namespace CloudFine
     {
         public const string targetIDAttributeName = "seekTargetID";
 
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            List<AgentWrapped> allTargets = GetFilteredAgents(surroundings, this);
+            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {
@@ -27,9 +27,9 @@ namespace CloudFine
                 return;
             }
 
-            AgentWrapped closestTarget = ClosestPursuableTarget(allTargets, mine);
+            Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            if (!closestTarget.agent.CanBeCaughtBy(mine))
+            if (!closestTarget.CanBeCaughtBy(mine))
             {
                 if (chosenTargetID != -1)
                 {
@@ -40,14 +40,14 @@ namespace CloudFine
             }
 
 
-            if (closestTarget.agent.agentID != chosenTargetID)
+            if (closestTarget.agentID != chosenTargetID)
             {
                 DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget.agent);
+                EngagePursuit(mine, closestTarget);
             }
 
             AttemptCatch(mine, closestTarget);
-            Vector3 desired_velocity = (closestTarget.wrappedPosition - mine.Position).normalized * mine.activeSettings.maxSpeed;
+            Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
@@ -68,23 +68,23 @@ namespace CloudFine
             mine.SetAttribute(targetIDAttributeName, -1);
         }
 
-        protected static void AttemptCatch(SteeringAgent mine, AgentWrapped chosenTargetWrapped)
+        protected static void AttemptCatch(SteeringAgent mine, Agent chosenTargetWrapped)
         {
-            float distAway = Vector3.Distance(chosenTargetWrapped.wrappedPosition, mine.Position);
-            if (distAway <= (chosenTargetWrapped.agent.Radius + mine.Radius) && chosenTargetWrapped.agent.CanBeCaughtBy(mine))
+            float distAway = Vector3.Distance(chosenTargetWrapped.Position, mine.Position);
+            if (distAway <= (chosenTargetWrapped.Radius + mine.Radius) && chosenTargetWrapped.CanBeCaughtBy(mine))
             {
-                mine.CatchAgent(chosenTargetWrapped.agent);
+                mine.CatchAgent(chosenTargetWrapped);
             }
         }
 
-        protected static AgentWrapped ClosestPursuableTarget(List<AgentWrapped> nearbyTargets, Agent agent)
+        protected static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
         {
             float closeDist = float.MaxValue;
-            AgentWrapped closeTarget = nearbyTargets[0];
-            foreach (AgentWrapped target in nearbyTargets)
+            Agent closeTarget = nearbyTargets[0];
+            foreach (Agent target in nearbyTargets)
             {
-                float sqrDist = Vector3.SqrMagnitude(target.wrappedPosition - agent.Position);
-                if (sqrDist < closeDist && (target.agent.CanBeCaughtBy(agent)))
+                float sqrDist = Vector3.SqrMagnitude(target.Position - agent.Position);
+                if (sqrDist < closeDist && (target.CanBeCaughtBy(agent)))
                 {
                     closeDist = sqrDist;
                     closeTarget = target;
