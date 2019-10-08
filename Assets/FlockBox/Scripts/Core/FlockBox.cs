@@ -328,10 +328,11 @@ namespace CloudFine
 
         public Vector3 RandomPosition()
         {
+            float buffer = wrapEdges ? 0 : boundaryBuffer;
             return new Vector3(
-               UnityEngine.Random.Range(boundaryBuffer, dimensions_x * cellSize - boundaryBuffer),
-               UnityEngine.Random.Range(boundaryBuffer, dimensions_y * cellSize - boundaryBuffer),
-               UnityEngine.Random.Range(boundaryBuffer, dimensions_z * cellSize - boundaryBuffer)
+               UnityEngine.Random.Range(buffer, dimensions_x * cellSize - buffer),
+               UnityEngine.Random.Range(buffer, dimensions_y * cellSize - buffer),
+               UnityEngine.Random.Range(buffer, dimensions_z * cellSize - buffer)
              );
         }
 
