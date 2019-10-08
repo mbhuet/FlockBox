@@ -37,13 +37,13 @@ namespace CloudFine
             return behaviors[index];
         }
 
-        public void AddPerceptions(ref SurroundingsInfo surroundings)
+        public void AddPerceptions(SurroundingsContainer surroundings)
         {
             surroundings.perceptionRadius = 0;
             surroundings.lookAheadSeconds = 0;
             for(int i=0; i<behaviors.Length; i++)
             {
-                behaviors[i].AddPerception(ref surroundings);
+                behaviors[i].AddPerception(surroundings);
             }
         }
 

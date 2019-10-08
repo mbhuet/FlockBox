@@ -9,7 +9,7 @@ namespace CloudFine
     {
         public const string fleeAttributeName = "fleeing";
 
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             Vector3 fleeMidpoint = Vector3.zero;
             float count = 0;

@@ -7,7 +7,7 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             List<Agent> obstacles = GetFilteredAgents(surroundings, this);
             if (obstacles.Count == 0)

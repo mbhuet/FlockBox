@@ -9,39 +9,39 @@ namespace CloudFine
         public override bool CanUseTagFilter => false;
         public override bool CanToggleActive => false;
 
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentBuffer)
         {
             Vector3 bufferedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
             float distanceToBorder = float.MaxValue;
 
-            if (surroundings.worldDimensions.x > 0)
+            if (worldDimensions.x > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.x, surroundings.worldDimensions.x - mine.Position.x);
-                bufferedPosition.x = Mathf.Clamp(bufferedPosition.x, surroundings.containmentBuffer, surroundings.worldDimensions.x - surroundings.containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.x, worldDimensions.x - mine.Position.x);
+                bufferedPosition.x = Mathf.Clamp(bufferedPosition.x, containmentBuffer, worldDimensions.x - containmentBuffer);
             }
             else
             {
                 bufferedPosition.x = 0;
             }
-            if(surroundings.worldDimensions.y > 0)
+            if (worldDimensions.y > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.y, surroundings.worldDimensions.y - mine.Position.y);
-                bufferedPosition.y = Mathf.Clamp(bufferedPosition.y, surroundings.containmentBuffer, surroundings.worldDimensions.y- surroundings.containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.y, worldDimensions.y - mine.Position.y);
+                bufferedPosition.y = Mathf.Clamp(bufferedPosition.y, containmentBuffer, worldDimensions.y - containmentBuffer);
             }
             else
             {
                 bufferedPosition.y = 0;
             }
-            if (surroundings.worldDimensions.z > 0)
+            if (worldDimensions.z > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.z, surroundings.worldDimensions.z - mine.Position.z);
-                bufferedPosition.z = Mathf.Clamp(bufferedPosition.z, surroundings.containmentBuffer, surroundings.worldDimensions.z - surroundings.containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.z, worldDimensions.z - mine.Position.z);
+                bufferedPosition.z = Mathf.Clamp(bufferedPosition.z, containmentBuffer, worldDimensions.z - containmentBuffer);
             }
             else
             {
                 bufferedPosition.z = 0;
             }
-            if(bufferedPosition == mine.Position + mine.Velocity)
+            if (bufferedPosition == mine.Position + mine.Velocity)
             {
                 steer = Vector3.zero;
                 return;
@@ -49,7 +49,12 @@ namespace CloudFine
             if (distanceToBorder <= 0) distanceToBorder = .001f;
 
             mine.GetSeekVector(out steer, bufferedPosition);
-            steer *= surroundings.containmentBuffer / distanceToBorder;
+            steer *= containmentBuffer / distanceToBorder;
+        }
+
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
+        {
+            steer = Vector3.zero;
         }
     }
 }

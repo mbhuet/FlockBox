@@ -6,28 +6,14 @@ using UnityEngine.SceneManagement;
 namespace CloudFine
 {
     [System.Serializable]
-    public struct SurroundingsInfo
+    public class SurroundingsContainer
     {
-        public float containmentBuffer;
-        public Vector3 worldDimensions;
-        //public float wrap;
-        public float perceptionRadius;
-        public float lookAheadSeconds;
-        public SurroundingsInfo(
-            List<Agent> allAgents)
-        { this.allAgents = allAgents; perceptionRadius = 0; lookAheadSeconds = 0; worldDimensions = Vector3.zero; containmentBuffer = 0; }
-        public List<Agent> allAgents;
-    }
+        public float perceptionRadius = 0;
+        public float lookAheadSeconds = 0;
+        public List<Agent> allAgents = new List<Agent>();
 
-    /*
-    [System.Serializable]
-    public struct AgentWrapped
-    {
-        public AgentWrapped(Agent agent, Vector3 wrappedPosition) { this.agent = agent; this.wrappedPosition = wrappedPosition; }
-        public Agent agent;
-        public Vector3 wrappedPosition;
+        public SurroundingsContainer() { }
     }
-    */
 
     [System.Serializable]
     public class Agent : MonoBehaviour
@@ -174,6 +160,12 @@ namespace CloudFine
         {
             if(myNeighborhood)
             myNeighborhood.ValidatePosition(ref m_position);
+        }
+
+        protected void ValidateVelocity()
+        {
+            if (myNeighborhood)
+                myNeighborhood.ValidateVelocity(ref m_velocity);
         }
 
         protected void FindNeighborhoodBuckets()

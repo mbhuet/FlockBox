@@ -8,9 +8,9 @@ namespace CloudFine
     {
         public float lookAheadSeconds = 1;
 
-        public override void AddPerception(ref SurroundingsInfo surroundings)
+        public override void AddPerception(SurroundingsContainer surroundings)
         {
-            base.AddPerception(ref surroundings);
+            base.AddPerception(surroundings);
             if(lookAheadSeconds > surroundings.lookAheadSeconds)
             {
                 surroundings.lookAheadSeconds = lookAheadSeconds;
