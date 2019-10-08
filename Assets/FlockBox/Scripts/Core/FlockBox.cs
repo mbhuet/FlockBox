@@ -105,6 +105,31 @@ namespace CloudFine
 
         public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
         {
+            if(agent.neighborType == Agent.NeighborType.POINT)
+            {
+                if(agentToBuckets.TryGetValue(agent, out buckets))
+                {
+                    if (buckets.Count == 1)
+                    {
+                        int currentbucket = GetBucketOverlappingPoint(agent.Position);
+                        int lastBucket = agentToBuckets[agent][0];
+                        if (lastBucket != currentbucket)
+                        {
+                            bucketToAgents[lastBucket].Remove(agent);
+                            if (!bucketToAgents.ContainsKey(currentbucket))
+                            {
+                                bucketToAgents.Add(currentbucket, new List<Agent>(defaultBucketCapacity) { agent });
+                            }
+                            else
+                            {
+                                bucketToAgents[currentbucket].Add(agent);
+                            }
+                            agentToBuckets[agent][0] = currentbucket;
+                        }
+                        return;
+                    }
+                }
+            }
             RemoveAgentFromBuckets(agent, out buckets);
             AddAgentToBuckets(agent, out buckets);
         }
@@ -163,7 +188,7 @@ namespace CloudFine
 
         public int GetBucketOverlappingPoint(Vector3 point)
         {
-            return WorldPositionToHash(wrapEdges ? WrapPosition(point) : point);
+            return WorldPositionToHash(point);
         }
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
@@ -178,7 +203,7 @@ namespace CloudFine
             int z1 = ToCellFloor(end.z);
 
             float wd = thickness;
-            buckets.Add(CellPositionToHash(x0, y0, z0));
+            
 
             if (buckets == null) buckets = new List<int>();
 
@@ -188,27 +213,17 @@ namespace CloudFine
             int dm = Mathf.Max(dx, dy, dz), i = dm; /* maximum difference */
             x1 = y1 = z1 = dm / 2; /* error offset */
 
+            buckets.Capacity = buckets.Count + dm;
+            buckets.Add(CellPositionToHash(x0, y0, z0));
+
+
             for (; ; )
             {  /* loop */
-                if (!wrapEdges)
-                {
-                    if (x0 < 0 || x0 >= dimensions_x) break;
-                    if (y0 < 0 || y0 >= dimensions_y) break;
-                    if (z0 < 0 || z0 >= dimensions_z) break;
-                    buckets.Add(CellPositionToHash(x0, y0, z0));
-                }
-
-                else
-                {
-                    
-                    buckets.Add(CellPositionToHash(
-                        (int)Mathf.Repeat(x0, dimensions_x),
-                        (int)Mathf.Repeat(y0, dimensions_y),
-                        (int)Mathf.Repeat(z0, dimensions_z)
-                        ));
-
-                }
-                //bucketsToDraw.Add(buckets[buckets.Count-1]);
+                
+                if (x0 < 0 || x0 >= dimensions_x) break;
+                if (y0 < 0 || y0 >= dimensions_y) break;
+                if (z0 < 0 || z0 >= dimensions_z) break;
+                buckets.Add(CellPositionToHash(x0, y0, z0));
 
                 if (i-- == 0) break;
 
@@ -235,31 +250,14 @@ namespace CloudFine
                 {
                     for (int zOff = center_z - neighborhoodRadius; zOff <= center_z + neighborhoodRadius; zOff++)
                     {
+                        if (xOff < 0 || xOff > dimensions_x
+                                || yOff < 0 || yOff > dimensions_y
+                                || zOff < 0 || zOff > dimensions_z)
+                        {
+                            continue;
+                        }
                         buckets.Add(CellPositionToHash(xOff, yOff, zOff));
-                        /*
-                        positionContainer.x = (center.x + xOff * cellSize);
-                        positionContainer.y = (center.y + yOff * cellSize);
-                        positionContainer.z = (center.z + zOff * cellSize);
-                        if (!wrapEdges)
-                        {
-                            if (positionContainer.x < 0 || positionContainer.x > dimensions.x * cellSize
-                                || positionContainer.y < 0 || positionContainer.y > dimensions.y * cellSize
-                                || positionContainer.z < 0 || positionContainer.z > dimensions.z * cellSize)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                buckets.Add(WorldPositionToHash(positionContainer));
-                            }
-                        }
-                        else
-                        {
-                            buckets.Add(WorldPositionToHash(WrapPosition(positionContainer)));
-                        }
-
-                        //bucketsToDraw.Add(buckets[buckets.Count - 1]);
-                        */
+                        
                     }
                 }
             }
@@ -300,69 +298,40 @@ namespace CloudFine
 
         public void ValidatePosition(ref Vector3 position)
         {
-            if (wrapEdges) position = WrapPosition(position);
-            else
+            if (position.x < 0)
             {
-                if (position.x < 0) position.x = 0;
-                else if (position.x > dimensions_x * cellSize) position.x = dimensions_x * cellSize;
-                if (position.y < 0) position.y = 0;
-                else if (position.y > dimensions_y * cellSize) position.y = dimensions_y * cellSize;
-                if (position.z < 0) position.z = 0;
-                else if (position.z > dimensions_z * cellSize) position.z = dimensions_z * cellSize;
-            }
-        }
-
-        private Vector3 WrapPosition(Vector3 position)
-        {
-            if (dimensions_x == 0)
-            {
-                position.x = 0;
-            }
-            else if (position.x < 0)
-            {
-                position.x = dimensions_x * cellSize + position.x;
+                position.x = wrapEdges? dimensions_x * cellSize + position.x : 0;
             }
             else if (position.x > dimensions_x * cellSize)
             {
-                position.x = position.x % (dimensions_x * cellSize);
+                position.x = wrapEdges ? position.x % (dimensions_x * cellSize) : dimensions_x * cellSize;
             }
-
-            if (dimensions_y == 0)
+            if (position.y < 0)
             {
-                position.y = 0;
-            }
-            else if (position.y < 0)
-            {
-                position.y = dimensions_y * cellSize + position.y;
+                position.y = wrapEdges? dimensions_y * cellSize + position.y : 0;
             }
             else if (position.y > dimensions_y * cellSize)
             {
-                position.y = position.y % (dimensions_y * cellSize);
+                position.y = wrapEdges? position.y % (dimensions_y * cellSize) : dimensions_y * cellSize;
             }
-
-            if (dimensions_z == 0)
+            if (position.z < 0)
             {
-                position.z = 0;
-            }
-            else if (position.z < 0)
-            {
-                position.z = dimensions_z * cellSize + position.z;
+                position.z = wrapEdges? dimensions_z * cellSize + position.z : 0;
             }
             else if (position.z > dimensions_z * cellSize)
             {
-                position.z = position.z % (dimensions_z * cellSize);
+                position.z = wrapEdges? position.z % (dimensions_z * cellSize) : dimensions_z * cellSize;
             }
-
-
-            return position;
         }
+
+        
 
         public Vector3 RandomPosition()
         {
             return new Vector3(
-               UnityEngine.Random.Range(0, dimensions_x * cellSize),
-               UnityEngine.Random.Range(0, dimensions_y * cellSize),
-               UnityEngine.Random.Range(0, dimensions_z * cellSize)
+               UnityEngine.Random.Range(boundaryBuffer, dimensions_x * cellSize - boundaryBuffer),
+               UnityEngine.Random.Range(boundaryBuffer, dimensions_y * cellSize - boundaryBuffer),
+               UnityEngine.Random.Range(boundaryBuffer, dimensions_z * cellSize - boundaryBuffer)
              );
         }
 
