@@ -17,12 +17,8 @@ namespace CloudFine
         {
             float wanderYaw = (Mathf.PerlinNoise((Time.time * wanderIntensity), mine.gameObject.GetInstanceID()) - .5f);
             float wanderPitch = (Mathf.PerlinNoise((Time.time * wanderIntensity) + 99f, mine.gameObject.GetInstanceID()) - .5f);
-
-            steer = 
-                Quaternion.AngleAxis(wanderYaw * wanderScope, mine.transform.InverseTransformDirection(mine.transform.up)) 
-                * Quaternion.AngleAxis(wanderPitch * wanderScope, mine.transform.InverseTransformDirection(mine.transform.right)) 
-                * mine.Forward
-                * mine.activeSettings.maxForce;
+            steer =
+                Quaternion.Euler(wanderYaw * wanderScope, wanderYaw * wanderScope, 0) * mine.Forward * mine.activeSettings.maxForce;
         }
 
     }
