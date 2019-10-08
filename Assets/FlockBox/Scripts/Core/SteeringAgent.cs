@@ -14,7 +14,7 @@ namespace CloudFine
         public BehaviorSettings activeSettings;
         private bool freezePosition = false;
 
-        private SurroundingsInfo mySurroundings = new SurroundingsInfo();
+        private SurroundingsContainer mySurroundings = new SurroundingsContainer();
         protected virtual void Update()
         {
             if (!isAlive) return;
@@ -22,17 +22,13 @@ namespace CloudFine
             if (freezePosition) return;
             if (UnityEngine.Random.value > activeSettings.sleepChance)
             {
-
-                activeSettings.AddPerceptions(ref mySurroundings);
-                myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, ref mySurroundings);
+                activeSettings.AddPerceptions(mySurroundings);
+                myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, mySurroundings);
                 Flock(mySurroundings);
 
                 Velocity += (Acceleration) * Time.deltaTime;
                 Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
-                Velocity = new Vector3(mySurroundings.worldDimensions.x > 0 ? Velocity.x : 0,
-                    mySurroundings.worldDimensions.y > 0 ? Velocity.y : 0,
-                    mySurroundings.worldDimensions.z > 0 ? Velocity.z : 0);
-
+                ValidateVelocity();
             }
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
@@ -58,7 +54,7 @@ namespace CloudFine
 
         private Vector3 steerCached = Vector3.zero;
 
-        void Flock(SurroundingsInfo surroundings)
+        void Flock(SurroundingsContainer surroundings)
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
@@ -70,7 +66,7 @@ namespace CloudFine
             }
             if (!myNeighborhood.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, surroundings);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
                 if (activeSettings.Containment.drawDebug) Debug.DrawRay(Position, steerCached, activeSettings.Containment.debugColor);
                 ApplyForce(steerCached);
             }

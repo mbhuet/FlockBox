@@ -7,7 +7,7 @@ namespace CloudFine
     [System.Serializable]
     public class AlignmentBehavior : RadialSteeringBehavior
     {
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             Vector3 sum = Vector3.zero;
             int count = 0;

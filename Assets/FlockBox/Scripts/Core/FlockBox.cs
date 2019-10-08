@@ -25,7 +25,11 @@ namespace CloudFine
         [SerializeField]
         private int dimensions_z = 10;
 
-        private Vector3 worldDimensions;
+        private Vector3 _worldDimensions = Vector3.zero;
+        public Vector3 WorldDimensions
+        {
+            get { return _worldDimensions; } private set { _worldDimensions = value; }
+        }
         [SerializeField]
         private float cellSize = 10;
 
@@ -58,9 +62,9 @@ namespace CloudFine
 
         private void Update()
         {
-            worldDimensions.x = dimensions_x * cellSize;
-            worldDimensions.y = dimensions_y * cellSize;
-            worldDimensions.z = dimensions_z * cellSize;
+            _worldDimensions.x = dimensions_x * cellSize;
+            _worldDimensions.y = dimensions_y * cellSize;
+            _worldDimensions.z = dimensions_z * cellSize;
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
@@ -69,11 +73,8 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, ref SurroundingsInfo surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, SurroundingsContainer surroundings)
         {
-            surroundings.worldDimensions =worldDimensions;
-            surroundings.containmentBuffer = boundaryBuffer;
-            surroundings.allAgents = new List<Agent>();
             
             if(buckets == null) buckets = new List<int>();
             else buckets.Clear();
@@ -87,18 +88,13 @@ namespace CloudFine
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, ref buckets);
             }
 
+            surroundings.allAgents = new List<Agent>(buckets.Count * defaultBucketCapacity);
+
             for (int i = 0; i < buckets.Count; i++)
             {
                 if (bucketToAgents.ContainsKey(buckets[i]))
                 {
                     surroundings.allAgents.AddRange(bucketToAgents[buckets[i]]);
-
-                    /*
-                    foreach (Agent agent in bucketToAgents[buckets[i]])
-                    {
-                        surroundings.allAgents.Add(new AgentWrapped(agent, wrapEdges ? WrapPositionRelative(agent.Position, position) : agent.Position));
-                    }
-                    */
                 }
             }
         }
@@ -298,33 +294,60 @@ namespace CloudFine
 
         public void ValidatePosition(ref Vector3 position)
         {
-            if (position.x < 0)
+            if (dimensions_x <= 0)
             {
-                position.x = wrapEdges? dimensions_x * cellSize + position.x : 0;
+                position.x = 0;
             }
-            else if (position.x > dimensions_x * cellSize)
+            else
             {
-                position.x = wrapEdges ? position.x % (dimensions_x * cellSize) : dimensions_x * cellSize;
+                if (position.x < 0)
+                {
+                    position.x = wrapEdges ? dimensions_x * cellSize + position.x : 0;
+                }
+                else if (position.x > dimensions_x * cellSize)
+                {
+                    position.x = wrapEdges ? position.x % (dimensions_x * cellSize) : dimensions_x * cellSize;
+                }
             }
-            if (position.y < 0)
+            if (dimensions_y <= 0)
             {
-                position.y = wrapEdges? dimensions_y * cellSize + position.y : 0;
+                position.y = 0;
             }
-            else if (position.y > dimensions_y * cellSize)
+            else
             {
-                position.y = wrapEdges? position.y % (dimensions_y * cellSize) : dimensions_y * cellSize;
+                if (position.y < 0)
+                {
+                    position.y = wrapEdges ? dimensions_y * cellSize + position.y : 0;
+                }
+                else if (position.y > dimensions_y * cellSize)
+                {
+                    position.y = wrapEdges ? position.y % (dimensions_y * cellSize) : dimensions_y * cellSize;
+                }
             }
-            if (position.z < 0)
+
+            if (dimensions_z <= 0)
             {
-                position.z = wrapEdges? dimensions_z * cellSize + position.z : 0;
+                position.z = 0;
             }
-            else if (position.z > dimensions_z * cellSize)
-            {
-                position.z = wrapEdges? position.z % (dimensions_z * cellSize) : dimensions_z * cellSize;
+            else { 
+                if (position.z < 0)
+                {
+                    position.z = wrapEdges ? dimensions_z * cellSize + position.z : 0;
+                }
+                else if (position.z > dimensions_z * cellSize)
+                {
+                    position.z = wrapEdges ? position.z % (dimensions_z * cellSize) : dimensions_z * cellSize;
+                }
             }
         }
 
-        
+        public void ValidateVelocity(ref Vector3 velocity)
+        {
+            if (dimensions_x <= 0) velocity.x = 0;
+            if (dimensions_y <= 0) velocity.y = 0;
+            if (dimensions_z <= 0) velocity.z = 0;
+        }
+
 
         public Vector3 RandomPosition()
         {

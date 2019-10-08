@@ -7,7 +7,7 @@ namespace CloudFine
     [System.Serializable]
     public class SeparationBehavior : RadialSteeringBehavior
     {
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsInfo surroundings)
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             steer = Vector3.zero;
             int count = 0;

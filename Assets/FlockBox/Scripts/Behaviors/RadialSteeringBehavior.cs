@@ -18,9 +18,9 @@ namespace CloudFine
                 && Vector3.Angle(mine.Forward, other.Position - mine.Position) <= fov); // inside fov
         }
 
-        public override void AddPerception(ref SurroundingsInfo surroundings)
+        public override void AddPerception(SurroundingsContainer surroundings)
         {
-            base.AddPerception(ref surroundings);
+            base.AddPerception(surroundings);
             if(effectiveRadius > surroundings.perceptionRadius)
             {
                 surroundings.perceptionRadius = effectiveRadius;
