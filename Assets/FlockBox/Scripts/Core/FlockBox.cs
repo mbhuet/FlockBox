@@ -17,26 +17,26 @@ namespace CloudFine
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
         private int defaultBucketCapacity = 10;
 
-        public bool displayGizmos;
+
         [SerializeField]
         private int dimensions_x = 10;
         [SerializeField]
         private int dimensions_y = 10;
         [SerializeField]
         private int dimensions_z = 10;
+        [SerializeField]
+        private float cellSize = 10;
+
 
         private Vector3 _worldDimensions = Vector3.zero;
         public Vector3 WorldDimensions
         {
             get { return _worldDimensions; } private set { _worldDimensions = value; }
         }
-        [SerializeField]
-        private float cellSize = 10;
 
-
-        public bool wrapEdges = true;
+        public bool wrapEdges = false;
         public float boundaryBuffer = 10;
-
+        public float sleepChance;
 
         [Serializable]
         public struct AgentPopulation
@@ -45,6 +45,9 @@ namespace CloudFine
             public int population;
         }
         public List<AgentPopulation> startingPopulations;
+
+        [SerializeField]
+        private bool drawGizmos = true;
 
 
         void Start()
@@ -73,7 +76,7 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, SurroundingsContainer surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, List<int> buckets, SurroundingsContainer surroundings)
         {
             
             if(buckets == null) buckets = new List<int>();
@@ -81,14 +84,14 @@ namespace CloudFine
 
             if (surroundings.perceptionRadius > 0)
             {
-                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, ref buckets);
+                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, buckets);
             }
             if (surroundings.lookAheadSeconds > 0)
             {
-                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, ref buckets);
+                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, buckets);
             }
 
-            surroundings.allAgents = new List<Agent>(buckets.Count * defaultBucketCapacity);
+            surroundings.allAgents = new List<Agent>();
 
             for (int i = 0; i < buckets.Count; i++)
             {
@@ -99,7 +102,7 @@ namespace CloudFine
             }
         }
 
-        public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
+        public void UpdateAgentBuckets(Agent agent, List<int> buckets)
         {
             if(agent.neighborType == Agent.NeighborType.POINT)
             {
@@ -126,11 +129,11 @@ namespace CloudFine
                     }
                 }
             }
-            RemoveAgentFromBuckets(agent, out buckets);
-            AddAgentToBuckets(agent, out buckets);
+            RemoveAgentFromBuckets(agent, buckets);
+            AddAgentToBuckets(agent, buckets);
         }
 
-        public void RemoveAgentFromBuckets(Agent agent, out List<int> buckets)
+        public void RemoveAgentFromBuckets(Agent agent, List<int> buckets)
         {
             if (agentToBuckets.TryGetValue(agent, out buckets))
             {
@@ -146,7 +149,7 @@ namespace CloudFine
 
         }
 
-        private void AddAgentToBuckets(Agent agent, out List<int> buckets)
+        private void AddAgentToBuckets(Agent agent, List<int> buckets)
         {
             if (!agentToBuckets.ContainsKey(agent))
             {
@@ -157,13 +160,13 @@ namespace CloudFine
             switch (agent.neighborType)
             {
                 case Agent.NeighborType.SHERE:
-                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, ref buckets);
+                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, buckets);
                     break;
                 case Agent.NeighborType.POINT:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
                 case Agent.NeighborType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward, agent.Radius, ref buckets);
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward, agent.Radius, buckets);
                     break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
@@ -187,7 +190,7 @@ namespace CloudFine
             return WorldPositionToHash(point);
         }
 
-        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
+        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, List<int> buckets)
         {
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
@@ -231,7 +234,7 @@ namespace CloudFine
 
         }
 
-        public void GetBucketsOverlappingSphere(Vector3 center, float radius, ref List<int> buckets)
+        public void GetBucketsOverlappingSphere(Vector3 center, float radius, List<int> buckets)
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
             if(buckets == null) buckets = new List<int>();
@@ -390,7 +393,7 @@ namespace CloudFine
 
         private void OnDrawGizmos()
         {
-            if (displayGizmos)
+            if (drawGizmos)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
