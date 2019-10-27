@@ -13,17 +13,17 @@ namespace CloudFine
 
         public BehaviorSettings activeSettings;
         private bool freezePosition = false;
-
+        private bool sleeping = false;
         private SurroundingsContainer mySurroundings = new SurroundingsContainer();
         protected virtual void Update()
         {
             if (!isAlive) return;
             if (activeSettings == null) return;
             if (freezePosition) return;
-            if (UnityEngine.Random.value > activeSettings.sleepChance)
-            {
+            sleeping = (UnityEngine.Random.value < myNeighborhood.sleepChance);
+            if(!sleeping){
                 activeSettings.AddPerceptions(mySurroundings);
-                myNeighborhood.GetSurroundings(Position, Velocity, ref buckets, mySurroundings);
+                myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
                 Flock(mySurroundings);
 
                 Velocity += (Acceleration) * Time.deltaTime;
@@ -33,7 +33,6 @@ namespace CloudFine
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
             Acceleration *= 0;
-
             UpdateTransform();
         }
 
@@ -41,6 +40,7 @@ namespace CloudFine
         protected override void LateUpdate()
         {
             if (!isAlive) return;
+            if (sleeping) return;
             FindNeighborhoodBuckets();
         }
 

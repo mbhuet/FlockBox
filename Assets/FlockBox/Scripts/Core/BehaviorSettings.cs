@@ -16,7 +16,6 @@ namespace CloudFine
     {
         public float maxForce = 10;    // Maximum steering force
         public float maxSpeed = 15;    // Maximum speed 
-        public float sleepChance = 0f;
 
         [SerializeField]
         private ContainmentBehavior containmentBehavior;

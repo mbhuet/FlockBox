@@ -11,7 +11,7 @@ namespace UnityStandardAssets.Utility
         private int m_FpsAccumulator = 0;
         private float m_FpsNextPeriod = 0;
         private int m_CurrentFps;
-        const string display = "{0}";// FPS";
+        const string display = "{0}";
         private Text m_Text;
 
 

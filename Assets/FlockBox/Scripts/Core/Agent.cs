@@ -171,13 +171,13 @@ namespace CloudFine
         protected void FindNeighborhoodBuckets()
         {
             if(myNeighborhood)
-            myNeighborhood.UpdateAgentBuckets(this, out buckets);
+            myNeighborhood.UpdateAgentBuckets(this, buckets);
         }
 
         protected void RemoveFromAllNeighborhoods()
         {
             if(myNeighborhood)
-            myNeighborhood.RemoveAgentFromBuckets(this, out buckets);
+            myNeighborhood.RemoveAgentFromBuckets(this, buckets);
         }
 
         public virtual void Kill()
