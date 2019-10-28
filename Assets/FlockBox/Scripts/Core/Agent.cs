@@ -281,13 +281,17 @@ namespace CloudFine
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
-
+                UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
                 switch (neighborType)
                 {
                     case NeighborType.BOX:
                         Gizmos.DrawWireCube(Vector3.zero, shape.dimensions);
                         break;
                     case NeighborType.LINE:
+                        Gizmos.DrawLine(Vector3.zero, Vector3.forward * shape.length);
+                        UnityEditor.Handles.DrawWireDisc(Vector3.forward * shape.length, Vector3.forward, Radius);
+                        UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, Radius);
+
                         break;
                     case NeighborType.POINT:
                         break;
