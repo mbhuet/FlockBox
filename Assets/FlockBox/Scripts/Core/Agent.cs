@@ -63,7 +63,11 @@ namespace CloudFine
             get { return shape.radius; }
             protected set { shape.radius = value; }
         }
-
+        public float Length
+        {
+            get { return shape.length; }
+            protected set { shape.length = value; }
+        }
 
         protected FlockBox myNeighborhood;
 
@@ -282,6 +286,7 @@ namespace CloudFine
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.color = Color.grey;
                 switch (neighborType)
                 {
                     case NeighborType.BOX:
@@ -291,6 +296,7 @@ namespace CloudFine
                         Gizmos.DrawLine(Vector3.zero, Vector3.forward * shape.length);
                         UnityEditor.Handles.DrawWireDisc(Vector3.forward * shape.length, Vector3.forward, Radius);
                         UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, Radius);
+                        UnityEditor.Handles.DrawWireDisc(Vector3.forward * shape.length/2f, Vector3.forward, Radius);
 
                         break;
                     case NeighborType.POINT:
