@@ -31,9 +31,8 @@ namespace CloudFine
             switch ((Agent.NeighborType)property.FindPropertyRelative("shape").enumValueIndex)
             {
                 case Agent.NeighborType.POINT:
-
                     break;
-                case Agent.NeighborType.SHERE:
+                case Agent.NeighborType.SPHERE:
                     totalHeight += DrawProperty(property, propRect, "radius");
                     break;
                 case Agent.NeighborType.LINE:

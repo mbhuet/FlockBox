@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace CloudFine
 {
@@ -22,8 +23,9 @@ namespace CloudFine
         public enum NeighborType
         {
             POINT, //occupy only one point, one neighborhood
-            SHERE, //occupy all neighborhoods within radius
+            SPHERE, //occupy all neighborhoods within radius
             LINE, //occupy all neighborhoods along line
+            BOX,
         }
 
         private Vector3 m_position = Vector3.zero;
@@ -54,17 +56,25 @@ namespace CloudFine
             protected set { m_acceleration = value; }
         }
 
-        [SerializeField]
+        [SerializeField][HideInInspector]
         private float m_radius = 1f;
         public float Radius
         {
-            get { return m_radius; }
-            protected set { m_radius = value; }
+            get { return shape.radius; }
+            protected set { shape.radius = value; }
         }
 
 
         protected FlockBox myNeighborhood;
-        public NeighborType neighborType;
+
+        [HideInInspector][SerializeField][FormerlySerializedAs("neighborType")]
+        private NeighborType m_neighborType;
+        public NeighborType neighborType
+        {
+            get { return shape.shape; }
+        }
+        [SerializeField]
+        protected Shape shape;
         public bool drawDebug = false;
 
         protected List<int> buckets;
@@ -138,6 +148,28 @@ namespace CloudFine
                 {
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
                 }
+            }
+
+            MigrateData();
+        }
+
+        private void OnValidate()
+        {
+            MigrateData();
+        }
+
+        private void MigrateData()
+        {
+            //MIGRATION
+            if (m_radius != default && shape.radius == default)
+            {
+                shape.radius = m_radius;
+                m_radius = default;
+            }
+            if (m_neighborType != default && shape.shape == default)
+            {
+                shape.shape = m_neighborType;
+                m_neighborType = default;
             }
         }
 
@@ -248,7 +280,22 @@ namespace CloudFine
             if (drawDebug)
             {
                 Gizmos.color = Color.grey;
-                Gizmos.DrawWireSphere(this.transform.position, Radius);
+                Gizmos.matrix = this.transform.localToWorldMatrix;
+
+                switch (neighborType)
+                {
+                    case NeighborType.BOX:
+                        Gizmos.DrawWireCube(Vector3.zero, shape.dimensions);
+                        break;
+                    case NeighborType.LINE:
+                        break;
+                    case NeighborType.POINT:
+                        break;
+                    case NeighborType.SPHERE:
+                        Gizmos.DrawWireSphere(Vector3.zero, Radius);
+                        break;
+
+                }
             }
         }
 #endif

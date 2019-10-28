@@ -159,7 +159,7 @@ namespace CloudFine
 
             switch (agent.neighborType)
             {
-                case Agent.NeighborType.SHERE:
+                case Agent.NeighborType.SPHERE:
                     GetBucketsOverlappingSphere(agent.Position, agent.Radius, buckets);
                     break;
                 case Agent.NeighborType.POINT:
