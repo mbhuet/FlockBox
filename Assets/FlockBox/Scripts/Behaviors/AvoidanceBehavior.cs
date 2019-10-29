@@ -20,10 +20,10 @@ namespace CloudFine
             Vector3 closestHitPoint = Vector3.zero;
             Agent mostThreateningObstacle = obstacles[0];
 
-            foreach (Agent obs_wrapped in obstacles)
+            foreach (Agent obstacle in obstacles)
             {
-                Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-                if (Vector3.Distance(closestPoint, obs_wrapped.Position) < obs_wrapped.Radius)
+                Vector3 closestPoint = ClosestPointPathToObstacle(mine, obstacle);
+                if (Vector3.Distance(closestPoint, obstacle.Position) < obstacle.shape.radius)
                 {
                     //found obstacle directly in path
                     foundObstacleInPath = true;
@@ -33,7 +33,7 @@ namespace CloudFine
                     {
                         closestHitDistance = distanceToClosestPoint;
                         closestHitPoint = closestPoint;
-                        mostThreateningObstacle = obs_wrapped;
+                        mostThreateningObstacle = obstacle;
                     }
 
                 }
@@ -44,7 +44,7 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-            float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.Radius, 1);
+            float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.shape.radius, 1);
             steer = closestHitPoint - mostThreateningObstacle.Position;
             steer = steer.normalized * mine.activeSettings.maxForce;
         }

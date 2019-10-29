@@ -20,13 +20,7 @@ namespace CloudFine
     public class Agent : MonoBehaviour
     {
 
-        public enum NeighborType
-        {
-            POINT, //occupy only one point, one neighborhood
-            SPHERE, //occupy all neighborhoods within radius
-            LINE, //occupy all neighborhoods along line
-            BOX,
-        }
+        
 
         private Vector3 m_position = Vector3.zero;
         public Vector3 Position
@@ -58,27 +52,23 @@ namespace CloudFine
 
         [SerializeField][HideInInspector]
         private float m_radius = 1f;
-        public float Radius
+        protected float Radius
         {
             get { return shape.radius; }
-            protected set { shape.radius = value; }
+            set { shape.radius = value; }
         }
-        public float Length
+        protected float Length
         {
             get { return shape.length; }
-            protected set { shape.length = value; }
+            set { shape.length = value; }
         }
 
         protected FlockBox myNeighborhood;
 
         [HideInInspector][SerializeField][FormerlySerializedAs("neighborType")]
-        private NeighborType m_neighborType;
-        public NeighborType neighborType
-        {
-            get { return shape.shape; }
-        }
+        private int m_neighborType;
         [SerializeField]
-        protected Shape shape;
+        public Shape shape;
         public bool drawDebug = false;
 
         protected List<int> buckets;
@@ -170,9 +160,9 @@ namespace CloudFine
                 shape.radius = m_radius;
                 m_radius = default;
             }
-            if (m_neighborType != default && shape.shape == default)
+            if (m_neighborType != default && shape.type == default)
             {
-                shape.shape = m_neighborType;
+                shape.type = (Shape.ShapeType)m_neighborType;
                 m_neighborType = default;
             }
         }
@@ -287,25 +277,7 @@ namespace CloudFine
                 Gizmos.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.color = Color.grey;
-                switch (neighborType)
-                {
-                    case NeighborType.BOX:
-                        Gizmos.DrawWireCube(Vector3.zero, shape.dimensions);
-                        break;
-                    case NeighborType.LINE:
-                        Gizmos.DrawLine(Vector3.zero, Vector3.forward * shape.length);
-                        UnityEditor.Handles.DrawWireDisc(Vector3.forward * shape.length, Vector3.forward, Radius);
-                        UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, Radius);
-                        UnityEditor.Handles.DrawWireDisc(Vector3.forward * shape.length/2f, Vector3.forward, Radius);
-
-                        break;
-                    case NeighborType.POINT:
-                        break;
-                    case NeighborType.SPHERE:
-                        Gizmos.DrawWireSphere(Vector3.zero, Radius);
-                        break;
-
-                }
+                shape.DrawGizmo();
             }
         }
 #endif

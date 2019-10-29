@@ -71,7 +71,7 @@ namespace CloudFine
         protected static void AttemptCatch(SteeringAgent mine, Agent chosenTargetWrapped)
         {
             float distAway = Vector3.Distance(chosenTargetWrapped.Position, mine.Position);
-            if (distAway <= (chosenTargetWrapped.Radius + mine.Radius) && chosenTargetWrapped.CanBeCaughtBy(mine))
+            if (distAway <= (chosenTargetWrapped.shape.radius + mine.shape.radius) && chosenTargetWrapped.CanBeCaughtBy(mine))
             {
                 mine.CatchAgent(chosenTargetWrapped);
             }

@@ -18,7 +18,7 @@ namespace CloudFine
             
             EditorGUI.BeginProperty(position, label, property);
 
-            var shapeProperty = property.FindPropertyRelative("shape");
+            var shapeProperty = property.FindPropertyRelative("type");
             var radiusProperty = property.FindPropertyRelative("radius");
             var lengthProperty = property.FindPropertyRelative("length");
             var dimensionProperty = property.FindPropertyRelative("dimensions");
@@ -26,20 +26,19 @@ namespace CloudFine
             totalHeight = 0;
             propRect = new Rect(position.x, position.y+ totalHeight, position.width, EditorGUIUtility.singleLineHeight);
 
-            totalHeight += DrawProperty(property, propRect, "shape");
+            totalHeight += DrawProperty(property, propRect, "type");
 
-            switch ((Agent.NeighborType)property.FindPropertyRelative("shape").enumValueIndex)
+            switch ((Shape.ShapeType)property.FindPropertyRelative("type").enumValueIndex)
             {
-                case Agent.NeighborType.POINT:
+                case Shape.ShapeType.POINT:
                     break;
-                case Agent.NeighborType.SPHERE:
+                case Shape.ShapeType.SPHERE:
                     totalHeight += DrawProperty(property, propRect, "radius");
                     break;
-                case Agent.NeighborType.LINE:
-                    totalHeight += DrawProperty(property, propRect, "radius");
+                case Shape.ShapeType.LINE:
                     totalHeight += DrawProperty(property, propRect, "length");
                     break;
-                case Agent.NeighborType.BOX:
+                case Shape.ShapeType.BOX:
                     totalHeight += DrawProperty(property, propRect, "dimensions");
                     break;
 

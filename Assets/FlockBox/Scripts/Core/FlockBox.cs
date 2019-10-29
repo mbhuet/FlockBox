@@ -104,7 +104,7 @@ namespace CloudFine
 
         public void UpdateAgentBuckets(Agent agent, List<int> buckets)
         {
-            if(agent.neighborType == Agent.NeighborType.POINT)
+            if(agent.shape.type == Shape.ShapeType.POINT)
             {
                 if(agentToBuckets.TryGetValue(agent, out buckets))
                 {
@@ -157,16 +157,16 @@ namespace CloudFine
             }
             buckets = new List<int>();
 
-            switch (agent.neighborType)
+            switch (agent.shape.type)
             {
-                case Agent.NeighborType.SPHERE:
-                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, buckets);
+                case Shape.ShapeType.SPHERE:
+                    GetBucketsOverlappingSphere(agent.Position, agent.shape.radius, buckets);
                     break;
-                case Agent.NeighborType.POINT:
+                case Shape.ShapeType.POINT:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
-                case Agent.NeighborType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.Length, agent.Radius, buckets);
+                case Shape.ShapeType.LINE:
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
