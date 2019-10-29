@@ -14,9 +14,9 @@ namespace CloudFine
         }
         public ShapeType type;
 
-        public float radius;
-        public float length;
-        public Vector3Int dimensions;
+        public float radius = 1;
+        public float length = 1;
+        public Vector3Int dimensions = Vector3Int.one;
 
         public bool Intersects(Shape other)
         {

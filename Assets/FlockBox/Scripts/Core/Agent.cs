@@ -155,7 +155,7 @@ namespace CloudFine
         private void MigrateData()
         {
             //MIGRATION
-            if (m_radius != default && shape.radius == default)
+            if (m_radius != default)
             {
                 shape.radius = m_radius;
                 m_radius = default;
