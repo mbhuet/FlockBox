@@ -31,6 +31,7 @@ namespace CloudFine
             switch ((Shape.ShapeType)property.FindPropertyRelative("type").enumValueIndex)
             {
                 case Shape.ShapeType.POINT:
+                    totalHeight += DrawProperty(property, propRect, "radius");
                     break;
                 case Shape.ShapeType.SPHERE:
                     totalHeight += DrawProperty(property, propRect, "radius");
@@ -38,10 +39,6 @@ namespace CloudFine
                 case Shape.ShapeType.LINE:
                     totalHeight += DrawProperty(property, propRect, "length");
                     break;
-                case Shape.ShapeType.BOX:
-                    totalHeight += DrawProperty(property, propRect, "dimensions");
-                    break;
-
             }
             //EditorGUI.indentLevel = indent;
             totalHeight -= 2;

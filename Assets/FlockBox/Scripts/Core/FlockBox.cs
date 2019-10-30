@@ -166,7 +166,7 @@ namespace CloudFine
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
                 case Shape.ShapeType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
@@ -192,14 +192,7 @@ namespace CloudFine
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, List<int> buckets)
         {
-            if (buckets == null) buckets = new List<int>();
-
-            if (thickness > 0)
-            {
-                GetBucketsOverlappingLineThickness(start, end, thickness, buckets);
-                return;
-            }
-            Debug.Log(start + "  " + end);
+            
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
 
@@ -238,56 +231,7 @@ namespace CloudFine
 
         }
 
-        public void GetBucketsOverlappingLineThickness(Vector3 start, Vector3 end, float thickness, List<int> buckets)
-        {
-            int x0 = ToCellFloor(start.x);
-            int x1 = ToCellFloor(end.x);
-
-            int y0 = ToCellFloor(start.y);
-            int y1 = ToCellFloor(end.y);
-
-            int z0 = ToCellFloor(start.z);
-            int z1 = ToCellFloor(end.z);
-
-            float wd = thickness;
-
-            int dx = Mathf.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-            int dy = Mathf.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-            int dz = Mathf.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
-
-            int err = dx - dy, e2, x2, y2;                          /* error value e_xy */
-            float ed = dx + dy == 0 ? 1 : Mathf.Sqrt((float)dx * dx + (float)dy * dy);
-
-            for (wd = (wd + 1) / 2; ;)
-            {                                   /* pixel loop */
-                buckets.Add(CellPositionToHash(x0, y0, z0));
-                e2 = err; x2 = x0;
-                if (2 * e2 >= -dx)
-                {                                           /* x step */
-                    for (e2 += dy, y2 = y0; e2 < ed * wd && (y1 != y2 || dx > dy); e2 += dx)
-                        buckets.Add(CellPositionToHash(x0, y2 += sy, z0));
-                    if (x0 == x1) break;
-                    e2 = err; err -= dy; x0 += sx;
-                }
-                if (2 * e2 <= dy)
-                {                                            /* y step */
-                    for (e2 = dx - e2; e2 < ed * wd && (x1 != x2 || dx < dy); e2 += dy)
-                        buckets.Add(CellPositionToHash(x2 += sx, y0, z0));
-                    if (y0 == y1) break;
-                    err += dx; y0 += sy;
-                }
-                /*
-                if (2 * e2 <= dz)
-                {                                            // z step
-                    for (e2 = dx - e2; e2 < ed * wd && (x1 != x2 || dx < dy); e2 += dy)
-                        setPixelColor(x2 += sx, y0, max(0, 255 * (abs(e2) / ed - wd + 1)));
-                    if (y0 == y1) break;
-                    err += dx; y0 += sy;
-                }
-                */
-            
-            }
-        }
+        
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, List<int> buckets)
         {
@@ -317,6 +261,7 @@ namespace CloudFine
             }
 
         }
+
 
         public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
         {

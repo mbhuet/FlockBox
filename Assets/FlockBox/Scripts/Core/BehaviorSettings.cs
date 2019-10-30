@@ -18,7 +18,7 @@ namespace CloudFine
         public float maxSpeed = 15;    // Maximum speed 
 
         [SerializeField]
-        private ContainmentBehavior containmentBehavior;
+        private ContainmentBehavior containmentBehavior = null;
         public ContainmentBehavior Containment => containmentBehavior;
 
         [SerializeField]

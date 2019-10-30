@@ -84,8 +84,7 @@ namespace CloudFine
             base.UpdateTransform();
             if (Velocity.magnitude > 0)
             {
-                Forward = Velocity.normalized;
-                transform.localRotation = Quaternion.LookRotation(Forward, Vector3.up);
+                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
             }
         }
 
@@ -96,8 +95,7 @@ namespace CloudFine
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;
-            Forward = UnityEngine.Random.insideUnitSphere;
-            Velocity = Forward * activeSettings.maxSpeed;
+            Velocity = UnityEngine.Random.insideUnitSphere * activeSettings.maxSpeed;
         }
 
         protected void LockPosition(bool isLocked)

@@ -36,11 +36,9 @@ namespace CloudFine
             protected set { m_velocity = value; }
         }
 
-        private Vector3 m_forward = Vector3.zero;
         public Vector3 Forward
         {
-            get { return m_forward; }
-            protected set { m_forward = value; }
+            get { return transform.localRotation * Vector3.forward; }
         }
 
         private Vector3 m_acceleration = Vector3.zero;
@@ -52,21 +50,13 @@ namespace CloudFine
 
         [SerializeField][HideInInspector]
         private float m_radius = 1f;
-        protected float Radius
-        {
-            get { return shape.radius; }
-            set { shape.radius = value; }
-        }
-        protected float Length
-        {
-            get { return shape.length; }
-            set { shape.length = value; }
-        }
+        [HideInInspector][SerializeField]
+        private int neighborType;
+
 
         protected FlockBox myNeighborhood;
 
-        [HideInInspector][SerializeField][FormerlySerializedAs("neighborType")]
-        private int m_neighborType;
+
         [SerializeField]
         public Shape shape;
         public bool drawDebug = false;
@@ -160,10 +150,10 @@ namespace CloudFine
                 shape.radius = m_radius;
                 m_radius = default;
             }
-            if (m_neighborType != default && shape.type == default)
+            if (neighborType != default && shape.type == default)
             {
-                shape.type = (Shape.ShapeType)m_neighborType;
-                m_neighborType = default;
+                shape.type = (Shape.ShapeType)neighborType;
+                neighborType = default;
             }
         }
 
@@ -263,6 +253,59 @@ namespace CloudFine
         {
             return isAlive;
         }
+
+
+        #region ShapeUtils
+        public bool Overlaps(Agent other)
+        {
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return other.OverlapsSphere(Position, shape.radius);
+                case Shape.ShapeType.SPHERE:
+                    return other.OverlapsSphere(Position, shape.radius);
+                case Shape.ShapeType.LINE:
+                    return other.OverlapsLine(Position, Position + Forward * shape.length);
+                default:
+                    return other.OverlapsSphere(Position, shape.radius);
+            }
+            
+        }
+
+        public bool RaycastToShape(Ray ray, out RaycastHit hit)
+        {
+            //TODO
+            hit = new RaycastHit();
+            return false;
+        }
+
+        public bool OverlapsSphere(Vector3 center, float radius)
+        {
+            //TODO
+            return false;
+        }
+        public bool OverlapsLine(Vector3 start, Vector3 end)
+        {
+            //TODO
+            return false;
+        }
+
+        private bool SphereOverlap(Vector3 centerA, float radiusA, Vector3 centerB, float radiusB)
+        {
+            return Vector3.SqrMagnitude(centerA - centerB) <= ((radiusA + radiusB) * (radiusA + radiusB));
+        }
+
+        Vector3 ClosestPointPathToObstacle(SteeringAgent mine, Agent obstacle)
+        {
+            Vector3 agentPos = mine.Position;
+            Vector3 agentToObstacle = obstacle.Position - agentPos;
+            Vector3 projection = Vector3.Project(agentToObstacle, mine.Velocity.normalized);
+            if (projection.normalized == mine.Velocity.normalized)
+                return agentPos + projection;
+            else return agentPos;
+        }
+
+        #endregion
 
 
 

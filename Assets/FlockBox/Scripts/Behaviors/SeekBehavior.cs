@@ -68,12 +68,11 @@ namespace CloudFine
             mine.SetAttribute(targetIDAttributeName, -1);
         }
 
-        protected static void AttemptCatch(SteeringAgent mine, Agent chosenTargetWrapped)
+        protected static void AttemptCatch(SteeringAgent mine, Agent target)
         {
-            float distAway = Vector3.Distance(chosenTargetWrapped.Position, mine.Position);
-            if (distAway <= (chosenTargetWrapped.shape.radius + mine.shape.radius) && chosenTargetWrapped.CanBeCaughtBy(mine))
+            if (mine.Overlaps(target))
             {
-                mine.CatchAgent(chosenTargetWrapped);
+                mine.CatchAgent(target);
             }
         }
 
