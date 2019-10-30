@@ -21,7 +21,6 @@ namespace CloudFine
             var shapeProperty = property.FindPropertyRelative("type");
             var radiusProperty = property.FindPropertyRelative("radius");
             var lengthProperty = property.FindPropertyRelative("length");
-            var dimensionProperty = property.FindPropertyRelative("dimensions");
 
             totalHeight = 0;
             propRect = new Rect(position.x, position.y+ totalHeight, position.width, EditorGUIUtility.singleLineHeight);

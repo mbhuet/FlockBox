@@ -272,27 +272,49 @@ namespace CloudFine
             
         }
 
-        public bool RaycastToShape(Ray ray, out RaycastHit hit)
-        {
-            //TODO
-            hit = new RaycastHit();
-            return false;
-        }
-
         public bool OverlapsSphere(Vector3 center, float radius)
         {
-            //TODO
-            return false;
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return SphereOverlap(center, radius, Position, shape.radius);
+                case Shape.ShapeType.SPHERE:
+                    return SphereOverlap(center, radius, Position, shape.radius);
+                case Shape.ShapeType.LINE:
+                    return SphereLineOverlap(center, radius, Position, Position + Forward * shape.length);
+                default:
+                    return SphereOverlap(center, radius, Position, shape.radius);
+            }
         }
         public bool OverlapsLine(Vector3 start, Vector3 end)
         {
-            //TODO
-            return false;
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return SphereLineOverlap(Position, shape.radius, start, end);
+                case Shape.ShapeType.SPHERE:
+                    return SphereLineOverlap(Position, shape.radius, start, end);
+                case Shape.ShapeType.LINE:
+                    return LineOverlap(start, end, Position, Position + Forward * shape.length);
+                default:
+                    return false;
+            }
         }
 
         private bool SphereOverlap(Vector3 centerA, float radiusA, Vector3 centerB, float radiusB)
         {
             return Vector3.SqrMagnitude(centerA - centerB) <= ((radiusA + radiusB) * (radiusA + radiusB));
+        }
+        private bool SphereLineOverlap(Vector3 center, float radius, Vector3 start, Vector3 end)
+        {
+            //TODO
+            return false;
+        }
+
+        private bool LineOverlap(Vector3 startA, Vector3 endA, Vector3 startB, Vector3 endB)
+        {
+            //TODO
+            return false;
         }
 
         Vector3 ClosestPointPathToObstacle(SteeringAgent mine, Agent obstacle)
@@ -303,6 +325,13 @@ namespace CloudFine
             if (projection.normalized == mine.Velocity.normalized)
                 return agentPos + projection;
             else return agentPos;
+        }
+
+        public bool RaycastToShape(Ray ray, out RaycastHit hit)
+        {
+            //TODO
+            hit = new RaycastHit();
+            return false;
         }
 
         #endregion
