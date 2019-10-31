@@ -10,6 +10,7 @@ namespace CloudFine
             POINT, //occupy only one point, one neighborhood
             SPHERE, //occupy all neighborhoods within radius
             LINE, //occupy all neighborhoods along line
+            CYLINDER,
             //COLLIDER,
         }
         public ShapeType type;
@@ -25,18 +26,23 @@ namespace CloudFine
         {
             switch (type)
             {
-                case ShapeType.LINE:
-                    Gizmos.DrawLine(Vector3.zero, Vector3.forward * length);
-                    UnityEditor.Handles.DrawWireDisc(Vector3.forward * length, Vector3.forward, radius);
-                    UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, radius);
-                    break;
+
                 case ShapeType.POINT:
                     Gizmos.DrawWireSphere(Vector3.zero, radius);
                     break;
                 case ShapeType.SPHERE:
                     Gizmos.DrawWireSphere(Vector3.zero, radius);
                     break;
-
+                case ShapeType.LINE:
+                    Gizmos.DrawLine(Vector3.zero, Vector3.forward * length);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.forward * length, Vector3.forward, radius);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, radius);
+                    break;
+                case ShapeType.CYLINDER:
+                    Gizmos.DrawLine(Vector3.zero, Vector3.forward * length);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.forward * length, Vector3.forward, radius);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, radius);
+                    break;
             }
         }
 #endif

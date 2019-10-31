@@ -39,6 +39,10 @@ namespace CloudFine
                     totalHeight += DrawProperty(property, propRect, "radius");
                     totalHeight += DrawProperty(property, propRect, "length");
                     break;
+                case Shape.ShapeType.CYLINDER:
+                    totalHeight += DrawProperty(property, propRect, "radius");
+                    totalHeight += DrawProperty(property, propRect, "length");
+                    break;
             }
             //EditorGUI.indentLevel = indent;
             totalHeight -= 2;

@@ -88,7 +88,7 @@ namespace CloudFine
             }
             if (surroundings.lookAheadSeconds > 0)
             {
-                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, buckets);
+                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
 
             surroundings.allAgents = new List<Agent>();
@@ -166,9 +166,11 @@ namespace CloudFine
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
                 case Shape.ShapeType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, buckets);
                     break;
-
+                case Shape.ShapeType.CYLINDER:
+                    GetBucketsOverlappingCylinder(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
+                    break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
@@ -191,7 +193,7 @@ namespace CloudFine
             return WorldPositionToHash(point);
         }
 
-        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, List<int> buckets)
+        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, List<int> buckets)
         {
             
             int x0 = ToCellFloor(start.x);
@@ -233,6 +235,33 @@ namespace CloudFine
         }
 
         
+        public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, List<int> buckets)
+        {
+            Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
+            Vector3 max = Vector3.Max(a, b) + Vector3.one * r;
+
+            Vector3Int minCell = ToCellFloor(min);
+            Vector3Int maxCell = ToCellFloor(max);
+
+            for(int x = minCell.x; x<=maxCell.x; x++)
+            {
+                for(int y = minCell.y; y<=maxCell.y; y++)
+                {
+                    for(int z = minCell.z; z<=maxCell.z; z++)
+                    {
+                        if (x < 0 || x > dimensions_x
+                        || y < 0 || y > dimensions_y
+                        || z < 0 || z > dimensions_z)
+                        {
+                            continue;
+                        }
+                        buckets.Add(CellPositionToHash(x, y, z));
+                    }
+                }
+            }
+
+
+        }
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, List<int> buckets)
         {
@@ -243,24 +272,23 @@ namespace CloudFine
             int center_y = ToCellFloor(center.y);
             int center_z = ToCellFloor(center.z);
 
-            for (int xOff = center_x - neighborhoodRadius; xOff <= center_x + neighborhoodRadius; xOff++)
+            for (int x = center_x - neighborhoodRadius; x <= center_x + neighborhoodRadius; x++)
             {
-                for (int yOff = center_y - neighborhoodRadius; yOff <= center_y + neighborhoodRadius; yOff++)
+                for (int y = center_y - neighborhoodRadius; y <= center_y + neighborhoodRadius; y++)
                 {
-                    for (int zOff = center_z - neighborhoodRadius; zOff <= center_z + neighborhoodRadius; zOff++)
+                    for (int z = center_z - neighborhoodRadius; z <= center_z + neighborhoodRadius; z++)
                     {
-                        if (xOff < 0 || xOff > dimensions_x
-                                || yOff < 0 || yOff > dimensions_y
-                                || zOff < 0 || zOff > dimensions_z)
+                        if (x < 0 || x > dimensions_x
+                                || y < 0 || y > dimensions_y
+                                || z < 0 || z > dimensions_z)
                         {
                             continue;
                         }
-                        buckets.Add(CellPositionToHash(xOff, yOff, zOff));
+                        buckets.Add(CellPositionToHash(x, y, z));
                         
                     }
                 }
             }
-
         }
 
 
@@ -366,6 +394,11 @@ namespace CloudFine
         private int ToCellFloor(float p)
         {
             return (int)(p / cellSize);
+        }
+
+        private Vector3Int ToCellFloor(Vector3 position)
+        {
+            return new Vector3Int(ToCellFloor(position.x), ToCellFloor(position.y), ToCellFloor(position.z));
         }
 
         private int CellPositionToHash(int x, int y, int z)

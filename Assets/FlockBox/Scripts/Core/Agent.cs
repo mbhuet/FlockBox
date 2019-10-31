@@ -274,7 +274,9 @@ namespace CloudFine
                 case Shape.ShapeType.SPHERE:
                     return other.OverlapsSphere(Position, shape.radius);
                 case Shape.ShapeType.LINE:
-                    return other.OverlapsLine(Position, LineEndPoint, shape.radius);
+                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
+                case Shape.ShapeType.CYLINDER:
+                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
                 default:
                     return other.OverlapsSphere(Position, shape.radius);
             }
@@ -291,6 +293,8 @@ namespace CloudFine
                     return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
                 case Shape.ShapeType.LINE:
                     return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, out mu1, out mu2);
+                case Shape.ShapeType.CYLINDER:
+                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, out mu1, out mu2);
                 default:
                     return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
             }
@@ -304,6 +308,8 @@ namespace CloudFine
                 case Shape.ShapeType.SPHERE:
                     return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, out mu1, out mu2);
                 case Shape.ShapeType.LINE:
+                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
+                case Shape.ShapeType.CYLINDER:
                     return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
                 default:
                     return false;
@@ -332,6 +338,8 @@ namespace CloudFine
                 case Shape.ShapeType.POINT:
                     return RaycastToSphereShape(ray, perceptionDistance, ref hit);
                 case Shape.ShapeType.LINE:
+                    return RaycastToLineShape(ray, perceptionDistance, ref hit);
+                case Shape.ShapeType.CYLINDER:
                     return RaycastToLineShape(ray, perceptionDistance, ref hit);
                 case Shape.ShapeType.SPHERE:
                     return RaycastToSphereShape(ray, perceptionDistance, ref hit);
