@@ -351,6 +351,8 @@ namespace CloudFine
             {
                 hit.point = Vector3.Lerp(p1, p2, Mathf.Min(mu1, mu2));
                 hit.normal = hit.point - Position;
+                //TODO optimization
+                hit.distance = Vector3.Distance(ray.origin, hit.point);
                 return true;
             }
             return false;
@@ -360,9 +362,10 @@ namespace CloudFine
         {
             if (GeometryUtility.LineSegementsIntersect(ray.origin, ray.origin + ray.direction * perceptionDistance, LineStartPoint, LineEndPoint, shape.radius, ref p1, ref p2))
             {
-                hit.normal = p2 - p1;
+                hit.normal = p1 - p2;
                 hit.point = p2 + hit.normal.normalized * shape.radius;
-                hit.normal = p2 - p1;
+                //TODO optimization
+                hit.distance = Vector3.Distance(ray.origin, hit.point);
                 return true;
             }
             
