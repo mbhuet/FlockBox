@@ -27,8 +27,8 @@ namespace CloudFine
             {
                 case ShapeType.LINE:
                     Gizmos.DrawLine(Vector3.zero, Vector3.forward * length);
-                    UnityEditor.Handles.DrawWireDisc(Vector3.forward * length, Vector3.forward, 1);
-                    UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, 1);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.forward * length, Vector3.forward, radius);
+                    UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, radius);
                     break;
                 case ShapeType.POINT:
                     Gizmos.DrawWireSphere(Vector3.zero, radius);

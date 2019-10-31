@@ -7,8 +7,6 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
-        float distanceToClosestPoint;
-        bool foundObstacleInPath = false;
         RaycastHit closestHit;
         RaycastHit hit;
 
@@ -22,11 +20,12 @@ namespace CloudFine
             }
 
             Ray myRay = new Ray(mine.Position, mine.Forward);
-            foundObstacleInPath = false;
+            float rayDist = surroundings.lookAheadSeconds * mine.Velocity.magnitude;
+            bool foundObstacleInPath = false;
 
             foreach (Agent obstacle in obstacles)
             {
-                if(obstacle.RaycastToShape(myRay, out hit))
+                if (obstacle.RaycastToShape(myRay, rayDist, out hit))
                 {
                     if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {

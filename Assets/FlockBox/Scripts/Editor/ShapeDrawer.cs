@@ -36,6 +36,7 @@ namespace CloudFine
                     totalHeight += DrawProperty(property, propRect, "radius");
                     break;
                 case Shape.ShapeType.LINE:
+                    totalHeight += DrawProperty(property, propRect, "radius");
                     totalHeight += DrawProperty(property, propRect, "length");
                     break;
             }

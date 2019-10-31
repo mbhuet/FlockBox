@@ -166,8 +166,9 @@ namespace CloudFine
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
                 case Shape.ShapeType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward * agent.shape.length, agent.shape.radius, buckets);
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
+
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
