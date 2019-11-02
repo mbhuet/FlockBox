@@ -384,6 +384,7 @@ namespace CloudFine
                     normal = (ray.origin - Position).normalized;
                     return;
                 }
+                // approaching the sphere, find perpendicular
                 GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
                 normal = (p1 - Position).normalized;
             }
@@ -398,13 +399,18 @@ namespace CloudFine
                 if(GeometryUtility.LinesIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, ref mu1, ref mu2)){
                     p1 = ray.origin + ray.direction * mu1;
                     p2 = Vector3.LerpUnclamped(LineStartPoint, LineEndPoint, mu2);
-                    //this is a 2d simulation, use hit normal
+                    //this is likely a 2d simulation, use hit normal
                     if((p1-p2).sqrMagnitude < .01f)
                     {
                         normal = hit.normal;
                         return;
                     }
-                    
+                    else if (Vector3.Cross(hit.normal, Forward).sqrMagnitude < 1) //hit a cap in 3D, use hit normal
+                    {
+                        normal = hit.normal;
+                        return;
+                    }
+                    // approaching the cylinder from the side, find perpendicular
                     normal  = (p1-p2).normalized;
 
                     return;

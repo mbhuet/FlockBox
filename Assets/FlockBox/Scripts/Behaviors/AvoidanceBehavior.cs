@@ -45,8 +45,6 @@ namespace CloudFine
                 return;
             }
             mostImmediateObstacle.FindNormalToSteerAwayFromShape(myRay, closestHit, mine.shape.radius, ref normal);
-            Debug.DrawLine(mine.Position, closestHit.point, Color.red * .5f);
-            Debug.DrawRay(closestHit.point, closestHit.normal, Color.yellow);
             steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
 
