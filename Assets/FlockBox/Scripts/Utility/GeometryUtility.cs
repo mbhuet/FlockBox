@@ -9,7 +9,11 @@ public static class GeometryUtility
         return Vector3.SqrMagnitude(centerA - centerB) <= ((radiusA + radiusB) * (radiusA + radiusB));
     }
 
-
+    //find closest point on line to center of sphere
+    public static bool SphereLineOverlap(Vector3 center, float radius, Vector3 p1, Vector3 p2)
+    {
+        return (Vector3.Project(center - p1, p2 - p1) - center).sqrMagnitude <= radius * radius;
+    }
 
     public static bool LineSegementsIntersect(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, float maxDistance, ref Vector3 pA, ref Vector3 pB)
     {
@@ -52,32 +56,92 @@ public static class GeometryUtility
 
     }
 
-
-    public static bool SphereLineOverlap(Vector3 sc, float r, Vector3 p1, Vector3 p2, out float mu1, out float mu2)
+    public static bool RaySphereIntersection(Ray r, Vector3 center, float radius, ref float t)
     {
-        float a, b, c;
-        float bb4ac;
-        Vector3 dp;
-
-        dp.x = p2.x - p1.x;
-        dp.y = p2.y - p1.y;
-        dp.z = p2.z - p1.z;
-        a = dp.x * dp.x + dp.y * dp.y + dp.z * dp.z;
-        b = 2 * (dp.x * (p1.x - sc.x) + dp.y * (p1.y - sc.y) + dp.z * (p1.z - sc.z));
-        c = sc.x * sc.x + sc.y * sc.y + sc.z * sc.z;
-        c += p1.x * p1.x + p1.y * p1.y + p1.z * p1.z;
-        c -= 2 * (sc.x * p1.x + sc.y * p1.y + sc.z * p1.z);
-        c -= r * r;
-        bb4ac = b * b - 4 * a * c;
-        if (Mathf.Abs(a) < Mathf.Epsilon || bb4ac < 0)
+        Vector3 oc = r.origin - center;
+        float a = Vector3.Dot(r.direction, r.direction);
+        float b = 2f * Vector3.Dot(oc, r.direction);
+        float c = Vector3.Dot(oc, oc) - radius * radius;
+        float discriminant = b * b - 4 * a * c;
+        if (discriminant < 0)
         {
-            mu1 = 0;
-            mu2 = 0;
             return false;
         }
+        else
+        {
+            float numerator = -b - Mathf.Sqrt(discriminant);
+            if (numerator > 0)
+            {
+                t= numerator / (2f * a);
+                return true;
+            }
 
-        mu1 = (-b + Mathf.Sqrt(bb4ac)) / (2 * a);
-        mu2 = (-b - Mathf.Sqrt(bb4ac)) / (2 * a);
-        return true;
+            numerator = -b + Mathf.Sqrt(discriminant);
+            if (numerator > 0)
+            {
+                t = numerator / (2f * a);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
+
+
+
+    // ray-cylinder intersetion (returns t and normal)
+    public static bool RayCylinderIntersection(Ray ray, Vector3 pa, Vector3 pb, float ra, ref float t, ref Vector3 normal) // point a, point b, radius
+    {
+        // center the cylinder, normalize axis
+        Vector3 cc = 0.5f * (pa + pb);
+        float ch = Vector3.Magnitude(pb - pa);
+        Vector3 ca = (pb - pa) / ch;
+        ch *= 0.5f;
+
+        Vector3 oc = ray.origin - cc;
+
+        float card = Vector3.Dot(ca, ray.direction);
+        float caoc = Vector3.Dot(ca, oc);
+
+        float a = 1.0f - card * card;
+        float b = Vector3.Dot(oc, ray.direction) - caoc * card;
+        float c = Vector3.Dot(oc, oc) - caoc * caoc - ra * ra;
+        float h = b * b - a * c;
+        if (h < 0.0)
+        {
+            t = -1;
+            normal = Vector3.zero;
+            return false;
+        }
+        h = Mathf.Sqrt(h);
+        float t1 = (-b - h) / a;
+        //float t2 = (-b+h)/a; // exit point
+
+        float y = caoc + t1 * card;
+
+        // body
+        if (Mathf.Abs(y) < ch)
+        {
+            t = t1;
+            normal = (oc + t1 * ray.direction - ca * y).normalized;
+            return true;
+        }
+
+        // caps
+        float sy = Mathf.Sign(y);
+        float tp = (sy * ch - caoc) / card;
+        if (Mathf.Abs(b + a * tp) < h)
+        {
+            t = tp;
+            normal = ca * sy;
+            return true;
+        }
+
+        t = 1;
+        normal = Vector3.zero;
+        return false;
+    }
+
 }

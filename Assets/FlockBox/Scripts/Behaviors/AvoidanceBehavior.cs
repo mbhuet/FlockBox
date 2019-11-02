@@ -22,7 +22,6 @@ namespace CloudFine
             Ray myRay = new Ray(mine.Position, mine.Forward);
             float rayDist = surroundings.lookAheadSeconds * mine.Velocity.magnitude;
             bool foundObstacleInPath = false;
-
             foreach (Agent obstacle in obstacles)
             {
                 if (obstacle.RaycastToShape(myRay, rayDist, out hit))
