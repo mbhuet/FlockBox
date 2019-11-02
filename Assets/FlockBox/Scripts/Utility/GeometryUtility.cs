@@ -18,7 +18,20 @@ public static class GeometryUtility
 
     public static bool LineSegementsIntersect(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, float maxDistance, ref Vector3 pA, ref Vector3 pB)
     {
+        float mua = 0;
+        float mub = 0;
+        LinesIntersect(p1, p2, p3, p4, ref mua, ref mub);
+        mua = Mathf.Clamp01(mua);
+        mub = Mathf.Clamp01(mub);
+        pA = Vector3.Lerp(p1, p2, mua);
+        pB = Vector3.Lerp(p3, p4, mub);
+        return (Vector3.SqrMagnitude(pA - pB) < maxDistance * maxDistance);
 
+
+    }
+
+    public static bool LinesIntersect(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, ref float mua, ref float mub)
+    {
         Vector3 p13, p43, p21;
         float d1343, d4321, d1321, d4343, d2121;
         float numer, denom;
@@ -48,13 +61,9 @@ public static class GeometryUtility
             return false;
         numer = d1343 * d4321 - d1321 * d4343;
 
-        float mua = Mathf.Clamp01(numer / denom);
-        float mub = Mathf.Clamp01((d1343 + d4321 * (mua)) / d4343);
-        pA = Vector3.Lerp(p1, p2, mua);
-        pB = Vector3.Lerp(p3, p4, mub);
-        return (Vector3.SqrMagnitude(pA - pB) < maxDistance * maxDistance);
-
-
+        mua = (numer / denom);
+        mub = ((d1343 + d4321 * (mua)) / d4343);
+        return true;
     }
 
     public static bool RaySphereIntersection(Ray r, Vector3 center, float radius, ref float t)
@@ -80,7 +89,9 @@ public static class GeometryUtility
             numerator = -b + Mathf.Sqrt(discriminant);
             if (numerator > 0)
             {
-                t = numerator / (2f * a);
+                //currently inside sphere
+                t = 0;
+                //t = numerator / (2f * a);
                 return true;
             }
             else
@@ -106,29 +117,45 @@ public static class GeometryUtility
         float card = Vector3.Dot(ca, ray.direction);
         float caoc = Vector3.Dot(ca, oc);
 
-        float a = 1.0f - card * card;
+        float a = 1 - card * card;
         float b = Vector3.Dot(oc, ray.direction) - caoc * card;
         float c = Vector3.Dot(oc, oc) - caoc * caoc - ra * ra;
         float h = b * b - a * c;
-        if (h < 0.0)
+        if (h < 0)
         {
-            t = -1;
-            normal = Vector3.zero;
+            //no collision
             return false;
         }
         h = Mathf.Sqrt(h);
-        float t1 = (-b - h) / a;
-        //float t2 = (-b+h)/a; // exit point
+        float t1 = (-b - h) / a; //entry point
+        float t2 = (-b+h)/a; // exit point
 
-        float y = caoc + t1 * card;
+        if(t1 < 0)
+        {
+            if (t2 > 0) //inside cylinder
+            {
+                t = 0;
+            }
+            else //hit point is behind
+            {
+                t = t2;
+            }
+        }
+        else //hit point is ahead
+        {
+            t = t1;
+        }
+
+        float y = caoc + t * card;
 
         // body
         if (Mathf.Abs(y) < ch)
         {
-            t = t1;
-            normal = (oc + t1 * ray.direction - ca * y).normalized;
-            return t>0;
+            normal = (oc + t * ray.direction - ca * y).normalized;
+            return t >= 0;
         }
+
+
 
         // caps
         float sy = Mathf.Sign(y);
@@ -137,11 +164,10 @@ public static class GeometryUtility
         {
             t = tp;
             normal = ca * sy;
-            return t>0;
+            return t >0;
         }
 
-        t = 1;
-        normal = Vector3.zero;
+
         return false;
     }
 

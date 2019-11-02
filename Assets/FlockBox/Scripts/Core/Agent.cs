@@ -374,7 +374,7 @@ namespace CloudFine
             return false;
         }
 
-        public void ProjectPointToShapeEdge(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal, ref Vector3 edgePoint, ref Vector3 closestPoint)
+        public void FindNormalToSteerAwayFromShape(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal)
         {
             if (shape.type == Shape.ShapeType.POINT || shape.type == Shape.ShapeType.SPHERE)
             {
@@ -384,18 +384,34 @@ namespace CloudFine
                     normal = (ray.origin - Position).normalized;
                     return;
                 }
-                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref closestPoint);
-                normal = (closestPoint - Position).normalized;
-                //edgePoint = Position + normal * (shape.radius + clearanceRadius);
+                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
+                normal = (p1 - Position).normalized;
             }
             else if (shape.type == Shape.ShapeType.LINE || shape.type == Shape.ShapeType.CYLINDER)
             {
-                GeometryUtility.LineSegementsIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, shape.radius + clearanceRadius, ref p1, ref p2);
-                normal = (p1 - p2).normalized;
-                //edgePoint = p2 + normal * (shape.radius + clearanceRadius);
-                //closestPoint = p1;
+                //inside of cylinder, steer out
+                if (hit.distance == 0)
+                {
+                    normal = hit.normal;
+                    return;
+                }
+                if(GeometryUtility.LinesIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, ref mu1, ref mu2)){
+                    p1 = ray.origin + ray.direction * mu1;
+                    p2 = Vector3.LerpUnclamped(LineStartPoint, LineEndPoint, mu2);
+                    //this is a 2d simulation, use hit normal
+                    if((p1-p2).sqrMagnitude < .01f)
+                    {
+                        normal = hit.normal;
+                        return;
+                    }
+                    
+                    normal  = (p1-p2).normalized;
+
+                    return;
+                }
+                normal = hit.normal;
+
             }
-            
         }
 
 

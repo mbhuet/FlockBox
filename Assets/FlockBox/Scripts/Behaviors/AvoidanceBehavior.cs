@@ -30,7 +30,6 @@ namespace CloudFine
             {
                 if (obstacle.RaycastToShape(myRay, mine.shape.radius, rayDist, out hit))
                 {
-                    Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red, 30);
                     if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {
                         closestHit = hit;
@@ -45,7 +44,9 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-            mostImmediateObstacle.ProjectPointToShapeEdge(myRay, closestHit, mine.shape.radius, ref normal, ref edgePoint, ref closestPoint);
+            mostImmediateObstacle.FindNormalToSteerAwayFromShape(myRay, closestHit, mine.shape.radius, ref normal);
+            Debug.DrawLine(mine.Position, closestHit.point, Color.red * .5f);
+            Debug.DrawRay(closestHit.point, closestHit.normal, Color.yellow);
             steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
 
