@@ -219,9 +219,9 @@ namespace CloudFine
             for (; ; )
             {  /* loop */
                 
-                if (x0 < 0 || x0 >= dimensions_x) break;
-                if (y0 < 0 || y0 >= dimensions_y) break;
-                if (z0 < 0 || z0 >= dimensions_z) break;
+                if (dimensions_x > 0 && (x0 < 0 || x0 >= dimensions_x)) break;
+                if (dimensions_y > 0 && (y0 < 0 || y0 >= dimensions_y)) break;
+                if (dimensions_z > 0 && (z0 < 0 || z0 >= dimensions_z)) break;
                 buckets.Add(CellPositionToHash(x0, y0, z0));
 
                 if (i-- == 0) break;
