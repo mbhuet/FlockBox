@@ -10,9 +10,10 @@ public static class GeometryUtility
     }
 
     //find closest point on line to center of sphere
-    public static bool SphereLineOverlap(Vector3 center, float radius, Vector3 p1, Vector3 p2)
+    public static bool SphereLineOverlap(Vector3 center, float radius, Vector3 p1, Vector3 p2, ref Vector3 closePoint)
     {
-        return (Vector3.Project(center - p1, p2 - p1) - center).sqrMagnitude <= radius * radius;
+        closePoint = p1 + Vector3.Project(center - p1, p2 - p1);
+        return (closePoint - center).sqrMagnitude <= radius * radius;
     }
 
     public static bool LineSegementsIntersect(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, float maxDistance, ref Vector3 pA, ref Vector3 pB)

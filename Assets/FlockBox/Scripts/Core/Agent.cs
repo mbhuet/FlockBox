@@ -264,6 +264,8 @@ namespace CloudFine
         }
 
 
+
+
         #region ShapeUtils
         public bool Overlaps(Agent other)
         {
@@ -291,9 +293,9 @@ namespace CloudFine
                 case Shape.ShapeType.SPHERE:
                     return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
                 case Shape.ShapeType.LINE:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint);
+                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
                 case Shape.ShapeType.CYLINDER:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint);
+                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
                 default:
                     return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
             }
@@ -303,9 +305,9 @@ namespace CloudFine
             switch (shape.type)
             {
                 case Shape.ShapeType.POINT:
-                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end);
+                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
                 case Shape.ShapeType.SPHERE:
-                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end);
+                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
                 case Shape.ShapeType.LINE:
                     return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
                 case Shape.ShapeType.CYLINDER:
@@ -321,20 +323,20 @@ namespace CloudFine
 
 
 
-        public bool RaycastToShape(Ray ray, float perceptionDistance, out RaycastHit hit)
+        public bool RaycastToShape(Ray ray, float rayRadius, float perceptionDistance, out RaycastHit hit)
         {
             hit = new RaycastHit();
 
             switch (shape.type)
             {
                 case Shape.ShapeType.POINT:
-                    return RaycastToSphereShape(ray, perceptionDistance, ref hit);
+                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
                 case Shape.ShapeType.LINE:
-                    return RaycastToLineShape(ray, perceptionDistance, ref hit);
+                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
                 case Shape.ShapeType.CYLINDER:
-                    return RaycastToLineShape(ray, perceptionDistance, ref hit);
+                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
                 case Shape.ShapeType.SPHERE:
-                    return RaycastToSphereShape(ray, perceptionDistance, ref hit);
+                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
             }
             return false;
         }
@@ -344,10 +346,10 @@ namespace CloudFine
         private float t;
         private Vector3 norm;
 
-        private bool RaycastToSphereShape(Ray ray, float perceptionDistance, ref RaycastHit hit)
+        private bool RaycastToSphereShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
         {
 
-            if (GeometryUtility.RaySphereIntersection(ray, Position, shape.radius, ref t))
+            if (GeometryUtility.RaySphereIntersection(ray, Position, shape.radius + rayRadius, ref t))
             {
                 if (t < 0 || t > perceptionDistance) return false;
                 hit.point = ray.GetPoint(t);
@@ -359,9 +361,9 @@ namespace CloudFine
             return false;
         }
 
-        private bool RaycastToLineShape(Ray ray, float perceptionDistance, ref RaycastHit hit)
+        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
         {
-            if (GeometryUtility.RayCylinderIntersection(ray, LineStartPoint, LineEndPoint, shape.radius, ref t, ref norm))
+            if (GeometryUtility.RayCylinderIntersection(ray, LineStartPoint, LineEndPoint, shape.radius + rayRadius, ref t, ref norm))
             {
                 hit.normal = norm;
                 hit.point = ray.GetPoint(t);
@@ -371,6 +373,33 @@ namespace CloudFine
             
             return false;
         }
+
+        public void ProjectPointToShapeEdge(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal, ref Vector3 edgePoint, ref Vector3 closestPoint)
+        {
+            if (shape.type == Shape.ShapeType.POINT || shape.type == Shape.ShapeType.SPHERE)
+            {
+                //if inside the sphere, steer out
+                if (hit.distance == 0)
+                {
+                    normal = (ray.origin - Position).normalized;
+                    return;
+                }
+                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref closestPoint);
+                normal = (closestPoint - Position).normalized;
+                //edgePoint = Position + normal * (shape.radius + clearanceRadius);
+            }
+            else if (shape.type == Shape.ShapeType.LINE || shape.type == Shape.ShapeType.CYLINDER)
+            {
+                GeometryUtility.LineSegementsIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, shape.radius + clearanceRadius, ref p1, ref p2);
+                normal = (p1 - p2).normalized;
+                //edgePoint = p2 + normal * (shape.radius + clearanceRadius);
+                //closestPoint = p1;
+            }
+            
+        }
+
+
+
 
 
         #endregion

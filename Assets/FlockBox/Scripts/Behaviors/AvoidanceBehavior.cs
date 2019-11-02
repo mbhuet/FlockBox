@@ -9,6 +9,10 @@ namespace CloudFine
     {
         RaycastHit closestHit;
         RaycastHit hit;
+        Agent mostImmediateObstacle;
+        Vector3 edgePoint;
+        Vector3 normal;
+        Vector3 closestPoint;
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
@@ -24,11 +28,13 @@ namespace CloudFine
             bool foundObstacleInPath = false;
             foreach (Agent obstacle in obstacles)
             {
-                if (obstacle.RaycastToShape(myRay, rayDist, out hit))
+                if (obstacle.RaycastToShape(myRay, mine.shape.radius, rayDist, out hit))
                 {
+                    Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red, 30);
                     if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {
                         closestHit = hit;
+                        mostImmediateObstacle = obstacle;
                     }
                     foundObstacleInPath = true;      
                 }
@@ -39,8 +45,10 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-            steer = closestHit.normal;
+            mostImmediateObstacle.ProjectPointToShapeEdge(myRay, closestHit, mine.shape.radius, ref normal, ref edgePoint, ref closestPoint);
+            steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
+
         }
     }
 }
