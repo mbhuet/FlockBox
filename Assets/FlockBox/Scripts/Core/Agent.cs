@@ -346,16 +346,13 @@ namespace CloudFine
 
         private bool RaycastToSphereShape(Ray ray, float perceptionDistance, ref RaycastHit hit)
         {
-            Debug.DrawLine(ray.origin, ray.GetPoint(perceptionDistance), Color.green);
 
             if (GeometryUtility.RaySphereIntersection(ray, Position, shape.radius, ref t))
             {
                 if (t < 0 || t > perceptionDistance) return false;
                 hit.point = ray.GetPoint(t);
-                Debug.DrawLine(ray.origin, hit.point, Color.red);
                 
                 hit.normal = (hit.point - Position).normalized;
-                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.red, 30);
                 hit.distance = t;
                 return true;
             }

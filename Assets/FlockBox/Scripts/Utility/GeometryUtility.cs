@@ -126,7 +126,7 @@ public static class GeometryUtility
         {
             t = t1;
             normal = (oc + t1 * ray.direction - ca * y).normalized;
-            return true;
+            return t>0;
         }
 
         // caps
@@ -136,7 +136,7 @@ public static class GeometryUtility
         {
             t = tp;
             normal = ca * sy;
-            return true;
+            return t>0;
         }
 
         t = 1;
