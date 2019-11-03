@@ -7,18 +7,15 @@ namespace CloudFine
     {
         public enum ShapeType
         {
-            POINT, //occupy only one point, one neighborhood
-            SPHERE, //occupy all neighborhoods within radius
-            LINE, //occupy all neighborhoods along line
+            POINT,
+            SPHERE,
+            LINE,
             CYLINDER,
-            //COLLIDER,
         }
         public ShapeType type;
 
         public float radius = 1;
         public float length = 1;
-        public Vector3Int dimensions = Vector3Int.one;
-        //[SerializeField] private Collider collider;
 
 
 #if UNITY_EDITOR
