@@ -17,26 +17,26 @@ namespace CloudFine
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
         private int defaultBucketCapacity = 10;
 
-        public bool displayGizmos;
+
         [SerializeField]
         private int dimensions_x = 10;
         [SerializeField]
         private int dimensions_y = 10;
         [SerializeField]
         private int dimensions_z = 10;
+        [SerializeField]
+        private float cellSize = 10;
+
 
         private Vector3 _worldDimensions = Vector3.zero;
         public Vector3 WorldDimensions
         {
             get { return _worldDimensions; } private set { _worldDimensions = value; }
         }
-        [SerializeField]
-        private float cellSize = 10;
 
-
-        public bool wrapEdges = true;
+        public bool wrapEdges = false;
         public float boundaryBuffer = 10;
-
+        public float sleepChance;
 
         [Serializable]
         public struct AgentPopulation
@@ -45,6 +45,9 @@ namespace CloudFine
             public int population;
         }
         public List<AgentPopulation> startingPopulations;
+
+        [SerializeField]
+        private bool drawGizmos = true;
 
 
         void Start()
@@ -73,7 +76,7 @@ namespace CloudFine
         }
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, ref List<int> buckets, SurroundingsContainer surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, List<int> buckets, SurroundingsContainer surroundings)
         {
             
             if(buckets == null) buckets = new List<int>();
@@ -81,14 +84,14 @@ namespace CloudFine
 
             if (surroundings.perceptionRadius > 0)
             {
-                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, ref buckets);
+                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, buckets);
             }
             if (surroundings.lookAheadSeconds > 0)
             {
-                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, 0, ref buckets);
+                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
 
-            surroundings.allAgents = new List<Agent>(buckets.Count * defaultBucketCapacity);
+            surroundings.allAgents = new List<Agent>();
 
             for (int i = 0; i < buckets.Count; i++)
             {
@@ -99,9 +102,9 @@ namespace CloudFine
             }
         }
 
-        public void UpdateAgentBuckets(Agent agent, out List<int> buckets)
+        public void UpdateAgentBuckets(Agent agent, List<int> buckets)
         {
-            if(agent.neighborType == Agent.NeighborType.POINT)
+            if(agent.shape.type == Shape.ShapeType.POINT)
             {
                 if(agentToBuckets.TryGetValue(agent, out buckets))
                 {
@@ -126,11 +129,11 @@ namespace CloudFine
                     }
                 }
             }
-            RemoveAgentFromBuckets(agent, out buckets);
-            AddAgentToBuckets(agent, out buckets);
+            RemoveAgentFromBuckets(agent, buckets);
+            AddAgentToBuckets(agent, buckets);
         }
 
-        public void RemoveAgentFromBuckets(Agent agent, out List<int> buckets)
+        public void RemoveAgentFromBuckets(Agent agent, List<int> buckets)
         {
             if (agentToBuckets.TryGetValue(agent, out buckets))
             {
@@ -146,7 +149,7 @@ namespace CloudFine
 
         }
 
-        private void AddAgentToBuckets(Agent agent, out List<int> buckets)
+        private void AddAgentToBuckets(Agent agent, List<int> buckets)
         {
             if (!agentToBuckets.ContainsKey(agent))
             {
@@ -154,16 +157,19 @@ namespace CloudFine
             }
             buckets = new List<int>();
 
-            switch (agent.neighborType)
+            switch (agent.shape.type)
             {
-                case Agent.NeighborType.SHERE:
-                    GetBucketsOverlappingSphere(agent.Position, agent.Radius, ref buckets);
+                case Shape.ShapeType.SPHERE:
+                    GetBucketsOverlappingSphere(agent.Position, agent.shape.radius, buckets);
                     break;
-                case Agent.NeighborType.POINT:
+                case Shape.ShapeType.POINT:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
                     break;
-                case Agent.NeighborType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.Forward, agent.Radius, ref buckets);
+                case Shape.ShapeType.LINE:
+                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, buckets);
+                    break;
+                case Shape.ShapeType.CYLINDER:
+                    GetBucketsOverlappingCylinder(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
                 default:
                     buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
@@ -187,8 +193,9 @@ namespace CloudFine
             return WorldPositionToHash(point);
         }
 
-        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, float thickness, ref List<int> buckets)
+        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, List<int> buckets)
         {
+            
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
 
@@ -196,12 +203,8 @@ namespace CloudFine
             int y1 = ToCellFloor(end.y);
 
             int z0 = ToCellFloor(start.z);
-            int z1 = ToCellFloor(end.z);
+            int z1 = ToCellFloor(end.z);     
 
-            float wd = thickness;
-            
-
-            if (buckets == null) buckets = new List<int>();
 
             int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
             int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
@@ -216,9 +219,9 @@ namespace CloudFine
             for (; ; )
             {  /* loop */
                 
-                if (x0 < 0 || x0 >= dimensions_x) break;
-                if (y0 < 0 || y0 >= dimensions_y) break;
-                if (z0 < 0 || z0 >= dimensions_z) break;
+                if (dimensions_x > 0 && (x0 < 0 || x0 >= dimensions_x)) break;
+                if (dimensions_y > 0 && (y0 < 0 || y0 >= dimensions_y)) break;
+                if (dimensions_z > 0 && (z0 < 0 || z0 >= dimensions_z)) break;
                 buckets.Add(CellPositionToHash(x0, y0, z0));
 
                 if (i-- == 0) break;
@@ -231,7 +234,36 @@ namespace CloudFine
 
         }
 
-        public void GetBucketsOverlappingSphere(Vector3 center, float radius, ref List<int> buckets)
+        
+        public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, List<int> buckets)
+        {
+            Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
+            Vector3 max = Vector3.Max(a, b) + Vector3.one * r;
+
+            Vector3Int minCell = ToCellFloor(min);
+            Vector3Int maxCell = ToCellFloor(max);
+
+            for(int x = minCell.x; x<=maxCell.x; x++)
+            {
+                for(int y = minCell.y; y<=maxCell.y; y++)
+                {
+                    for(int z = minCell.z; z<=maxCell.z; z++)
+                    {
+                        if (x < 0 || x > dimensions_x
+                        || y < 0 || y > dimensions_y
+                        || z < 0 || z > dimensions_z)
+                        {
+                            continue;
+                        }
+                        buckets.Add(CellPositionToHash(x, y, z));
+                    }
+                }
+            }
+
+
+        }
+
+        public void GetBucketsOverlappingSphere(Vector3 center, float radius, List<int> buckets)
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
             if(buckets == null) buckets = new List<int>();
@@ -240,25 +272,25 @@ namespace CloudFine
             int center_y = ToCellFloor(center.y);
             int center_z = ToCellFloor(center.z);
 
-            for (int xOff = center_x - neighborhoodRadius; xOff <= center_x + neighborhoodRadius; xOff++)
+            for (int x = center_x - neighborhoodRadius; x <= center_x + neighborhoodRadius; x++)
             {
-                for (int yOff = center_y - neighborhoodRadius; yOff <= center_y + neighborhoodRadius; yOff++)
+                for (int y = center_y - neighborhoodRadius; y <= center_y + neighborhoodRadius; y++)
                 {
-                    for (int zOff = center_z - neighborhoodRadius; zOff <= center_z + neighborhoodRadius; zOff++)
+                    for (int z = center_z - neighborhoodRadius; z <= center_z + neighborhoodRadius; z++)
                     {
-                        if (xOff < 0 || xOff > dimensions_x
-                                || yOff < 0 || yOff > dimensions_y
-                                || zOff < 0 || zOff > dimensions_z)
+                        if (x < 0 || x > dimensions_x
+                                || y < 0 || y > dimensions_y
+                                || z < 0 || z > dimensions_z)
                         {
                             continue;
                         }
-                        buckets.Add(CellPositionToHash(xOff, yOff, zOff));
+                        buckets.Add(CellPositionToHash(x, y, z));
                         
                     }
                 }
             }
-
         }
+
 
         public Vector3 WrapPositionRelative(Vector3 position, Vector3 relativeTo)
         {
@@ -364,6 +396,11 @@ namespace CloudFine
             return (int)(p / cellSize);
         }
 
+        private Vector3Int ToCellFloor(Vector3 position)
+        {
+            return new Vector3Int(ToCellFloor(position.x), ToCellFloor(position.y), ToCellFloor(position.z));
+        }
+
         private int CellPositionToHash(int x, int y, int z)
         {
             if (x < 0 || y < 0 || z < 0) return -1;
@@ -390,7 +427,7 @@ namespace CloudFine
 
         private void OnDrawGizmos()
         {
-            if (displayGizmos)
+            if (drawGizmos)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;

@@ -7,6 +7,13 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
+        RaycastHit closestHit;
+        RaycastHit hit;
+        Agent mostImmediateObstacle;
+        Vector3 edgePoint;
+        Vector3 normal;
+        Vector3 closestPoint;
+
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             List<Agent> obstacles = GetFilteredAgents(surroundings, this);
@@ -15,27 +22,20 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
+
+            Ray myRay = new Ray(mine.Position, mine.Forward);
+            float rayDist = surroundings.lookAheadSeconds * mine.Velocity.magnitude;
             bool foundObstacleInPath = false;
-            float closestHitDistance = float.MaxValue;
-            Vector3 closestHitPoint = Vector3.zero;
-            Agent mostThreateningObstacle = obstacles[0];
-
-            foreach (Agent obs_wrapped in obstacles)
+            foreach (Agent obstacle in obstacles)
             {
-                Vector3 closestPoint = ClosestPointPathToObstacle(mine, obs_wrapped);
-                if (Vector3.Distance(closestPoint, obs_wrapped.Position) < obs_wrapped.Radius)
+                if (obstacle.RaycastToShape(myRay, mine.shape.radius, rayDist, out hit))
                 {
-                    //found obstacle directly in path
-                    foundObstacleInPath = true;
-
-                    float distanceToClosestPoint = Vector3.Distance(closestPoint, mine.Position);
-                    if (distanceToClosestPoint < closestHitDistance)
+                    if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {
-                        closestHitDistance = distanceToClosestPoint;
-                        closestHitPoint = closestPoint;
-                        mostThreateningObstacle = obs_wrapped;
+                        closestHit = hit;
+                        mostImmediateObstacle = obstacle;
                     }
-
+                    foundObstacleInPath = true;      
                 }
             }
 
@@ -44,19 +44,10 @@ namespace CloudFine
                 steer = Vector3.zero;
                 return;
             }
-            float distanceToObstacleEdge = Mathf.Max(Vector3.Distance(mine.Position, mostThreateningObstacle.Position) - mostThreateningObstacle.Radius, 1);
-            steer = closestHitPoint - mostThreateningObstacle.Position;
+            mostImmediateObstacle.FindNormalToSteerAwayFromShape(myRay, closestHit, mine.shape.radius, ref normal);
+            steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
-        }
 
-        Vector3 ClosestPointPathToObstacle(SteeringAgent mine, Agent obstacle)
-        {
-            Vector3 agentPos = mine.Position;
-            Vector3 agentToObstacle = obstacle.Position - agentPos;
-            Vector3 projection = Vector3.Project(agentToObstacle, mine.Velocity.normalized);
-            if (projection.normalized == mine.Velocity.normalized)
-                return agentPos + projection;
-            else return agentPos;
         }
     }
 }

@@ -156,7 +156,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.32156864, g: 0.32156864, b: 0.32156864, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014376891}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 100, y: 100, z: 0}
+  m_LocalPosition: {x: 50, y: 50, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -232,15 +232,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 327ff1812ac0af74d975a4bc65c3be66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayGizmos: 1
-  dimensions: {x: 20, y: 20, z: 20}
+  dimensions_x: 10
+  dimensions_y: 10
+  dimensions_z: 10
   cellSize: 10
   wrapEdges: 1
   boundaryBuffer: 10
+  sleepChance: 0
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
       type: 3}
     population: 500
+  drawGizmos: 1
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace CloudFine
 {
@@ -19,12 +20,7 @@ namespace CloudFine
     public class Agent : MonoBehaviour
     {
 
-        public enum NeighborType
-        {
-            POINT, //occupy only one point, one neighborhood
-            SHERE, //occupy all neighborhoods within radius
-            LINE, //occupy all neighborhoods along line
-        }
+        
 
         private Vector3 m_position = Vector3.zero;
         public Vector3 Position
@@ -40,11 +36,18 @@ namespace CloudFine
             protected set { m_velocity = value; }
         }
 
-        private Vector3 m_forward = Vector3.zero;
         public Vector3 Forward
         {
-            get { return m_forward; }
-            protected set { m_forward = value; }
+            get { return transform.localRotation * Vector3.forward; }
+        }
+
+        private Vector3 LineStartPoint
+        {
+            get { return Position; }
+        }
+        private Vector3 LineEndPoint
+        {
+            get { return Position + Forward * shape.length; }
         }
 
         private Vector3 m_acceleration = Vector3.zero;
@@ -54,17 +57,17 @@ namespace CloudFine
             protected set { m_acceleration = value; }
         }
 
-        [SerializeField]
+        [SerializeField][HideInInspector]
         private float m_radius = 1f;
-        public float Radius
-        {
-            get { return m_radius; }
-            protected set { m_radius = value; }
-        }
+        [HideInInspector][SerializeField]
+        private int neighborType;
 
 
         protected FlockBox myNeighborhood;
-        public NeighborType neighborType;
+
+
+        [SerializeField]
+        public Shape shape;
         public bool drawDebug = false;
 
         protected List<int> buckets;
@@ -139,6 +142,28 @@ namespace CloudFine
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
                 }
             }
+
+            MigrateData();
+        }
+
+        private void OnValidate()
+        {
+            MigrateData();
+        }
+
+        private void MigrateData()
+        {
+            //MIGRATION
+            if (m_radius != default)
+            {
+                shape.radius = m_radius;
+                m_radius = default;
+            }
+            if (neighborType != default && shape.type == default)
+            {
+                shape.type = (Shape.ShapeType)neighborType;
+                neighborType = default;
+            }
         }
 
         protected void RegisterNewAgent()
@@ -171,13 +196,13 @@ namespace CloudFine
         protected void FindNeighborhoodBuckets()
         {
             if(myNeighborhood)
-            myNeighborhood.UpdateAgentBuckets(this, out buckets);
+            myNeighborhood.UpdateAgentBuckets(this, buckets);
         }
 
         protected void RemoveFromAllNeighborhoods()
         {
             if(myNeighborhood)
-            myNeighborhood.RemoveAgentFromBuckets(this, out buckets);
+            myNeighborhood.RemoveAgentFromBuckets(this, buckets);
         }
 
         public virtual void Kill()
@@ -241,6 +266,169 @@ namespace CloudFine
 
 
 
+        #region ShapeUtils
+        public bool Overlaps(Agent other)
+        {
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return other.OverlapsSphere(Position, shape.radius);
+                case Shape.ShapeType.SPHERE:
+                    return other.OverlapsSphere(Position, shape.radius);
+                case Shape.ShapeType.LINE:
+                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
+                case Shape.ShapeType.CYLINDER:
+                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
+                default:
+                    return other.OverlapsSphere(Position, shape.radius);
+            }
+        }
+
+        public bool OverlapsSphere(Vector3 center, float radius)
+        {
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
+                case Shape.ShapeType.SPHERE:
+                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
+                case Shape.ShapeType.LINE:
+                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
+                case Shape.ShapeType.CYLINDER:
+                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
+                default:
+                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
+            }
+        }
+        public bool OverlapsLine(Vector3 start, Vector3 end, float thickness)
+        {
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
+                case Shape.ShapeType.SPHERE:
+                    return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
+                case Shape.ShapeType.LINE:
+                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
+                case Shape.ShapeType.CYLINDER:
+                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
+                default:
+                    return false;
+            }
+        }
+
+
+        
+
+
+
+
+        public bool RaycastToShape(Ray ray, float rayRadius, float perceptionDistance, out RaycastHit hit)
+        {
+            hit = new RaycastHit();
+
+            switch (shape.type)
+            {
+                case Shape.ShapeType.POINT:
+                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
+                case Shape.ShapeType.LINE:
+                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
+                case Shape.ShapeType.CYLINDER:
+                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
+                case Shape.ShapeType.SPHERE:
+                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
+            }
+            return false;
+        }
+
+        float mu1, mu2;
+        Vector3 p1, p2;
+        private float t;
+        private Vector3 norm;
+
+        private bool RaycastToSphereShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
+        {
+
+            if (GeometryUtility.RaySphereIntersection(ray, Position, shape.radius + rayRadius, ref t))
+            {
+                if (t < 0 || t > perceptionDistance) return false;
+                hit.point = ray.GetPoint(t);
+                
+                hit.normal = (hit.point - Position).normalized;
+                hit.distance = t;
+                return true;
+            }
+            return false;
+        }
+
+        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
+        {
+            if (GeometryUtility.RayCylinderIntersection(ray, LineStartPoint, LineEndPoint, shape.radius + rayRadius, ref t, ref norm))
+            {
+                hit.normal = norm;
+                hit.point = ray.GetPoint(t);
+                hit.distance = t;
+                return true;
+            }
+            
+            return false;
+        }
+
+        public void FindNormalToSteerAwayFromShape(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal)
+        {
+            if (shape.type == Shape.ShapeType.POINT || shape.type == Shape.ShapeType.SPHERE)
+            {
+                //if inside the sphere, steer out
+                if (hit.distance == 0)
+                {
+                    normal = (ray.origin - Position).normalized;
+                    return;
+                }
+                // approaching the sphere, find perpendicular
+                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
+                normal = (p1 - Position).normalized;
+            }
+            else if (shape.type == Shape.ShapeType.LINE || shape.type == Shape.ShapeType.CYLINDER)
+            {
+                //inside of cylinder, steer out
+                if (hit.distance == 0)
+                {
+                    normal = hit.normal;
+                    return;
+                }
+                if(GeometryUtility.LinesIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, ref mu1, ref mu2)){
+                    p1 = ray.origin + ray.direction * mu1;
+                    p2 = Vector3.LerpUnclamped(LineStartPoint, LineEndPoint, mu2);
+                    //this is likely a 2d simulation, use hit normal
+                    if((p1-p2).sqrMagnitude < .01f)
+                    {
+                        normal = hit.normal;
+                        return;
+                    }
+                    else if (Vector3.Cross(hit.normal, Forward).sqrMagnitude < 1) //hit a cap in 3D, use hit normal
+                    {
+                        normal = hit.normal;
+                        return;
+                    }
+                    // approaching the cylinder from the side, find perpendicular
+                    normal  = (p1-p2).normalized;
+
+                    return;
+                }
+                normal = hit.normal;
+
+            }
+        }
+
+
+
+
+
+        #endregion
+
+
+
+
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -248,7 +436,10 @@ namespace CloudFine
             if (drawDebug)
             {
                 Gizmos.color = Color.grey;
-                Gizmos.DrawWireSphere(this.transform.position, Radius);
+                Gizmos.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.color = Color.grey;
+                shape.DrawGizmo();
             }
         }
 #endif
