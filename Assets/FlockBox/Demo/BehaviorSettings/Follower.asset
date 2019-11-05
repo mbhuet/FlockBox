@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8429455985200993309
+--- !u!114 &-7725174596085115582
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,17 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 991e65c331b0e6748af0d23822cd3eb3, type: 3}
+  m_Script: {fileID: 11500000, guid: 1de813169b09ad449a5980b7e79407d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  useTagFilter: 1
-  filterTags:
-  - Obstacle
-  drawDebug: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 1
+  foldout: 0
   lookAheadSeconds: 1
 --- !u!114 &-6742341320620086265
 MonoBehaviour:
@@ -42,26 +41,6 @@ MonoBehaviour:
   foldout: 1
   effectiveRadius: 8
   fov: 360
---- !u!114 &-5769737824000778392
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1de813169b09ad449a5980b7e79407d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 1
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 0
-  lookAheadSeconds: 1
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -74,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7172dbec51051c438e5cb95fbc2154c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
+  isActive: 1
   weight: 0.811
   useTagFilter: 0
   filterTags: []
@@ -93,16 +72,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b81d4f1c37cfb9b4696d982df08a7441, type: 3}
-  m_Name: AvoidObstacle
+  m_Name: Follower
   m_EditorClassIdentifier: 
   maxForce: 20
   maxSpeed: 30
-  containmentBehavior: {fileID: -5769737824000778392}
+  containmentBehavior: {fileID: -7725174596085115582}
   behaviors:
   - {fileID: 3267645291290633549}
   - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
-  - {fileID: -8429455985200993309}
+  - {fileID: 2004199288920464966}
+--- !u!114 &2004199288920464966
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68e371b9afd605499fe88a448194a1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 1
+  filterTags:
+  - Leader
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 1
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -121,6 +120,6 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 0
+  foldout: 1
   effectiveRadius: 10
   fov: 360
