@@ -25,11 +25,12 @@ namespace CloudFine
                 activeSettings.AddPerceptions(mySurroundings);
                 myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
                 Flock(mySurroundings);
-
-                Velocity += (Acceleration) * Time.deltaTime;
-                Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
-                ValidateVelocity();
             }
+            Contain();
+            Velocity += (Acceleration) * Time.deltaTime;
+            Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
+            ValidateVelocity();
+
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
             Acceleration *= 0;
@@ -64,6 +65,11 @@ namespace CloudFine
                 if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
+            
+        }
+
+        void Contain()
+        {
             if (!myNeighborhood.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
