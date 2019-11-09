@@ -29,7 +29,7 @@ namespace CloudFine
 
             Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            if (!closestTarget.CanBeCaughtBy(mine))
+            if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
             {
                 if (chosenTargetID != -1)
                 {
@@ -78,6 +78,7 @@ namespace CloudFine
 
         protected static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
         {
+            if (nearbyTargets.Count == 0) return null;
             float closeDist = float.MaxValue;
             Agent closeTarget = nearbyTargets[0];
             foreach (Agent target in nearbyTargets)
