@@ -15,7 +15,7 @@ namespace CloudFine
 
             List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
-            if (allTargets.Count > 0)
+            if (allTargets.Count == 0)
             {
                 if (HasPursuitTarget(mine))
                 {
