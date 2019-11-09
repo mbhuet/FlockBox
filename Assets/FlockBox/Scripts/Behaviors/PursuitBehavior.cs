@@ -15,7 +15,7 @@ namespace CloudFine
 
             List<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
-            if (allTargets.Count > 0)
+            if (allTargets.Count == 0)
             {
                 if (HasPursuitTarget(mine))
                 {
@@ -27,7 +27,7 @@ namespace CloudFine
 
             Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
 
-            if (!closestTarget.CanBeCaughtBy(mine))
+            if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
             {
                 if (HasPursuitTarget(mine))
                 {
