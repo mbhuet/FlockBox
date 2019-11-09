@@ -15,6 +15,10 @@ namespace CloudFine
     {
         private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
+
+        private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
+        private Dictionary<string, List<Agent>> tagToAgents = new Dictionary<string, List<Agent>>();
+
         private int defaultBucketCapacity = 10;
 
 
@@ -100,6 +104,15 @@ namespace CloudFine
                     surroundings.allAgents.AddRange(bucketToAgents[buckets[i]]);
                 }
             }
+            if (surroundings.globalSearchTags.Count > 0)
+            {
+                foreach (string agentTag in surroundings.globalSearchTags) {
+                    if (tagToAgents.ContainsKey(agentTag))
+                    {
+                        surroundings.allAgents.AddRange(tagToAgents[agentTag]);
+                    }
+                }
+            }
         }
 
         public void UpdateAgentBuckets(Agent agent, List<int> buckets)
@@ -149,12 +162,38 @@ namespace CloudFine
 
         }
 
+        private void UpdateTagRegistration(Agent agent)
+        {
+
+        }
+
         private void AddAgentToBuckets(Agent agent, List<int> buckets)
         {
             if (!agentToBuckets.ContainsKey(agent))
             {
                 agentToBuckets.Add(agent, new List<int>());
             }
+            if (!lastKnownTag.ContainsKey(agent))
+            {
+                lastKnownTag.Add(agent, agent.tag);
+                if (!tagToAgents.ContainsKey(agent.tag))
+                {
+                    tagToAgents.Add(agent.tag, new List<Agent>());
+                }
+                tagToAgents[agent.tag].Add(agent);
+
+            }
+            else if (!agent.CompareTag(lastKnownTag[agent]))
+            {
+                tagToAgents[lastKnownTag[agent]].Remove(agent);
+                lastKnownTag[agent] = agent.tag;
+                if (!tagToAgents.ContainsKey(agent.tag))
+                {
+                    tagToAgents.Add(agent.tag, new List<Agent>());
+                }
+                tagToAgents[agent.tag].Add(agent);
+            }
+
             buckets = new List<int>();
 
             switch (agent.shape.type)

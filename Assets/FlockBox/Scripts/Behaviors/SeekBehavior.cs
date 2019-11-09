@@ -76,7 +76,7 @@ namespace CloudFine
             }
         }
 
-        protected static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
+        public static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
         {
             if (nearbyTargets.Count == 0) return null;
             float closeDist = float.MaxValue;

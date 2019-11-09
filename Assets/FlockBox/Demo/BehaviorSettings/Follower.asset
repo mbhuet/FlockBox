@@ -41,27 +41,6 @@ MonoBehaviour:
   foldout: 1
   effectiveRadius: 8
   fov: 360
---- !u!114 &-1352800339391299551
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7172dbec51051c438e5cb95fbc2154c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 0.811
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  foldout: 1
-  effectiveRadius: 10
-  fov: 360
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +58,6 @@ MonoBehaviour:
   containmentBehavior: {fileID: -7725174596085115582}
   behaviors:
   - {fileID: 3267645291290633549}
-  - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
   - {fileID: 2004199288920464966}
 --- !u!114 &2004199288920464966
@@ -102,6 +80,8 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
+  followDistance: 10
+  stoppingRadius: 10
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -114,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea8df8741560c5419c65741a80da967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   weight: 0.73
   useTagFilter: 0
   filterTags: []

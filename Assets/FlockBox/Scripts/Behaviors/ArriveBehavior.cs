@@ -44,11 +44,15 @@ namespace CloudFine
             }
 
             AttemptCatch(mine, closestTarget);
-            Vector3 desired_velocity =
-                (closestTarget.Position - mine.Position).normalized
-                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (closestTarget.Position - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, effectiveRadius);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
+        }
+
+        public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float effectiveRadius)
+        {
+            return (arrivePosition - mine.Position).normalized
+                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
         }
     }
 }
