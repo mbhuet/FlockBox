@@ -131,9 +131,13 @@ namespace CloudFine
             }
         }
 
-        protected void Start()
+        protected void Awake()
         {
             if (!isRegistered) RegisterNewAgent();
+        }
+
+        protected void Start()
+        {
             if (!hasSpawned)
             {
                 myNeighborhood = GetComponentInParent<FlockBox>();
@@ -153,6 +157,7 @@ namespace CloudFine
 
         private void MigrateData()
         {
+            if (shape == null) return;
             //MIGRATION
             if (m_radius != default)
             {

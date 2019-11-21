@@ -101,7 +101,14 @@ namespace CloudFine
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;
-            Velocity = UnityEngine.Random.insideUnitSphere * activeSettings.maxSpeed;
+            if (activeSettings)
+            {
+                Velocity = UnityEngine.Random.insideUnitSphere * activeSettings.maxSpeed;
+            }
+            else
+            {
+                Debug.LogWarning("No BehaviorSettings for SteeringAgent " + this.name);
+            }
         }
 
         protected void LockPosition(bool isLocked)
