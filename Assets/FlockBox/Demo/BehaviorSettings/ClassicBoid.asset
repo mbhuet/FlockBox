@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 1.37
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
