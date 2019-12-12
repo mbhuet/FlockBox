@@ -83,9 +83,13 @@ namespace CloudFine
 
         public void GetSurroundings(Vector3 position, Vector3 velocity, List<int> buckets, SurroundingsContainer surroundings)
         {
-            
-            if(buckets == null) buckets = new List<int>();
+
+            if (buckets==null)
+            {
+                buckets = new List<int>();
+            }
             else buckets.Clear();
+
 
             if (surroundings.perceptionRadius > 0)
             {
@@ -96,8 +100,7 @@ namespace CloudFine
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
 
-            surroundings.allAgents = new List<Agent>();
-
+            surroundings.allAgents.Clear();
             for (int i = 0; i < buckets.Count; i++)
             {
                 if (bucketToAgents.ContainsKey(buckets[i]))
@@ -319,7 +322,11 @@ namespace CloudFine
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
             if(buckets == null) buckets = new List<int>();
-            buckets.Capacity = buckets.Count + ((neighborhoodRadius*2+1) * (neighborhoodRadius*2+1) * (neighborhoodRadius*2+1));
+
+            int expectedCapacity = buckets.Count + ((neighborhoodRadius * 2 + 1) * (neighborhoodRadius * 2 + 1) * (neighborhoodRadius * 2 + 1));
+            if (buckets.Capacity < expectedCapacity) {
+                buckets.Capacity = expectedCapacity;
+            }
             int center_x = ToCellFloor(center.x);
             int center_y = ToCellFloor(center.y);
             int center_z = ToCellFloor(center.z);
