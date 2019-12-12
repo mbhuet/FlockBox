@@ -14,8 +14,8 @@ namespace CloudFine
     [CreateAssetMenu(menuName = "BehaviorSettings")]
     public class BehaviorSettings : ScriptableObject
     {
-        public float maxForce = 10;    // Maximum steering force
-        public float maxSpeed = 15;    // Maximum speed 
+        public float maxForce = 20;    // Maximum steering force
+        public float maxSpeed = 30;    // Maximum speed 
 
         [SerializeField]
         private ContainmentBehavior containmentBehavior = null;

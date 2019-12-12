@@ -240,6 +240,7 @@ namespace CloudFine
             int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
             int dz = Math.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
             int dm = Mathf.Max(Mathf.Max(dx, dy), dz);
+            int i = dm;
             x1 = y1 = z1 = dm / 2; /* error offset */
 
             int expectedCapacity = buckets.Count + dm;
