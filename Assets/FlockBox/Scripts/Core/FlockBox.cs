@@ -127,31 +127,6 @@ namespace CloudFine
         /// <param name="isStatic">Will this agent be updating its position every frame</param>
         public void UpdateAgentBuckets(Agent agent, List<int> buckets, bool isStatic)
         {
-            if(agent.shape.type == Shape.ShapeType.POINT)
-            {
-                if(agentToBuckets.TryGetValue(agent, out buckets))
-                {
-                    if (buckets.Count == 1)
-                    {
-                        int currentbucket = GetBucketOverlappingPoint(agent.Position);
-                        int lastBucket = agentToBuckets[agent][0];
-                        if (lastBucket != currentbucket)
-                        {
-                            bucketToAgents[lastBucket].Remove(agent);
-                            if (!bucketToAgents.ContainsKey(currentbucket))
-                            {
-                                bucketToAgents.Add(currentbucket, new List<Agent>(maxCellCapacity) { agent });
-                            }
-                            else
-                            {
-                                bucketToAgents[currentbucket].Add(agent);
-                            }
-                            agentToBuckets[agent][0] = currentbucket;
-                        }
-                        return;
-                    }
-                }
-            }
             RemoveAgentFromBuckets(agent, buckets);
             AddAgentToBuckets(agent, buckets, isStatic);
         }
@@ -172,10 +147,6 @@ namespace CloudFine
 
         }
 
-        private void UpdateTagRegistration(Agent agent)
-        {
-
-        }
 
         private List<Agent> _bucketContents;
         private void AddAgentToBuckets(Agent agent, List<int> buckets, bool isStatic)
@@ -205,7 +176,11 @@ namespace CloudFine
                 tagToAgents[agent.tag].Add(agent);
             }
 
-            buckets = new List<int>();
+            if (buckets == null)
+            {
+                buckets = new List<int>();
+            }
+            buckets.Clear();
 
             switch (agent.shape.type)
             {
@@ -213,7 +188,7 @@ namespace CloudFine
                     GetBucketsOverlappingSphere(agent.Position, agent.shape.radius, buckets);
                     break;
                 case Shape.ShapeType.POINT:
-                    buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
+                    buckets.Add ( GetBucketOverlappingPoint(agent.Position) );
                     break;
                 case Shape.ShapeType.LINE:
                     GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, buckets);
@@ -222,7 +197,7 @@ namespace CloudFine
                     GetBucketsOverlappingCylinder(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
                 default:
-                    buckets = new List<int>() { GetBucketOverlappingPoint(agent.Position) };
+                    buckets.Add( GetBucketOverlappingPoint(agent.Position) );
                     break;
             }
             for (int i = 0; i < buckets.Count; i++)
