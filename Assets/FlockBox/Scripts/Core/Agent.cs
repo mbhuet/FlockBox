@@ -198,10 +198,10 @@ namespace CloudFine
                 myNeighborhood.ValidateVelocity(ref m_velocity);
         }
 
-        protected void FindNeighborhoodBuckets()
+        protected virtual void FindNeighborhoodBuckets()
         {
             if(myNeighborhood)
-            myNeighborhood.UpdateAgentBuckets(this, buckets);
+            myNeighborhood.UpdateAgentBuckets(this, buckets, true);
         }
 
         protected void RemoveFromAllNeighborhoods()

@@ -94,6 +94,12 @@ namespace CloudFine
             }
         }
 
+        protected override void FindNeighborhoodBuckets()
+        {
+            if (myNeighborhood)
+                myNeighborhood.UpdateAgentBuckets(this, buckets, false);
+        }
+
 
         public override void Spawn(FlockBox neighborhood)
         {
