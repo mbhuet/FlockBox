@@ -239,10 +239,14 @@ namespace CloudFine
             int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
             int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
             int dz = Math.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
-            int dm = Mathf.Max(dx, dy, dz), i = dm; /* maximum difference */
+            int dm = Mathf.Max(Mathf.Max(dx, dy), dz);
             x1 = y1 = z1 = dm / 2; /* error offset */
 
-            buckets.Capacity = buckets.Count + dm;
+            int expectedCapacity = buckets.Count + dm;
+            if (buckets.Capacity < expectedCapacity)
+            {
+                buckets.Capacity = expectedCapacity;
+            }
             buckets.Add(CellPositionToHash(x0, y0, z0));
 
 

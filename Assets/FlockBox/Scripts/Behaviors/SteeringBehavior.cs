@@ -29,24 +29,25 @@ namespace CloudFine
         public virtual bool CanUseTagFilter => true;
         public virtual bool CanToggleActive => true;
 
-       
+        private static List<Agent> _filterCache = new List<Agent>();
         public static List<Agent> GetFilteredAgents(SurroundingsContainer surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
 
-            List<Agent> filtered = new List<Agent>();
+            _filterCache.Clear();
+
             foreach (Agent other in surroundings.allAgents)
             {
                 for(int i =0; i<behavior.filterTags.Length; i++)
                 {
                     if (other.CompareTag(behavior.filterTags[i]))
                     {
-                        filtered.Add(other);
+                        _filterCache.Add(other);
                         break;
                     }
                 }
             }
-            return filtered;
+            return _filterCache;
 
         }
     }

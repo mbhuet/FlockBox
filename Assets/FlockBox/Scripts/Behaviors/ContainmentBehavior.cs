@@ -9,14 +9,19 @@ namespace CloudFine
         public override bool CanUseTagFilter => false;
         public override bool CanToggleActive => false;
 
+        private Vector3 bufferedPosition;
+        private float[] minArray = new float[3];
         public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentBuffer)
         {
-            Vector3 bufferedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
+            bufferedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
             float distanceToBorder = float.MaxValue;
 
             if (worldDimensions.x > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.x, worldDimensions.x - mine.Position.x);
+                minArray[0] = distanceToBorder;
+                minArray[1] = mine.Position.x;
+                minArray[2] = worldDimensions.x - mine.Position.x;
+                distanceToBorder = Mathf.Min(minArray);
                 bufferedPosition.x = Mathf.Clamp(bufferedPosition.x, containmentBuffer, worldDimensions.x - containmentBuffer);
             }
             else
@@ -25,7 +30,10 @@ namespace CloudFine
             }
             if (worldDimensions.y > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.y, worldDimensions.y - mine.Position.y);
+                minArray[0] = distanceToBorder;
+                minArray[1] = mine.Position.y;
+                minArray[2] = worldDimensions.y - mine.Position.y;
+                distanceToBorder = Mathf.Min(minArray);
                 bufferedPosition.y = Mathf.Clamp(bufferedPosition.y, containmentBuffer, worldDimensions.y - containmentBuffer);
             }
             else
@@ -34,7 +42,10 @@ namespace CloudFine
             }
             if (worldDimensions.z > 0)
             {
-                distanceToBorder = Mathf.Min(distanceToBorder, mine.Position.z, worldDimensions.z - mine.Position.z);
+                minArray[0] = distanceToBorder;
+                minArray[1] = mine.Position.z;
+                minArray[2] = worldDimensions.z - mine.Position.z;
+                distanceToBorder = Mathf.Min(minArray);
                 bufferedPosition.z = Mathf.Clamp(bufferedPosition.z, containmentBuffer, worldDimensions.z - containmentBuffer);
             }
             else
