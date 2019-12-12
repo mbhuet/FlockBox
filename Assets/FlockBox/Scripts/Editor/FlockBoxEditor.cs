@@ -23,7 +23,8 @@ namespace CloudFine
 
         private SerializedProperty _populations;
         private SerializedProperty _gizmos;
-
+        private SerializedProperty _cellCapacity;
+        private SerializedProperty _useCellCapacity;
 
 
         private bool optimizationFoldout = false;
@@ -42,6 +43,8 @@ namespace CloudFine
             _sleep = serializedObject.FindProperty("sleepChance");
             _populations = serializedObject.FindProperty("startingPopulations");
             _gizmos = serializedObject.FindProperty("drawGizmos");
+            _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
+            _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
 
         }
 
@@ -84,7 +87,11 @@ namespace CloudFine
             if (optimizationFoldout)
             {
                 EditorGUILayout.Slider(_sleep, 0, 1);
-
+                EditorGUILayout.PropertyField(_useCellCapacity);
+                if (_useCellCapacity.boolValue)
+                {
+                    EditorGUILayout.PropertyField(_cellCapacity);
+                }
             }
             EditorGUILayout.Space();
 

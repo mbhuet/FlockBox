@@ -19,7 +19,6 @@ namespace CloudFine
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, List<Agent>> tagToAgents = new Dictionary<string, List<Agent>>();
 
-        private int defaultBucketCapacity = 10;
 
 
         [SerializeField]
@@ -41,6 +40,8 @@ namespace CloudFine
         public bool wrapEdges = false;
         public float boundaryBuffer = 10;
         public float sleepChance;
+        [SerializeField] private int maxCellCapacity = 10;
+        [SerializeField] private bool capCellCapacity = true;
 
         [Serializable]
         public struct AgentPopulation
@@ -115,7 +116,13 @@ namespace CloudFine
             }
         }
 
-        public void UpdateAgentBuckets(Agent agent, List<int> buckets)
+        /// <summary>
+        /// Remove from 
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="buckets"></param>
+        /// <param name="isStatic">Will this agent be updating its position every frame</param>
+        public void UpdateAgentBuckets(Agent agent, List<int> buckets, bool isStatic)
         {
             if(agent.shape.type == Shape.ShapeType.POINT)
             {
@@ -130,7 +137,7 @@ namespace CloudFine
                             bucketToAgents[lastBucket].Remove(agent);
                             if (!bucketToAgents.ContainsKey(currentbucket))
                             {
-                                bucketToAgents.Add(currentbucket, new List<Agent>(defaultBucketCapacity) { agent });
+                                bucketToAgents.Add(currentbucket, new List<Agent>(maxCellCapacity) { agent });
                             }
                             else
                             {
@@ -143,7 +150,7 @@ namespace CloudFine
                 }
             }
             RemoveAgentFromBuckets(agent, buckets);
-            AddAgentToBuckets(agent, buckets);
+            AddAgentToBuckets(agent, buckets, isStatic);
         }
 
         public void RemoveAgentFromBuckets(Agent agent, List<int> buckets)
@@ -167,7 +174,8 @@ namespace CloudFine
 
         }
 
-        private void AddAgentToBuckets(Agent agent, List<int> buckets)
+        private List<Agent> _bucketContents;
+        private void AddAgentToBuckets(Agent agent, List<int> buckets, bool isStatic)
         {
             if (!agentToBuckets.ContainsKey(agent))
             {
@@ -218,10 +226,15 @@ namespace CloudFine
             {
                 if (!bucketToAgents.ContainsKey(buckets[i]))
                 {
-                    bucketToAgents.Add(buckets[i], new List<Agent>(defaultBucketCapacity));
+                    bucketToAgents.Add(buckets[i], new List<Agent>(maxCellCapacity));
                 }
-                bucketToAgents[buckets[i]].Add(agent);
-                agentToBuckets[agent].Add(buckets[i]);
+                _bucketContents = bucketToAgents[buckets[i]];
+                if(!capCellCapacity || isStatic || (_bucketContents.Count<maxCellCapacity))
+                {
+                    _bucketContents.Add(agent);
+                    agentToBuckets[agent].Add(buckets[i]);
+                }
+
             }
 
 
