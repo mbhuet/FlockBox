@@ -86,19 +86,25 @@ namespace CloudFine
             optimizationFoldout = EditorGUILayout.Foldout(optimizationFoldout, "Optimization", true);
             if (optimizationFoldout)
             {
+                EditorGUI.indentLevel = 1;
                 EditorGUILayout.Slider(_sleep, 0, 1);
                 EditorGUILayout.PropertyField(_useCellCapacity);
                 if (_useCellCapacity.boolValue)
                 {
+                    EditorGUI.indentLevel = 2;
                     EditorGUILayout.PropertyField(_cellCapacity);
                 }
+                EditorGUI.indentLevel = 0;
             }
             EditorGUILayout.Space();
 
             debugFoldout = EditorGUILayout.Foldout(debugFoldout, "Debug", true);
             if (debugFoldout)
             {
+                EditorGUI.indentLevel = 1;
                 EditorGUILayout.PropertyField(_gizmos);
+                EditorGUI.indentLevel = 0;
+
             }
 
 

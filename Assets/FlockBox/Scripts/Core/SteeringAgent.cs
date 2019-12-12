@@ -91,6 +91,7 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+                Forward = transform.localRotation* Vector3.forward;
             }
         }
 

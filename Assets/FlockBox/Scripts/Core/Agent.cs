@@ -36,10 +36,13 @@ namespace CloudFine
             protected set { m_velocity = value; }
         }
 
+        private Vector3 m_forward = Vector3.zero;
         public Vector3 Forward
         {
-            get { return transform.localRotation * Vector3.forward; }
+            get { return m_forward; }
+            protected set { m_forward = value; }
         }
+
 
         private Vector3 LineStartPoint
         {
