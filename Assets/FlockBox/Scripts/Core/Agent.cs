@@ -36,7 +36,7 @@ namespace CloudFine
             protected set { m_velocity = value; }
         }
 
-        private Vector3 m_forward = Vector3.zero;
+        private Vector3 m_forward = Vector3.forward;
         public Vector3 Forward
         {
             get { return m_forward; }
@@ -251,6 +251,7 @@ namespace CloudFine
         protected virtual void UpdateTransform()
         {
             this.transform.localPosition = Position;
+            Forward = transform.forward;
         }
 
         public virtual void CatchAgent(Agent other)

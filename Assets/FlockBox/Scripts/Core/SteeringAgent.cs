@@ -85,14 +85,12 @@ namespace CloudFine
         }
 
         protected override void UpdateTransform()
-        {
-            
-            base.UpdateTransform();
+        {        
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
-                Forward = transform.localRotation* Vector3.forward;
             }
+            base.UpdateTransform();
         }
 
         protected override void FindNeighborhoodBuckets()
