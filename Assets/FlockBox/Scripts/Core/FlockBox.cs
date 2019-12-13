@@ -81,6 +81,7 @@ namespace CloudFine
         }
 
 
+        
         public void GetSurroundings(Vector3 position, Vector3 velocity, List<int> buckets, SurroundingsContainer surroundings)
         {
 
@@ -103,17 +104,17 @@ namespace CloudFine
             surroundings.allAgents.Clear();
             for (int i = 0; i < buckets.Count; i++)
             {
-                if (bucketToAgents.ContainsKey(buckets[i]))
+                if(bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache))
                 {
-                    surroundings.allAgents.AddRange(bucketToAgents[buckets[i]]);
+                    surroundings.allAgents.AddRange(_bucketContentsCache);
                 }
             }
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
-                    if (tagToAgents.ContainsKey(agentTag))
+                    if(tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
                     {
-                        surroundings.allAgents.AddRange(tagToAgents[agentTag]);
+                        surroundings.allAgents.AddRange(_bucketContentsCache);
                     }
                 }
             }
@@ -137,9 +138,9 @@ namespace CloudFine
             {
                 for (int i = 0; i < buckets.Count; i++)
                 {
-                    if (bucketToAgents.ContainsKey(buckets[i]))
+                    if (bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache))
                     {
-                        bucketToAgents[buckets[i]].Remove(agent);
+                        _bucketContentsCache.Remove(agent);
                     }
                 }
                 agentToBuckets[agent].Clear();
@@ -148,33 +149,51 @@ namespace CloudFine
         }
 
 
-        private List<Agent> _bucketContents;
+        private List<Agent> _bucketContentsCache;
+        private List<int> _bucketListCache;
+        private string _tagCache;
+
         private void AddAgentToBuckets(Agent agent, List<int> buckets, bool isStatic)
         {
-            if (!agentToBuckets.ContainsKey(agent))
-            {
-                agentToBuckets.Add(agent, new List<int>());
-            }
-            if (!lastKnownTag.ContainsKey(agent))
-            {
-                lastKnownTag.Add(agent, agent.tag);
-                if (!tagToAgents.ContainsKey(agent.tag))
-                {
-                    tagToAgents.Add(agent.tag, new List<Agent>());
-                }
-                tagToAgents[agent.tag].Add(agent);
 
-            }
-            else if (!agent.CompareTag(lastKnownTag[agent]))
+
+            if(lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
             {
-                tagToAgents[lastKnownTag[agent]].Remove(agent);
-                lastKnownTag[agent] = agent.tag;
-                if (!tagToAgents.ContainsKey(agent.tag))
+                //check for changes
+                if (!agent.CompareTag(_tagCache))
                 {
-                    tagToAgents.Add(agent.tag, new List<Agent>());
+                    if (tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //remove from old tag list
+                    {
+                        _bucketContentsCache.Remove(agent);
+                    }
+                    _tagCache = agent.tag;
+                    lastKnownTag[agent] = _tagCache; //update last known                 
+
+                    if(tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //add to new tag list
+                    {
+                        _bucketContentsCache.Add(agent);
+                    }
+                    else
+                    {
+                        tagToAgents.Add(_tagCache, new List<Agent>() { agent });
+                    }
                 }
-                tagToAgents[agent.tag].Add(agent);
             }
+            else //no tag recorded
+            {
+                _tagCache = agent.tag;
+                lastKnownTag.Add(agent, _tagCache); //save last know tag
+                if(tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //add to tag list
+                {
+                    _bucketContentsCache.Add(agent);
+                }
+                else
+                {
+                    tagToAgents.Add(agent.tag, new List<Agent>() { agent});
+
+                }
+            }
+
 
             if (buckets == null)
             {
@@ -200,19 +219,29 @@ namespace CloudFine
                     buckets.Add( GetBucketOverlappingPoint(agent.Position) );
                     break;
             }
+
+            if (!agentToBuckets.TryGetValue(agent, out _bucketListCache))
+            {
+                agentToBuckets.Add(agent, new List<int>());
+            }
+
             for (int i = 0; i < buckets.Count; i++)
             {
-                if (!bucketToAgents.ContainsKey(buckets[i]))
+                if (bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache)) //get bucket if already existing
                 {
-                    bucketToAgents.Add(buckets[i], new List<Agent>(maxCellCapacity));
-                }
-                _bucketContents = bucketToAgents[buckets[i]];
-                if(!capCellCapacity || isStatic || (_bucketContents.Count<maxCellCapacity))
-                {
-                    _bucketContents.Add(agent);
-                    agentToBuckets[agent].Add(buckets[i]);
+                    if (!capCellCapacity || isStatic || (_bucketContentsCache.Count < maxCellCapacity))
+                    {
+                        _bucketContentsCache.Add(agent);
+                        agentToBuckets[agent].Add(buckets[i]);
+                    }
                 }
 
+                else //create bucket, add agent
+                {
+                    bucketToAgents.Add(buckets[i], new List<Agent>(maxCellCapacity) { agent});
+                    agentToBuckets[agent].Add(buckets[i]);
+
+                }
             }
 
 
