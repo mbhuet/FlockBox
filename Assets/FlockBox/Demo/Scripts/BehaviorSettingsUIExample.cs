@@ -30,15 +30,15 @@ namespace CloudFine
 
                 if (alignment && alignmentSlider)
                 {
-                    alignmentSlider.SetValueWithoutNotify(alignment.weight/maxWeight);
+                    alignmentSlider.value = (alignment.weight / maxWeight);
                 }
-                if(cohesion && cohesionSlider)
+                if (cohesion && cohesionSlider)
                 {
-                    cohesionSlider.SetValueWithoutNotify(cohesion.weight/maxWeight);
+                    cohesionSlider.value = (cohesion.weight / maxWeight);
                 }
-                if(separation && separationSlider)
+                if (separation && separationSlider)
                 {
-                    separationSlider.SetValueWithoutNotify(separation.weight/maxWeight);
+                    separationSlider.value = (separation.weight / maxWeight);
                 }
             }
         }

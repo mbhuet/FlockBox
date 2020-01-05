@@ -77,7 +77,7 @@ namespace CloudFine
                     if (type.IsAbstract) continue;
                     if (behaviors.Any(x => x.GetType() == type) || type == typeof(ContainmentBehavior))
                     {
-                        menu.AddDisabledItem(new GUIContent(type.Name), false);
+                        menu.AddDisabledItem(new GUIContent(type.Name));
                     }
                     else
                     {
