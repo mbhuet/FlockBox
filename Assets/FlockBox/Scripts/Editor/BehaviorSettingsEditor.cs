@@ -107,8 +107,12 @@ namespace CloudFine
 
             bool foldout = foldoutProperty.boolValue;
 
+#if UNITY_2018
+            foldout = EditorGUILayout.Foldout(foldout, behavior.GetType().Name);
+#else
             foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, behavior.GetType().Name);
             EditorGUILayout.EndFoldoutHeaderGroup();
+#endif
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
