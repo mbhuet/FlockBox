@@ -8,7 +8,7 @@ namespace CloudFine
     [System.Serializable]
     public abstract class SteeringBehavior : ScriptableObject
     {
-        public bool IsActive => isActive;
+        public bool IsActive { get { return isActive; } }
         [SerializeField, HideInInspector]
         private bool isActive = true;
         [HideInInspector]
@@ -26,8 +26,8 @@ namespace CloudFine
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings);
         public virtual void AddPerception(SurroundingsContainer surroundings) { }
-        public virtual bool CanUseTagFilter => true;
-        public virtual bool CanToggleActive => true;
+        public virtual bool CanUseTagFilter { get { return true; } }
+        public virtual bool CanToggleActive { get { return true; } }
 
         private static List<Agent> _filterCache = new List<Agent>();
         public static List<Agent> GetFilteredAgents(SurroundingsContainer surroundings, SteeringBehavior behavior)

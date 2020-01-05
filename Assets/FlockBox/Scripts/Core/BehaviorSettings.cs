@@ -19,11 +19,11 @@ namespace CloudFine
 
         [SerializeField]
         private ContainmentBehavior containmentBehavior = null;
-        public ContainmentBehavior Containment => containmentBehavior;
+        public ContainmentBehavior Containment { get { return containmentBehavior; } }
 
         [SerializeField]
         private SteeringBehavior[] behaviors = new SteeringBehavior[0];
-        public SteeringBehavior[] Behaviors => behaviors;
+        public SteeringBehavior[] Behaviors { get { return behaviors; } }
         public int NumBehaviors
         {
             get { return behaviors.Length; }

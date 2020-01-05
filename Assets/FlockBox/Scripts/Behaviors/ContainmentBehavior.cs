@@ -6,8 +6,8 @@ namespace CloudFine
 {
     public class ContainmentBehavior : ForecastSteeringBehavior
     {
-        public override bool CanUseTagFilter => false;
-        public override bool CanToggleActive => false;
+        public override bool CanUseTagFilter { get { return false; } }
+        public override bool CanToggleActive { get { return false; } }
 
         private Vector3 bufferedPosition;
         private float[] minArray = new float[3];
