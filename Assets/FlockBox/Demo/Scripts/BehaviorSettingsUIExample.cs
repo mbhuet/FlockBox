@@ -8,6 +8,7 @@ namespace CloudFine
     public class BehaviorSettingsUIExample : MonoBehaviour
     {
         public BehaviorSettings mySettings;
+        public float maxWeight = 2f;
 
         private AlignmentBehavior alignment;
         private CohesionBehavior cohesion;
@@ -29,15 +30,15 @@ namespace CloudFine
 
                 if (alignment && alignmentSlider)
                 {
-                    alignmentSlider.SetValueWithoutNotify(alignment.weight);
+                    alignmentSlider.SetValueWithoutNotify(alignment.weight/maxWeight);
                 }
                 if(cohesion && cohesionSlider)
                 {
-                    cohesionSlider.SetValueWithoutNotify(cohesion.weight);
+                    cohesionSlider.SetValueWithoutNotify(cohesion.weight/maxWeight);
                 }
                 if(separation && separationSlider)
                 {
-                    separationSlider.SetValueWithoutNotify(separation.weight);
+                    separationSlider.SetValueWithoutNotify(separation.weight/maxWeight);
                 }
             }
         }
@@ -46,7 +47,8 @@ namespace CloudFine
         {
             if (alignment)
             {
-                alignment.weight = t;
+                alignment.weight = t*maxWeight;
+                MarkSettingsDirty();
             }
         }
 
@@ -54,7 +56,8 @@ namespace CloudFine
         {
             if (cohesion)
             {
-                cohesion.weight = t;
+                cohesion.weight = t*maxWeight;
+                MarkSettingsDirty();
             }
         }
 
@@ -62,8 +65,23 @@ namespace CloudFine
         {
             if (separation)
             {
-                separation.weight = t;
+                separation.weight = t*maxWeight;
+                MarkSettingsDirty();
             }
+        }
+
+
+        /// <summary>
+        /// Will cause settings changes to be saved by "File/Save Project"
+        /// </summary>
+        private void MarkSettingsDirty()
+        {
+#if UNITY_EDITOR
+            if (mySettings)
+            {
+                UnityEditor.EditorUtility.SetDirty(mySettings);
+            }
+#endif
         }
     }
 }
