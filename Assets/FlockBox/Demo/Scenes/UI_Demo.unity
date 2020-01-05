@@ -1480,7 +1480,7 @@ MonoBehaviour:
   dimensions_y: 10
   dimensions_z: 0
   cellSize: 10
-  wrapEdges: 0
+  wrapEdges: 1
   boundaryBuffer: 10
   sleepChance: 0
   maxCellCapacity: 10
