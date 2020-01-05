@@ -1610,7 +1610,7 @@ RectTransform:
   m_Father: {fileID: 1716854267}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.78, y: 0}
+  m_AnchorMin: {x: 0.7, y: 0}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -1764,6 +1764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mySettings: {fileID: 11400000, guid: d749565fa040e6d41a4209f21e978a16, type: 2}
+  maxWeight: 2
   alignmentSlider: {fileID: 1996837690}
   cohesionSlider: {fileID: 1286208022}
   separationSlider: {fileID: 930998213}
