@@ -36,6 +36,18 @@ namespace CloudFine
             return behaviors[index];
         }
 
+        public T GetBehavior<T>() where T : SteeringBehavior
+        {
+            foreach(SteeringBehavior behavior in Behaviors)
+            {
+                if(behavior.GetType() == typeof(T))
+                {
+                    return (T)behavior;
+                }
+            }
+            return null;
+        }
+
         public void AddPerceptions(SurroundingsContainer surroundings)
         {
             surroundings.perceptionRadius = 0;

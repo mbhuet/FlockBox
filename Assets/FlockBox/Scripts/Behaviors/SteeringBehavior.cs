@@ -21,8 +21,8 @@ namespace CloudFine
         public bool drawDebug;
         [HideInInspector]
         public Color debugColor = Color.white;
-        [HideInInspector]
-        public bool foldout = true;
+        [SerializeField, HideInInspector]
+        private bool foldout = true;
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings);
         public virtual void AddPerception(SurroundingsContainer surroundings) { }
