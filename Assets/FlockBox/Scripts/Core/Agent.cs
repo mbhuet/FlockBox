@@ -162,15 +162,15 @@ namespace CloudFine
         {
             if (shape == null) return;
             //MIGRATION
-            if (m_radius != default)
+            if (m_radius != 0)
             {
                 shape.radius = m_radius;
-                m_radius = default;
+                m_radius = 0;
             }
-            if (neighborType != default && shape.type == default)
+            if (neighborType != 0 && shape.type == 0)
             {
                 shape.type = (Shape.ShapeType)neighborType;
-                neighborType = default;
+                neighborType = 0;
             }
         }
 
