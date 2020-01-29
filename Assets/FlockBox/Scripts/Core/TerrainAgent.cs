@@ -20,11 +20,19 @@ namespace CloudFine
         {
             base.UpdateVelocity();
 
-            RaycastToTerrain(Position, out currentPostHit);
+            if (
+            RaycastToTerrain(Position, out currentPostHit)
+                &&
+            RaycastToTerrain(Position + Velocity * Time.deltaTime, out goalPosHit)
+            )
+            {
+                slopedVelocity = (goalPosHit.point - currentPostHit.point).normalized;
 
-            RaycastToTerrain(Position + Velocity * Time.deltaTime, out goalPosHit);
-
-            slopedVelocity = (goalPosHit.point - currentPostHit.point).normalized * Velocity.magnitude;
+            }
+            else
+            {
+                slopedVelocity = Vector3.zero;
+            }
         }
 
 
@@ -34,10 +42,18 @@ namespace CloudFine
             {
                 transform.position = terrainHit.point + Vector3.up * shape.radius;
             }
+            else
+            {
+                transform.localPosition = Position;
+            }
 
             if (slopedVelocity.magnitude > 0)
             {
-                transform.localRotation = Quaternion.LookRotation(slopedVelocity.normalized, Vector3.up);
+                transform.rotation = Quaternion.LookRotation(slopedVelocity.normalized, Vector3.up);
+            }
+            else if (Velocity.magnitude > 0)
+            {
+                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
             }
 
             Forward = transform.forward;
@@ -47,7 +63,6 @@ namespace CloudFine
         private bool RaycastToTerrain(Vector3 origin, out RaycastHit hit)
         {
             origin = transform.parent.TransformPoint(origin);
-
            return Physics.Raycast(origin + Vector3.up * raycastRange * .5f, Vector3.down, out hit, raycastRange, terrainLayerMask);
         }
 
