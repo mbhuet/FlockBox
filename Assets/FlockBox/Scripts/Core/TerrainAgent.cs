@@ -10,42 +10,36 @@ namespace CloudFine
         private Ray terrainRay;
         private RaycastHit terrainHit;
         public float raycastRange = 1000f;
-        
+
+        private Vector3 slopedVelocity;
+
         protected override void UpdateVelocity()
         {
             base.UpdateVelocity();
-            //project onto terrain, get new velocity
 
             RaycastHit currentPostHit;
             RaycastToTerrain(Position, out currentPostHit);
-            //Physics.Raycast(Position + Vector3.up * 500f, Vector3.down * 1000f, out currentPostHit, 1000, terrainLayerMask);
 
             RaycastHit goalPosHit;
-            RaycastToTerrain(Position + Velocity, out goalPosHit);
-            //Physics.Raycast((Position + Velocity) + Vector3.up * 500f, Vector3.down * 1000f, out goalPosHit, 1000, terrainLayerMask);
+            RaycastToTerrain(Position + Velocity * Time.deltaTime, out goalPosHit);
 
-
-            
-                Velocity = (goalPosHit.point - currentPostHit.point).normalized * Velocity.magnitude;
- 
-
-
+            slopedVelocity = (goalPosHit.point - currentPostHit.point).normalized * Velocity.magnitude;
         }
-        
 
-        protected override void UpdatePosition()
+
+        protected override void UpdateTransform()
         {
-            base.UpdatePosition();
-
-            terrainRay.origin = (Position) + Vector3.up * 500f;
-            terrainRay.direction = Vector3.down;
-            //Debug.DrawRay(terrainRay.origin, terrainRay.direction * 1000, Color.cyan, 10);
-
             if (RaycastToTerrain(Position, out terrainHit))
-                //Physics.Raycast(terrainRay, out terrainHit, 1000, terrainLayerMask))
             {
-                Position = terrainHit.point + Vector3.up * shape.radius;
+                transform.position = terrainHit.point + Vector3.up * shape.radius;
             }
+
+            if (slopedVelocity.magnitude > 0)
+            {
+                transform.localRotation = Quaternion.LookRotation(slopedVelocity.normalized, Vector3.up);
+            }
+
+            Forward = transform.forward;
 
         }
 
