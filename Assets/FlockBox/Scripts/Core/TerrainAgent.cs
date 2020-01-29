@@ -9,6 +9,9 @@ namespace CloudFine
         public LayerMask terrainLayerMask;
         private Ray terrainRay;
         private RaycastHit terrainHit;
+        RaycastHit currentPostHit;
+        RaycastHit goalPosHit;
+
         public float raycastRange = 1000f;
 
         private Vector3 slopedVelocity;
@@ -17,10 +20,8 @@ namespace CloudFine
         {
             base.UpdateVelocity();
 
-            RaycastHit currentPostHit;
             RaycastToTerrain(Position, out currentPostHit);
 
-            RaycastHit goalPosHit;
             RaycastToTerrain(Position + Velocity * Time.deltaTime, out goalPosHit);
 
             slopedVelocity = (goalPosHit.point - currentPostHit.point).normalized * Velocity.magnitude;
@@ -45,7 +46,9 @@ namespace CloudFine
 
         private bool RaycastToTerrain(Vector3 origin, out RaycastHit hit)
         {
-            return Physics.Raycast(origin + Vector3.up * raycastRange * .5f, Vector3.down, out hit, raycastRange, terrainLayerMask);
+            origin = transform.parent.TransformPoint(origin);
+
+           return Physics.Raycast(origin + Vector3.up * raycastRange * .5f, Vector3.down, out hit, raycastRange, terrainLayerMask);
         }
 
     }
