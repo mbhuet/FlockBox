@@ -14,42 +14,29 @@ namespace CloudFine
 
         public float raycastRange = 1000f;
 
-        private Vector3 slopedVelocity;
+        private Vector3 worldPosDelta;
 
-        protected override void UpdateVelocity()
-        {
-            base.UpdateVelocity();
-
-            if (
-            RaycastToTerrain(Position, out currentPostHit)
-                &&
-            RaycastToTerrain(Position + Velocity * Time.deltaTime, out goalPosHit)
-            )
-            {
-                slopedVelocity = (goalPosHit.point - currentPostHit.point).normalized;
-
-            }
-            else
-            {
-                slopedVelocity = Vector3.zero;
-            }
-        }
+        
 
 
         protected override void UpdateTransform()
         {
+            Vector3 oldWorldPos = transform.position;
+            worldPosDelta = Vector3.zero;
+
             if (RaycastToTerrain(Position, out terrainHit))
             {
                 transform.position = terrainHit.point + Vector3.up * shape.radius;
+                worldPosDelta = transform.position - oldWorldPos;
             }
             else
             {
                 transform.localPosition = Position;
             }
 
-            if (slopedVelocity.magnitude > 0)
+            if (worldPosDelta.magnitude > 0)
             {
-                transform.rotation = Quaternion.LookRotation(slopedVelocity.normalized, Vector3.up);
+                transform.rotation = Quaternion.LookRotation(worldPosDelta.normalized, Vector3.up);
             }
             else if (Velocity.magnitude > 0)
             {
