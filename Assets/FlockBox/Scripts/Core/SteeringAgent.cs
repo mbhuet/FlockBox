@@ -27,13 +27,8 @@ namespace CloudFine
                 Flock(mySurroundings);
             }
             Contain();
-            Velocity += (Acceleration) * Time.deltaTime;
-            Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
-            ValidateVelocity();
-
-            Position += (Velocity * Time.deltaTime);
-            ValidatePosition();
-            Acceleration *= 0;
+            UpdateVelocity();
+            UpdatePosition();
             UpdateTransform();
         }
 
@@ -82,6 +77,21 @@ namespace CloudFine
         {
             steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
+        }
+
+        protected virtual void UpdateVelocity()
+        {
+            Velocity += (Acceleration) * Time.deltaTime;
+            Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
+            ValidateVelocity();
+            Acceleration *= 0;
+
+        }
+
+        protected virtual void UpdatePosition()
+        {
+            Position += (Velocity * Time.deltaTime);
+            ValidatePosition();
         }
 
         protected override void UpdateTransform()
