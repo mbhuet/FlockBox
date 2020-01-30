@@ -60,7 +60,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 0, g: 0.6346965, b: 1, a: 1}
   foldout: 1
-  effectiveRadius: 20
+  effectiveRadius: 30
   fieldOfView: 360
 --- !u!114 &11400000
 MonoBehaviour:
