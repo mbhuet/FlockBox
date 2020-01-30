@@ -35,8 +35,6 @@ namespace CloudFine
             ValidatePosition();
             Acceleration *= 0;
             UpdateTransform();
-
-            Debug.DrawLine(transform.position, transform.position + Forward * 2f, Color.blue);
         }
 
 
