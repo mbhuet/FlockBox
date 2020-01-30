@@ -6,37 +6,33 @@ namespace CloudFine
 {
     public class TerrainAgent : SteeringAgent
     {
-        public LayerMask terrainLayerMask;
-        private Ray terrainRay;
-        private RaycastHit terrainHit;
-        RaycastHit currentPostHit;
-        RaycastHit goalPosHit;
+        public LayerMask _terrainLayerMask;
+        /// <summary>
+        /// Should be a little more than the maximum elevation of your Terrain. Otherwise, agents spawned beneath the highest points may not find the surface.
+        /// </summary>
+        public float _raycastDistance = 1000f;
 
-        public float raycastRange = 1000f;
-
-        private Vector3 worldPosDelta;
-
-        
-
+        private RaycastHit _terrainHit;
+        private Vector3 _worldPosDelta;
 
         protected override void UpdateTransform()
         {
             Vector3 oldWorldPos = transform.position;
-            worldPosDelta = Vector3.zero;
+            _worldPosDelta = Vector3.zero;
 
-            if (RaycastToTerrain(Position, out terrainHit))
+            if(Physics.Raycast(transform.parent.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
             {
-                transform.position = terrainHit.point + Vector3.up * shape.radius;
-                worldPosDelta = transform.position - oldWorldPos;
+                transform.position = _terrainHit.point + Vector3.up * shape.radius;
+                _worldPosDelta = transform.position - oldWorldPos;
             }
             else
             {
                 transform.localPosition = Position;
             }
 
-            if (worldPosDelta.magnitude > 0)
+            if (_worldPosDelta.magnitude > 0)
             {
-                transform.rotation = Quaternion.LookRotation(worldPosDelta.normalized, Vector3.up);
+                transform.rotation = Quaternion.LookRotation(_worldPosDelta.normalized, Vector3.up);
             }
             else if (Velocity.magnitude > 0)
             {
@@ -45,12 +41,6 @@ namespace CloudFine
 
             Forward = transform.localRotation * Vector3.forward;
 
-        }
-
-        private bool RaycastToTerrain(Vector3 origin, out RaycastHit hit)
-        {
-            origin = transform.parent.TransformPoint(origin);
-           return Physics.Raycast(origin + Vector3.up * raycastRange * .5f, Vector3.down, out hit, raycastRange, terrainLayerMask);
         }
 
     }

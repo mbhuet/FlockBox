@@ -52,9 +52,10 @@ MonoBehaviour:
     length: 1
   drawDebug: 1
   activeSettings: {fileID: 11400000, guid: 29feaf021ce9fee428a94e509bf2ac6d, type: 2}
-  terrainLayerMask:
+  _terrainLayerMask:
     serializedVersion: 2
     m_Bits: 16
+  _raycastDistance: 1000
 --- !u!1 &7765479890752917496
 GameObject:
   m_ObjectHideFlags: 0
