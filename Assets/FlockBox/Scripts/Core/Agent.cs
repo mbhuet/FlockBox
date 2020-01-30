@@ -23,6 +23,9 @@ namespace CloudFine
         
 
         private Vector3 m_position = Vector3.zero;
+        /// <summary>
+        /// Position in local space
+        /// </summary>
         public Vector3 Position
         {
             get { return m_position; }
@@ -30,6 +33,9 @@ namespace CloudFine
         }
 
         private Vector3 m_velocity = Vector3.zero;
+        /// <summary>
+        /// Velocity in local space
+        /// </summary>
         public Vector3 Velocity
         {
             get { return m_velocity; }
@@ -37,6 +43,9 @@ namespace CloudFine
         }
 
         private Vector3 m_forward = Vector3.forward;
+        /// <summary>
+        /// Forward in local space. Magnitude will never be zero.
+        /// </summary>
         public Vector3 Forward
         {
             get { return m_forward; }
@@ -251,7 +260,7 @@ namespace CloudFine
         protected virtual void UpdateTransform()
         {
             this.transform.localPosition = Position;
-            Forward = transform.forward;
+            Forward = transform.localRotation * Vector3.forward;
         }
 
         public virtual void CatchAgent(Agent other)

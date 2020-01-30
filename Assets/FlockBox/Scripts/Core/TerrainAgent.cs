@@ -43,7 +43,7 @@ namespace CloudFine
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
             }
 
-            Forward = transform.forward;
+            Forward = transform.localRotation * Vector3.forward;
 
         }
 
