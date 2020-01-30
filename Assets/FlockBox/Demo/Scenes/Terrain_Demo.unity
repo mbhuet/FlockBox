@@ -138,11 +138,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: TerrainBoid (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 3040563576298773591, guid: de0d3717a20ebd34390a378c86c664c5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4214186027875092558, guid: de0d3717a20ebd34390a378c86c664c5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1052,7 +1047,7 @@ MonoBehaviour:
   - prefab: {fileID: 3617397216089966378, guid: de0d3717a20ebd34390a378c86c664c5,
       type: 3}
     population: 100
-  drawGizmos: 1
+  drawGizmos: 0
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0
@@ -1268,11 +1263,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TerrainBoid (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3040563576298773591, guid: de0d3717a20ebd34390a378c86c664c5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4214186027875092558, guid: de0d3717a20ebd34390a378c86c664c5,
         type: 3}

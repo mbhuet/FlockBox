@@ -50,7 +50,7 @@ MonoBehaviour:
     type: 0
     radius: 1
     length: 1
-  drawDebug: 1
+  drawDebug: 0
   activeSettings: {fileID: 11400000, guid: 29feaf021ce9fee428a94e509bf2ac6d, type: 2}
   _terrainLayerMask:
     serializedVersion: 2
@@ -113,7 +113,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 59d75cb0a295d3441b7c3d4afaa67dba, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
