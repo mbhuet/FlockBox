@@ -24,6 +24,7 @@ namespace CloudFine
             {
                 transform.position = _terrainHit.point + Vector3.up * shape.radius;
                 _worldPosDelta = transform.position - oldWorldPos;
+                Position = transform.localPosition;
             }
             else
             {

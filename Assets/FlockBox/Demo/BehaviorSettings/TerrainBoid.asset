@@ -82,6 +82,28 @@ MonoBehaviour:
   - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
   - {fileID: 2484503824146704289}
+  - {fileID: 2145920418875072621}
+--- !u!114 &2145920418875072621
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 991e65c331b0e6748af0d23822cd3eb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 3.34
+  useTagFilter: 1
+  filterTags:
+  - Obstacle
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  foldout: 1
+  lookAheadSeconds: 5
 --- !u!114 &2484503824146704289
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -94,11 +116,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
+  isActive: 1
   weight: 2.68
   useTagFilter: 0
   filterTags: []
-  drawDebug: 1
+  drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
   wanderScope: 90
