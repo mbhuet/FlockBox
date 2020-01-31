@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 2.56
   useTagFilter: 0
   filterTags: []
-  drawDebug: 0
+  drawDebug: 1
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
-  lookAheadSeconds: 0.8
+  lookAheadSeconds: 5
 --- !u!114 &-6742341320620086265
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 0.47
+  weight: 2.65
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 0.29
+  weight: 1.55
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 2.68
+  weight: 1.35
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 0.73
+  weight: 1.39
   useTagFilter: 0
   filterTags: []
   drawDebug: 0

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -118,6 +119,8 @@ namespace CloudFine
                     }
                 }
             }
+
+            surroundings.allAgents = surroundings.allAgents.Distinct().ToList();
         }
 
         /// <summary>
