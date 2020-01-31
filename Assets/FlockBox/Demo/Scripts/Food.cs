@@ -6,8 +6,9 @@ namespace CloudFine
 {
     public class Food : Agent
     {
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             OnCaught += Relocate;
         }
 

@@ -143,7 +143,7 @@ namespace CloudFine
             }
         }
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             if (!isRegistered) RegisterNewAgent();
         }
