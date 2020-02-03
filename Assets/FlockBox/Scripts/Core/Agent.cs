@@ -157,6 +157,10 @@ namespace CloudFine
                 {
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
                 }
+                else
+                {
+                    Debug.LogWarning("Agent " + this.name + " is not a child of a FlockBox object.", this);
+                }
             }
 
             MigrateData();
