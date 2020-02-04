@@ -9,6 +9,8 @@ namespace CloudFine
     [System.Serializable]
     public class SteeringAgent : Agent
     {
+
+        private Vector3 Acceleration = Vector3.zero;
         protected float speedThrottle = 1;
 
         public BehaviorSettings activeSettings;
@@ -22,14 +24,13 @@ namespace CloudFine
             if (freezePosition) return;
             sleeping = (UnityEngine.Random.value < myNeighborhood.sleepChance);
             if(!sleeping){
+                Acceleration *= 0;
                 activeSettings.AddPerceptions(mySurroundings);
                 myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
                 Flock(mySurroundings);
             }
             Contain();
-            UpdateVelocity();
-            UpdatePosition();
-            UpdateTransform();
+            ApplySteeringAcceleration(Acceleration);
         }
 
 
@@ -79,29 +80,22 @@ namespace CloudFine
             steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
         }
 
-        protected virtual void UpdateVelocity()
+        /// <summary>
+        /// Apply the results of all steering behavior calculations to this object.
+        /// </summary>
+        /// <param name="acceleration">The result of all steering behaviors.</param>
+        protected virtual void ApplySteeringAcceleration(Vector3 acceleration)
         {
-            Velocity += (Acceleration) * Time.deltaTime;
+            Velocity += (acceleration) * Time.deltaTime;
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             ValidateVelocity();
-            Acceleration *= 0;
 
-        }
-
-        protected virtual void UpdatePosition()
-        {
             Position += (Velocity * Time.deltaTime);
             ValidatePosition();
+
+            UpdateTransform();
         }
 
-        protected override void UpdateTransform()
-        {        
-            if (Velocity.magnitude > 0)
-            {
-                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
-            }
-            base.UpdateTransform();
-        }
 
         protected override void FindNeighborhoodBuckets()
         {

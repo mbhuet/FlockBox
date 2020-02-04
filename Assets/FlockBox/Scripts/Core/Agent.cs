@@ -34,7 +34,7 @@ namespace CloudFine
 
         private Vector3 m_velocity = Vector3.zero;
         /// <summary>
-        /// Velocity in local space
+        /// Velocity in local space. Magnitude may be zero.
         /// </summary>
         public Vector3 Velocity
         {
@@ -62,12 +62,7 @@ namespace CloudFine
             get { return Position + Forward * shape.length; }
         }
 
-        private Vector3 m_acceleration = Vector3.zero;
-        public Vector3 Acceleration
-        {
-            get { return m_acceleration; }
-            protected set { m_acceleration = value; }
-        }
+
 
         [SerializeField][HideInInspector]
         private float m_radius = 1f;
@@ -202,16 +197,26 @@ namespace CloudFine
 
         }
 
-        protected void ValidatePosition()
+        /// <summary>
+        /// Validate Position with current FlockBox. If the FlockBox wraps edges, Position will be wrapped. Otherwise it will be clamped to inside the FlockBox.
+        /// </summary>
+        /// <returns>True if Position was adjusted.</returns>
+        protected bool ValidatePosition()
         {
             if(myNeighborhood)
-            myNeighborhood.ValidatePosition(ref m_position);
+                return myNeighborhood.ValidatePosition(ref m_position);
+            return true;
         }
 
-        protected void ValidateVelocity()
+        /// <summary>
+        /// Validate Velocity with current FlockBox. Will zero out any dimension which the FlockBox does not have.
+        /// </summary>
+        /// <returns>True if Velocity was adjusted.</returns>
+        protected bool ValidateVelocity()
         {
             if (myNeighborhood)
-                myNeighborhood.ValidateVelocity(ref m_velocity);
+                return myNeighborhood.ValidateVelocity(ref m_velocity);
+            return true;
         }
 
         protected virtual void FindNeighborhoodBuckets()
@@ -261,9 +266,17 @@ namespace CloudFine
             FindNeighborhoodBuckets();
         }
 
+
+        /// <summary>
+        /// Updates transform to match current Position and Velocity.
+        /// </summary>
         protected virtual void UpdateTransform()
         {
             this.transform.localPosition = Position;
+            if (Velocity.magnitude > 0)
+            {
+                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+            }
             Forward = transform.localRotation * Vector3.forward;
         }
 
