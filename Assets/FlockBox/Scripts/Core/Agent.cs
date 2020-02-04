@@ -200,7 +200,7 @@ namespace CloudFine
         /// <summary>
         /// Validate Position with current FlockBox. If the FlockBox wraps edges, Position will be wrapped. Otherwise it will be clamped to inside the FlockBox.
         /// </summary>
-        /// <returns>True if Position was adjusted.</returns>
+        /// <returns>False if Position was adjusted.</returns>
         protected bool ValidatePosition()
         {
             if(myNeighborhood)
@@ -211,7 +211,7 @@ namespace CloudFine
         /// <summary>
         /// Validate Velocity with current FlockBox. Will zero out any dimension which the FlockBox does not have.
         /// </summary>
-        /// <returns>True if Velocity was adjusted.</returns>
+        /// <returns>False if Velocity was adjusted.</returns>
         protected bool ValidateVelocity()
         {
             if (myNeighborhood)
