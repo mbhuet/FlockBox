@@ -395,10 +395,12 @@ namespace CloudFine
             return position;
         }
 
-        public void ValidatePosition(ref Vector3 position)
+        public bool ValidatePosition(ref Vector3 position)
         {
+            bool valid = true;
             if (dimensions_x <= 0)
             {
+                valid = valid && position.x == 0;
                 position.x = 0;
             }
             else
@@ -406,14 +408,17 @@ namespace CloudFine
                 if (position.x < 0)
                 {
                     position.x = wrapEdges ? dimensions_x * cellSize + position.x : 0;
+                    valid = false;
                 }
                 else if (position.x > dimensions_x * cellSize)
                 {
                     position.x = wrapEdges ? position.x % (dimensions_x * cellSize) : dimensions_x * cellSize;
+                    valid = false;
                 }
             }
             if (dimensions_y <= 0)
             {
+                valid = valid && position.y == 0;
                 position.y = 0;
             }
             else
@@ -421,34 +426,58 @@ namespace CloudFine
                 if (position.y < 0)
                 {
                     position.y = wrapEdges ? dimensions_y * cellSize + position.y : 0;
+                    valid = false;
+
                 }
                 else if (position.y > dimensions_y * cellSize)
                 {
                     position.y = wrapEdges ? position.y % (dimensions_y * cellSize) : dimensions_y * cellSize;
+                    valid = false;
+
                 }
             }
 
             if (dimensions_z <= 0)
             {
+                valid = valid && position.z == 0;
                 position.z = 0;
             }
             else { 
                 if (position.z < 0)
                 {
                     position.z = wrapEdges ? dimensions_z * cellSize + position.z : 0;
+                    valid = false;
+
                 }
                 else if (position.z > dimensions_z * cellSize)
                 {
                     position.z = wrapEdges ? position.z % (dimensions_z * cellSize) : dimensions_z * cellSize;
+                    valid = false;
+
                 }
             }
+            return valid;
         }
 
-        public void ValidateVelocity(ref Vector3 velocity)
+        public bool ValidateVelocity(ref Vector3 velocity)
         {
-            if (dimensions_x <= 0) velocity.x = 0;
-            if (dimensions_y <= 0) velocity.y = 0;
-            if (dimensions_z <= 0) velocity.z = 0;
+            bool valid = true;
+            if (dimensions_x <= 0)
+            {
+                valid = valid && velocity.x == 0;
+                velocity.x = 0;
+            }
+            if (dimensions_y <= 0)
+            {
+                valid = valid && velocity.y == 0;
+                velocity.y = 0;
+            }
+            if (dimensions_z <= 0)
+            {
+                valid = valid && velocity.z == 0;
+                velocity.z = 0;
+            }
+            return valid;
         }
 
 
