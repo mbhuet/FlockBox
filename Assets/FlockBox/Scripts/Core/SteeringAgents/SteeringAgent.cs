@@ -10,7 +10,8 @@ namespace CloudFine
     public class SteeringAgent : Agent
     {
 
-        private Vector3 Acceleration = Vector3.zero;
+        protected Vector3 Acceleration { get; private set; }
+
         protected float speedThrottle = 1;
 
         public BehaviorSettings activeSettings;
@@ -30,7 +31,7 @@ namespace CloudFine
                 Flock(mySurroundings);
             }
             Contain();
-            ApplySteeringAcceleration(Acceleration);
+            ApplySteeringAcceleration();
         }
 
 
@@ -83,10 +84,9 @@ namespace CloudFine
         /// <summary>
         /// Apply the results of all steering behavior calculations to this object.
         /// </summary>
-        /// <param name="acceleration">The result of all steering behaviors.</param>
-        protected virtual void ApplySteeringAcceleration(Vector3 acceleration)
+        protected virtual void ApplySteeringAcceleration()
         {
-            Velocity += (acceleration) * Time.deltaTime;
+            Velocity += (Acceleration) * Time.deltaTime;
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             ValidateVelocity();
 

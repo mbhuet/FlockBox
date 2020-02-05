@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class TerrainAgent : SteeringAgent
+    public class TerrainSteeringAgent : SteeringAgent
     {
         public LayerMask _terrainLayerMask;
         /// <summary>

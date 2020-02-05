@@ -23,10 +23,10 @@ namespace CloudFine
         public Color debugColor = Color.white;
 
         //supress "field declared but not used" warning. foldout is used by PropertyDrawer
-#pragma warning disable 0169
+#pragma warning disable 0414
         [SerializeField, HideInInspector]
         private bool foldout = true;
-#pragma warning restore 0169
+#pragma warning restore 0414
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings);
         public virtual void AddPerception(SurroundingsContainer surroundings) { }
