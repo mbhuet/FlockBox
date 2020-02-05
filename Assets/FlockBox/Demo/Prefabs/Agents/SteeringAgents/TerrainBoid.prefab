@@ -50,7 +50,7 @@ MonoBehaviour:
     type: 0
     radius: 1
     length: 1
-  drawDebug: 0
+  drawDebug: 1
   activeSettings: {fileID: 11400000, guid: 29feaf021ce9fee428a94e509bf2ac6d, type: 2}
   _terrainLayerMask:
     serializedVersion: 2
@@ -82,7 +82,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7765479890752917496}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: -1}
+  m_LocalPosition: {x: -0, y: 1, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 4}
   m_Children: []
   m_Father: {fileID: 4214186027875092558}

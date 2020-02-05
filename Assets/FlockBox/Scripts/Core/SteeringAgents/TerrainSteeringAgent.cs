@@ -17,13 +17,12 @@ namespace CloudFine
 
         protected override void UpdateTransform()
         {
-            Vector3 oldWorldPos = transform.position;
             _worldPosDelta = Vector3.zero;
 
             if(Physics.Raycast(transform.parent.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
             {
-                transform.position = _terrainHit.point + Vector3.up * shape.radius;
-                _worldPosDelta = transform.position - oldWorldPos;
+                _worldPosDelta = _terrainHit.point - transform.position;
+                transform.position = _terrainHit.point;// + Vector3.up * shape.radius;
                 Position = transform.localPosition;
             }
             else

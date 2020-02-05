@@ -17,7 +17,7 @@ namespace CloudFine
 
         protected override void ApplySteeringAcceleration()
         {
-
+            //do nothing in Update()
         }
 
 
