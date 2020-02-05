@@ -21,6 +21,7 @@ namespace CloudFine
         /// <param name="acceleration">The result of all steering behaviors.</param>
         protected override void ApplySteeringAcceleration(Vector3 acceleration)
         {
+            Velocity = rigidbody.velocity;
             Velocity += (acceleration) * Time.deltaTime;
             Velocity = Velocity.normalized * Mathf.Min(Velocity.magnitude, activeSettings.maxSpeed * speedThrottle);
             ValidateVelocity();
