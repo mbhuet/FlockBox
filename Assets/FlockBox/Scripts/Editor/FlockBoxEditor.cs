@@ -25,7 +25,7 @@ namespace CloudFine
         private SerializedProperty _gizmos;
         private SerializedProperty _cellCapacity;
         private SerializedProperty _useCellCapacity;
-
+        private SerializedProperty _useECS;
 
         private bool optimizationFoldout = false;
         private bool debugFoldout = false;
@@ -45,7 +45,7 @@ namespace CloudFine
             _gizmos = serializedObject.FindProperty("drawGizmos");
             _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
-
+            _useECS = serializedObject.FindProperty("useECS");
         }
 
         public override void OnInspectorGUI()
@@ -60,7 +60,7 @@ namespace CloudFine
 
             EditorGUILayout.PropertyField(_size);
             EditorGUILayout.PropertyField(_wrap);
-           
+
             if (!_wrap.boolValue)
             {
                 EditorGUILayout.PropertyField(_buffer);
@@ -87,6 +87,8 @@ namespace CloudFine
             if (optimizationFoldout)
             {
                 EditorGUI.indentLevel = 1;
+                EditorGUILayout.PropertyField(_useECS);
+
                 EditorGUILayout.Slider(_sleep, 0, 1);
                 EditorGUILayout.PropertyField(_useCellCapacity);
                 if (_useCellCapacity.boolValue)
@@ -94,6 +96,7 @@ namespace CloudFine
                     EditorGUI.indentLevel = 2;
                     EditorGUILayout.PropertyField(_cellCapacity);
                 }
+
                 EditorGUI.indentLevel = 0;
             }
             EditorGUILayout.Space();

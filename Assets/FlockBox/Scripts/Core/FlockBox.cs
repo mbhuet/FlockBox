@@ -24,6 +24,11 @@ namespace CloudFine
         private Dictionary<string, List<Agent>> tagToAgents = new Dictionary<string, List<Agent>>();
 
 
+        private NativeHashMap<int, NativeArray<Entity>> bucketToEntity = new NativeHashMap<int, NativeArray<Entity>>();
+        private NativeHashMap<Entity, NativeArray<int>> entityToBuckets = new NativeHashMap<Entity, NativeArray<int>>();
+
+
+
 
         [SerializeField]
         private int dimensions_x = 10;
@@ -58,6 +63,9 @@ namespace CloudFine
         [SerializeField]
         private bool drawGizmos = true;
 
+        [SerializeField]
+        private bool useECS = false;
+
         EntityManager manager;
         Entity agentEntityPrefab;
 
@@ -68,20 +76,32 @@ namespace CloudFine
             foreach (AgentPopulation pop in startingPopulations)
             {
                 if (pop.prefab == null) continue;
-                agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, World.Active);
-                NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);
-                manager.Instantiate(agentEntityPrefab, agents);
 
-                for (int i = 0; i < pop.population; i++)
+                if (useECS)
                 {
-                    //add things and set data that is not part of the agent prefab.
-                    //the conversion utility will port data that is on the prefab.
+                    agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, World.Active);
+                    NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);
+                    manager.Instantiate(agentEntityPrefab, agents);
 
-                    manager.SetComponentData(agents[i], new Translation { Value = RandomPosition() });
-                    manager.SetComponentData(agents[i], new Velocity { Value = UnityEngine.Random.insideUnitSphere });
-                    //add all component data, imitate agent.Spawn(this)
+                    for (int i = 0; i < pop.population; i++)
+                    {
+                        //add things and set data that is not part of the agent prefab.
+                        //the conversion utility will port data that is on the prefab.
+
+                        manager.SetComponentData(agents[i], new Translation { Value = RandomPosition() });
+                        manager.SetComponentData(agents[i], new Velocity { Value = UnityEngine.Random.insideUnitSphere });
+                        //add all component data, imitate agent.Spawn(this)
+                    }
+                    agents.Dispose();
                 }
-                agents.Dispose();
+                else
+                {
+                    for(int i =0; i<pop.population; i++)
+                    {
+                        Agent agent = GameObject.Instantiate(pop.prefab);
+                        agent.Spawn(this);
+                    }
+                }
             }
         }
 
