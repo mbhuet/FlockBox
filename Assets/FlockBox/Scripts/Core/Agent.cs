@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+using Unity.Entities;
+using Unity.Transforms;
 
 namespace CloudFine
 {
@@ -17,7 +16,7 @@ namespace CloudFine
     }
 
     [System.Serializable]
-    public class Agent : MonoBehaviour
+    public class Agent : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         
@@ -476,6 +475,12 @@ namespace CloudFine
                 UnityEditor.Handles.color = Color.grey;
                 shape.DrawGizmo();
             }
+        }
+
+        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponent(entity, typeof(Translation));
+            dstManager.AddComponent(entity, typeof(Velocity));
         }
 #endif
     }

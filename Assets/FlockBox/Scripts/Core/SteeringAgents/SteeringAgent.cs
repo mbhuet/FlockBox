@@ -62,7 +62,6 @@ namespace CloudFine
                 if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
-            
         }
 
         void Contain()
