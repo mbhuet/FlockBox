@@ -120,7 +120,7 @@ namespace CloudFine
                 }
             }
 
-            surroundings.allAgents = surroundings.allAgents.Distinct().ToList();
+            //surroundings.allAgents = surroundings.allAgents.Distinct().ToList();
         }
 
         /// <summary>

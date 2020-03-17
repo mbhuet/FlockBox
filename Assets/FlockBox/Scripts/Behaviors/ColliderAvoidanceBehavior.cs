@@ -16,7 +16,7 @@ namespace CloudFine
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             Ray myRay = new Ray(mine.Position, mine.Forward);
-            float rayDist = surroundings.lookAheadSeconds * mine.Velocity.magnitude;            
+            float rayDist = lookAheadSeconds * mine.Velocity.magnitude;            
 
             if (!ObstacleInPath(myRay, mine.shape.radius, rayDist, ref hit, mask))
             {
@@ -56,6 +56,7 @@ namespace CloudFine
                 ray.direction = dir;
                 if (!Physics.SphereCast(ray, rayRadius, out hit, perceptionDistance, mask))
                 {
+                    //Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * perceptionDistance);
                     return dir;
                 }
             }
