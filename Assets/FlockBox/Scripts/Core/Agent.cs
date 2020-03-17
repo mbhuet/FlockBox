@@ -77,8 +77,8 @@ namespace CloudFine
         public Shape shape;
         public bool drawDebug = false;
 
-        protected List<int> buckets = new List<int>();
-        protected List<Agent> neighbors;
+        protected HashSet<int> buckets = new HashSet<int>();
+        protected HashSet<Agent> neighbors;
 
         protected static Dictionary<int, Agent> agentRegistry;
         protected static int agentCount_static = 0;
