@@ -1100,7 +1100,7 @@ MonoBehaviour:
   - prefab: {fileID: 3617397216089966378, guid: a6b4451236571bc4582f399c6e205d2e,
       type: 3}
     population: 350
-  drawGizmos: 0
+  drawGizmos: 1
 --- !u!4 &1046019925
 Transform:
   m_ObjectHideFlags: 0
