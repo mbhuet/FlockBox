@@ -20,6 +20,11 @@ namespace CloudFine
             //do nothing in Update()
         }
 
+        public override void Spawn(FlockBox neighborhood, Vector3 position)
+        {
+            base.Spawn(neighborhood, position);
+            rigidbody.velocity = Velocity;
+        }
 
         protected virtual void FixedUpdate()
         {

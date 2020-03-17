@@ -109,9 +109,9 @@ namespace CloudFine
         }
 
 
-        public override void Spawn(FlockBox neighborhood)
+        public override void Spawn(FlockBox neighborhood, Vector3 position)
         {
-            base.Spawn(neighborhood);
+            base.Spawn(neighborhood, position);
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;

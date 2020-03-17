@@ -254,7 +254,7 @@ namespace CloudFine
             ForceUpdatePosition();
         }
 
-        public virtual void Spawn(FlockBox neighborhood)
+        public void Spawn(FlockBox neighborhood)
         {
             Spawn(neighborhood, neighborhood.RandomPosition());
         }
