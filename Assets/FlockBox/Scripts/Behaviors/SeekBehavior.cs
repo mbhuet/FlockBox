@@ -15,7 +15,7 @@ namespace CloudFine
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {
@@ -76,11 +76,11 @@ namespace CloudFine
             }
         }
 
-        public static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
+        public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
         {
             if (nearbyTargets.Count == 0) return null;
             float closeDist = float.MaxValue;
-            Agent closeTarget = nearbyTargets[0];
+            Agent closeTarget = null;
             foreach (Agent target in nearbyTargets)
             {
                 float sqrDist = Vector3.SqrMagnitude(target.Position - agent.Position);

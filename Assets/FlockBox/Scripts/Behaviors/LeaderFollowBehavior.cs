@@ -15,7 +15,7 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            List<Agent> leaders = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> leaders = GetFilteredAgents(surroundings, this);
 
             if (leaders.Count == 0)
             {

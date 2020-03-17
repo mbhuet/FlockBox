@@ -107,20 +107,24 @@ namespace CloudFine
             {
                 if(bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache))
                 {
-                    surroundings.allAgents.AddRange(_bucketContentsCache);
+                    foreach (Agent a in _bucketContentsCache)
+                    {
+                        surroundings.allAgents.Add(a);
+                    }
                 }
             }
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
-                    if(tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
+                    if (tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
                     {
-                        surroundings.allAgents.AddRange(_bucketContentsCache);
+                        foreach (Agent a in _bucketContentsCache)
+                        {
+                            surroundings.allAgents.Add(a);
+                        }
                     }
                 }
             }
-
-            //surroundings.allAgents = surroundings.allAgents.Distinct().ToList();
         }
 
         /// <summary>

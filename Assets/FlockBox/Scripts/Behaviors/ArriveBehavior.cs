@@ -13,7 +13,7 @@ namespace CloudFine
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
             int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
 
-            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {

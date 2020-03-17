@@ -33,8 +33,8 @@ namespace CloudFine
         public virtual bool CanUseTagFilter { get { return true; } }
         public virtual bool CanToggleActive { get { return true; } }
 
-        private static List<Agent> _filterCache = new List<Agent>();
-        public static List<Agent> GetFilteredAgents(SurroundingsContainer surroundings, SteeringBehavior behavior)
+        private static HashSet<Agent> _filterCache = new HashSet<Agent>();
+        public static HashSet<Agent> GetFilteredAgents(SurroundingsContainer surroundings, SteeringBehavior behavior)
         {
             if (!behavior.useTagFilter) return surroundings.allAgents;
 

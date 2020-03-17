@@ -12,7 +12,7 @@ namespace CloudFine
         public float perceptionRadius = 0;
         public float lookAheadSeconds = 0;
         public List<string> globalSearchTags = new List<string>();
-        public List<Agent> allAgents = new List<Agent>();
+        public HashSet<Agent> allAgents = new HashSet<Agent>();
         public SurroundingsContainer() { }
     }
 
