@@ -77,7 +77,12 @@ namespace CloudFine
 
         public void GetSeekVector(out Vector3 steer, Vector3 target)
         {
-            steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
+            GetSteerVector(out steer, target - Position);
+        }
+
+        public void GetSteerVector(out Vector3 steer, Vector3 desiredForward)
+        {
+            steer = desiredForward.normalized * activeSettings.maxSpeed - Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
         }
 

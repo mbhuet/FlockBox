@@ -26,10 +26,7 @@ namespace CloudFine
             if (count > 0)
             {
                 fleeMidpoint /= (count);
-                Vector3 desired_velocity = (fleeMidpoint - mine.Position).normalized * -1 * mine.activeSettings.maxSpeed;
-                steer = desired_velocity - mine.Velocity;
-                steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-
+                mine.GetSteerVector(out steer, (mine.Position-fleeMidpoint));
                 mine.SetAttribute(fleeAttributeName, true);
             }
             else
