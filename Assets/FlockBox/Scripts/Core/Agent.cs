@@ -267,6 +267,26 @@ namespace CloudFine
         }
 
 
+
+        public Vector3 WorldToFlockBoxDirection(Vector3 worldDir)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.InverseTransformDirection(worldDir);
+            }
+            return worldDir;
+        }
+
+        public Vector3 WorldToFlockBoxPosition(Vector3 worldPos)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.InverseTransformPoint(worldPos);
+            }
+            return worldPos;
+        }
+
+
         /// <summary>
         /// Updates transform to match current Position and Velocity.
         /// </summary>

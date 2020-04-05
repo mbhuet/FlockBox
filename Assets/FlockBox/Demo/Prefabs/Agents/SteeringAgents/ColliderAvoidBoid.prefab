@@ -63,6 +63,7 @@ GameObject:
   - component: {fileID: 6746356000083852779}
   - component: {fileID: 2361251483705247709}
   - component: {fileID: 8356518021041650468}
+  - component: {fileID: 2528773231456503463}
   m_Layer: 0
   m_Name: pyramid
   m_TagString: Untagged
@@ -130,3 +131,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &2528773231456503463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7765479890752917496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b53559e749ec9e4996938994eab1138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationTension: 0.3
+  _positionTension: 1
+  _positionSlackDistance: 0
+  _rotationSlackDegrees: 10
+  _positionDeadZoneAffectsRotation: 0

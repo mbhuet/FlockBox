@@ -34,10 +34,11 @@ namespace CloudFine
 
         public LayerMask mask = -1;
         RaycastHit hit;
+        public bool drawVisionRays = false;
 
         public override bool CanUseTagFilter => false;
 
-        const int numViewDirections = 300;
+        const int numViewDirections = 360;
         private static Vector3[] Directions
         {
             get
@@ -65,22 +66,47 @@ namespace CloudFine
             }
         }
         private static Vector3[] _directions;
-        
+
+        private const string lastClearDirectionKey = "lastClearDirection";
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            float rayDist = lookAheadSeconds * mine.Velocity.magnitude;            
-            Ray myRay = new Ray(mine.transform.position, mine.transform.forward);
 
+
+
+            float rayDist = lookAheadSeconds * mine.Velocity.magnitude;      
+            Ray myRay = new Ray(mine.transform.position, mine.transform.forward);
             if (!ObstacleInPath(myRay, mine.shape.radius, rayDist, ref hit, mask))
             {
                 steer = Vector3.zero;
+                mine.SetAttribute(lastClearDirectionKey, steer);
+
                 return;
             }
-            steer = ObstacleRays(myRay, mine.shape.radius, rayDist, ref hit, mask);
-            
-            steer = steer.normalized * mine.activeSettings.maxForce - mine.Velocity;
+            float hitDist = hit.distance;
 
+            Vector3 lastClearWorldDirection = Vector3.zero;
+            if (mine.HasAttribute(lastClearDirectionKey))
+            {
+                lastClearWorldDirection = (Vector3)mine.GetAttribute(lastClearDirectionKey);
+            }
+            if (lastClearWorldDirection == Vector3.zero)
+            {
+                lastClearWorldDirection = mine.transform.forward;
+            }
+            myRay = new Ray(mine.transform.position, lastClearWorldDirection);
+
+            //Debug.DrawRay(myRay.origin, myRay.direction * hit.distance, Color.blue);
+
+            steer = ObstacleRays(myRay, mine.shape.radius, rayDist, ref hit, mask);
+            mine.SetAttribute(lastClearDirectionKey, steer.normalized);
+            //steer is currently in worldSpace, need in flockbox space
+            //mine.transform.InverseTransformDirection(steer);
+            //Debug.DrawRay(myRay.origin, steer.normalized * rayDist, Color.red);
+            float smooth = (1f - (hitDist / rayDist));
+            steer = mine.WorldToFlockBoxDirection(steer);
+            steer = steer.normalized * mine.activeSettings.maxForce - mine.Velocity;
+            steer *= smooth;
         }
 
         bool ObstacleInPath(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit, LayerMask mask)
@@ -89,7 +115,6 @@ namespace CloudFine
             {
                 return true;
             }
-            else { }
             return false;
         }
 
@@ -109,9 +134,11 @@ namespace CloudFine
                 ray.direction = dir;
                 if (!Physics.SphereCast(ray, rayRadius, out hit, perceptionDistance, mask))
                 {
-                    //Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * perceptionDistance);
+                    if(drawVisionRays) Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * perceptionDistance, Color.yellow);
                     return dir;
                 }
+                if(drawVisionRays)Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * hit.distance, new Color(1,1,1,.3f));
+
             }
 
             return forward;

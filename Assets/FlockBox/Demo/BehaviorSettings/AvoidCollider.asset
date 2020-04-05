@@ -44,6 +44,7 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 4294967295
+  drawVisionRays: 0
 --- !u!114 &-5769737824000778392
 MonoBehaviour:
   m_ObjectHideFlags: 1
