@@ -69,8 +69,8 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            Ray myRay = new Ray(mine.Position, mine.Forward);
             float rayDist = lookAheadSeconds * mine.Velocity.magnitude;            
+            Ray myRay = new Ray(mine.transform.position, mine.transform.forward);
 
             if (!ObstacleInPath(myRay, mine.shape.radius, rayDist, ref hit, mask))
             {
