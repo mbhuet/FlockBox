@@ -15,33 +15,47 @@ public class TwitchDampening : MonoBehaviour
     /// </summary>
     public bool _positonSlackAffectsRotation;
 
-    Quaternion _lastRotation;
-    Vector3 _lastPosition;
+    private Quaternion _lastWorldRotation;
+    private Vector3 _lastWorldPosition;
+
+    private Quaternion _initialLocalRotation;
+    private Vector3 _initialLocalPosition;
+
+    private Vector3 _positionDampVelocity;
+    private Quaternion _rotationDampVelocity;
+
+    private float _positionDampTime;
+    private float _rotaitonDampTime;
 
     private void Start()
     {
-        _lastPosition = transform.position;
-        _lastRotation = transform.rotation;
+        _initialLocalRotation = transform.localRotation;
+        _initialLocalPosition = transform.localPosition;
+
+        _lastWorldPosition = transform.position;
+        _lastWorldRotation = transform.rotation;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        transform.rotation = _lastRotation;
-        transform.position = _lastPosition;
+        transform.rotation = _lastWorldRotation;
+        transform.position = _lastWorldPosition;
 
-        float rotationSlack = Quaternion.Angle(transform.localRotation, Quaternion.identity)/ _rotationSlackDegrees;
+        float rotationSlack = Quaternion.Angle(transform.localRotation, _initialLocalRotation)/ _rotationSlackDegrees;
         rotationSlack *= rotationSlack;
         rotationSlack = Mathf.Clamp01(rotationSlack);
 
-        float positionSlack = (transform.localPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
+        float positionSlack = (transform.localPosition - _initialLocalPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
         positionSlack *= positionSlack;
         positionSlack = Mathf.Clamp01(positionSlack);
 
-        transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, _positionTension * positionSlack);
-        _lastPosition = transform.position;
-        
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, _rotationTension * rotationSlack * (_positonSlackAffectsRotation? positionSlack : 1f));
-        _lastRotation = transform.rotation;      
+        //lerp(target, value, expE(-rate[0-1] * deltaTime))
+        transform.localPosition = Vector3.Lerp(transform.localPosition, _initialLocalPosition, Mathf.Exp( -(_positionTension * positionSlack) * Time.deltaTime));
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, _initialLocalRotation, Mathf.Exp(-(_rotationTension * rotationSlack * (_positonSlackAffectsRotation? positionSlack : 1f)) * Time.deltaTime));
+
+        _lastWorldRotation = transform.rotation;
+        _lastWorldPosition = transform.position;
+
     }
 }

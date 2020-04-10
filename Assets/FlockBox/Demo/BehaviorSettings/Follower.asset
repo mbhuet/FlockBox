@@ -40,7 +40,7 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
   effectiveRadius: 8
-  fov: 360
+  fieldOfView: 360
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,3 +81,5 @@ MonoBehaviour:
   foldout: 1
   followDistance: 10
   stoppingRadius: 10
+  clearAheadDistance: 30
+  clearAheadRadius: 10

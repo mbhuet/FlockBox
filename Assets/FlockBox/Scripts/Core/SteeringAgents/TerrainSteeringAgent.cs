@@ -19,28 +19,28 @@ namespace CloudFine
         {
             _worldPosDelta = Vector3.zero;
 
-            if(Physics.Raycast(transform.parent.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
+            if(Physics.Raycast(myNeighborhood.transform.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
             {
                 _worldPosDelta = _terrainHit.point - transform.position;
-                transform.position = _terrainHit.point;// + Vector3.up * shape.radius;
-                Position = transform.localPosition;
+                Position = myNeighborhood.transform.InverseTransformPoint(_terrainHit.point);
             }
-            else
-            {
-                transform.localPosition = Position;
-            }
+            transform.localPosition = SmoothedPosition(Position);
+
 
             if (_worldPosDelta.magnitude > 0)
             {
-                transform.rotation = Quaternion.LookRotation(_worldPosDelta.normalized, Vector3.up);
+                transform.localRotation = SmoothedRotation(myNeighborhood.transform.InverseTransformDirection(_worldPosDelta));
+                Forward = Velocity.normalized;
             }
             else if (Velocity.magnitude > 0)
             {
-                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+                transform.localRotation = SmoothedRotation(Velocity);
+                Forward = Velocity.normalized;
             }
-
-            Forward = transform.localRotation * Vector3.forward;
-
+            else
+            {
+                Forward = transform.localRotation * Vector3.forward;
+            }
         }
 
     }

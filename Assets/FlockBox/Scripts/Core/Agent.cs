@@ -296,8 +296,12 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+                Forward = Velocity.normalized;
             }
-            Forward = transform.localRotation * Vector3.forward;
+            else
+            {
+                Forward = transform.localRotation * Vector3.forward;
+            }
         }
 
         public virtual void CatchAgent(Agent other)
@@ -486,7 +490,7 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             if (drawDebug)
             {
