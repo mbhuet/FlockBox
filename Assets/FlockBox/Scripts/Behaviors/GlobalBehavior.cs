@@ -11,10 +11,7 @@ namespace CloudFine
             base.AddPerception(surroundings);
             foreach (string tag in filterTags)
             {
-                if (!surroundings.globalSearchTags.Contains(tag))
-                {
-                    surroundings.globalSearchTags.Add(tag);
-                }
+                surroundings.AddGlobalSearchTag(tag);
             }
         }
     }

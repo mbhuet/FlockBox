@@ -50,8 +50,8 @@ namespace CloudFine
 
         public void AddPerceptions(SurroundingsContainer surroundings)
         {
-            surroundings.perceptionRadius = 0;
-            surroundings.lookAheadSeconds = 0;
+
+            surroundings.Clear();
             for(int i=0; i<behaviors.Length; i++)
             {
                 behaviors[i].AddPerception(surroundings);

@@ -11,10 +11,7 @@ namespace CloudFine
         public override void AddPerception(SurroundingsContainer surroundings)
         {
             base.AddPerception(surroundings);
-            if(lookAheadSeconds > surroundings.lookAheadSeconds)
-            {
-                surroundings.lookAheadSeconds = lookAheadSeconds;
-            }
+            surroundings.SetMinLookAheadSeconds(lookAheadSeconds);
         }
     }
 }

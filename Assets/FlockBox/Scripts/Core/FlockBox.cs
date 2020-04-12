@@ -101,15 +101,35 @@ namespace CloudFine
             {
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
+            if (surroundings.perceptionShapes.Count > 0)
+            {
+                foreach (System.Tuple<Shape, Vector3> s in surroundings.perceptionShapes)
+                {
+                    switch (s.Item1.type)
+                    {
+                        case Shape.ShapeType.POINT:
+                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
+                            break;
+                        case Shape.ShapeType.SPHERE:
+                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
+                            break;
+                        case Shape.ShapeType.LINE:
+                            //TODO: assumes Line Perception will only be in direction of Velocity
+                            GetBucketsOverlappingLine(s.Item2, velocity.normalized * s.Item1.length, buckets);
+                            break;
+                        case Shape.ShapeType.CYLINDER:
+                            //TODO: assumes Cylinder Perception will only be in direction of Velocity
+                            GetBucketsOverlappingCylinder(s.Item2, velocity.normalized * s.Item1.length, s.Item1.radius, buckets);
+                            break;
+                    }
+                }
+            }
 
-            surroundings.allAgents.Clear();
-            foreach(int bucket in buckets) { 
+            foreach (int bucket in buckets)
+            { 
                 if(bucketToAgents.TryGetValue(bucket, out _bucketContentsCache))
                 {
-                    foreach (Agent a in _bucketContentsCache)
-                    {
-                        surroundings.allAgents.Add(a);
-                    }
+                    surroundings.AddAgents(_bucketContentsCache);
                 }
             }
             if (surroundings.globalSearchTags.Count > 0)
@@ -117,13 +137,12 @@ namespace CloudFine
                 foreach (string agentTag in surroundings.globalSearchTags) {
                     if (tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
                     {
-                        foreach (Agent a in _bucketContentsCache)
-                        {
-                            surroundings.allAgents.Add(a);
-                        }
+                        surroundings.AddAgents(_bucketContentsCache);
                     }
                 }
             }
+
+            
         }
 
         /// <summary>
