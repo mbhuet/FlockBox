@@ -14,22 +14,28 @@ namespace CloudFine
 
         private RaycastHit _terrainHit;
         private Vector3 _worldPosDelta;
+        private Vector3 _lastPosition;
+
+        protected override void ApplySteeringAcceleration()
+        {
+            _lastPosition = Position;
+            base.ApplySteeringAcceleration();
+        }
 
         protected override void UpdateTransform()
         {
             _worldPosDelta = Vector3.zero;
 
-            if(Physics.Raycast(myNeighborhood.transform.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
+            if(Physics.Raycast(WorldPosition + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
             {
-                _worldPosDelta = _terrainHit.point - transform.position;
-                Position = myNeighborhood.transform.InverseTransformPoint(_terrainHit.point);
+                _worldPosDelta = _terrainHit.point - FlockBoxToWorldPosition(_lastPosition);
+                Position = WorldToFlockBoxPosition(_terrainHit.point);
             }
             transform.localPosition = SmoothedPosition(Position);
 
-
             if (_worldPosDelta.magnitude > 0)
             {
-                Vector3 terrainForward = myNeighborhood.transform.InverseTransformDirection(_worldPosDelta);
+                Vector3 terrainForward = WorldToFlockBoxDirection(_worldPosDelta);
                 transform.localRotation = SmoothedRotation(terrainForward);
                 Forward = terrainForward.normalized;
             }

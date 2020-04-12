@@ -24,11 +24,11 @@ namespace CloudFine
         [SerializeField, HideInInspector] protected bool _smoothRotation;
         [SerializeField, HideInInspector] protected bool _smoothPosition;
 
-        [SerializeField, HideInInspector] private float _rotationTension = .3f;
+        [SerializeField, HideInInspector] private float _rotationTension = .9f;
         [SerializeField, HideInInspector] private float _positionTension = 1;
-        [SerializeField, HideInInspector] private float _positionSlackDistance = 0;
+        [SerializeField, HideInInspector] private float _positionSlackDistance = .1f;
         [SerializeField, HideInInspector] private float _rotationSlackDegrees = 10;
-        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo = true;
+        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo;
 
         protected virtual void Update()
         {
@@ -160,7 +160,7 @@ namespace CloudFine
             positionSlack *= positionSlack;
             positionSlack = Mathf.Clamp01(positionSlack);
 
-            return Vector3.Lerp(transform.localPosition, targetPosition, 1f - Mathf.Pow(_positionTension * positionSlack, Time.deltaTime));
+            return Vector3.Lerp(transform.localPosition, targetPosition, 1f - Mathf.Pow((1f-_positionTension * positionSlack), Time.deltaTime));
         }
 
         protected Quaternion SmoothedRotation(Vector3 targetForward)
@@ -176,7 +176,7 @@ namespace CloudFine
             rotationSlack *= rotationSlack;
             rotationSlack = Mathf.Clamp01(rotationSlack);
 
-            return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(_rotationTension * rotationSlack, Time.deltaTime));
+            return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(1f-(_rotationTension * rotationSlack), Time.deltaTime));
         }
 
         protected override void UpdateTransform()
@@ -218,6 +218,9 @@ namespace CloudFine
                 {
                     UnityEditor.Handles.matrix = myNeighborhood.transform.localToWorldMatrix;
                     UnityEditor.Handles.PositionHandle(Position, Quaternion.LookRotation(Forward));
+                    UnityEditor.Handles.color = Color.white;
+                    UnityEditor.Handles.Label(Position, new GUIContent("RAW"));
+
                 }
             }
         }
