@@ -64,10 +64,7 @@ namespace CloudFine
 
             }
 
-
-
             serializedObject.ApplyModifiedProperties();
-
         }
     }
 }

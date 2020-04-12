@@ -54,6 +54,13 @@ MonoBehaviour:
     length: 1
   drawDebug: 1
   activeSettings: {fileID: 11400000, guid: d749565fa040e6d41a4209f21e978a16, type: 2}
+  _smoothRotation: 0
+  _smoothPosition: 0
+  _rotationTension: 0.9
+  _positionTension: 1
+  _positionSlackDistance: 0.1
+  _rotationSlackDegrees: 10
+  _drawUnsmoothedGizmo: 0
 --- !u!135 &1096042005912204121
 SphereCollider:
   m_ObjectHideFlags: 0

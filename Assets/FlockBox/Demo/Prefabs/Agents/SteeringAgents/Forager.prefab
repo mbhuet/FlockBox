@@ -52,6 +52,13 @@ MonoBehaviour:
     length: 1
   drawDebug: 1
   activeSettings: {fileID: 11400000, guid: d1e9852ea339bf4448021969b2a0b127, type: 2}
+  _smoothRotation: 0
+  _smoothPosition: 0
+  _rotationTension: 0.9
+  _positionTension: 1
+  _positionSlackDistance: 0.1
+  _rotationSlackDegrees: 10
+  _drawUnsmoothedGizmo: 0
 --- !u!1 &7765479890752917496
 GameObject:
   m_ObjectHideFlags: 0

@@ -52,6 +52,13 @@ MonoBehaviour:
     length: 1
   drawDebug: 1
   activeSettings: {fileID: 11400000, guid: 29feaf021ce9fee428a94e509bf2ac6d, type: 2}
+  _smoothRotation: 0
+  _smoothPosition: 0
+  _rotationTension: 0.9
+  _positionTension: 1
+  _positionSlackDistance: 0.1
+  _rotationSlackDegrees: 10
+  _drawUnsmoothedGizmo: 0
   _terrainLayerMask:
     serializedVersion: 2
     m_Bits: 16
