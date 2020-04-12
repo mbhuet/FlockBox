@@ -19,6 +19,8 @@ namespace CloudFine
         private SerializedProperty _rotationSlack;
         private SerializedProperty _positionSlack;
 
+        private SerializedProperty _unsmoothGizmo;
+
         private void Awake()
         {
             _smoothRotation = serializedObject.FindProperty("_smoothRotation");
@@ -29,6 +31,9 @@ namespace CloudFine
 
             _rotationSlack = serializedObject.FindProperty("_rotationSlackDegrees");
             _positionSlack = serializedObject.FindProperty("_positionSlackDistance");
+
+            _unsmoothGizmo = serializedObject.FindProperty("_drawUnsmoothedGizmo");
+
         }
 
         public override void OnInspectorGUI()
@@ -52,7 +57,9 @@ namespace CloudFine
                 {
                     _positionTension.floatValue = EditorGUILayout.Slider("Position Tension", _positionTension.floatValue, 0f, 1f);
                     EditorGUILayout.PropertyField(_positionSlack, new GUIContent("Position Dead Zone"));
+                    EditorGUILayout.Space();
                 }
+                EditorGUILayout.PropertyField(_unsmoothGizmo);
                 EditorGUI.indentLevel--;
 
             }

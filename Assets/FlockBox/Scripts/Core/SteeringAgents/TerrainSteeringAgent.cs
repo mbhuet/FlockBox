@@ -29,8 +29,9 @@ namespace CloudFine
 
             if (_worldPosDelta.magnitude > 0)
             {
-                transform.localRotation = SmoothedRotation(myNeighborhood.transform.InverseTransformDirection(_worldPosDelta));
-                Forward = Velocity.normalized;
+                Vector3 terrainForward = myNeighborhood.transform.InverseTransformDirection(_worldPosDelta);
+                transform.localRotation = SmoothedRotation(terrainForward);
+                Forward = terrainForward.normalized;
             }
             else if (Velocity.magnitude > 0)
             {

@@ -28,6 +28,7 @@ namespace CloudFine
         [SerializeField, HideInInspector] private float _positionTension = 1;
         [SerializeField, HideInInspector] private float _positionSlackDistance = 0;
         [SerializeField, HideInInspector] private float _rotationSlackDegrees = 10;
+        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo = true;
 
         protected virtual void Update()
         {
@@ -151,12 +152,15 @@ namespace CloudFine
         {
             if (!_smoothPosition) return targetPosition;
 
-            float positionSlack = (transform.localPosition - targetPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
+            float positionSlack = 1f;
+            if (_positionSlackDistance > 0)
+            {
+                   positionSlack = (transform.localPosition - targetPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
+            }
             positionSlack *= positionSlack;
             positionSlack = Mathf.Clamp01(positionSlack);
 
-            //lerp(target, value, expE(-rate[0-1] * deltaTime))
-            return Vector3.Lerp(transform.localPosition, targetPosition, Mathf.Exp(-(_positionTension * positionSlack) * Time.deltaTime));
+            return Vector3.Lerp(transform.localPosition, targetPosition, 1f - Mathf.Pow(_positionTension * positionSlack, Time.deltaTime));
         }
 
         protected Quaternion SmoothedRotation(Vector3 targetForward)
@@ -164,12 +168,15 @@ namespace CloudFine
             Quaternion desiredLocalRotation = Quaternion.LookRotation(targetForward.normalized, Vector3.up);
             if (!_smoothRotation) return desiredLocalRotation;
 
-            float rotationSlack = Quaternion.Angle(transform.localRotation, desiredLocalRotation) / _rotationSlackDegrees;
+            float rotationSlack = 1;
+            if (_rotationSlackDegrees > 0)
+            {
+                rotationSlack = Quaternion.Angle(transform.localRotation, desiredLocalRotation) / _rotationSlackDegrees;
+            }
             rotationSlack *= rotationSlack;
             rotationSlack = Mathf.Clamp01(rotationSlack);
 
-            //lerp(target, value, expE(-rate[0-1] * deltaTime))
-            return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, Mathf.Exp(-(_rotationTension * rotationSlack) * Time.deltaTime));
+            return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(_rotationTension * rotationSlack, Time.deltaTime));
         }
 
         protected override void UpdateTransform()
@@ -187,5 +194,34 @@ namespace CloudFine
                 Forward = transform.localRotation * Vector3.forward;
             }
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            if (UnityEditor.Selection.activeGameObject != transform.gameObject)
+            {
+                return;
+            }
+            if (drawDebug)
+            {
+                Gizmos.color = Color.grey;
+                Gizmos.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.color = Color.grey;
+                shape.DrawGizmo();
+
+            }
+
+            if (_drawUnsmoothedGizmo)
+            {
+                if (myNeighborhood != null && Position !=null && Forward!=null)
+                {
+                    UnityEditor.Handles.matrix = myNeighborhood.transform.localToWorldMatrix;
+                    UnityEditor.Handles.PositionHandle(Position, Quaternion.LookRotation(Forward));
+                }
+            }
+        }
+#endif
+
     }
 }

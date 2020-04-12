@@ -36,7 +36,7 @@ namespace CloudFine
         RaycastHit hit;
         public bool drawVisionRays = false;
 
-        public override bool CanUseTagFilter => false;
+        public override bool CanUseTagFilter { get { return false; } }
 
         const int numViewDirections = 360;
         private static Vector3[] Directions
@@ -75,7 +75,7 @@ namespace CloudFine
 
 
             float rayDist = lookAheadSeconds * mine.Velocity.magnitude;      
-            Ray myRay = new Ray(mine.transform.position, mine.transform.forward);
+            Ray myRay = new Ray(mine.WorldPosition, mine.WorldForward);
             if (!ObstacleInPath(myRay, mine.shape.radius, rayDist, ref hit, mask))
             {
                 steer = Vector3.zero;
@@ -92,17 +92,13 @@ namespace CloudFine
             }
             if (lastClearWorldDirection == Vector3.zero)
             {
-                lastClearWorldDirection = mine.transform.forward;
+                lastClearWorldDirection = myRay.direction;
             }
-            myRay = new Ray(mine.transform.position, lastClearWorldDirection);
 
-            //Debug.DrawRay(myRay.origin, myRay.direction * hit.distance, Color.blue);
+            myRay.direction = lastClearWorldDirection;
 
             steer = ObstacleRays(myRay, mine.shape.radius, rayDist, ref hit, mask);
             mine.SetAttribute(lastClearDirectionKey, steer.normalized);
-            //steer is currently in worldSpace, need in flockbox space
-            //mine.transform.InverseTransformDirection(steer);
-            //Debug.DrawRay(myRay.origin, steer.normalized * rayDist, Color.red);
             float smooth = (1f - (hitDist / rayDist));
             steer = mine.WorldToFlockBoxDirection(steer);
             steer = steer.normalized * mine.activeSettings.maxForce - mine.Velocity;

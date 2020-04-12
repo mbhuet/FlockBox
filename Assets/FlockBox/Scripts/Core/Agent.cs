@@ -19,17 +19,22 @@ namespace CloudFine
     [System.Serializable]
     public class Agent : MonoBehaviour
     {
-
-        
-
         private Vector3 m_position = Vector3.zero;
         /// <summary>
-        /// Position in local space
+        /// Position in local space.
         /// </summary>
         public Vector3 Position
         {
             get { return m_position; }
             protected set { m_position = value; }
+        }
+        
+        /// <summary>
+        /// Position in world space. 
+        /// </summary>
+        public Vector3 WorldPosition
+        {
+            get { return FlockBoxToWorldPosition(Position);}
         }
 
         private Vector3 m_velocity = Vector3.zero;
@@ -50,6 +55,14 @@ namespace CloudFine
         {
             get { return m_forward; }
             protected set { m_forward = value; }
+        }
+
+        /// <summary>
+        /// Forward in world space.
+        /// </summary>
+        public Vector3 WorldForward
+        {
+            get { return FlockBoxToWorldDirection(Forward); }
         }
 
 
@@ -267,6 +280,23 @@ namespace CloudFine
         }
 
 
+        public Vector3 FlockBoxToWorldPosition(Vector3 localPos)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.TransformPoint(localPos);
+            }
+            return localPos;
+        }
+
+        public Vector3 FlockBoxToWorldDirection(Vector3 localDir)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.TransformDirection(localDir);
+            }
+            return localDir;
+        }
 
         public Vector3 WorldToFlockBoxDirection(Vector3 worldDir)
         {
