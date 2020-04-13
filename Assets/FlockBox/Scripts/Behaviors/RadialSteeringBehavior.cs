@@ -19,9 +19,9 @@ namespace CloudFine
                 && Vector3.Angle(mine.Forward, other.Position - mine.Position) <= fieldOfView); // inside fov
         }
 
-        public override void AddPerception(SurroundingsContainer surroundings)
+        public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
-            base.AddPerception(surroundings);
+            base.AddPerception(agent, surroundings);
             surroundings.SetMinPerceptionRadius(effectiveRadius);
         }
     }

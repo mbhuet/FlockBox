@@ -29,7 +29,7 @@ namespace CloudFine
 #pragma warning restore 0414
 
         public abstract void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings);
-        public virtual void AddPerception(SurroundingsContainer surroundings) { }
+        public virtual void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings) { }
         public virtual bool CanUseTagFilter { get { return true; } }
         public virtual bool CanToggleActive { get { return true; } }
 

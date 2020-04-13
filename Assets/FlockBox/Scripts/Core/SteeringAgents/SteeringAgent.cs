@@ -28,7 +28,7 @@ namespace CloudFine
         [SerializeField, HideInInspector] private float _positionTension = 1;
         [SerializeField, HideInInspector] private float _positionSlackDistance = .1f;
         [SerializeField, HideInInspector] private float _rotationSlackDegrees = 10;
-        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo;
+        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo = false;
 
         protected virtual void Update()
         {
@@ -38,7 +38,7 @@ namespace CloudFine
             sleeping = (UnityEngine.Random.value < myNeighborhood.sleepChance);
             if(!sleeping){
                 Acceleration *= 0;
-                activeSettings.AddPerceptions(mySurroundings);
+                activeSettings.AddPerceptions(this, mySurroundings);
                 myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
                 Flock(mySurroundings);
             }

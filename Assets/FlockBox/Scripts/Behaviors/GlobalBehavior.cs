@@ -6,9 +6,9 @@ namespace CloudFine
 {
     public abstract class GlobalBehavior : SteeringBehavior
     {
-        public override void AddPerception(SurroundingsContainer surroundings)
+        public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
-            base.AddPerception(surroundings);
+            base.AddPerception(agent, surroundings);
             foreach (string tag in filterTags)
             {
                 surroundings.AddGlobalSearchTag(tag);

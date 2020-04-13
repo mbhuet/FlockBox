@@ -8,9 +8,9 @@ namespace CloudFine
     {
         public float lookAheadSeconds = 1;
 
-        public override void AddPerception(SurroundingsContainer surroundings)
+        public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
-            base.AddPerception(surroundings);
+            base.AddPerception(agent, surroundings);
             surroundings.SetMinLookAheadSeconds(lookAheadSeconds);
         }
     }

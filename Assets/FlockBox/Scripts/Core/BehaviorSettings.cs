@@ -48,13 +48,13 @@ namespace CloudFine
             return null;
         }
 
-        public void AddPerceptions(SurroundingsContainer surroundings)
+        public void AddPerceptions(SteeringAgent agent, SurroundingsContainer surroundings)
         {
 
             surroundings.Clear();
             for(int i=0; i<behaviors.Length; i++)
             {
-                behaviors[i].AddPerception(surroundings);
+                behaviors[i].AddPerception(agent, surroundings);
             }
         }
 
