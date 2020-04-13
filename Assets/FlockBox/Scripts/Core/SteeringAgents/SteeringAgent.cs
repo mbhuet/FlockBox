@@ -179,6 +179,7 @@ namespace CloudFine
             return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(1f-(_rotationTension * rotationSlack), Time.deltaTime));
         }
 
+
         protected override void UpdateTransform()
         {
             transform.localPosition = SmoothedPosition(Position);

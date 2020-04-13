@@ -30,12 +30,12 @@ namespace CloudFine
 
         public void SetMinPerceptionRadius(float radius)
         {
-            perceptionRadius = Mathf.Min(radius, perceptionRadius);
+            perceptionRadius = Mathf.Max(radius, perceptionRadius);
         }
 
         public void SetMinLookAheadSeconds(float seconds)
         {
-            lookAheadSeconds = Mathf.Min(lookAheadSeconds, seconds);
+            lookAheadSeconds = Mathf.Max(lookAheadSeconds, seconds);
         }
 
         public void AddGlobalSearchTag(string tag)
