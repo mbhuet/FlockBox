@@ -27,7 +27,7 @@ namespace CloudFine
         {
             base.AddPerception(agent, surroundings);
             Perception.radius = effectiveRadius;
-            //surroundings.AddPerceptionShape(Perception, (mine.Position + (mine.Forward * queueDistance)));
+            surroundings.AddPerceptionShape(Perception, (agent.Position + (agent.Forward * queueDistance)));
         }
 
         protected bool WithinEffectiveRadius(SteeringAgent mine, Agent other)

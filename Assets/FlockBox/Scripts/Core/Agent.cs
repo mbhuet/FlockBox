@@ -56,7 +56,7 @@ namespace CloudFine
             }
         }
 
-        private void AddPerceptionShape(Shape shape, Vector3 position)
+        public void AddPerceptionShape(Shape shape, Vector3 position)
         {
             perceptionShapes.Add(new System.Tuple<Shape, Vector3>(shape,position));
         }
@@ -95,12 +95,12 @@ namespace CloudFine
 
         private Vector3 m_forward = Vector3.forward;
         /// <summary>
-        /// Forward in local space. Magnitude will never be zero.
+        /// Forward in local space. Magnitude will never be zero. Guaranteed to be normalized.
         /// </summary>
         public Vector3 Forward
         {
             get { return m_forward; }
-            protected set { m_forward = value; }
+            protected set { m_forward = value.normalized; }
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
-                Forward = Velocity.normalized;
+                Forward = Velocity;
             }
             else
             {

@@ -37,12 +37,12 @@ namespace CloudFine
             {
                 Vector3 terrainForward = WorldToFlockBoxDirection(_worldPosDelta);
                 transform.localRotation = SmoothedRotation(terrainForward);
-                Forward = terrainForward.normalized;
+                Forward = terrainForward;
             }
             else if (Velocity.magnitude > 0)
             {
                 transform.localRotation = SmoothedRotation(Velocity);
-                Forward = Velocity.normalized;
+                Forward = Velocity;
             }
             else
             {

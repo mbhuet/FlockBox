@@ -17,7 +17,7 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = SmoothedRotation(Acceleration.normalized);
-                Forward = Velocity.normalized;
+                Forward = Velocity;
             }
 
             else
