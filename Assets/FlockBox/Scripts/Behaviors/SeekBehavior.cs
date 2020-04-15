@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeekBehavior : RadialSteeringBehavior
+    public class SeekBehavior : GlobalRadialSteeringBehavior
     {
         public const string targetIDAttributeName = "seekTargetID";
 
