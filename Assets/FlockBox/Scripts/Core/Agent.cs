@@ -48,7 +48,7 @@ namespace CloudFine
             allAgents.Add(a);
         }
 
-        public void AddAgents(IEnumerable<Agent> agents)
+        public void AddAgents(HashSet<Agent> agents)
         {
             foreach(Agent a in agents)
             {
