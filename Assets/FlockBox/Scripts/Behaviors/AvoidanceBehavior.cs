@@ -7,6 +7,8 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
+        public float clearance;
+
         RaycastHit closestHit;
         RaycastHit hit;
         Agent mostImmediateObstacle;
@@ -28,7 +30,7 @@ namespace CloudFine
             bool foundObstacleInPath = false;
             foreach (Agent obstacle in obstacles)
             {
-                if (obstacle.RaycastToShape(myRay, mine.shape.radius, rayDist, out hit))
+                if (obstacle.RaycastToShape(myRay, mine.shape.radius + clearance, rayDist, out hit))
                 {
                     if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {
@@ -48,6 +50,7 @@ namespace CloudFine
             steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
 
+            steer *= (1f - (closestHit.distance / rayDist));
         }
     }
 }
