@@ -32,6 +32,7 @@ namespace CloudFine
     public class ColliderAvoidanceBehavior : ForecastSteeringBehavior
     {
 
+        public float clearance;
         public LayerMask mask = -1;
         RaycastHit hit;
         public bool drawVisionRays = false;
@@ -73,7 +74,7 @@ namespace CloudFine
         {
             float rayDist = lookAheadSeconds * mine.Velocity.magnitude;      
             Ray myRay = new Ray(mine.WorldPosition, mine.WorldForward);
-            if (!ObstacleInPath(myRay, mine.shape.radius, rayDist, ref hit, mask))
+            if (!ObstacleInPath(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask))
             {
                 steer = Vector3.zero;
                 mine.SetAttribute(lastClearDirectionKey, steer);
@@ -94,7 +95,7 @@ namespace CloudFine
 
             myRay.direction = lastClearWorldDirection;
 
-            steer = ObstacleRays(myRay, mine.shape.radius, rayDist, ref hit, mask);
+            steer = ObstacleRays(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask);
             mine.SetAttribute(lastClearDirectionKey, steer.normalized);
             float smooth = (1f - (hitDist / rayDist));
             steer = mine.WorldToFlockBoxDirection(steer);
