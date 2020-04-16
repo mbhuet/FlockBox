@@ -53,6 +53,13 @@ namespace CloudFine
             steer = Vector3.zero; 
         }
 
+
+#if UNITY_EDITOR
+        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        {
+            UnityEditor.Handles.color = debugColor;
+        }
         
+#endif
     }
 }

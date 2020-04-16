@@ -24,5 +24,25 @@ namespace CloudFine
             base.AddPerception(agent, surroundings);
             surroundings.SetMinPerceptionRadius(effectiveRadius);
         }
+
+#if UNITY_EDITOR
+        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        {
+            Debug.Log("draw");
+            base.DrawPerceptionGizmo(agent);
+            Color c = debugColor;
+            UnityEditor.Handles.color = c;
+            Vector3 startHoriz = Quaternion.Euler(0, -fieldOfView / 2f, 0) * Vector3.forward;
+            Vector3 startVert = Quaternion.Euler( -fieldOfView / 2f, 0, 0) * Vector3.forward;
+
+            UnityEditor.Handles.DrawWireArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
+            UnityEditor.Handles.DrawWireArc(Vector3.zero, Vector3.right, startVert, fieldOfView, effectiveRadius);
+
+            c.a = c.a*.1f;
+            UnityEditor.Handles.color = c;
+            UnityEditor.Handles.DrawSolidArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
+        }
+#endif
+
     }
 }

@@ -52,5 +52,21 @@ namespace CloudFine
 
             steer *= (1f - (closestHit.distance / rayDist));
         }
+
+#if UNITY_EDITOR
+
+        protected override void DrawForecastPerceptionEndCapGizmo(SteeringAgent agent, Vector3 endpoint)
+        {
+            Color c = debugColor;
+            UnityEditor.Handles.color = c;
+            UnityEditor.Handles.DrawWireDisc(endpoint, Vector3.forward, agent.shape.radius + clearance);
+            UnityEditor.Handles.DrawWireDisc(endpoint, Vector3.forward, agent.shape.radius);
+
+            c.a = c.a * .1f;
+            UnityEditor.Handles.color = c;
+            UnityEditor.Handles.DrawSolidDisc(endpoint, Vector3.forward, agent.shape.radius);
+        }
+
+#endif
     }
 }

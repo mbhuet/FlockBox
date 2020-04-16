@@ -47,15 +47,21 @@ namespace CloudFine
                 editor.DrawDefaultInspectorWithoutScriptField();
 
 
-                SerializedProperty drawVectorProp = serializedObject.FindProperty("drawDebug");
-                EditorGUILayout.PropertyField(drawVectorProp);
-                if (drawVectorProp.boolValue)
+                SerializedProperty drawDebugProp = serializedObject.FindProperty("drawDebug");
+                SerializedProperty drawVectorProp = serializedObject.FindProperty("debugDrawSteering");
+                SerializedProperty drawPerceptionProp = serializedObject.FindProperty("debugDrawPerception");
+
+                EditorGUILayout.PropertyField(drawDebugProp);
+                if (drawDebugProp.boolValue)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Space(20);
+                    EditorGUI.indentLevel++;
                     SerializedProperty color = serializedObject.FindProperty("debugColor");
                     color.colorValue = EditorGUILayout.ColorField(color.colorValue);
-                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.PropertyField(drawVectorProp);
+                    EditorGUILayout.PropertyField(drawPerceptionProp);
+                    EditorGUI.indentLevel--;
+                    //EditorGUILayout.EndHorizontal();
                 }
                                 
                 GUILayout.Space(5);

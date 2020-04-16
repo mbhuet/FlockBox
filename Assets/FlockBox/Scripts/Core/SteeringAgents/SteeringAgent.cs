@@ -71,7 +71,7 @@ namespace CloudFine
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
                 steerCached *= behavior.weight;
-                if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
             
@@ -82,7 +82,7 @@ namespace CloudFine
             if (!myNeighborhood.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
                 ApplyForce(steerCached);
             }
         }
@@ -199,18 +199,23 @@ namespace CloudFine
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            if (UnityEditor.Selection.activeGameObject != transform.gameObject)
-            {
-                return;
-            }
+            Gizmos.matrix = this.transform.localToWorldMatrix;
+
             if (drawDebug)
             {
                 Gizmos.color = Color.grey;
-                Gizmos.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.color = Color.grey;
                 shape.DrawGizmo();
 
+
+            }
+
+           
+
+            if (UnityEditor.Selection.activeGameObject != transform.gameObject)
+            {
+                return;
             }
 
             if (_drawUnsmoothedGizmo)
@@ -223,6 +228,17 @@ namespace CloudFine
                     UnityEditor.Handles.Label(Position, new GUIContent("RAW"));
 
                 }
+            }
+        }
+
+        void OnDrawGizmos()
+        {
+
+            if (activeSettings)
+            {
+                    UnityEditor.Handles.matrix = transform.localToWorldMatrix;
+                
+                activeSettings.DrawPerceptionGizmos(this);
             }
         }
 #endif

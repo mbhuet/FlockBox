@@ -17,10 +17,32 @@ namespace CloudFine
         public bool useTagFilter;
         [HideInInspector]
         public string[] filterTags = new string[0];
-        [HideInInspector]
-        public bool drawDebug;
-        [HideInInspector]
+
+        [SerializeField, HideInInspector]
+        private bool drawDebug;
+        [SerializeField, HideInInspector]
         public Color debugColor = Color.white;
+        [SerializeField, HideInInspector]
+        private bool debugDrawSteering;
+        [SerializeField, HideInInspector]
+        private bool debugDrawPerception;
+
+        public bool DrawPerception
+        {
+            get
+            {
+                return drawDebug && debugDrawPerception;
+            }
+        }
+        public bool DrawSteering
+        {
+            get
+            {
+                return drawDebug && debugDrawSteering;
+            }
+        }
+
+        
 
         //supress "field declared but not used" warning. foldout is used by PropertyDrawer
 #pragma warning disable 0414
@@ -53,6 +75,10 @@ namespace CloudFine
             }
             return _filterCache;
 
+        }
+
+        public virtual void DrawPerceptionGizmo(SteeringAgent agent)
+        {
         }
     }
 }
