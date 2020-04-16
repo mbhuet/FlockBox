@@ -42,20 +42,42 @@ public class TwitchDampening : MonoBehaviour
         transform.rotation = _lastWorldRotation;
         transform.position = _lastWorldPosition;
 
-        float rotationSlack = Quaternion.Angle(transform.localRotation, _initialLocalRotation)/ _rotationSlackDegrees;
-        rotationSlack *= rotationSlack;
-        rotationSlack = Mathf.Clamp01(rotationSlack);
-
-        float positionSlack = (transform.localPosition - _initialLocalPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
-        positionSlack *= positionSlack;
-        positionSlack = Mathf.Clamp01(positionSlack);
-
-        //lerp(target, value, expE(-rate[0-1] * deltaTime))
-        transform.localPosition = Vector3.Lerp(transform.localPosition, _initialLocalPosition, Mathf.Exp( -(_positionTension * positionSlack) * Time.deltaTime));
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, _initialLocalRotation, Mathf.Exp(-(_rotationTension * rotationSlack * (_positonSlackAffectsRotation? positionSlack : 1f)) * Time.deltaTime));
+        transform.localPosition = SmoothedPosition(_initialLocalPosition);
+        transform.localRotation = SmoothedRotation(_initialLocalRotation);
 
         _lastWorldRotation = transform.rotation;
         _lastWorldPosition = transform.position;
 
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="desiredLocalPosition"></param>
+    /// <returns></returns>
+    protected Vector3 SmoothedPosition(Vector3 desiredLocalPosition)
+    {
+        float positionSlack = 1f;
+        if (_positionSlackDistance > 0)
+        {
+            positionSlack = (transform.localPosition - desiredLocalPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
+        }
+        positionSlack *= positionSlack;
+        positionSlack = Mathf.Clamp01(positionSlack);
+
+        return Vector3.Lerp(transform.localPosition, desiredLocalPosition, 1f - Mathf.Pow((1f - _positionTension * positionSlack), Time.deltaTime));
+    }
+
+    protected Quaternion SmoothedRotation(Quaternion desiredLocalRotation)
+    {
+        float rotationSlack = 1;
+        if (_rotationSlackDegrees > 0)
+        {
+            rotationSlack = Quaternion.Angle(transform.localRotation, desiredLocalRotation) / _rotationSlackDegrees;
+        }
+        rotationSlack *= rotationSlack;
+        rotationSlack = Mathf.Clamp01(rotationSlack);
+
+        return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(1f - (_rotationTension * rotationSlack), Time.deltaTime));
     }
 }

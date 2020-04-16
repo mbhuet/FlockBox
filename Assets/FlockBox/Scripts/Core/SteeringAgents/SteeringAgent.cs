@@ -19,17 +19,6 @@ namespace CloudFine
         private bool sleeping = false;
         private SurroundingsContainer mySurroundings = new SurroundingsContainer();
 
-
-        //Dampening
-        [SerializeField, HideInInspector] protected bool _smoothRotation;
-        [SerializeField, HideInInspector] protected bool _smoothPosition;
-
-        [SerializeField, HideInInspector] private float _rotationTension = .9f;
-        [SerializeField, HideInInspector] private float _positionTension = 1;
-        [SerializeField, HideInInspector] private float _positionSlackDistance = .1f;
-        [SerializeField, HideInInspector] private float _rotationSlackDegrees = 10;
-        [SerializeField, HideInInspector] private bool _drawUnsmoothedGizmo = false;
-
         protected virtual void Update()
         {
             if (!isAlive) return;
@@ -143,41 +132,7 @@ namespace CloudFine
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="targetPosition"></param>
-        /// <returns></returns>
-        protected Vector3 SmoothedPosition(Vector3 targetPosition)
-        {
-            if (!_smoothPosition) return targetPosition;
-
-            float positionSlack = 1f;
-            if (_positionSlackDistance > 0)
-            {
-                   positionSlack = (transform.localPosition - targetPosition).sqrMagnitude / (_positionSlackDistance * _positionSlackDistance);
-            }
-            positionSlack *= positionSlack;
-            positionSlack = Mathf.Clamp01(positionSlack);
-
-            return Vector3.Lerp(transform.localPosition, targetPosition, 1f - Mathf.Pow((1f-_positionTension * positionSlack), Time.deltaTime));
-        }
-
-        protected Quaternion SmoothedRotation(Vector3 targetForward)
-        {
-            Quaternion desiredLocalRotation = Quaternion.LookRotation(targetForward.normalized, Vector3.up);
-            if (!_smoothRotation) return desiredLocalRotation;
-
-            float rotationSlack = 1;
-            if (_rotationSlackDegrees > 0)
-            {
-                rotationSlack = Quaternion.Angle(transform.localRotation, desiredLocalRotation) / _rotationSlackDegrees;
-            }
-            rotationSlack *= rotationSlack;
-            rotationSlack = Mathf.Clamp01(rotationSlack);
-
-            return Quaternion.Slerp(transform.localRotation, desiredLocalRotation, 1f - Mathf.Pow(1f-(_rotationTension * rotationSlack), Time.deltaTime));
-        }
+       
 
 
         protected override void UpdateTransform()
