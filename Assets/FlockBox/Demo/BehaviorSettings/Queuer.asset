@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isActive: 1
   weight: 1
-  useTagFilter: 0
+  useTagFilter: 1
   filterTags:
   - Forager
-  drawDebug: 1
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  drawDebug: 0
+  debugColor: {r: 1, g: 0, b: 0, a: 1}
   foldout: 1
   effectiveRadius: 5
   fieldOfView: 360
@@ -59,11 +59,12 @@ MonoBehaviour:
   useTagFilter: 1
   filterTags:
   - Food
-  drawDebug: 0
+  drawDebug: 1
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
   effectiveRadius: 200
   fieldOfView: 360
+  globalTagSearch: 1
 --- !u!114 &-2896304334565910821
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -77,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 2
   useTagFilter: 1
   filterTags:
   - Obstacle
@@ -85,6 +86,7 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   foldout: 1
   lookAheadSeconds: 3
+  clearance: 0.5
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +125,7 @@ MonoBehaviour:
   filterTags:
   - Forager
   drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugColor: {r: 0, g: 1, b: 0.96201396, a: 1}
   foldout: 1
-  effectiveRadius: 3
+  effectiveRadius: 5
   queueDistance: 5

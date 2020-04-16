@@ -6,12 +6,12 @@ namespace CloudFine
 {
     public abstract class GlobalRadialSteeringBehavior : RadialSteeringBehavior
     {
-
-        public bool globalSearch;
+        [Tooltip("Use if there are few targets and/or they need to be preceptible from far away.")]
+        public bool globalTagSearch;
         
         public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
-            if (globalSearch)
+            if (globalTagSearch)
             {
                 foreach (string tag in filterTags)
                 {

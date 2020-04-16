@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class LeaderFollowBehavior : GlobalRadialSteeringBehavior
+    public class LeaderFollowBehavior : GlobalBehavior
     {
         public float followDistance = 10;
         public float stoppingRadius = 10;
