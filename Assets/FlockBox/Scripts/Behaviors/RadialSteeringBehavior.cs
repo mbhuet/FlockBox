@@ -28,7 +28,6 @@ namespace CloudFine
 #if UNITY_EDITOR
         public override void DrawPerceptionGizmo(SteeringAgent agent)
         {
-            Debug.Log("draw");
             base.DrawPerceptionGizmo(agent);
             Color c = debugColor;
             UnityEditor.Handles.color = c;

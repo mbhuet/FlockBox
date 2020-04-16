@@ -12,6 +12,7 @@ namespace CloudFine
         public float clearAheadRadius = 10;
 
         private Vector3 pointOnLeaderPath_cached;
+        public const string leaderIDAttributeName = "leaderID";
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
@@ -19,11 +20,13 @@ namespace CloudFine
 
             if (leaders.Count == 0)
             {
+                mine.RemoveAttribute(leaderIDAttributeName);
                 steer = Vector3.zero;
                 return;
             }
 
             Agent closestLeader = SeekBehavior.ClosestPursuableTarget(leaders, mine);
+            mine.SetAttribute(leaderIDAttributeName, closestLeader.agentID);
 
             //check to see if we should clear the way in front of the leader
             float scalar = Vector3.Dot(mine.Position - closestLeader.Position, closestLeader.Forward);
@@ -38,11 +41,40 @@ namespace CloudFine
                 }
             }
 
-
-
             Vector3 desired_velocity = ArriveBehavior.DesiredVelocityForArrival(mine, closestLeader.Position - closestLeader.Forward * followDistance, stoppingRadius);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
+
+
+#if UNITY_EDITOR
+        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        {
+            base.DrawPerceptionGizmo(agent);
+            Color c = debugColor;
+            UnityEditor.Handles.color = c;
+            c.a = c.a * .1f;
+
+            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.forward * clearAheadDistance);
+            UnityEditor.Handles.DrawWireDisc(Vector3.forward * clearAheadDistance, Vector3.forward, clearAheadRadius);
+            UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, clearAheadRadius);
+
+            Vector3[] verts = new Vector3[]
+            {
+                Vector3.left * clearAheadRadius,
+                Vector3.left * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.right * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.right *clearAheadRadius
+            };
+
+            UnityEditor.Handles.DrawSolidRectangleWithOutline(verts, c, debugColor);
+
+            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.back * followDistance);
+            UnityEditor.Handles.DrawSolidDisc(Vector3.back * followDistance, Vector3.up, 1);
+
+            UnityEditor.Handles.DrawWireDisc(Vector3.back * followDistance, Vector3.right, stoppingRadius);
+            UnityEditor.Handles.DrawWireDisc(Vector3.back * followDistance, Vector3.up, stoppingRadius);
+        }
+#endif
     }
 }

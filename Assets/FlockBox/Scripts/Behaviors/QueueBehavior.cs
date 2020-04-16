@@ -58,8 +58,17 @@ namespace CloudFine
         public override void DrawPerceptionGizmo(SteeringAgent agent)
         {
             UnityEditor.Handles.color = debugColor;
+            UnityEditor.Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.up, effectiveRadius);
+            UnityEditor.Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.right, effectiveRadius);
+
+            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.forward * queueDistance);
+            Color c = debugColor;
+            c.a = .1f * c.a;
+            UnityEditor.Handles.color = c;
+            UnityEditor.Handles.DrawSolidDisc(Vector3.forward * queueDistance, Vector3.up, effectiveRadius);
+
         }
-        
+
 #endif
     }
 }
