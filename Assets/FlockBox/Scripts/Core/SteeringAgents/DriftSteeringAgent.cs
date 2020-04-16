@@ -12,11 +12,11 @@ namespace CloudFine
     {
         protected override void UpdateTransform()
         {
-            transform.localPosition = SmoothedPosition(Position);
+            transform.localPosition = (Position);
 
             if (Velocity.magnitude > 0)
             {
-                transform.localRotation = SmoothedRotation(Acceleration.normalized);
+                transform.localRotation = LookRotation(Acceleration.normalized);
                 Forward = Velocity;
             }
 

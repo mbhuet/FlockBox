@@ -133,15 +133,18 @@ namespace CloudFine
 
 
        
-
+        protected Quaternion LookRotation(Vector3 desiredForward)
+        {
+            return Quaternion.LookRotation(desiredForward);
+        }
 
         protected override void UpdateTransform()
         {
-            transform.localPosition = SmoothedPosition(Position);
+            transform.localPosition = (Position);
 
             if (Velocity.magnitude > 0)
             {
-                transform.localRotation = SmoothedRotation(Velocity.normalized);
+                transform.localRotation = LookRotation(Velocity.normalized);
                 Forward = Velocity;
             }
 
@@ -173,17 +176,7 @@ namespace CloudFine
                 return;
             }
 
-            if (_drawUnsmoothedGizmo)
-            {
-                if (myNeighborhood != null && Position !=null && Forward!=null)
-                {
-                    UnityEditor.Handles.matrix = myNeighborhood.transform.localToWorldMatrix;
-                    UnityEditor.Handles.PositionHandle(Position, Quaternion.LookRotation(Forward));
-                    UnityEditor.Handles.color = Color.white;
-                    UnityEditor.Handles.Label(Position, new GUIContent("RAW"));
-
-                }
-            }
+            
         }
 
         void OnDrawGizmos()

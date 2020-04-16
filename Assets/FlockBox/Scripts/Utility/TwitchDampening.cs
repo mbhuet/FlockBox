@@ -4,16 +4,11 @@ using UnityEngine;
 
 public class TwitchDampening : MonoBehaviour
 {
-    [Range(0f, 1f)] public float _rotationTension = .3f;
+    [Range(0f, 1f)] public float _rotationTension = .9f;
     [Range(0f, 1f)] public float _positionTension = 1;
 
     public float _positionSlackDistance = 0;
     public float _rotationSlackDegrees = 10;
-
-    /// <summary>
-    /// Will cause the transform to not rotate when still
-    /// </summary>
-    public bool _positonSlackAffectsRotation;
 
     private Quaternion _lastWorldRotation;
     private Vector3 _lastWorldPosition;

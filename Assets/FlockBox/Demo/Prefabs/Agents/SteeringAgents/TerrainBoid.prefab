@@ -52,13 +52,6 @@ MonoBehaviour:
     length: 1
   drawDebug: 1
   activeSettings: {fileID: 11400000, guid: 29feaf021ce9fee428a94e509bf2ac6d, type: 2}
-  _smoothRotation: 0
-  _smoothPosition: 0
-  _rotationTension: 0.9
-  _positionTension: 1
-  _positionSlackDistance: 0.1
-  _rotationSlackDegrees: 10
-  _drawUnsmoothedGizmo: 0
   _terrainLayerMask:
     serializedVersion: 2
     m_Bits: 16
@@ -74,6 +67,7 @@ GameObject:
   - component: {fileID: 6746356000083852779}
   - component: {fileID: 2361251483705247709}
   - component: {fileID: 8356518021041650468}
+  - component: {fileID: 7920585629393720905}
   m_Layer: 0
   m_Name: pyramid
   m_TagString: Untagged
@@ -141,3 +135,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &7920585629393720905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7765479890752917496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b53559e749ec9e4996938994eab1138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationTension: 0.9
+  _positionTension: 1
+  _positionSlackDistance: 0
+  _rotationSlackDegrees: 10
