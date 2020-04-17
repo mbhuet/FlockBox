@@ -2,12 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
     [System.Serializable]
     public class ArriveBehavior : SeekBehavior
     {
+        public float stoppingDistance = 10;
+
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
@@ -44,15 +49,30 @@ namespace CloudFine
             }
 
             AttemptCatch(mine, closestTarget);
-            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, effectiveRadius);
+            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, stoppingDistance);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
 
-        public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float effectiveRadius)
+        public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float stopRadius)
         {
             return (arrivePosition - mine.Position).normalized
-                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (stopRadius * stopRadius));
         }
+
+#if UNITY_EDITOR
+        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        {
+            base.DrawPerceptionGizmo(agent, labels);
+
+            Handles.color = debugColor;
+            Handles.DrawWireDisc(Vector3.zero, Vector3.up, stoppingDistance);
+            
+            if (labels)
+            {
+                Handles.Label(Vector3.forward * stoppingDistance, new GUIContent("Stopping Distance"));
+            }
+        }
+#endif
     }
 }

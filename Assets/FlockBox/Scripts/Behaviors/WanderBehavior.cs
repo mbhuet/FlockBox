@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -25,7 +28,38 @@ namespace CloudFine
                     * mine.Forward * mine.activeSettings.maxForce;
         }
 
+#if UNITY_EDITOR
+        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        {
+            base.DrawPerceptionGizmo(agent, labels);
+            Vector3 startHoriz = Quaternion.Euler(0, -wanderScope / 2f, 0) * Vector3.forward;
+            Vector3 startVert = Quaternion.Euler(-wanderScope / 2f, 0, 0) * Vector3.forward;
+
+            Vector3 endHoriz = Quaternion.Euler(0, wanderScope / 2f, 0) * Vector3.forward;
+            Vector3 endVert = Quaternion.Euler(wanderScope / 2f, 0, 0) * Vector3.forward;
+
+
+            float wanderRadius = agent.shape.radius * 2f;
+
+            Handles.DrawWireArc(Vector3.zero, Vector3.up, startHoriz, wanderScope, wanderRadius);
+            Handles.DrawWireArc(Vector3.zero, Vector3.right, startVert, wanderScope, wanderRadius);
+
+            if (wanderScope < 360)
+            {
+                Handles.DrawLine(Vector3.zero, startHoriz * wanderRadius);
+                Handles.DrawLine(Vector3.zero, endHoriz * wanderRadius);
+                Handles.DrawLine(Vector3.zero, startVert * wanderRadius);
+                Handles.DrawLine(Vector3.zero, endVert * wanderRadius);
+            }
+
+            if (labels)
+            {
+                Handles.Label(startHoriz * wanderRadius, new GUIContent("Wander Scope"));
+            }
+        }
+#endif
+
     }
 
-    
+
 }
