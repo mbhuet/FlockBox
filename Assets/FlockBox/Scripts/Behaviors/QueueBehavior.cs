@@ -71,6 +71,11 @@ namespace CloudFine
             Handles.color = c;
             Handles.DrawSolidDisc(Vector3.forward * queueDistance, Vector3.up, queueRadius);
 
+            if (labels)
+            {
+                Handles.Label(Vector3.forward * queueDistance, new GUIContent("Queue Distance"));
+                Handles.Label(Vector3.forward *(queueDistance + queueRadius), new GUIContent("Queue Radius"));
+            }
         }
 
 #endif
