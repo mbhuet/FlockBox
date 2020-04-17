@@ -159,7 +159,7 @@ namespace CloudFine
         {
             Gizmos.matrix = this.transform.localToWorldMatrix;
 
-            if (drawDebug)
+            if (debugDrawShape)
             {
                 Gizmos.color = Color.grey;
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
@@ -184,8 +184,6 @@ namespace CloudFine
 
             if (activeSettings)
             {
-                    UnityEditor.Handles.matrix = transform.localToWorldMatrix;
-                
                 activeSettings.DrawPerceptionGizmos(this);
             }
         }

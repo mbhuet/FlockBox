@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CloudFine
 {
@@ -134,7 +135,8 @@ namespace CloudFine
 
         [SerializeField]
         public Shape shape;
-        public bool drawDebug = false;
+        [FormerlySerializedAs("drawDebug")]
+        public bool debugDrawShape = false;
 
         protected HashSet<int> buckets = new HashSet<int>();
         protected HashSet<Agent> neighbors;
@@ -254,6 +256,16 @@ namespace CloudFine
             name += "_" + agentID;
             this.name = name;
 
+        }
+
+        public static Agent GetAgentById(int id)
+        {
+            if (agentRegistry == null) return null;
+            Agent output;
+            if(agentRegistry.TryGetValue(id, out output)){
+                return output;
+            }
+            return null;
         }
 
         /// <summary>
@@ -568,7 +580,7 @@ namespace CloudFine
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            if (drawDebug)
+            if (debugDrawShape)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;

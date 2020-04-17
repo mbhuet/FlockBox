@@ -61,7 +61,8 @@ namespace CloudFine
 #if UNITY_EDITOR
         public void DrawPerceptionGizmos(SteeringAgent agent)
         {
-            foreach(SteeringBehavior behavior in behaviors)
+
+            foreach (SteeringBehavior behavior in behaviors)
             {
                 if (behavior.DrawPerception)
                 {

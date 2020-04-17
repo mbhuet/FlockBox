@@ -79,6 +79,7 @@ namespace CloudFine
 
         public virtual void DrawPerceptionGizmo(SteeringAgent agent)
         {
+            UnityEditor.Handles.matrix = agent.transform.localToWorldMatrix;
         }
     }
 }

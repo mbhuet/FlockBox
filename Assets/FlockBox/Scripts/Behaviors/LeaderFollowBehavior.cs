@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -51,13 +54,25 @@ namespace CloudFine
         public override void DrawPerceptionGizmo(SteeringAgent agent)
         {
             base.DrawPerceptionGizmo(agent);
-            Color c = debugColor;
-            UnityEditor.Handles.color = c;
-            c.a = c.a * .1f;
 
-            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.forward * clearAheadDistance);
-            UnityEditor.Handles.DrawWireDisc(Vector3.forward * clearAheadDistance, Vector3.forward, clearAheadRadius);
-            UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.forward, clearAheadRadius);
+            Color areaFill = debugColor;
+            areaFill.a *= .1f;
+            if (agent.HasAttribute(leaderIDAttributeName))
+            {
+                int leaderId = (int)agent.GetAttribute(leaderIDAttributeName);
+                Agent leader = Agent.GetAgentById(leaderId);
+                if(leader != null)
+                {
+                    Handles.matrix = leader.transform.localToWorldMatrix;
+                    Gizmos.matrix = leader.transform.localToWorldMatrix;
+                    areaFill = Color.clear;
+                }
+            }
+            Handles.color = debugColor;
+
+            Handles.DrawLine(Vector3.zero, Vector3.forward * clearAheadDistance);
+            Handles.DrawWireDisc(Vector3.forward * clearAheadDistance, Vector3.forward, clearAheadRadius);
+            Handles.DrawWireDisc(Vector3.zero, Vector3.forward, clearAheadRadius);
 
             Vector3[] verts = new Vector3[]
             {
@@ -67,13 +82,19 @@ namespace CloudFine
                 Vector3.right *clearAheadRadius
             };
 
-            UnityEditor.Handles.DrawSolidRectangleWithOutline(verts, c, debugColor);
+            Handles.DrawSolidRectangleWithOutline(verts, areaFill, debugColor);
 
-            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.back * followDistance);
-            UnityEditor.Handles.DrawSolidDisc(Vector3.back * followDistance, Vector3.up, 1);
+            Handles.DrawLine(Vector3.up * clearAheadRadius,
+                Vector3.up * clearAheadRadius + Vector3.forward * clearAheadDistance);
 
-            UnityEditor.Handles.DrawWireDisc(Vector3.back * followDistance, Vector3.right, stoppingRadius);
-            UnityEditor.Handles.DrawWireDisc(Vector3.back * followDistance, Vector3.up, stoppingRadius);
+            Handles.DrawLine(Vector3.down * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.down * clearAheadRadius);
+
+
+            Handles.DrawLine(Vector3.zero, Vector3.back * followDistance);
+            Gizmos.DrawSphere(Vector3.back * followDistance, 1);
+
+            Gizmos.DrawWireSphere(Vector3.back * followDistance, stoppingRadius);
         }
 #endif
     }

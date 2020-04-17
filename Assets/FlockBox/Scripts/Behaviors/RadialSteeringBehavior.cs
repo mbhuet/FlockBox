@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -30,16 +33,27 @@ namespace CloudFine
         {
             base.DrawPerceptionGizmo(agent);
             Color c = debugColor;
-            UnityEditor.Handles.color = c;
+            Handles.color = c;
             Vector3 startHoriz = Quaternion.Euler(0, -fieldOfView / 2f, 0) * Vector3.forward;
             Vector3 startVert = Quaternion.Euler( -fieldOfView / 2f, 0, 0) * Vector3.forward;
 
-            UnityEditor.Handles.DrawWireArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
-            UnityEditor.Handles.DrawWireArc(Vector3.zero, Vector3.right, startVert, fieldOfView, effectiveRadius);
+            Vector3 endHoriz = Quaternion.Euler(0, fieldOfView / 2f, 0) * Vector3.forward;
+            Vector3 endVert = Quaternion.Euler(fieldOfView / 2f, 0, 0) * Vector3.forward;
+
+            Handles.DrawWireArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
+            Handles.DrawWireArc(Vector3.zero, Vector3.right, startVert, fieldOfView, effectiveRadius);
+
+            if (fieldOfView < 360)
+            {
+                Handles.DrawLine(Vector3.zero, startHoriz * effectiveRadius);
+                Handles.DrawLine(Vector3.zero, endHoriz * effectiveRadius);
+                Handles.DrawLine(Vector3.zero, startVert * effectiveRadius);
+                Handles.DrawLine(Vector3.zero, endVert * effectiveRadius);
+            }
 
             c.a = c.a*.1f;
-            UnityEditor.Handles.color = c;
-            UnityEditor.Handles.DrawSolidArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
+            Handles.color = c;
+            Handles.DrawSolidArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
         }
 #endif
 
