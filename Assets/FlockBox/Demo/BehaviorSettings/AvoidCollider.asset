@@ -45,7 +45,7 @@ MonoBehaviour:
   debugDrawPerception: 0
   foldout: 1
   lookAheadSeconds: 2
-  clearance: 1.09
+  clearance: 0
   mask:
     serializedVersion: 2
     m_Bits: 4294967295
