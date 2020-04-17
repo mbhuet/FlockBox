@@ -10,8 +10,9 @@ namespace CloudFine
 {
     public abstract class RadialSteeringBehavior : SteeringBehavior
     {
+        [Tooltip("Radius within which other Agents will affect this behavior.")]
         public float effectiveRadius = 10;
-        [Range(0f, 360f), FormerlySerializedAs("fov")]
+        [Range(0f, 360f), FormerlySerializedAs("fov"), Tooltip("Range in degrees within which other Agents will affect this behavior.")]
         public float fieldOfView = 360;
 
         protected bool WithinEffectiveRadius(SteeringAgent mine, Agent other)

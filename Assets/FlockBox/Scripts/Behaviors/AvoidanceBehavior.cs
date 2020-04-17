@@ -10,6 +10,7 @@ namespace CloudFine
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
+        [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
         public float clearance;
 
         RaycastHit closestHit;

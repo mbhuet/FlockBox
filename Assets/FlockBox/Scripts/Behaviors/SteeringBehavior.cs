@@ -12,22 +12,22 @@ namespace CloudFine
     public abstract class SteeringBehavior : ScriptableObject
     {
         public bool IsActive { get { return isActive; } }
-        [SerializeField, HideInInspector]
+        [SerializeField, HideInInspector, Tooltip("Determines if this behavior will apply any steering force.")]
         private bool isActive = true;
-        [HideInInspector]
+        [HideInInspector, Tooltip("Relative strength of this behavior's steering force.")]
         public float weight = 1;
-        [HideInInspector]
+        [HideInInspector, Tooltip("Limit this behavior's awareness to Agents with certain Tags.")]
         public bool useTagFilter;
         [HideInInspector]
         public string[] filterTags = new string[0];
 
-        [SerializeField, HideInInspector]
+        [SerializeField, HideInInspector, Tooltip("[Debug] Enable debug visualizations for this behavior.")]
         private bool drawDebug;
         [SerializeField, HideInInspector]
         public Color debugColor = Color.white;
-        [SerializeField, HideInInspector]
+        [SerializeField, HideInInspector, Tooltip("[Debug] Draw line representing this behavior's steering force. (Will only appear in Play mode).")]
         private bool debugDrawSteering;
-        [SerializeField, HideInInspector]
+        [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawPerception;
 
         public bool DrawPerception

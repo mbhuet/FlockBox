@@ -11,6 +11,7 @@ namespace CloudFine
     [System.Serializable]
     public class ArriveBehavior : SeekBehavior
     {
+        [Tooltip("Distance at which brake force will be applied to bring the agent to a stop.")]
         public float stoppingDistance = 10;
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)

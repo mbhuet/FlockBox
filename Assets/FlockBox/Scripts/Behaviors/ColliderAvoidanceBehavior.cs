@@ -34,11 +34,14 @@ namespace CloudFine
     [System.Serializable]
     public class ColliderAvoidanceBehavior : ForecastSteeringBehavior
     {
-
+        [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
         public float clearance;
+        [Tooltip("Which Physics Layers should be considered obstacles. Used for Raycasting.")]
         public LayerMask mask = -1;
-        RaycastHit hit;
+        [Tooltip("Draw lines representing Raycasts this behavior is using to detect obstacles ahead and clear routes (Will only appear in Play mode).")]
         public bool drawVisionRays = false;
+
+        RaycastHit hit;
 
         public override bool CanUseTagFilter { get { return false; } }
 

@@ -11,8 +11,9 @@ namespace CloudFine
     [System.Serializable]
     public class WanderBehavior : SteeringBehavior
     {
-        [Range(0,360f)]
+        [Range(0,360f), Tooltip("The maximum deviation from the current direction of travel that a wander force can be.")]
         public float wanderScope = 90;
+        [Tooltip("How quickly the wander force can change direction.")]
         public float wanderIntensity = 1;
         public override bool CanUseTagFilter { get { return false; } }
 

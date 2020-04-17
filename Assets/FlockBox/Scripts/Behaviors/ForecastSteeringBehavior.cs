@@ -9,6 +9,7 @@ namespace CloudFine
 {
     public abstract class ForecastSteeringBehavior : SteeringBehavior
     {
+        [Tooltip("Seconds ahead this behavior is able to perceive in the current direction of travel.")]
         public float lookAheadSeconds = 1;
 
         public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)

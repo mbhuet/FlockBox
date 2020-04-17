@@ -10,8 +10,10 @@ namespace CloudFine
     [System.Serializable]
     public class QueueBehavior : SteeringBehavior
     {
-        public float queueRadius = 10;
+        [Tooltip("Determines a point ahead to look for Agents blocking this one.")]
         public float queueDistance = 5;
+        [Tooltip("The search radius around a point ahead to look for Agents blocking this one.")]
+        public float queueRadius = 10;
 
         private Shape _perception;
         private Shape Perception

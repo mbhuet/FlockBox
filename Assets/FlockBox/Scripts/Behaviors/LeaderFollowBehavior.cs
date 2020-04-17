@@ -9,9 +9,13 @@ namespace CloudFine
 {
     public class LeaderFollowBehavior : GlobalBehavior
     {
+        [Tooltip("Distance behind the leader for followers to seek. Prevents followers from crowding the leader.")]
         public float followDistance = 10;
+        [Tooltip("Distance from the target point at which followers will begin to slow down.")]
         public float stoppingRadius = 10;
+        [Tooltip("Distance ahead of the leader that followers should steer out of the leader's path.")]
         public float clearAheadDistance = 30;
+        [Tooltip("Radius around the leader's path within which followers should steer out of the leader's way.")]
         public float clearAheadRadius = 10;
 
         private Vector3 pointOnLeaderPath_cached;
