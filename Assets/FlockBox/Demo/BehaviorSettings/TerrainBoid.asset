@@ -16,8 +16,10 @@ MonoBehaviour:
   weight: 2.56
   useTagFilter: 0
   filterTags: []
-  drawDebug: 1
+  drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   lookAheadSeconds: 5
 --- !u!114 &-6742341320620086265
@@ -38,6 +40,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 0.8414739, b: 0, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   effectiveRadius: 8
   fieldOfView: 360
@@ -59,6 +63,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 0, g: 0.6346965, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 1
   foldout: 1
   effectiveRadius: 30
   fieldOfView: 360
@@ -102,8 +108,11 @@ MonoBehaviour:
   - Obstacle
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   lookAheadSeconds: 5
+  clearance: 0
 --- !u!114 &2484503824146704289
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,6 +131,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   wanderScope: 90
   wanderIntensity: 1
@@ -143,6 +154,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 0, b: 0, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   effectiveRadius: 20
   fieldOfView: 360
