@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -16,21 +19,25 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
         {
-            base.DrawPerceptionGizmo(agent);
-            UnityEditor.Handles.color = debugColor;
-            Vector3 endpoint = agent.Forward * agent.activeSettings.maxSpeed * lookAheadSeconds;
+            base.DrawPerceptionGizmo(agent, labels);
+            float distance = agent.activeSettings.maxSpeed * lookAheadSeconds;
             if (Application.isPlaying)
             {
-                endpoint = agent.Forward * agent.Velocity.magnitude * lookAheadSeconds;
+                distance = agent.Velocity.magnitude * lookAheadSeconds;
             }
-            UnityEditor.Handles.DrawLine(Vector3.zero, endpoint);
-            DrawForecastPerceptionEndCapGizmo(agent, endpoint);
+            DrawForecastPerceptionGizmo(agent, distance);
+            if (labels)
+            {
+                Handles.Label(Vector3.forward * distance, new GUIContent("Look Ahead"));
+            }
+
         }
 
-        protected virtual void DrawForecastPerceptionEndCapGizmo(SteeringAgent agent, Vector3 endpoint)
+        protected virtual void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
         {
+            Handles.DrawLine(Vector3.zero, Vector3.forward * distance);
         }
 #endif
     }

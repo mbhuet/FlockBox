@@ -66,7 +66,7 @@ namespace CloudFine
             {
                 if (behavior.DrawPerception)
                 {
-                    behavior.DrawPerceptionGizmo(agent);
+                    behavior.DrawPerceptionGizmo(agent, !Application.isPlaying);
                 }
             }
         }

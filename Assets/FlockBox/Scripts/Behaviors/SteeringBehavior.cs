@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -77,9 +80,44 @@ namespace CloudFine
 
         }
 
-        public virtual void DrawPerceptionGizmo(SteeringAgent agent)
+
+
+#if UNITY_EDITOR
+        public virtual void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
         {
-            UnityEditor.Handles.matrix = agent.transform.localToWorldMatrix;
+            Handles.matrix = agent.transform.localToWorldMatrix;
+            Gizmos.matrix = agent.transform.localToWorldMatrix;
+            Gizmos.color = debugColor;
+            Handles.color = debugColor;
         }
+
+        protected void DrawCylinderGizmo(float clearAheadRadius, float clearAheadDistance)
+        {
+            Handles.color = debugColor;
+            Color areaFill = debugColor;
+            areaFill.a *= .1f;
+
+            Handles.DrawLine(Vector3.zero, Vector3.forward * clearAheadDistance);
+            Handles.DrawWireDisc(Vector3.forward * clearAheadDistance, Vector3.forward, clearAheadRadius);
+            Handles.DrawWireDisc(Vector3.zero, Vector3.forward, clearAheadRadius);
+
+            Vector3[] verts = new Vector3[]
+            {
+                Vector3.left * clearAheadRadius,
+                Vector3.left * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.right * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.right *clearAheadRadius
+            };
+
+            Handles.DrawSolidRectangleWithOutline(verts, areaFill, debugColor);
+
+            Handles.DrawLine(Vector3.up * clearAheadRadius,
+                Vector3.up * clearAheadRadius + Vector3.forward * clearAheadDistance);
+
+            Handles.DrawLine(Vector3.down * clearAheadRadius + Vector3.forward * clearAheadDistance,
+                Vector3.down * clearAheadRadius);
+        }
+
+#endif
     }
 }

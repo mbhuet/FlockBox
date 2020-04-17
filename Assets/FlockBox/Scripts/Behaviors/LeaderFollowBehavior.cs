@@ -51,9 +51,9 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
         {
-            base.DrawPerceptionGizmo(agent);
+            base.DrawPerceptionGizmo(agent, labels);
 
             Color areaFill = debugColor;
             areaFill.a *= .1f;
@@ -68,33 +68,23 @@ namespace CloudFine
                     areaFill = Color.clear;
                 }
             }
-            Handles.color = debugColor;
 
-            Handles.DrawLine(Vector3.zero, Vector3.forward * clearAheadDistance);
-            Handles.DrawWireDisc(Vector3.forward * clearAheadDistance, Vector3.forward, clearAheadRadius);
-            Handles.DrawWireDisc(Vector3.zero, Vector3.forward, clearAheadRadius);
-
-            Vector3[] verts = new Vector3[]
-            {
-                Vector3.left * clearAheadRadius,
-                Vector3.left * clearAheadRadius + Vector3.forward * clearAheadDistance,
-                Vector3.right * clearAheadRadius + Vector3.forward * clearAheadDistance,
-                Vector3.right *clearAheadRadius
-            };
-
-            Handles.DrawSolidRectangleWithOutline(verts, areaFill, debugColor);
-
-            Handles.DrawLine(Vector3.up * clearAheadRadius,
-                Vector3.up * clearAheadRadius + Vector3.forward * clearAheadDistance);
-
-            Handles.DrawLine(Vector3.down * clearAheadRadius + Vector3.forward * clearAheadDistance,
-                Vector3.down * clearAheadRadius);
+            DrawCylinderGizmo(clearAheadRadius, clearAheadDistance);
 
 
             Handles.DrawLine(Vector3.zero, Vector3.back * followDistance);
-            Gizmos.DrawSphere(Vector3.back * followDistance, 1);
 
             Gizmos.DrawWireSphere(Vector3.back * followDistance, stoppingRadius);
+
+            if (labels)
+            {
+                Handles.Label(Vector3.forward * clearAheadDistance, new GUIContent("Clear Ahead Distance"));
+                Handles.Label(Vector3.forward * clearAheadDistance + Vector3.up * clearAheadRadius, new GUIContent("Clear Ahead Radius"));
+
+                Handles.Label(Vector3.back * followDistance, new GUIContent("Follow Distance"));
+                Handles.Label(Vector3.back * followDistance + Vector3.up * stoppingRadius, new GUIContent("Stopping Radius"));
+            }
+
         }
 #endif
     }

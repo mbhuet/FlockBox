@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
     [System.Serializable]
     public class QueueBehavior : SteeringBehavior
     {
-        public float effectiveRadius = 10;
+        public float queueRadius = 10;
         public float queueDistance = 5;
 
         private Shape _perception;
@@ -26,7 +29,7 @@ namespace CloudFine
         public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
             base.AddPerception(agent, surroundings);
-            Perception.radius = effectiveRadius;
+            Perception.radius = queueRadius;
             surroundings.AddPerceptionShape(Perception, (agent.Position + (agent.Forward * queueDistance)));
         }
 
@@ -34,7 +37,7 @@ namespace CloudFine
         {
             if (mine == other) return false;
             return (
-                Vector3.SqrMagnitude((mine.Position + (mine.Forward * queueDistance)) - other.Position) < effectiveRadius * effectiveRadius); // inside fov
+                Vector3.SqrMagnitude((mine.Position + (mine.Forward * queueDistance)) - other.Position) < queueRadius * queueRadius); // inside fov
         }
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
@@ -55,17 +58,18 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent)
+        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
         {
-            UnityEditor.Handles.color = debugColor;
-            UnityEditor.Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.up, effectiveRadius);
-            UnityEditor.Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.right, effectiveRadius);
+            base.DrawPerceptionGizmo(agent, labels);
 
-            UnityEditor.Handles.DrawLine(Vector3.zero, Vector3.forward * queueDistance);
+            Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.up, queueRadius);
+            Gizmos.DrawWireSphere(Vector3.forward * queueDistance, queueRadius);
+            Handles.DrawLine(Vector3.zero, Vector3.forward * queueDistance);
+
             Color c = debugColor;
             c.a = .1f * c.a;
-            UnityEditor.Handles.color = c;
-            UnityEditor.Handles.DrawSolidDisc(Vector3.forward * queueDistance, Vector3.up, effectiveRadius);
+            Handles.color = c;
+            Handles.DrawSolidDisc(Vector3.forward * queueDistance, Vector3.up, queueRadius);
 
         }
 

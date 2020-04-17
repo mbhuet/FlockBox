@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -53,20 +56,14 @@ namespace CloudFine
             steer *= (1f - (closestHit.distance / rayDist));
         }
 
-#if UNITY_EDITOR
-
-        protected override void DrawForecastPerceptionEndCapGizmo(SteeringAgent agent, Vector3 endpoint)
-        {
-            Color c = debugColor;
-            UnityEditor.Handles.color = c;
-            UnityEditor.Handles.DrawWireDisc(endpoint, Vector3.forward, agent.shape.radius + clearance);
-            UnityEditor.Handles.DrawWireDisc(endpoint, Vector3.forward, agent.shape.radius);
-
-            c.a = c.a * .1f;
-            UnityEditor.Handles.color = c;
-            UnityEditor.Handles.DrawSolidDisc(endpoint, Vector3.forward, agent.shape.radius);
+    #if UNITY_EDITOR
+            protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
+            {
+                DrawCylinderGizmo(agent.shape.radius + clearance, distance);
+                Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);
+            Handles.Label(Vector3.forward * distance + Vector3.up * agent.shape.radius, new GUIContent("Agent Radius"));
+            Handles.Label(Vector3.forward * distance + Vector3.up * (agent.shape.radius + clearance), new GUIContent("Clearance"));
         }
-
 #endif
     }
 }

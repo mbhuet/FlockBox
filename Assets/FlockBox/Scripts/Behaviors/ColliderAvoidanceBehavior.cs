@@ -25,6 +25,9 @@ SOFTWARE.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
@@ -137,5 +140,17 @@ namespace CloudFine
 
             return forward;
         }
+
+#if UNITY_EDITOR
+        protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
+        {
+            DrawCylinderGizmo(agent.shape.radius + clearance, distance);
+            Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);
+            Handles.Label(Vector3.forward * distance + Vector3.up * agent.shape.radius, new GUIContent("Agent Radius"));
+            Handles.Label(Vector3.forward * distance + Vector3.up * (agent.shape.radius + clearance), new GUIContent("Clearance"));
+
+
+        }
+#endif
     }
 }
