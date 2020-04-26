@@ -153,35 +153,47 @@ namespace CloudFine
         private float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
 
+        #region AgentProperties
         [SerializeField]
-        protected Dictionary<string, object> attributes = new Dictionary<string, object>();
-        public object GetAttribute(string name)
+        protected Dictionary<string, object> agentProperties = new Dictionary<string, object>();
+        public T GetAgentProperty<T>(string name)
         {
             object val;
-            if (!attributes.TryGetValue(name, out val))
-                return false;
-            return val;
+            if (!agentProperties.TryGetValue(name, out val))
+                return default;
+            return (T)val;
         }
-        public virtual void SetAttribute(string name, object value)
+        public void SetAgentProperty<T>(string name, T value)
         {
-            if (attributes.ContainsKey(name))
-                attributes[name] = value;
+            if (agentProperties.ContainsKey(name))
+                agentProperties[name] = value;
             else
             {
-                attributes.Add(name, value);
+                agentProperties.Add(name, value);
             }
         }
-        public void RemoveAttribute(string name)
+        public void RemoveAgentProperty(string name)
         {
-            attributes.Remove(name);
+            agentProperties.Remove(name);
         }
-        public bool HasAttribute(string name)
+        public bool HasAgentProperty(string name)
         {
-            return attributes.ContainsKey(name);
+            return agentProperties.ContainsKey(name);
         }
 
+        [System.Obsolete("[Deprecated] Use GetAgentProperty() instead.")]
+        public object GetAttribute(string name) { return GetAgentProperty<object>(name); }
+        [System.Obsolete("[Deprecated] Use SetAgentProperty() instead.")]
+        public void SetAttribute(string name, object value) { SetAgentProperty(name, value); }
+        [System.Obsolete("[Deprecated] Use RemoveAgentProperty() instead.")]
+        public void RemoveAttribute(string name, object value) { RemoveAgentProperty(name); }
+        [System.Obsolete("[Deprecated] Use HasAgentProperty() instead.")]
+        public bool HasAttribute(string name) { return HasAgentProperty(name); }
+    
+    #endregion
 
-        public delegate void AgentEvent(Agent agent);
+
+    public delegate void AgentEvent(Agent agent);
         public AgentEvent OnCaught;
         public AgentEvent OnCatch;
         public AgentEvent OnKill;
@@ -220,6 +232,11 @@ namespace CloudFine
             }
 
             MigrateData();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (hasSpawned || isAlive) Kill();
         }
 
         private void OnValidate()

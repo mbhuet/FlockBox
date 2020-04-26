@@ -10,8 +10,8 @@ namespace CloudFine
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
-            int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
+            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
 
             HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 

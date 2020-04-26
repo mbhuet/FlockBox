@@ -27,13 +27,13 @@ namespace CloudFine
 
             if (leaders.Count == 0)
             {
-                mine.RemoveAttribute(leaderIDAttributeName);
+                mine.RemoveAgentProperty(leaderIDAttributeName);
                 steer = Vector3.zero;
                 return;
             }
 
             Agent closestLeader = SeekBehavior.ClosestPursuableTarget(leaders, mine);
-            mine.SetAttribute(leaderIDAttributeName, closestLeader.agentID);
+            mine.SetAgentProperty(leaderIDAttributeName, closestLeader.agentID);
 
             //check to see if we should clear the way in front of the leader
             float scalar = Vector3.Dot(mine.Position - closestLeader.Position, closestLeader.Forward);
@@ -61,9 +61,9 @@ namespace CloudFine
 
             Color areaFill = debugColor;
             areaFill.a *= .1f;
-            if (agent.HasAttribute(leaderIDAttributeName))
+            if (agent.HasAgentProperty(leaderIDAttributeName))
             {
-                int leaderId = (int)agent.GetAttribute(leaderIDAttributeName);
+                int leaderId = agent.GetAgentProperty<int>(leaderIDAttributeName);
                 Agent leader = Agent.GetAgentById(leaderId);
                 if(leader != null)
                 {

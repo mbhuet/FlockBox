@@ -27,11 +27,11 @@ namespace CloudFine
             {
                 fleeMidpoint /= (count);
                 mine.GetSteerVector(out steer, (mine.Position-fleeMidpoint));
-                mine.SetAttribute(fleeAttributeName, true);
+                mine.SetAgentProperty(fleeAttributeName, true);
             }
             else
             {
-                mine.SetAttribute(fleeAttributeName, false);
+                mine.SetAgentProperty(fleeAttributeName, false);
                 steer = Vector3.zero;
             }
         }
