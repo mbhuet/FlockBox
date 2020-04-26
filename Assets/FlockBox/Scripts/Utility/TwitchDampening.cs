@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class TwitchDampening : MonoBehaviour
 {
-    [Range(0f, 1f)] public float _rotationTension = .9f;
+    [Range(0f, 1f)] public float _rotationTension = .95f;
     [Range(0f, 1f)] public float _positionTension = 1;
 
     public float _positionSlackDistance = 0;
-    public float _rotationSlackDegrees = 10;
+    public float _rotationSlackDegrees = 5;
 
     private Quaternion _lastWorldRotation;
     private Vector3 _lastWorldPosition;
