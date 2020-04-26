@@ -49,7 +49,7 @@ namespace CloudFine
 
                 SerializedProperty drawDebugProp = serializedObject.FindProperty("drawDebug");
                 SerializedProperty drawVectorProp = serializedObject.FindProperty("debugDrawSteering");
-                SerializedProperty drawPerceptionProp = serializedObject.FindProperty("debugDrawPerception");
+                SerializedProperty drawPerceptionProp = serializedObject.FindProperty("debugDrawProperties");
 
                 EditorGUILayout.PropertyField(drawDebugProp);
                 if (drawDebugProp.boolValue)

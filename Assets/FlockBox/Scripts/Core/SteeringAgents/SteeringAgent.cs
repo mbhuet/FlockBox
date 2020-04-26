@@ -181,10 +181,9 @@ namespace CloudFine
 
         void OnDrawGizmos()
         {
-
             if (activeSettings)
             {
-                activeSettings.DrawPerceptionGizmos(this);
+                activeSettings.DrawPropertyGizmos(this);
             }
         }
 #endif

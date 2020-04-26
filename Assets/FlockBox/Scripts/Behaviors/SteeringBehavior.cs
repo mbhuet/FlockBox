@@ -28,13 +28,13 @@ namespace CloudFine
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw line representing this behavior's steering force. (Will only appear in Play mode).")]
         private bool debugDrawSteering;
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
-        private bool debugDrawPerception;
+        private bool debugDrawProperties;
 
-        public bool DrawPerception
+        public bool DrawProperties
         {
             get
             {
-                return drawDebug && debugDrawPerception;
+                return drawDebug && debugDrawProperties;
             }
         }
         public bool DrawSteering
@@ -83,7 +83,7 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public virtual void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public virtual void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
             Handles.matrix = agent.transform.localToWorldMatrix;
             Gizmos.matrix = agent.transform.localToWorldMatrix;

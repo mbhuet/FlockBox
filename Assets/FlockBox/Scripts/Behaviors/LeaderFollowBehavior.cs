@@ -55,9 +55,9 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
 
             Color areaFill = debugColor;
             areaFill.a *= .1f;
@@ -80,7 +80,7 @@ namespace CloudFine
 
             Gizmos.DrawWireSphere(Vector3.back * followDistance, stoppingRadius);
 
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(Vector3.forward * clearAheadDistance, new GUIContent("Clear Ahead Distance"));
                 Handles.Label(Vector3.forward * clearAheadDistance + Vector3.up * clearAheadRadius, new GUIContent("Clear Ahead Radius"));

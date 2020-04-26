@@ -60,9 +60,9 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
 
             Handles.DrawWireDisc(Vector3.forward * queueDistance, Vector3.up, queueRadius);
             Gizmos.DrawWireSphere(Vector3.forward * queueDistance, queueRadius);
@@ -73,7 +73,7 @@ namespace CloudFine
             Handles.color = c;
             Handles.DrawSolidDisc(Vector3.forward * queueDistance, Vector3.up, queueRadius);
 
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(Vector3.forward * queueDistance, new GUIContent("Queue Distance"));
                 Handles.Label(Vector3.forward *(queueDistance + queueRadius), new GUIContent("Queue Radius"));

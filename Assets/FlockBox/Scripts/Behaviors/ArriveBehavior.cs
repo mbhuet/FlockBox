@@ -62,14 +62,14 @@ namespace CloudFine
         }
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
 
             Handles.color = debugColor;
             Handles.DrawWireDisc(Vector3.zero, Vector3.up, stoppingDistance);
             
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(Vector3.forward * stoppingDistance, new GUIContent("Stopping Distance"));
             }

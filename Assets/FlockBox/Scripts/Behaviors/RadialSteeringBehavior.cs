@@ -30,9 +30,9 @@ namespace CloudFine
         }
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
             Vector3 startHoriz = Quaternion.Euler(0, -fieldOfView / 2f, 0) * Vector3.forward;
             Vector3 startVert = Quaternion.Euler( -fieldOfView / 2f, 0, 0) * Vector3.forward;
 
@@ -57,7 +57,7 @@ namespace CloudFine
             Handles.color = c;
             Handles.DrawSolidArc(Vector3.zero, Vector3.up, startHoriz, fieldOfView, effectiveRadius);
 
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(startHoriz * effectiveRadius, new GUIContent("Field Of View"));
                 Handles.Label(Vector3.forward * effectiveRadius, new GUIContent("Effective Radius"));

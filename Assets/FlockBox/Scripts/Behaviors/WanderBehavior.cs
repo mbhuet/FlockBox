@@ -30,9 +30,9 @@ namespace CloudFine
         }
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
             Vector3 startHoriz = Quaternion.Euler(0, -wanderScope / 2f, 0) * Vector3.forward;
             Vector3 startVert = Quaternion.Euler(-wanderScope / 2f, 0, 0) * Vector3.forward;
 
@@ -53,7 +53,7 @@ namespace CloudFine
                 Handles.DrawLine(Vector3.zero, endVert * wanderRadius);
             }
 
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(startHoriz * wanderRadius, new GUIContent("Wander Scope"));
             }

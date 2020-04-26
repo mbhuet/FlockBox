@@ -20,16 +20,16 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        public override void DrawPerceptionGizmo(SteeringAgent agent, bool labels)
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
-            base.DrawPerceptionGizmo(agent, labels);
+            base.DrawPropertyGizmos(agent, drawLabels);
             float distance = agent.activeSettings.maxSpeed * lookAheadSeconds;
             if (Application.isPlaying)
             {
                 distance = agent.Velocity.magnitude * lookAheadSeconds;
             }
             DrawForecastPerceptionGizmo(agent, distance);
-            if (labels)
+            if (drawLabels)
             {
                 Handles.Label(Vector3.forward * distance, new GUIContent("Look Ahead"));
             }
