@@ -12,8 +12,8 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
-            int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
+            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
 
             HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
@@ -54,18 +54,18 @@ namespace CloudFine
 
         public static bool HasPursuitTarget(SteeringAgent mine)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) return false;
-            return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
+            if (!mine.HasAgentProperty(targetIDAttributeName)) return false;
+            return mine.GetAgentProperty<int>(targetIDAttributeName) >= 0;
         }
 
         protected static void EngagePursuit(SteeringAgent mine, Agent target)
         {
-            mine.SetAttribute(targetIDAttributeName, target.agentID);
+            mine.SetAgentProperty(targetIDAttributeName, target.agentID);
         }
 
         protected static void DisengagePursuit(SteeringAgent mine, int targetID)
         {
-            mine.SetAttribute(targetIDAttributeName, -1);
+            mine.SetAgentProperty(targetIDAttributeName, -1);
         }
 
         protected static void AttemptCatch(SteeringAgent mine, Agent target)

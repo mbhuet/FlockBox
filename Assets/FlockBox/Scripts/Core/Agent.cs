@@ -181,13 +181,13 @@ namespace CloudFine
             return agentProperties.ContainsKey(name);
         }
 
-        [System.Obsolete("[Deprecated] Use GetAgentProperty() instead.")]
+        [System.Obsolete("Use GetAgentProperty<T>() instead.")]
         public object GetAttribute(string name) { return GetAgentProperty<object>(name); }
-        [System.Obsolete("[Deprecated] Use SetAgentProperty() instead.")]
+        [System.Obsolete("Use SetAgentProperty<T>() instead.")]
         public void SetAttribute(string name, object value) { SetAgentProperty(name, value); }
-        [System.Obsolete("[Deprecated] Use RemoveAgentProperty() instead.")]
+        [System.Obsolete("Use RemoveAgentProperty() instead.")]
         public void RemoveAttribute(string name, object value) { RemoveAgentProperty(name); }
-        [System.Obsolete("[Deprecated] Use HasAgentProperty() instead.")]
+        [System.Obsolete("Use HasAgentProperty() instead.")]
         public bool HasAttribute(string name) { return HasAgentProperty(name); }
     
     #endregion
