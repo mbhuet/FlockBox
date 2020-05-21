@@ -10,7 +10,7 @@ namespace CloudFine
     public class SteeringAgent : Agent
     {
 
-        protected Vector3 Acceleration { get; private set; }
+        public Vector3 Acceleration { get; private set; }
 
         protected float speedThrottle = 1;
 
