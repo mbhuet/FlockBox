@@ -150,7 +150,7 @@ namespace CloudFine
         public bool isCaught { get; protected set; }
         protected bool hasSpawned = false;
 
-        private float spawnTime;
+        protected float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
 
         #region AgentProperties
@@ -220,7 +220,7 @@ namespace CloudFine
         {
             if (!hasSpawned)
             {
-                myNeighborhood = GetComponentInParent<FlockBox>();
+                myNeighborhood = FindNeighborhood();
                 if (myNeighborhood)
                 {
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
@@ -307,6 +307,17 @@ namespace CloudFine
             return true;
         }
 
+        protected virtual FlockBox FindNeighborhood()
+        {
+            return GetComponentInParent<FlockBox>();
+        }
+
+        protected virtual void JoinNeighborhood(FlockBox neighborhood)
+        {
+            myNeighborhood = neighborhood;
+            transform.SetParent(myNeighborhood.transform);
+        }
+
         protected virtual void FindNeighborhoodBuckets()
         {
             if(myNeighborhood)
@@ -336,8 +347,7 @@ namespace CloudFine
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            myNeighborhood = neighborhood;
-            transform.SetParent(myNeighborhood.transform);
+            JoinNeighborhood(neighborhood);
             this.Position = position;
             ForceUpdatePosition();
         }
@@ -345,6 +355,11 @@ namespace CloudFine
         public void Spawn(FlockBox neighborhood)
         {
             Spawn(neighborhood, neighborhood.RandomPosition());
+        }
+
+        protected virtual void Spawn()
+        {
+
         }
 
         protected virtual void ForceUpdatePosition()
