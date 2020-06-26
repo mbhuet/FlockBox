@@ -38,7 +38,7 @@ namespace CloudFine
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new Separation { Radius = effectiveRadius });
+            dstManager.AddComponentData(entity, new SeparationData { Radius = effectiveRadius });
         }
     }
 }

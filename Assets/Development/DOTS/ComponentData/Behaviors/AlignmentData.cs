@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public struct Alignment : IComponentData
+public struct AlignmentData : IComponentData
 {
     public float Radius;
 }

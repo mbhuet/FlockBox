@@ -13,12 +13,12 @@ using UnityEngine.UIElements;
 public abstract class AlignmentSystem : SteeringSystem
 {
     [BurstCompile]
-    struct AlignmentJob : IJobForEach<Acceleration, Surroundings, Alignment>
+    struct AlignmentJob : IJobForEach<Acceleration, Surroundings, AlignmentData>
     {
         public float dt;
 
 
-        public void Execute(ref Acceleration accel, ref Surroundings sur, ref Alignment align)
+        public void Execute(ref Acceleration accel, ref Surroundings sur, ref AlignmentData align)
         {
             //look at surroundings
             //modify acceleration

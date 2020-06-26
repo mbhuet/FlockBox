@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public struct Separation : IComponentData
+public struct CohesionData : IComponentData
 {
     public float Radius;
+
 }
