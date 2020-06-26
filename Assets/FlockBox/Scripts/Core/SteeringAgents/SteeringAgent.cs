@@ -157,14 +157,19 @@ namespace CloudFine
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new Translation { Value = Position });
-            dstManager.AddComponentData(entity, new Velocity { Value = Velocity });
-            dstManager.AddComponentData(entity, new Forward { Value = Forward });
-            dstManager.AddComponentData(entity, new Acceleration { Value = Acceleration });
-            dstManager.AddComponentData(entity, new Tag { Value = TagMaskUtility.TagToInt(tag) }); 
-            dstManager.AddComponentData(entity, new ShapeData { Radius = shape.radius });
+            //AgentData holds everything a behavior needs to know how to react to another Agent
+            dstManager.AddComponentData(entity, new AgentData { 
+                Position = Position,
+                Velocity = Velocity,
+                Forward = Forward,
+                Tag = TagMaskUtility.TagToInt(tag),
+                Radius = shape.radius
+            });
 
-            foreach(SteeringBehavior behavior in activeSettings.Behaviors)
+            //give entity a buffer to hold info about surroundings
+            dstManager.AddBuffer<SurroundingsData>(entity);
+
+            foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
                 if(behavior is IConvertToComponentData)
                 {

@@ -11,11 +11,11 @@ using UnityEngine;
 public class CohesionSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct CohesionJob : IJobForEach<Acceleration, Surroundings, CohesionData>
+    struct CohesionJob : IJobForEach<Acceleration, SurroundingsData, CohesionData>
     {
         public float dt;
 
-        public void Execute(ref Acceleration c1, ref Surroundings c0, ref CohesionData c2)
+        public void Execute(ref Acceleration c1, ref SurroundingsData c0, ref CohesionData c2)
         {
             throw new System.NotImplementedException();
         }

@@ -629,13 +629,14 @@ namespace CloudFine
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponent(entity, typeof(Translation));
-            dstManager.AddComponent(entity, typeof(Velocity));
-            dstManager.AddComponent(entity, typeof(Forward));
-            dstManager.AddComponent(entity, typeof(Tag));
-            dstManager.AddComponent(entity, typeof(Shape));
-
-
+            dstManager.AddComponentData(entity, new AgentData
+            {
+                Position = Position,
+                Velocity = Velocity,
+                Forward = Forward,
+                Tag = TagMaskUtility.TagToInt(tag),
+                Radius = shape.radius
+            });
         }
     }
 }

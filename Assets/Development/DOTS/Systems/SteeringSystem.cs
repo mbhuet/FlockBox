@@ -10,12 +10,12 @@ using UnityEngine;
 public class SteeringSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct SteeringJob : IJobForEach<Acceleration, Surroundings>
+    struct SteeringJob : IJobForEach<Acceleration, SurroundingsData>
     {
         public float dt;
 
 
-        public void Execute(ref Acceleration c0, ref Surroundings c1)
+        public void Execute(ref Acceleration c0, ref SurroundingsData c1)
         {
             //look at surroundings
             //modify acceleration

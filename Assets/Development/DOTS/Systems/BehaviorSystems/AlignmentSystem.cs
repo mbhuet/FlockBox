@@ -13,26 +13,29 @@ using UnityEngine.UIElements;
 public abstract class AlignmentSystem : SteeringSystem
 {
     [BurstCompile]
-    struct AlignmentJob : IJobForEach<Acceleration, Surroundings, AlignmentData>
+    struct AlignmentJob : IJobForEachWithEntity<Acceleration, AlignmentData>
     {
         public float dt;
+        public SurroundingsData sur;
 
 
-        public void Execute(ref Acceleration accel, ref Surroundings sur, ref AlignmentData align)
+
+        public void Execute(Entity entity, int index, ref Acceleration c0, ref AlignmentData c1)
         {
-            //look at surroundings
-            //modify acceleration
-
-            //c0.Value += c1.Value * dt;
+            //throw new System.NotImplementedException();
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
+        
+
         AlignmentJob job = new AlignmentJob
         {
             //pass input data into the job
-            dt = Time.deltaTime
-        };
+            dt = Time.deltaTime,
+            sur = GetBufferFromEntity<SurroundingsData>()[entity]
+
+    };
         return job.Schedule(this, inputDeps);
     }
 }
