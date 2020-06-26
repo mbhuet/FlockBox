@@ -36,7 +36,7 @@ namespace CloudFine
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new CohesionData { Radius = effectiveRadius });
+            dstManager.AddComponentData(entity, new CohesionData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
         }
     }
 }
