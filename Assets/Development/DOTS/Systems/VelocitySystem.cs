@@ -7,7 +7,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-public class FlockSystem : JobComponentSystem
+[UpdateAfter(typeof(AccelerationSystem))]
+public class VelocitySystem : JobComponentSystem
 {
     //what does a flocksystem need to make decisions about how an agents data should change
     //surroundings
@@ -15,7 +16,7 @@ public class FlockSystem : JobComponentSystem
     //
     [BurstCompile]
     //[RequireComponentTag(typeof(AgentTag))] //only look for 
-    struct FlockJob : IJobForEach<Translation, Velocity>
+    struct VelocityJob : IJobForEach<Translation, Velocity>
     {
         public float dt;
 
@@ -27,7 +28,7 @@ public class FlockSystem : JobComponentSystem
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        FlockJob job = new FlockJob
+        VelocityJob job = new VelocityJob
         {
             //pass input data into the job
             dt = Time.deltaTime

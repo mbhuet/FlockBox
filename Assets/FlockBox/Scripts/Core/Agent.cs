@@ -624,11 +624,18 @@ namespace CloudFine
             }
         }
 
+#endif
+
+
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponent(entity, typeof(Translation));
             dstManager.AddComponent(entity, typeof(Velocity));
+            dstManager.AddComponent(entity, typeof(Forward));
+            dstManager.AddComponent(entity, typeof(Tag));
+            dstManager.AddComponent(entity, typeof(Shape));
+
+
         }
-#endif
     }
 }

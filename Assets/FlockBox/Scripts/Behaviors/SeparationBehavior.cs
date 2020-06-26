@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
 
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeparationBehavior : RadialSteeringBehavior
+    public class SeparationBehavior : RadialSteeringBehavior, IConvertToComponentData
     {
+
+
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             steer = Vector3.zero;
@@ -31,6 +34,11 @@ namespace CloudFine
             {
                 mine.GetSteerVector(out steer, steer);
             }
+        }
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponentData(entity, new Separation { Radius = effectiveRadius });
         }
     }
 }

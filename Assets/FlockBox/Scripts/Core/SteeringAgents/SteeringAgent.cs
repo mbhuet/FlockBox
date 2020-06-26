@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 
 namespace CloudFine
 {
     [System.Serializable]
-    public class SteeringAgent : Agent
+    public class SteeringAgent : Agent, IConvertGameObjectToEntity
     {
 
         public Vector3 Acceleration { get; private set; }
@@ -150,6 +152,24 @@ namespace CloudFine
             else
             {
                 Forward = transform.localRotation * Vector3.forward;
+            }
+        }
+
+        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponentData(entity, new Translation { Value = Position });
+            dstManager.AddComponentData(entity, new Velocity { Value = Velocity });
+            dstManager.AddComponentData(entity, new Forward { Value = Forward });
+            dstManager.AddComponentData(entity, new Acceleration { Value = Acceleration });
+            dstManager.AddComponentData(entity, new Tag { Value = TagMaskUtility.TagToInt(tag) }); 
+            dstManager.AddComponentData(entity, new ShapeData { Radius = shape.radius });
+
+            foreach(SteeringBehavior behavior in activeSettings.Behaviors)
+            {
+                if(behavior is IConvertToComponentData)
+                {
+                    (behavior as IConvertToComponentData).Convert(entity, dstManager, conversionSystem);
+                }
             }
         }
 

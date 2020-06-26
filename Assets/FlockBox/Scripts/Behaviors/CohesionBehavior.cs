@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
 
 namespace CloudFine
 {
     [System.Serializable]
-    public class CohesionBehavior : RadialSteeringBehavior
+    public class CohesionBehavior : RadialSteeringBehavior, IConvertToComponentData
     {
+
+
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             //steer used as midpoint to prevent garbage
@@ -29,6 +32,11 @@ namespace CloudFine
             {
                 steer = Vector3.zero;
             }
+        }
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponentData(entity, new Cohesion { Radius = effectiveRadius });
         }
     }
 }
