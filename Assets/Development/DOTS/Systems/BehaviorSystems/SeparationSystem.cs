@@ -11,12 +11,12 @@ using UnityEngine;
 public abstract class SeparationSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct SeparationJob : IJobForEach<Acceleration, SurroundingsData, SeparationData>
+    struct SeparationJob : IJobForEach<Acceleration, NeighborData, SeparationData>
     {
         public float dt;
 
 
-        public void Execute(ref Acceleration c0, ref SurroundingsData c1, ref SeparationData sep)
+        public void Execute(ref Acceleration c0, ref NeighborData c1, ref SeparationData sep)
         {
             //look at surroundings
             //modify acceleration

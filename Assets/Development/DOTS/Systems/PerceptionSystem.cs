@@ -16,10 +16,10 @@ public class PerceptionSystem : JobComponentSystem
     //
     [BurstCompile]
     //[RequireComponentTag(typeof(AgentTag))] //only look for 
-    struct PerceptionJob : IJobForEach<Perception, SurroundingsData>
+    struct PerceptionJob : IJobForEach<Perception, NeighborData>
     {
 
-        public void Execute(ref Perception per, ref SurroundingsData c0)
+        public void Execute(ref Perception per, ref NeighborData c0)
         {
             //c0.Value += c1.Value * dt;
         }

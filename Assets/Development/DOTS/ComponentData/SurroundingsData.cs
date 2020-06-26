@@ -7,11 +7,11 @@ using UnityEngine;
 // will be reserved (32 bytes) along with the size of the buffer header
 // (currently 16 bytes on 64-bit targets)
 [InternalBufferCapacity(12)]
-public struct SurroundingsData : IBufferElementData
+public struct NeighborData : IBufferElementData
 {
     // These implicit conversions are optional, but can help reduce typing.
-    public static implicit operator AgentData(SurroundingsData e) { return e.Value; }
-    public static implicit operator SurroundingsData(AgentData e) { return new SurroundingsData { Value = e }; }
+    public static implicit operator AgentData(NeighborData e) { return e.Value; }
+    public static implicit operator NeighborData(AgentData e) { return new NeighborData { Value = e }; }
 
     // Actual value each buffer element will store.
     public AgentData Value;

@@ -14,30 +14,23 @@ using UnityEngine.UIElements;
 public abstract class AlignmentSystem : SteeringSystem
 {
     [BurstCompile]
-    struct AlignmentJob : IJobForEachWithEntity_EBCC<SurroundingsData, Acceleration, AlignmentData>
+    struct AlignmentJob : IJobForEachWithEntity_EBCC<NeighborData, Acceleration, AlignmentData>
     {
-        public float dt;
-        // Allow buffer read write in parralel jobs
-        // Ensure, no two jobs can write to same entity, at the same time.
-        // !! "You are somehow completely certain that there is no race condition possible here, because you are absolutely certain that you will not be writing to the same Entity ID multiple times from your parallel for job. (If you do thats a race condition and you can easily crash unity, overwrite memory etc) If you are indeed certain and ready to take the risks.
-        // https://forum.unity.com/threads/how-can-i-improve-or-jobify-this-system-building-a-list.547324/#post-3614833
-        [NativeDisableParallelForRestriction]
-        public BufferFromEntity<SurroundingsData> surBuffer;
 
-
-        public void Execute(Entity entity, int index, DynamicBuffer<SurroundingsData> b0, ref Acceleration c1, ref AlignmentData c2)
+        public void Execute(Entity entity, int index, DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
         {
-            //throw new System.NotImplementedException();
+            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask)){
+                
+            }
         }
     }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         
 
         AlignmentJob job = new AlignmentJob
         {
-            //pass input data into the job
-            dt = Time.deltaTime,
 
         };
         return job.Schedule(this, inputDeps);

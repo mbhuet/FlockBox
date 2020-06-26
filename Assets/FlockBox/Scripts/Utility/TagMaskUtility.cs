@@ -30,6 +30,12 @@ public static class TagMaskUtility
 
     public static bool TagInMask(string tag, Int32 mask)
     {
-        return (1 << (TagToInt(tag)) & mask) != 0;
+        return TagInMask(TagToInt(tag), mask);
+    }
+
+    public static bool TagInMask(byte tag, Int32 mask)
+    {
+        return (1 << tag & mask) != 0;
+
     }
 }

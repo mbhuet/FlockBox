@@ -167,7 +167,7 @@ namespace CloudFine
             });
 
             //give entity a buffer to hold info about surroundings
-            dstManager.AddBuffer<SurroundingsData>(entity);
+            dstManager.AddBuffer<NeighborData>(entity);
 
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {

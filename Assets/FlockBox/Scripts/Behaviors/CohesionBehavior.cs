@@ -8,8 +8,6 @@ namespace CloudFine
     [System.Serializable]
     public class CohesionBehavior : RadialSteeringBehavior, IConvertToComponentData
     {
-
-
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             //steer used as midpoint to prevent garbage
