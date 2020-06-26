@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 public abstract class AlignmentSystem : SteeringSystem
 {
     [BurstCompile]
-    struct AlignmentJob : IJobForEachWithEntity<Acceleration, AlignmentData>
+    struct AlignmentJob : IJobForEachWithEntity_EBCC<SurroundingsData, Acceleration, AlignmentData>
     {
         public float dt;
         // Allow buffer read write in parralel jobs
@@ -25,10 +25,8 @@ public abstract class AlignmentSystem : SteeringSystem
         public BufferFromEntity<SurroundingsData> surBuffer;
 
 
-        public void Execute(Entity entity, int index, ref Acceleration c0, ref AlignmentData c1)
+        public void Execute(Entity entity, int index, DynamicBuffer<SurroundingsData> b0, ref Acceleration c1, ref AlignmentData c2)
         {
-            DynamicBuffer<SurroundingsData> sur = surBuffer[entity];
-            
             //throw new System.NotImplementedException();
         }
     }
@@ -40,7 +38,6 @@ public abstract class AlignmentSystem : SteeringSystem
         {
             //pass input data into the job
             dt = Time.deltaTime,
-            surBuffer = GetBufferFromEntity<SurroundingsData>(false)
 
         };
         return job.Schedule(this, inputDeps);
