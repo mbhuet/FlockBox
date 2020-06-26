@@ -2,18 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
     [System.Serializable]
     public class ArriveBehavior : SeekBehavior
     {
+        [Tooltip("Distance at which brake force will be applied to bring the agent to a stop.")]
+        public float stoppingDistance = 10;
+
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
-            int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
+            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
 
-            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {
@@ -44,15 +50,30 @@ namespace CloudFine
             }
 
             AttemptCatch(mine, closestTarget);
-            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, effectiveRadius);
+            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, stoppingDistance);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
 
-        public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float effectiveRadius)
+        public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float stopRadius)
         {
             return (arrivePosition - mine.Position).normalized
-                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (effectiveRadius * effectiveRadius));
+                * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (stopRadius * stopRadius));
         }
+
+#if UNITY_EDITOR
+        public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
+        {
+            base.DrawPropertyGizmos(agent, drawLabels);
+
+            Handles.color = debugColor;
+            Handles.DrawWireDisc(Vector3.zero, Vector3.up, stoppingDistance);
+            
+            if (drawLabels)
+            {
+                Handles.Label(Vector3.forward * stoppingDistance, new GUIContent("Stopping Distance"));
+            }
+        }
+#endif
     }
 }

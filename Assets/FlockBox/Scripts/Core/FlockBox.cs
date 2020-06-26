@@ -17,11 +17,11 @@ namespace CloudFine
 {
     public class FlockBox : MonoBehaviour
     {
-        private Dictionary<int, List<Agent>> bucketToAgents = new Dictionary<int, List<Agent>>(); //get all agents in a bucket
-        private Dictionary<Agent, List<int>> agentToBuckets = new Dictionary<Agent, List<int>>(); //get all buckets an agent is in
+        private Dictionary<int, HashSet<Agent>> bucketToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a bucket
+        private Dictionary<Agent, HashSet<int>> agentToBuckets = new Dictionary<Agent, HashSet<int>>(); //get all buckets an agent is in
 
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
-        private Dictionary<string, List<Agent>> tagToAgents = new Dictionary<string, List<Agent>>();
+        private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
 
 
         private NativeHashMap<int, NativeArray<Entity>> bucketToEntity = new NativeHashMap<int, NativeArray<Entity>>();
@@ -119,12 +119,12 @@ namespace CloudFine
 
 
         
-        public void GetSurroundings(Vector3 position, Vector3 velocity, List<int> buckets, SurroundingsContainer surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> buckets, SurroundingsContainer surroundings)
         {
 
             if (buckets==null)
             {
-                buckets = new List<int>();
+                buckets = new HashSet<int>();
             }
             else buckets.Clear();
 
@@ -137,26 +137,48 @@ namespace CloudFine
             {
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
-
-            surroundings.allAgents.Clear();
-            for (int i = 0; i < buckets.Count; i++)
+            if (surroundings.perceptionShapes.Count > 0)
             {
-                if(bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache))
+                foreach (System.Tuple<Shape, Vector3> s in surroundings.perceptionShapes)
                 {
-                    surroundings.allAgents.AddRange(_bucketContentsCache);
+                    switch (s.Item1.type)
+                    {
+                        case Shape.ShapeType.POINT:
+                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
+                            break;
+                        case Shape.ShapeType.SPHERE:
+                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
+                            break;
+                        case Shape.ShapeType.LINE:
+                            //TODO: assumes Line Perception will only be in direction of Velocity
+                            GetBucketsOverlappingLine(s.Item2, velocity.normalized * s.Item1.length, buckets);
+                            break;
+                        case Shape.ShapeType.CYLINDER:
+                            //TODO: assumes Cylinder Perception will only be in direction of Velocity
+                            GetBucketsOverlappingCylinder(s.Item2, velocity.normalized * s.Item1.length, s.Item1.radius, buckets);
+                            break;
+                    }
+                }
+            }
+
+            foreach (int bucket in buckets)
+            { 
+                if(bucketToAgents.TryGetValue(bucket, out _bucketContentsCache))
+                {
+                    surroundings.AddAgents(_bucketContentsCache);
                 }
             }
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
-                    if(tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
+                    if (tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
                     {
-                        surroundings.allAgents.AddRange(_bucketContentsCache);
+                        surroundings.AddAgents(_bucketContentsCache);
                     }
                 }
             }
 
-            surroundings.allAgents = surroundings.allAgents.Distinct().ToList();
+            
         }
 
         /// <summary>
@@ -165,19 +187,19 @@ namespace CloudFine
         /// <param name="agent"></param>
         /// <param name="buckets"></param>
         /// <param name="isStatic">Will this agent be updating its position every frame</param>
-        public void UpdateAgentBuckets(Agent agent, List<int> buckets, bool isStatic)
+        public void UpdateAgentBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
         {
             RemoveAgentFromBuckets(agent, buckets);
             AddAgentToBuckets(agent, buckets, isStatic);
         }
 
-        public void RemoveAgentFromBuckets(Agent agent, List<int> buckets)
+        public void RemoveAgentFromBuckets(Agent agent, HashSet<int> buckets)
         {
             if (agentToBuckets.TryGetValue(agent, out buckets))
             {
-                for (int i = 0; i < buckets.Count; i++)
+                foreach(int bucket in buckets)
                 {
-                    if (bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache))
+                    if (bucketToAgents.TryGetValue(bucket, out _bucketContentsCache))
                     {
                         _bucketContentsCache.Remove(agent);
                     }
@@ -188,11 +210,11 @@ namespace CloudFine
         }
 
 
-        private List<Agent> _bucketContentsCache;
-        private List<int> _bucketListCache;
+        private HashSet<Agent> _bucketContentsCache;
+        private HashSet<int> _bucketListCache;
         private string _tagCache;
 
-        private void AddAgentToBuckets(Agent agent, List<int> buckets, bool isStatic)
+        private void AddAgentToBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
         {
 
 
@@ -214,7 +236,7 @@ namespace CloudFine
                     }
                     else
                     {
-                        tagToAgents.Add(_tagCache, new List<Agent>() { agent });
+                        tagToAgents.Add(_tagCache, new HashSet<Agent>() { agent });
                     }
                 }
             }
@@ -228,7 +250,7 @@ namespace CloudFine
                 }
                 else
                 {
-                    tagToAgents.Add(agent.tag, new List<Agent>() { agent});
+                    tagToAgents.Add(agent.tag, new HashSet<Agent>() { agent});
 
                 }
             }
@@ -236,7 +258,7 @@ namespace CloudFine
 
             if (buckets == null)
             {
-                buckets = new List<int>();
+                buckets = new HashSet<int>();
             }
             buckets.Clear();
 
@@ -261,24 +283,23 @@ namespace CloudFine
 
             if (!agentToBuckets.TryGetValue(agent, out _bucketListCache))
             {
-                agentToBuckets.Add(agent, new List<int>());
+                agentToBuckets.Add(agent, new HashSet<int>());
             }
 
-            for (int i = 0; i < buckets.Count; i++)
-            {
-                if (bucketToAgents.TryGetValue(buckets[i], out _bucketContentsCache)) //get bucket if already existing
+            foreach(int bucket in buckets) { 
+                if (bucketToAgents.TryGetValue(bucket, out _bucketContentsCache)) //get bucket if already existing
                 {
                     if (!capCellCapacity || isStatic || (_bucketContentsCache.Count < maxCellCapacity))
                     {
                         _bucketContentsCache.Add(agent);
-                        agentToBuckets[agent].Add(buckets[i]);
+                        agentToBuckets[agent].Add(bucket);
                     }
                 }
 
                 else //create bucket, add agent
                 {
-                    bucketToAgents.Add(buckets[i], new List<Agent>(maxCellCapacity) { agent});
-                    agentToBuckets[agent].Add(buckets[i]);
+                    bucketToAgents.Add(bucket, new HashSet<Agent>() { agent});
+                    agentToBuckets[agent].Add(bucket);
 
                 }
             }
@@ -291,7 +312,7 @@ namespace CloudFine
             return WorldPositionToHash(point);
         }
 
-        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, List<int> buckets)
+        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> buckets)
         {
             
             int x0 = ToCellFloor(start.x);
@@ -311,11 +332,6 @@ namespace CloudFine
             int i = dm;
             x1 = y1 = z1 = dm / 2; /* error offset */
 
-            int expectedCapacity = buckets.Count + dm;
-            if (buckets.Capacity < expectedCapacity)
-            {
-                buckets.Capacity = expectedCapacity;
-            }
             buckets.Add(CellPositionToHash(x0, y0, z0));
 
 
@@ -338,7 +354,7 @@ namespace CloudFine
         }
 
         
-        public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, List<int> buckets)
+        public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> buckets)
         {
             Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
             Vector3 max = Vector3.Max(a, b) + Vector3.one * r;
@@ -366,15 +382,11 @@ namespace CloudFine
 
         }
 
-        public void GetBucketsOverlappingSphere(Vector3 center, float radius, List<int> buckets)
+        public void GetBucketsOverlappingSphere(Vector3 center, float radius, HashSet<int> buckets)
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
-            if(buckets == null) buckets = new List<int>();
+            if(buckets == null) buckets = new HashSet<int>();
 
-            int expectedCapacity = buckets.Count + ((neighborhoodRadius * 2 + 1) * (neighborhoodRadius * 2 + 1) * (neighborhoodRadius * 2 + 1));
-            if (buckets.Capacity < expectedCapacity) {
-                buckets.Capacity = expectedCapacity;
-            }
             int center_x = ToCellFloor(center.x);
             int center_y = ToCellFloor(center.y);
             int center_z = ToCellFloor(center.z);

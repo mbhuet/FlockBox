@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class FleeBehavior : RadialSteeringBehavior
+    public class FleeBehavior : GlobalRadialSteeringBehavior
     {
         public const string fleeAttributeName = "fleeing";
 
@@ -26,15 +26,12 @@ namespace CloudFine
             if (count > 0)
             {
                 fleeMidpoint /= (count);
-                Vector3 desired_velocity = (fleeMidpoint - mine.Position).normalized * -1 * mine.activeSettings.maxSpeed;
-                steer = desired_velocity - mine.Velocity;
-                steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-
-                mine.SetAttribute(fleeAttributeName, true);
+                mine.GetSteerVector(out steer, (mine.Position-fleeMidpoint));
+                mine.SetAgentProperty(fleeAttributeName, true);
             }
             else
             {
-                mine.SetAttribute(fleeAttributeName, false);
+                mine.SetAgentProperty(fleeAttributeName, false);
                 steer = Vector3.zero;
             }
         }

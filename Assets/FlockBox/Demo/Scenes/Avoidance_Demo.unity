@@ -196,6 +196,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 697808139, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbe22f4fc91492b43a0e32540fcac751, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}
 --- !u!4 &123403937 stripped
@@ -335,6 +339,8 @@ MonoBehaviour:
   wrapEdges: 0
   boundaryBuffer: 10
   sleepChance: 0
+  maxCellCapacity: 10
+  capCellCapacity: 1
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: cb0c23d81e0afe84dacfcae9c87bd37f,
       type: 3}
@@ -433,6 +439,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 697808139, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbe22f4fc91492b43a0e32540fcac751, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}
 --- !u!1 &1667051883
@@ -595,5 +605,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 697808139, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbe22f4fc91492b43a0e32540fcac751, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06cea556d5f06f24e89f67255dd974e9, type: 3}

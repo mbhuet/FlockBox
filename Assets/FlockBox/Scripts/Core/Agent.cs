@@ -2,33 +2,88 @@
 using UnityEngine;
 using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine.Serialization;
 
 namespace CloudFine
 {
     [System.Serializable]
     public class SurroundingsContainer
     {
-        public float perceptionRadius = 0;
-        public float lookAheadSeconds = 0;
-        public List<string> globalSearchTags = new List<string>();
-        public List<Agent> allAgents = new List<Agent>();
-        public SurroundingsContainer() { }
+        public float perceptionRadius { get; private set; }
+        public float lookAheadSeconds { get; private set; }
+        public HashSet<string> globalSearchTags { get; private set; }
+        public HashSet<Agent> allAgents { get; private set; }
+        public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
+
+        public SurroundingsContainer()
+        {
+            globalSearchTags = new HashSet<string>();
+            allAgents = new HashSet<Agent>();
+            perceptionShapes = new List<System.Tuple<Shape, Vector3>>();
+        }
+
+        public void Clear()
+        {
+            perceptionRadius = 0;
+            lookAheadSeconds = 0;
+            allAgents.Clear();
+            perceptionShapes.Clear();
+            globalSearchTags.Clear();
+        }
+
+        public void SetMinPerceptionRadius(float radius)
+        {
+            perceptionRadius = Mathf.Max(radius, perceptionRadius);
+        }
+
+        public void SetMinLookAheadSeconds(float seconds)
+        {
+            lookAheadSeconds = Mathf.Max(lookAheadSeconds, seconds);
+        }
+
+        public void AddGlobalSearchTag(string tag)
+        {
+            globalSearchTags.Add(tag);
+        }
+
+        public void AddAgent(Agent a)
+        {
+            allAgents.Add(a);
+        }
+
+        public void AddAgents(HashSet<Agent> agents)
+        {
+            foreach(Agent a in agents)
+            {
+                AddAgent(a);
+            }
+        }
+
+        public void AddPerceptionShape(Shape shape, Vector3 position)
+        {
+            perceptionShapes.Add(new System.Tuple<Shape, Vector3>(shape,position));
+        }
     }
 
     [System.Serializable]
     public class Agent : MonoBehaviour, IConvertGameObjectToEntity
     {
-
-        
-
         private Vector3 m_position = Vector3.zero;
         /// <summary>
-        /// Position in local space
+        /// Position in local space.
         /// </summary>
         public Vector3 Position
         {
             get { return m_position; }
             protected set { m_position = value; }
+        }
+        
+        /// <summary>
+        /// Position in world space. 
+        /// </summary>
+        public Vector3 WorldPosition
+        {
+            get { return FlockBoxToWorldPosition(Position);}
         }
 
         private Vector3 m_velocity = Vector3.zero;
@@ -43,12 +98,20 @@ namespace CloudFine
 
         private Vector3 m_forward = Vector3.forward;
         /// <summary>
-        /// Forward in local space. Magnitude will never be zero.
+        /// Forward in local space. Magnitude will never be zero. Guaranteed to be normalized.
         /// </summary>
         public Vector3 Forward
         {
             get { return m_forward; }
-            protected set { m_forward = value; }
+            protected set { m_forward = value.normalized; }
+        }
+
+        /// <summary>
+        /// Forward in world space.
+        /// </summary>
+        public Vector3 WorldForward
+        {
+            get { return FlockBoxToWorldDirection(Forward); }
         }
 
 
@@ -74,10 +137,11 @@ namespace CloudFine
 
         [SerializeField]
         public Shape shape;
-        public bool drawDebug = false;
+        [FormerlySerializedAs("drawDebug")]
+        public bool debugDrawShape = false;
 
-        protected List<int> buckets = new List<int>();
-        protected List<Agent> neighbors;
+        protected HashSet<int> buckets = new HashSet<int>();
+        protected HashSet<Agent> neighbors;
 
         protected static Dictionary<int, Agent> agentRegistry;
         protected static int agentCount_static = 0;
@@ -88,38 +152,50 @@ namespace CloudFine
         public bool isCaught { get; protected set; }
         protected bool hasSpawned = false;
 
-        private float spawnTime;
+        protected float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
 
+        #region AgentProperties
         [SerializeField]
-        protected Dictionary<string, object> attributes = new Dictionary<string, object>();
-        public object GetAttribute(string name)
+        protected Dictionary<string, object> agentProperties = new Dictionary<string, object>();
+        public T GetAgentProperty<T>(string name)
         {
             object val;
-            if (!attributes.TryGetValue(name, out val))
-                return false;
-            return val;
+            if (!agentProperties.TryGetValue(name, out val))
+                return default;
+            return (T)val;
         }
-        public virtual void SetAttribute(string name, object value)
+        public void SetAgentProperty<T>(string name, T value)
         {
-            if (attributes.ContainsKey(name))
-                attributes[name] = value;
+            if (agentProperties.ContainsKey(name))
+                agentProperties[name] = value;
             else
             {
-                attributes.Add(name, value);
+                agentProperties.Add(name, value);
             }
         }
-        public void RemoveAttribute(string name)
+        public void RemoveAgentProperty(string name)
         {
-            attributes.Remove(name);
+            agentProperties.Remove(name);
         }
-        public bool HasAttribute(string name)
+        public bool HasAgentProperty(string name)
         {
-            return attributes.ContainsKey(name);
+            return agentProperties.ContainsKey(name);
         }
 
+        [System.Obsolete("Use GetAgentProperty<T>() instead.")]
+        public object GetAttribute(string name) { return GetAgentProperty<object>(name); }
+        [System.Obsolete("Use SetAgentProperty<T>() instead.")]
+        public void SetAttribute(string name, object value) { SetAgentProperty(name, value); }
+        [System.Obsolete("Use RemoveAgentProperty() instead.")]
+        public void RemoveAttribute(string name, object value) { RemoveAgentProperty(name); }
+        [System.Obsolete("Use HasAgentProperty() instead.")]
+        public bool HasAttribute(string name) { return HasAgentProperty(name); }
+    
+    #endregion
 
-        public delegate void AgentEvent(Agent agent);
+
+    public delegate void AgentEvent(Agent agent);
         public AgentEvent OnCaught;
         public AgentEvent OnCatch;
         public AgentEvent OnKill;
@@ -146,7 +222,7 @@ namespace CloudFine
         {
             if (!hasSpawned)
             {
-                myNeighborhood = GetComponentInParent<FlockBox>();
+                myNeighborhood = FindNeighborhood();
                 if (myNeighborhood)
                 {
                     Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
@@ -158,6 +234,11 @@ namespace CloudFine
             }
 
             MigrateData();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (hasSpawned || isAlive) Kill();
         }
 
         private void OnValidate()
@@ -196,6 +277,16 @@ namespace CloudFine
 
         }
 
+        public static Agent GetAgentById(int id)
+        {
+            if (agentRegistry == null) return null;
+            Agent output;
+            if(agentRegistry.TryGetValue(id, out output)){
+                return output;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Validate Position with current FlockBox. If the FlockBox wraps edges, Position will be wrapped. Otherwise it will be clamped to inside the FlockBox.
         /// </summary>
@@ -216,6 +307,17 @@ namespace CloudFine
             if (myNeighborhood)
                 return myNeighborhood.ValidateVelocity(ref m_velocity);
             return true;
+        }
+
+        protected virtual FlockBox FindNeighborhood()
+        {
+            return GetComponentInParent<FlockBox>();
+        }
+
+        protected virtual void JoinNeighborhood(FlockBox neighborhood)
+        {
+            myNeighborhood = neighborhood;
+            transform.SetParent(myNeighborhood.transform);
         }
 
         protected virtual void FindNeighborhoodBuckets()
@@ -247,15 +349,19 @@ namespace CloudFine
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            myNeighborhood = neighborhood;
-            transform.SetParent(myNeighborhood.transform);
+            JoinNeighborhood(neighborhood);
             this.Position = position;
             ForceUpdatePosition();
         }
 
-        public virtual void Spawn(FlockBox neighborhood)
+        public void Spawn(FlockBox neighborhood)
         {
             Spawn(neighborhood, neighborhood.RandomPosition());
+        }
+
+        protected virtual void Spawn()
+        {
+
         }
 
         protected virtual void ForceUpdatePosition()
@@ -263,6 +369,43 @@ namespace CloudFine
             ValidatePosition();
             UpdateTransform();
             FindNeighborhoodBuckets();
+        }
+
+
+        public Vector3 FlockBoxToWorldPosition(Vector3 localPos)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.TransformPoint(localPos);
+            }
+            return localPos;
+        }
+
+        public Vector3 FlockBoxToWorldDirection(Vector3 localDir)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.TransformDirection(localDir);
+            }
+            return localDir;
+        }
+
+        public Vector3 WorldToFlockBoxDirection(Vector3 worldDir)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.InverseTransformDirection(worldDir);
+            }
+            return worldDir;
+        }
+
+        public Vector3 WorldToFlockBoxPosition(Vector3 worldPos)
+        {
+            if (myNeighborhood)
+            {
+                return myNeighborhood.transform.InverseTransformPoint(worldPos);
+            }
+            return worldPos;
         }
 
 
@@ -275,8 +418,12 @@ namespace CloudFine
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+                Forward = Velocity;
             }
-            Forward = transform.localRotation * Vector3.forward;
+            else
+            {
+                Forward = transform.localRotation * Vector3.forward;
+            }
         }
 
         public virtual void CatchAgent(Agent other)
@@ -465,9 +612,9 @@ namespace CloudFine
 
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
-            if (drawDebug)
+            if (debugDrawShape)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;

@@ -1,12 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CloudFine
 {
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior
     {
+        [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
+        public float clearance;
+
         RaycastHit closestHit;
         RaycastHit hit;
         Agent mostImmediateObstacle;
@@ -16,7 +22,7 @@ namespace CloudFine
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            List<Agent> obstacles = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> obstacles = GetFilteredAgents(surroundings, this);
             if (obstacles.Count == 0)
             {
                 steer = Vector3.zero;
@@ -28,7 +34,7 @@ namespace CloudFine
             bool foundObstacleInPath = false;
             foreach (Agent obstacle in obstacles)
             {
-                if (obstacle.RaycastToShape(myRay, mine.shape.radius, rayDist, out hit))
+                if (obstacle.RaycastToShape(myRay, mine.shape.radius + clearance, rayDist, out hit))
                 {
                     if (!foundObstacleInPath || hit.distance < closestHit.distance)
                     {
@@ -48,6 +54,17 @@ namespace CloudFine
             steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
 
+            steer *= (1f - (closestHit.distance / rayDist));
         }
+
+    #if UNITY_EDITOR
+            protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
+            {
+                DrawCylinderGizmo(agent.shape.radius + clearance, distance);
+                Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);
+            Handles.Label(Vector3.forward * distance + Vector3.up * agent.shape.radius, new GUIContent("Agent Radius"));
+            Handles.Label(Vector3.forward * distance + Vector3.up * (agent.shape.radius + clearance), new GUIContent("Clearance"));
+        }
+#endif
     }
 }

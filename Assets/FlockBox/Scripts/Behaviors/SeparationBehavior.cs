@@ -29,9 +29,7 @@ namespace CloudFine
 
             if (steer.magnitude > 0)
             {
-                steer = steer.normalized * (mine.activeSettings.maxSpeed);
-                steer -= (mine.Velocity);
-                steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
+                mine.GetSteerVector(out steer, steer);
             }
         }
     }

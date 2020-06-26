@@ -14,33 +14,40 @@ namespace CloudFine
 
         private RaycastHit _terrainHit;
         private Vector3 _worldPosDelta;
+        private Vector3 _lastPosition;
+
+        protected override void ApplySteeringAcceleration()
+        {
+            _lastPosition = Position;
+            base.ApplySteeringAcceleration();
+        }
 
         protected override void UpdateTransform()
         {
             _worldPosDelta = Vector3.zero;
 
-            if(Physics.Raycast(transform.parent.TransformPoint(Position) + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
+            if(Physics.Raycast(WorldPosition + Vector3.up * _raycastDistance * .5f, Vector3.down, out _terrainHit, _raycastDistance, _terrainLayerMask))
             {
-                _worldPosDelta = _terrainHit.point - transform.position;
-                transform.position = _terrainHit.point;// + Vector3.up * shape.radius;
-                Position = transform.localPosition;
+                _worldPosDelta = _terrainHit.point - FlockBoxToWorldPosition(_lastPosition);
+                Position = WorldToFlockBoxPosition(_terrainHit.point);
             }
-            else
-            {
-                transform.localPosition = Position;
-            }
+            transform.localPosition = (Position);
 
             if (_worldPosDelta.magnitude > 0)
             {
-                transform.rotation = Quaternion.LookRotation(_worldPosDelta.normalized, Vector3.up);
+                Vector3 terrainForward = WorldToFlockBoxDirection(_worldPosDelta);
+                transform.localRotation = LookRotation(terrainForward);
+                Forward = terrainForward;
             }
             else if (Velocity.magnitude > 0)
             {
-                transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);
+                transform.localRotation = LookRotation(Velocity);
+                Forward = Velocity;
             }
-
-            Forward = transform.localRotation * Vector3.forward;
-
+            else
+            {
+                Forward = transform.localRotation * Vector3.forward;
+            }
         }
 
     }

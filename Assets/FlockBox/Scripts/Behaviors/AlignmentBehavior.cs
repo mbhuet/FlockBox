@@ -23,11 +23,7 @@ namespace CloudFine
             if (count > 0)
             {
                 sum /= ((float)count);
-                sum.Normalize();
-                sum *= (mine.activeSettings.maxSpeed);
-                steer = sum - mine.Velocity;
-                steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-
+                mine.GetSteerVector(out steer, sum);
             }
             else
             {

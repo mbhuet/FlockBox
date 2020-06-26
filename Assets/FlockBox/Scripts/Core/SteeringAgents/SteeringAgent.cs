@@ -10,7 +10,7 @@ namespace CloudFine
     public class SteeringAgent : Agent
     {
 
-        protected Vector3 Acceleration { get; private set; }
+        public Vector3 Acceleration { get; private set; }
 
         protected float speedThrottle = 1;
 
@@ -18,6 +18,7 @@ namespace CloudFine
         private bool freezePosition = false;
         private bool sleeping = false;
         private SurroundingsContainer mySurroundings = new SurroundingsContainer();
+
         protected virtual void Update()
         {
             if (!isAlive) return;
@@ -26,7 +27,7 @@ namespace CloudFine
             sleeping = (UnityEngine.Random.value < myNeighborhood.sleepChance);
             if(!sleeping){
                 Acceleration *= 0;
-                activeSettings.AddPerceptions(mySurroundings);
+                activeSettings.AddPerceptions(this, mySurroundings);
                 myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
                 Flock(mySurroundings);
             }
@@ -59,7 +60,7 @@ namespace CloudFine
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
                 steerCached *= behavior.weight;
-                if (behavior.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
                 ApplyForce(steerCached);
             }
         }
@@ -69,14 +70,19 @@ namespace CloudFine
             if (!myNeighborhood.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.drawDebug) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
                 ApplyForce(steerCached);
             }
         }
 
         public void GetSeekVector(out Vector3 steer, Vector3 target)
         {
-            steer = (target - Position).normalized * activeSettings.maxSpeed - Velocity;
+            GetSteerVector(out steer, target - Position);
+        }
+
+        public void GetSteerVector(out Vector3 steer, Vector3 desiredForward)
+        {
+            steer = desiredForward.normalized * activeSettings.maxSpeed - Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, activeSettings.maxForce);
         }
 
@@ -103,9 +109,9 @@ namespace CloudFine
         }
 
 
-        public override void Spawn(FlockBox neighborhood)
+        public override void Spawn(FlockBox neighborhood, Vector3 position)
         {
-            base.Spawn(neighborhood);
+            base.Spawn(neighborhood, position);
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;
@@ -123,5 +129,63 @@ namespace CloudFine
         {
             freezePosition = isLocked;
         }
+
+
+       
+        protected Quaternion LookRotation(Vector3 desiredForward)
+        {
+            return Quaternion.LookRotation(desiredForward);
+        }
+
+        protected override void UpdateTransform()
+        {
+            transform.localPosition = (Position);
+
+            if (Velocity.magnitude > 0)
+            {
+                transform.localRotation = LookRotation(Velocity.normalized);
+                Forward = Velocity;
+            }
+
+            else
+            {
+                Forward = transform.localRotation * Vector3.forward;
+            }
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.matrix = this.transform.localToWorldMatrix;
+
+            if (debugDrawShape)
+            {
+                Gizmos.color = Color.grey;
+                UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
+                UnityEditor.Handles.color = Color.grey;
+                shape.DrawGizmo();
+
+
+            }
+
+           
+
+            if (UnityEditor.Selection.activeGameObject != transform.gameObject)
+            {
+                return;
+            }
+
+            
+        }
+
+        void OnDrawGizmos()
+        {
+            if (activeSettings)
+            {
+                activeSettings.DrawPropertyGizmos(this);
+            }
+        }
+#endif
+
     }
 }

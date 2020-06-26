@@ -6,16 +6,16 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeekBehavior : RadialSteeringBehavior
+    public class SeekBehavior : GlobalRadialSteeringBehavior
     {
         public const string targetIDAttributeName = "seekTargetID";
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) mine.SetAttribute(targetIDAttributeName, -1);
-            int chosenTargetID = (int)mine.GetAttribute(targetIDAttributeName);
+            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
 
-            List<Agent> allTargets = GetFilteredAgents(surroundings, this);
+            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
             if (allTargets.Count == 0)
             {
@@ -54,18 +54,18 @@ namespace CloudFine
 
         public static bool HasPursuitTarget(SteeringAgent mine)
         {
-            if (!mine.HasAttribute(targetIDAttributeName)) return false;
-            return (int)mine.GetAttribute(targetIDAttributeName) >= 0;
+            if (!mine.HasAgentProperty(targetIDAttributeName)) return false;
+            return mine.GetAgentProperty<int>(targetIDAttributeName) >= 0;
         }
 
         protected static void EngagePursuit(SteeringAgent mine, Agent target)
         {
-            mine.SetAttribute(targetIDAttributeName, target.agentID);
+            mine.SetAgentProperty(targetIDAttributeName, target.agentID);
         }
 
         protected static void DisengagePursuit(SteeringAgent mine, int targetID)
         {
-            mine.SetAttribute(targetIDAttributeName, -1);
+            mine.SetAgentProperty(targetIDAttributeName, -1);
         }
 
         protected static void AttemptCatch(SteeringAgent mine, Agent target)
@@ -76,11 +76,11 @@ namespace CloudFine
             }
         }
 
-        public static Agent ClosestPursuableTarget(List<Agent> nearbyTargets, Agent agent)
+        public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
         {
             if (nearbyTargets.Count == 0) return null;
             float closeDist = float.MaxValue;
-            Agent closeTarget = nearbyTargets[0];
+            Agent closeTarget = null;
             foreach (Agent target in nearbyTargets)
             {
                 float sqrDist = Vector3.SqrMagnitude(target.Position - agent.Position);

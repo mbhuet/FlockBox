@@ -18,6 +18,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 0
   lookAheadSeconds: 1
 --- !u!114 &11400000
@@ -55,6 +57,8 @@ MonoBehaviour:
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawPerception: 0
   foldout: 1
   wanderScope: 90
   wanderIntensity: 1
