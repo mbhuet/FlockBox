@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateAfter(typeof(SteeringSystemGroup))]
+[UpdateInGroup(typeof(MovementSystemGroup))]
 public class AccelerationSystem : JobComponentSystem
 {
     //what does a flocksystem need to make decisions about how an agents data should change

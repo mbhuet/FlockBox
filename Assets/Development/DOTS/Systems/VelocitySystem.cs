@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+[UpdateInGroup(typeof(MovementSystemGroup))]
 [UpdateAfter(typeof(AccelerationSystem))]
 public class VelocitySystem : JobComponentSystem
 {

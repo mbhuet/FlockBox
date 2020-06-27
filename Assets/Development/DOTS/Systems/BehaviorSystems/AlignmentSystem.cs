@@ -1,34 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [UpdateInGroup(typeof(SteeringSystemGroup))]
-
-public abstract class AlignmentSystem : SteeringSystem
+public class AlignmentSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct AlignmentJob : IJobForEachWithEntity_EBCC<NeighborData, Acceleration, AlignmentData>
+    struct AlignmentJob : IJobForEach_BCC<NeighborData, Acceleration, AlignmentData>
     {
 
-        public void Execute(Entity entity, int index, DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
+
+        public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
         {
-            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask)){
-                
+            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
+            {
+
             }
         }
     }
 
-    protected override JobHandle OnUpdate(JobHandle inputDeps)
+    struct AlignmentPerceptionJob : IJobForEach<AlignmentData, PerceptionData>
     {
-        
+        public void Execute(ref AlignmentData c0, ref PerceptionData c1)
+        {
+            //add perceptions
+            c1.perceptionRadius = Mathf.Max(c1.perceptionRadius, c0.Radius);
+        }
+    }
 
+    protected override JobHandle OnUpdate(JobHandle inputDeps)
+    { 
         AlignmentJob job = new AlignmentJob
         {
 
