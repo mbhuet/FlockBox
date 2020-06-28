@@ -16,14 +16,14 @@ public class AccelerationSystem : JobComponentSystem
     //
     [BurstCompile]
     //[RequireComponentTag(typeof(AgentTag))] //only look for 
-    struct AccelerationJob : IJobForEach<Velocity, Acceleration>
+    struct AccelerationJob : IJobForEach<AgentData, Acceleration>
     {
         public float dt;
 
 
-        public void Execute(ref Velocity vel, ref Acceleration accel)
+        public void Execute(ref AgentData vel, ref Acceleration accel)
         {
-            vel.Value += accel.Value * dt;
+            vel.Velocity += accel.Value * dt;
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)

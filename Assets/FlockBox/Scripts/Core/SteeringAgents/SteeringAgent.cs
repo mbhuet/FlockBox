@@ -157,7 +157,7 @@ namespace CloudFine
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //AgentData holds everything a behavior needs to know how to react to another Agent
+            //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData { 
                 Position = Position,
                 Velocity = Velocity,

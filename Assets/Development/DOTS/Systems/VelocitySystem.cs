@@ -17,14 +17,15 @@ public class VelocitySystem : JobComponentSystem
     //
     [BurstCompile]
     //[RequireComponentTag(typeof(AgentTag))] //only look for 
-    struct VelocityJob : IJobForEach<Translation, Velocity>
+    struct VelocityJob : IJobForEach<Translation, AgentData>
     {
         public float dt;
 
 
-        public void Execute(ref Translation c0, ref Velocity c1)
+        public void Execute(ref Translation c0, ref AgentData c1)
         {
-            c0.Value += c1.Value * dt;
+            c1.Position += c1.Velocity * dt;
+            c0.Value = c1.Position;
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)

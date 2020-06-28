@@ -88,8 +88,10 @@ namespace CloudFine
                         //add things and set data that is not part of the agent prefab.
                         //the conversion utility will port data that is on the prefab.
 
-                        manager.SetComponentData(agents[i], new Translation { Value = RandomPosition() });
-                        manager.SetComponentData(agents[i], new Velocity { Value = UnityEngine.Random.insideUnitSphere });
+                        manager.SetComponentData(agents[i], new AgentData { 
+                            Position = RandomPosition(),
+                            Velocity = UnityEngine.Random.insideUnitSphere 
+                        });
                         //add all component data, imitate agent.Spawn(this)
                     }
                     agents.Dispose();
