@@ -56,11 +56,40 @@ namespace CloudFine
         {
 
             surroundings.Clear();
-            for(int i=0; i<behaviors.Length; i++)
+            for (int i = 0; i < behaviors.Length; i++)
             {
                 behaviors[i].AddPerception(agent, surroundings);
             }
         }
+
+        #region DOTS
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            foreach (SteeringBehavior behavior in Behaviors)
+            {
+                AddComponentData(behavior, entity, dstManager);
+            }
+
+            dstManager.AddComponentData(entity, Containment.Convert());
+            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
+
+        }
+
+        private void AddComponentData<T,U>(T behavior, Entity entity, EntityManager dstManager) where T : IConvertToComponentData<U> where U : struct, IComponentData
+        {
+            dstManager.AddComponentData<U>(entity, behavior.Convert());
+        }
+
+        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
+        {
+            foreach (SteeringBehavior behavior in Behaviors)
+            {
+                dstManager.SetComponentData(entity, behavior.Convert());
+            }
+            dstManager.SetComponentData(entity, Containment.Convert());
+        }
+        #endregion
 
 #if UNITY_EDITOR
         public void DrawPropertyGizmos(SteeringAgent agent)
