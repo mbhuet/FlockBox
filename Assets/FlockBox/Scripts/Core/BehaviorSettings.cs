@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 using Unity.Entities;
-using System.ComponentModel;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -42,9 +41,9 @@ namespace CloudFine
 
         public T GetBehavior<T>() where T : SteeringBehavior
         {
-            foreach(SteeringBehavior behavior in Behaviors)
+            foreach (SteeringBehavior behavior in Behaviors)
             {
-                if(behavior.GetType() == typeof(T))
+                if (behavior.GetType() == typeof(T))
                 {
                     return (T)behavior;
                 }
@@ -68,26 +67,26 @@ namespace CloudFine
         {
             foreach (SteeringBehavior behavior in Behaviors)
             {
-                AddComponentData(behavior, entity, dstManager);
+                if (behavior is IConvertToComponentData)
+                {
+                    (behavior as IConvertToComponentData).Convert(entity, dstManager, conversionSystem);
+                }
             }
-
-            dstManager.AddComponentData(entity, Containment.Convert());
+            Containment.Convert(entity, dstManager, conversionSystem);
             dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
 
-        }
-
-        private void AddComponentData<T,U>(T behavior, Entity entity, EntityManager dstManager) where T : IConvertToComponentData<U> where U : struct, IComponentData
-        {
-            dstManager.AddComponentData<U>(entity, behavior.Convert());
         }
 
         public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
         {
             foreach (SteeringBehavior behavior in Behaviors)
             {
-                dstManager.SetComponentData(entity, behavior.Convert());
+                if (behavior is IConvertToComponentData)
+                {
+                    (behavior as IConvertToComponentData).UpdateEntityComponentData(entity, dstManager);
+                }
             }
-            dstManager.SetComponentData(entity, Containment.Convert());
+            Containment.UpdateEntityComponentData(entity, dstManager);
         }
         #endregion
 
