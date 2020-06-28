@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToComponentData
+    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToComponentData<ContainmentData>
     {
         public override bool CanUseTagFilter { get { return false; } }
         public override bool CanToggleActive { get { return false; } }
@@ -72,6 +72,16 @@ namespace CloudFine
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponentData(entity, new ContainmentData { });
+        }
+
+        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
+        {
+            dstManager.SetComponentData(entity, new ContainmentData { });
+        }
+
+        public ContainmentData Convert()
+        {
+            return new ContainmentData { };
         }
     }
 }

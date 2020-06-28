@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class CohesionBehavior : RadialSteeringBehavior, IConvertToComponentData
+    public class CohesionBehavior : RadialSteeringBehavior, IConvertToComponentData<CohesionData>
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
@@ -34,7 +34,20 @@ namespace CloudFine
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new CohesionData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
+            dstManager.AddComponentData(entity, Convert());
+        }
+
+        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
+        {
+            dstManager.SetComponentData(entity, Convert());
+        }
+
+        public CohesionData Convert()
+        {
+            return new CohesionData { 
+                Radius = effectiveRadius, 
+                TagMask = TagMaskUtility.GetTagMask(filterTags) 
+            };
         }
     }
 }

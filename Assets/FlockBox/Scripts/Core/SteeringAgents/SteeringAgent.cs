@@ -157,7 +157,8 @@ namespace CloudFine
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = activeSettings });
+            activeSettings.Convert(entity, dstManager, conversionSystem);
+
             //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData { 
                 Position = Position,
@@ -172,14 +173,6 @@ namespace CloudFine
             //give entity a buffer to hold info about surroundings
             dstManager.AddBuffer<NeighborData>(entity);
 
-            foreach (SteeringBehavior behavior in activeSettings.Behaviors)
-            {
-                if(behavior is IConvertToComponentData)
-                {
-                    (behavior as IConvertToComponentData).Convert(entity, dstManager, conversionSystem);
-                }
-            }
-            activeSettings.Containment.Convert(entity, dstManager, conversionSystem);
         }
 
 #if UNITY_EDITOR

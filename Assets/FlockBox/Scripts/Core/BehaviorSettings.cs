@@ -5,6 +5,8 @@ using System;
 using System.Reflection;
 using System.Linq;
 using System.IO;
+using Unity.Entities;
+using System.ComponentModel;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,8 +14,10 @@ using UnityEditor;
 namespace CloudFine
 {
     [CreateAssetMenu(menuName = "BehaviorSettings")]
-    public class BehaviorSettings : ScriptableObject
+    public class BehaviorSettings : ScriptableObject, ISerializationCallbackReceiver
     {
+        public Action<BehaviorSettings> OnChanged;
+
         public float maxForce = 20;    // Maximum steering force
         public float maxSpeed = 30;    // Maximum speed 
 
@@ -69,6 +73,16 @@ namespace CloudFine
                     behavior.DrawPropertyGizmos(agent, !Application.isPlaying);
                 }
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            if (OnChanged != null) OnChanged.Invoke(this);
+        }
+
+        public void OnAfterDeserialize()
+        {
+            //throw new NotImplementedException();
         }
 #endif
 

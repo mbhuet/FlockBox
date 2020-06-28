@@ -30,6 +30,17 @@ namespace CloudFine
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawProperties;
 
+        public bool IsECSCompatible
+        {
+            get
+            {
+                return GetType().GetInterfaces().Any(x =>
+                    x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == typeof(IConvertToComponentData<>));
+            }
+        }
+
+
         public bool DrawProperties
         {
             get

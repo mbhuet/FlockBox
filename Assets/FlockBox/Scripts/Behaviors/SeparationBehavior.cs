@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CloudFine
 {
     [System.Serializable]
-    public class SeparationBehavior : RadialSteeringBehavior, IConvertToComponentData
+    public class SeparationBehavior : RadialSteeringBehavior, IConvertToComponentData<SeparationData>
     {
 
 
@@ -39,6 +39,16 @@ namespace CloudFine
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponentData(entity, new SeparationData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
+        }
+
+        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
+        {
+            dstManager.SetComponentData(entity, new SeparationData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
+        }
+
+        public SeparationData Convert()
+        {
+            return new SeparationData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) };
         }
     }
 }
