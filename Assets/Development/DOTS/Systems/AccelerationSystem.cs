@@ -20,10 +20,10 @@ public class AccelerationSystem : JobComponentSystem
     {
         public float dt;
 
-
         public void Execute(ref AgentData vel, ref Acceleration accel)
         {
             vel.Velocity += accel.Value * dt;
+            accel.Value = 0;
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)

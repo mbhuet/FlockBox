@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 [UpdateInGroup(typeof(SteeringSystemGroup))]
@@ -10,11 +11,12 @@ public class CohesionSystem : JobComponentSystem
     [BurstCompile]
     struct CohesionJob : IJobForEach_BCC<NeighborData, Acceleration, CohesionData>
     {
-
+        public float dt;
 
         public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref CohesionData c2)
         {
-            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
+            c1.Value += new float3(0, dt * 10, 0);
+            //if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
             {
 
             }
@@ -34,6 +36,7 @@ public class CohesionSystem : JobComponentSystem
     {
         CohesionJob job = new CohesionJob
         {
+            dt = Time.deltaTime
 
         };
         return job.Schedule(this, inputDeps);

@@ -232,18 +232,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 327ff1812ac0af74d975a4bc65c3be66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensions_x: 10
-  dimensions_y: 10
-  dimensions_z: 10
+  dimensions_x: 20
+  dimensions_y: 20
+  dimensions_z: 20
   cellSize: 10
   wrapEdges: 1
   boundaryBuffer: 10
   sleepChance: 0
+  maxCellCapacity: 10
+  capCellCapacity: 1
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
       type: 3}
-    population: 500
+    population: 2000
   drawGizmos: 1
+  useECS: 1
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0

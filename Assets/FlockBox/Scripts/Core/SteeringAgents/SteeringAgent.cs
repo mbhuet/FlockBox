@@ -165,6 +165,8 @@ namespace CloudFine
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius
             });
+            dstManager.AddComponentData(entity, new ContainmentData());
+            dstManager.AddComponentData(entity, new Acceleration());
 
             //give entity a buffer to hold info about surroundings
             dstManager.AddBuffer<NeighborData>(entity);

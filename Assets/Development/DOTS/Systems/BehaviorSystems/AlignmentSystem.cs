@@ -14,7 +14,7 @@ public class AlignmentSystem : JobComponentSystem
 
         public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
         {
-            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
+            //if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
             {
 
             }

@@ -14,10 +14,6 @@ public class ContainmentSystem : JobComponentSystem
 
         public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref ContainmentData c2)
         {
-            if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
-            {
-
-            }
         }
     }
 
@@ -26,7 +22,6 @@ public class ContainmentSystem : JobComponentSystem
         public void Execute(ref ContainmentData c0, ref PerceptionData c1)
         {
             //add perceptions
-            c1.perceptionRadius = Mathf.Max(c1.perceptionRadius, c0.Radius);
         }
     }
 
