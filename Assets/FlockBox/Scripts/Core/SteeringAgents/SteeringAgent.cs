@@ -166,7 +166,6 @@ namespace CloudFine
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius
             });
-            dstManager.AddComponentData(entity, new ContainmentData());
             dstManager.AddComponentData(entity, new Acceleration());
             dstManager.AddComponentData(entity, new PerceptionData());
 
@@ -180,6 +179,7 @@ namespace CloudFine
                     (behavior as IConvertToComponentData).Convert(entity, dstManager, conversionSystem);
                 }
             }
+            activeSettings.Containment.Convert(entity, dstManager, conversionSystem);
         }
 
 #if UNITY_EDITOR

@@ -121,7 +121,7 @@ namespace CloudFine
             {
                 GUIStyle style = new GUIStyle(GUI.skin.GetStyle(ecsBadgeStyle));
                 style.fontSize = 8;
-                EditorGUILayout.LabelField("ECS", style, GUILayout.Width(32), GUILayout.Height(10));
+                EditorGUILayout.LabelField(new GUIContent("ECS", "This behavior is compatible with ECS."), style, GUILayout.Width(32), GUILayout.Height(10));
             }
             GUILayout.FlexibleSpace();
             if (canRemove)

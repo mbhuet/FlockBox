@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
 
 namespace CloudFine
 {
-    public class ContainmentBehavior : ForecastSteeringBehavior
+    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToComponentData
     {
         public override bool CanUseTagFilter { get { return false; } }
         public override bool CanToggleActive { get { return false; } }
@@ -66,6 +67,11 @@ namespace CloudFine
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             steer = Vector3.zero;
+        }
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponentData(entity, new ContainmentData { });
         }
     }
 }
