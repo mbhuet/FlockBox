@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
+using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
