@@ -157,6 +157,7 @@ namespace CloudFine
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = activeSettings });
             //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData { 
                 Position = Position,
@@ -167,6 +168,7 @@ namespace CloudFine
             });
             dstManager.AddComponentData(entity, new ContainmentData());
             dstManager.AddComponentData(entity, new Acceleration());
+            dstManager.AddComponentData(entity, new PerceptionData());
 
             //give entity a buffer to hold info about surroundings
             dstManager.AddBuffer<NeighborData>(entity);

@@ -15,7 +15,8 @@ public class CohesionSystem : JobComponentSystem
 
         public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref CohesionData c2)
         {
-            c1.Value += new float3(0, dt * 10, 0);
+            c1.Value += new float3(0, dt * b0.Length * 100, 0);
+
             //if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
             {
 

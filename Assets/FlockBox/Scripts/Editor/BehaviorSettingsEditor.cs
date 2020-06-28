@@ -13,6 +13,7 @@ namespace CloudFine
     {
         const string activeStyle = "ProgressBarBar";
         const string inactiveStyle = "ProgressBarBack";
+        const string ecsBadgeStyle = "sv_label_4";
 
         private BehaviorSettings targetSettings;
         private SerializedProperty _behaviors;
@@ -116,7 +117,12 @@ namespace CloudFine
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
-
+            if (behavior is IConvertToComponentData)
+            {
+                GUIStyle style = new GUIStyle(GUI.skin.GetStyle(ecsBadgeStyle));
+                style.fontSize = 8;
+                EditorGUILayout.LabelField("ECS", style, GUILayout.Width(32), GUILayout.Height(10));
+            }
             GUILayout.FlexibleSpace();
             if (canRemove)
             {
