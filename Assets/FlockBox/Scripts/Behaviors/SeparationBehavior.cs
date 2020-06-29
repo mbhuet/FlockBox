@@ -36,14 +36,10 @@ namespace CloudFine
             }
         }
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        {
-            dstManager.AddComponentData(entity, new SeparationData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
-        }
 
-        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
+        public override void AddComponentData(Entity entity, EntityManager dstManager)
         {
-            dstManager.SetComponentData(entity, new SeparationData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) });
+            dstManager.AddComponentData(entity, Convert());
         }
 
         public SeparationData Convert()

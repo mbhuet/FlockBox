@@ -32,14 +32,10 @@ namespace CloudFine
             }
         }
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+
+        public override void AddComponentData(Entity entity, EntityManager dstManager)
         {
             dstManager.AddComponentData(entity, Convert());
-        }
-
-        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
-        {
-            dstManager.SetComponentData(entity, Convert());
         }
 
         public CohesionData Convert()

@@ -69,15 +69,12 @@ namespace CloudFine
             steer = Vector3.zero;
         }
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+
+        public override void AddComponentData(Entity entity, EntityManager dstManager)
         {
-            dstManager.AddComponentData(entity, new ContainmentData { });
+            dstManager.AddComponentData(entity, Convert());
         }
 
-        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
-        {
-            dstManager.SetComponentData(entity, new ContainmentData { });
-        }
 
         public ContainmentData Convert()
         {

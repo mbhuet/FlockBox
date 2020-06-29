@@ -32,7 +32,7 @@ namespace CloudFine
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawProperties;
 
-        public bool IsECSCompatible
+        public bool HasECSImplementation
         {
             get
             {
@@ -130,6 +130,14 @@ namespace CloudFine
             Handles.DrawLine(Vector3.down * clearAheadRadius + Vector3.forward * clearAheadDistance,
                 Vector3.down * clearAheadRadius);
         }
+
+
+
+
+        public virtual void AddComponentData(Entity entity, EntityManager dstManager) { }
+        public virtual void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf) { }
+        public virtual void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf) { }
+        public virtual void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf) { }
 
 #endif
     }

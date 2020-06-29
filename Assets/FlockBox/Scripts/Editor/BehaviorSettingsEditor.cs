@@ -117,7 +117,7 @@ namespace CloudFine
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
-            if (behavior is IConvertToComponentData)
+            if (behavior.HasECSImplementation)
             {
                 GUIStyle style = new GUIStyle(GUI.skin.GetStyle(ecsBadgeStyle));
                 style.fontSize = 8;

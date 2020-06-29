@@ -16,6 +16,9 @@ namespace CloudFine
     public class BehaviorSettings : ScriptableObject, ISerializationCallbackReceiver
     {
         public Action<BehaviorSettings> OnChanged;
+        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorAdded;
+        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorModified;
+        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorRemoved;
 
         public float maxForce = 20;    // Maximum steering force
         public float maxSpeed = 30;    // Maximum speed 
@@ -67,27 +70,14 @@ namespace CloudFine
         {
             foreach (SteeringBehavior behavior in Behaviors)
             {
-                if (behavior is IConvertToComponentData)
-                {
-                    (behavior as IConvertToComponentData).Convert(entity, dstManager, conversionSystem);
-                }
+                behavior.AddComponentData(entity, dstManager);
             }
-            Containment.Convert(entity, dstManager, conversionSystem);
+            Containment.AddComponentData(entity, dstManager);
+
             dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
 
         }
 
-        public void UpdateEntityComponentData(Entity entity, EntityManager dstManager)
-        {
-            foreach (SteeringBehavior behavior in Behaviors)
-            {
-                if (behavior is IConvertToComponentData)
-                {
-                    (behavior as IConvertToComponentData).UpdateEntityComponentData(entity, dstManager);
-                }
-            }
-            Containment.UpdateEntityComponentData(entity, dstManager);
-        }
         #endregion
 
 #if UNITY_EDITOR
