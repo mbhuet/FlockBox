@@ -32,13 +32,13 @@ namespace CloudFine
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawProperties;
 
+        public Action<SteeringBehavior> OnValueChanged;
+
         public bool HasECSImplementation
         {
             get
             {
-                return GetType().GetInterfaces().Any(x =>
-                    x.IsGenericType &&
-                    x.GetGenericTypeDefinition() == typeof(IConvertToComponentData<>));
+                return this is IConvertToComponentData;
             }
         }
 
@@ -58,7 +58,17 @@ namespace CloudFine
             }
         }
 
-        
+        private void OnValidate()
+        {
+            MarkAsChanged();
+        }
+
+        public void MarkAsChanged()
+        {
+            if (OnValueChanged != null) OnValueChanged(this);
+        }
+
+
 
         //supress "field declared but not used" warning. foldout is used by PropertyDrawer
 #pragma warning disable 0414

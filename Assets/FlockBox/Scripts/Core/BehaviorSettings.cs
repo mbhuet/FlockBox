@@ -14,7 +14,7 @@ using UnityEditor;
 namespace CloudFine
 {
     [CreateAssetMenu(menuName = "BehaviorSettings")]
-    public class BehaviorSettings : ScriptableObject, ISerializationCallbackReceiver
+    public class BehaviorSettings : ScriptableObject
     {
         public Action<BehaviorSettings> OnChanged;
         public Action<BehaviorSettings, SteeringBehavior> OnBehaviorAdded;
@@ -34,6 +34,16 @@ namespace CloudFine
         public int NumBehaviors
         {
             get { return behaviors.Length; }
+        }
+
+        private void OnValidate()
+        {
+            if (OnChanged != null) OnChanged.Invoke(this);
+        }
+
+        public void BehaviorChangeDetected(SteeringBehavior modBehavior)
+        {
+            if(OnBehaviorModified != null) OnBehaviorModified.Invoke(this, modBehavior);
         }
 
 
@@ -94,15 +104,7 @@ namespace CloudFine
             }
         }
 
-        public void OnBeforeSerialize()
-        {
-            if (OnChanged != null) OnChanged.Invoke(this);
-        }
 
-        public void OnAfterDeserialize()
-        {
-            //throw new NotImplementedException();
-        }
 #endif
 
     }

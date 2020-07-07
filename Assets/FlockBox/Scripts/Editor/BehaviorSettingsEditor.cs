@@ -166,9 +166,10 @@ namespace CloudFine
         {
 
                 _behaviors.arraySize = _behaviors.arraySize + 1;
-                _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)CreateBehavior(behaviorType);
+            SteeringBehavior newBehavior = CreateBehavior(behaviorType);
+            newBehavior.OnValueChanged += targetSettings.BehaviorChangeDetected;
+                _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
                 serializedObject.ApplyModifiedProperties();
-
         }
     }
 }
