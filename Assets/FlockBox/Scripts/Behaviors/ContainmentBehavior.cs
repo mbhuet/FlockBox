@@ -70,15 +70,17 @@ namespace CloudFine
         }
 
 
-        public override void AddComponentData(Entity entity, EntityManager dstManager)
-        {
-            dstManager.AddComponentData(entity, Convert());
-        }
+
 
 
         public ContainmentData Convert()
         {
             return new ContainmentData { };
         }
+
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferAdd(this, entity, buf);
+        public void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferRemove(this, entity, buf);
+        public void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferSet(this, entity, buf);
     }
 }

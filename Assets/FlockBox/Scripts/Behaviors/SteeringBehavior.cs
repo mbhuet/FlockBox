@@ -131,14 +131,6 @@ namespace CloudFine
                 Vector3.down * clearAheadRadius);
         }
 
-
-
-
-        public virtual void AddComponentData(Entity entity, EntityManager dstManager) { }
-        public virtual void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf) { }
-        public virtual void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf) { }
-        public virtual void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf) { }
-
 #endif
     }
 }

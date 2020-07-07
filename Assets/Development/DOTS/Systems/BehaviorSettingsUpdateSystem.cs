@@ -47,33 +47,42 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
 
     private void OnBehaviorAdded(BehaviorSettings settings, SteeringBehavior add)
     {
+        IConvertToComponentData convert = add as IConvertToComponentData;
+        if (convert == null) return;
+
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach(Entity entity in entities)
         {
-            add.EntityCommandBufferAdd(entity, buffer);
+            convert.EntityCommandBufferAdd(entity, buffer);
         }
         entities.Dispose();
     }
 
     private void OnBehaviorModified(BehaviorSettings settings, SteeringBehavior mod)
     {
+        IConvertToComponentData convert = mod as IConvertToComponentData;
+        if (convert == null) return;
+
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach (Entity entity in entities)
         {
-            mod.EntityCommandBufferSet(entity, buffer);
+            convert.EntityCommandBufferSet(entity, buffer);
         }
         entities.Dispose();
     }
 
     private void OnBehaviorRemoved(BehaviorSettings settings, SteeringBehavior rem)
     {
+        IConvertToComponentData convert = rem as IConvertToComponentData;
+        if (convert == null) return;
+
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach (Entity entity in entities)
         {
-            rem.EntityCommandBufferRemove(entity, buffer);
+            convert.EntityCommandBufferRemove(entity, buffer);
         }
         entities.Dispose();
     }

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 using Unity.Entities;
+using System.CodeDom;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -68,11 +69,11 @@ namespace CloudFine
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            foreach (SteeringBehavior behavior in Behaviors)
+            foreach (IConvertToComponentData behavior in Behaviors)
             {
-                behavior.AddComponentData(entity, dstManager);
+                behavior.AddEntityData(entity, dstManager);
             }
-            Containment.AddComponentData(entity, dstManager);
+            Containment.AddEntityData(entity, dstManager);
 
             dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
 

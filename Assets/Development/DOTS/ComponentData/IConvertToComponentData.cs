@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public interface IConvertToComponentData<T> where T : struct, IComponentData
+public interface IConvertToComponentData
 {
-    //void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem);
-    //void UpdateEntityComponentData(Entity entity, EntityManager dstManager);
+    void AddEntityData(Entity entity, EntityManager entityManager);
+    void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf);
+    void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf);
+    void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf);
+}
 
+public interface IConvertToComponentData<T> : IConvertToComponentData where T : struct, IComponentData
+{
     T Convert();
 }

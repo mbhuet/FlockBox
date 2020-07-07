@@ -8,18 +8,18 @@ using UnityEngine;
 public class ContainmentSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct ContainmentJob : IJobForEach_BCC<NeighborData, Acceleration, ContainmentData>
+    struct ContainmentJob : IJobForEach_BCC<NeighborData, Acceleration, AlignmentData>
     {
 
 
-        public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref ContainmentData c2)
+        public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
         {
         }
     }
 
-    struct ContainmentPerceptionJob : IJobForEach<ContainmentData, PerceptionData>
+    struct ContainmentPerceptionJob : IJobForEach<AlignmentData, PerceptionData>
     {
-        public void Execute(ref ContainmentData c0, ref PerceptionData c1)
+        public void Execute(ref AlignmentData c0, ref PerceptionData c1)
         {
             //add perceptions
         }
