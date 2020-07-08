@@ -102,9 +102,13 @@ namespace CloudFine
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            foreach (IConvertToComponentData behavior in Behaviors)
+            foreach (SteeringBehavior behavior in Behaviors)
             {
-                behavior.AddEntityData(entity, dstManager);
+                if(behavior is IConvertToComponentData)
+                {
+                    (behavior as IConvertToComponentData).AddEntityData(entity, dstManager);
+
+                }
             }
             Containment.AddEntityData(entity, dstManager);
 

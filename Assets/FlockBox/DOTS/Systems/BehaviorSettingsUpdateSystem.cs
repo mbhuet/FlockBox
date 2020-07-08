@@ -119,16 +119,13 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
         IConvertToComponentData convert = rem as IConvertToComponentData;
         if (convert == null) return;
 
-        return;
-
-
         Debug.Log("behavior rem " + settings.ToString() + " " + rem.ToString());
 
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach (Entity entity in entities)
         {
-            convert.EntityCommandBufferRemove(entity, ecb);
+            convert.RemoveEntityData(entity, EntityManager);
         }
         entities.Dispose();
     }

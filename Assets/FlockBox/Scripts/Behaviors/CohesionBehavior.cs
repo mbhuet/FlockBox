@@ -43,6 +43,7 @@ namespace CloudFine
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
         public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
         public void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferAdd(this, entity, buf);
         public void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferRemove(this, entity, buf);
         public void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf) => IConvertToComponentDataExtension.EntityCommandBufferSet(this, entity, buf);

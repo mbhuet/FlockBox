@@ -7,7 +7,10 @@ using UnityEngine;
 public interface IConvertToComponentData
 {
     void AddEntityData(Entity entity, EntityManager entityManager);
+    //void AddEntityData(EntityQuery query, EntityManager entityManager);
     void SetEntityData(Entity entity, EntityManager entityManager);
+    //void RemoveEntityData(EntityQuery query, EntityManager entityManager);
+    void RemoveEntityData(Entity entity, EntityManager entityManager);
     void EntityCommandBufferAdd(Entity entity, EntityCommandBuffer buf);
     void EntityCommandBufferRemove(Entity entity, EntityCommandBuffer buf);
     void EntityCommandBufferSet(Entity entity, EntityCommandBuffer buf);
