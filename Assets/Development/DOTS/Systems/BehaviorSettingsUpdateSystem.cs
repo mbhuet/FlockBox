@@ -1,12 +1,8 @@
 ﻿using CloudFine;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 
@@ -15,24 +11,69 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
 {
     protected EntityQuery m_Query;
     private BehaviorSettings[] allSettings;
-    private EntityCommandBuffer buffer;
+    private EntityCommandBuffer ecb;
+
+    EndSimulationEntityCommandBufferSystem m_EndSimulationEcbSystem;
 
     protected override void OnCreate()
     {
         m_Query = GetEntityQuery(typeof(BehaviorSettingsData));
         allSettings = Resources.FindObjectsOfTypeAll<BehaviorSettings>();
- 
-        foreach(BehaviorSettings settings in allSettings)
+
+        m_EndSimulationEcbSystem = World
+            .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
+        ecb = m_EndSimulationEcbSystem.CreateCommandBuffer();//.ToConcurrent();
+
+        foreach (BehaviorSettings settings in allSettings)
         {
             settings.OnChanged += OnSettingsChanged;
             settings.OnBehaviorAdded += OnBehaviorAdded;
+            settings.OnBehaviorModified += OnBehaviorModified;
+            settings.OnBehaviorRemoved += OnBehaviorRemoved;
         }
     }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        return inputDeps;
-        //throw new System.NotImplementedException();
+        var job = new UpdateBehaviorSettingsJob
+        {
+
+        };
+        //jobHandle = job.Schedule(this, inputDeps);
+        //ecb.Schedule(this, inputDeps);
+        
+        /*
+        Entities.ForEach((Entity entity, int entityInQueryIndex, ref Lifetime lifetime) =>
+        {
+            // Track the lifetime of an entity and destroy it once
+            // the lifetime reaches zero
+            if (lifetime.Value == 0)
+            {
+                // pass the entityInQueryIndex to the operation so
+                // the ECB can play back the commands in the right
+                // order
+                ecb.DestroyEntity(entityInQueryIndex, entity);
+            }
+            else
+            {
+                lifetime.Value -= 1;
+            }
+        }).Schedule(inputDeps);
+        */
+
+        // Make sure that the ECB system knows about our job
+        //m_EndSimulationEcbSystem.AddJobHandleForProducer(jobHandle);
+        return default;
+    }
+
+    [BurstCompile]
+    struct UpdateBehaviorSettingsJob : IJob
+    {
+        public void Execute()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     private void OnSettingsChanged(BehaviorSettings changed)
@@ -50,11 +91,13 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
         IConvertToComponentData convert = add as IConvertToComponentData;
         if (convert == null) return;
 
+        Debug.Log("behavior add " + settings.ToString() + " " + add.ToString());
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach(Entity entity in entities)
         {
-            convert.EntityCommandBufferAdd(entity, buffer);
+            convert.AddEntityData(entity, EntityManager);
+            //convert.EntityCommandBufferAdd(entity, ecb);
         }
         entities.Dispose();
     }
@@ -63,12 +106,15 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
     {
         IConvertToComponentData convert = mod as IConvertToComponentData;
         if (convert == null) return;
+        Debug.Log("behavior mod " + settings.ToString() + " " + mod.ToString());
 
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach (Entity entity in entities)
         {
-            convert.EntityCommandBufferSet(entity, buffer);
+
+            convert.SetEntityData(entity, EntityManager);
+            //convert.EntityCommandBufferSet(entity, ecb);
         }
         entities.Dispose();
     }
@@ -78,11 +124,16 @@ public class BehaviorSettingsUpdateSystem : JobComponentSystem
         IConvertToComponentData convert = rem as IConvertToComponentData;
         if (convert == null) return;
 
+        return;
+
+
+        Debug.Log("behavior rem " + settings.ToString() + " " + rem.ToString());
+
         m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
         NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
         foreach (Entity entity in entities)
         {
-            convert.EntityCommandBufferRemove(entity, buffer);
+            convert.EntityCommandBufferRemove(entity, ecb);
         }
         entities.Dispose();
     }

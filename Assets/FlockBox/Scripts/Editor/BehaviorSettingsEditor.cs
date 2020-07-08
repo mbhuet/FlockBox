@@ -55,6 +55,7 @@ namespace CloudFine
 
             if (toRemove >= 0)
             {
+                if(targetSettings.OnBehaviorRemoved != null) targetSettings.OnBehaviorRemoved.Invoke(targetSettings, targetSettings.GetBehavior(toRemove));
                 AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
@@ -164,12 +165,12 @@ namespace CloudFine
 
         void AddBehavior(object behaviorType)
         {
-
-                _behaviors.arraySize = _behaviors.arraySize + 1;
+            _behaviors.arraySize = _behaviors.arraySize + 1;
             SteeringBehavior newBehavior = CreateBehavior(behaviorType);
-            newBehavior.OnValueChanged += targetSettings.BehaviorChangeDetected;
-                _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
-                serializedObject.ApplyModifiedProperties();
+            if(targetSettings.OnBehaviorAdded != null) targetSettings.OnBehaviorAdded.Invoke(targetSettings, newBehavior);
+
+            _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

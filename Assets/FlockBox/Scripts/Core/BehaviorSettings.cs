@@ -36,6 +36,16 @@ namespace CloudFine
             get { return behaviors.Length; }
         }
 
+        private void OnEnable()
+        {
+            //Subscribe to value changes in behaviors
+            foreach(SteeringBehavior behavior in Behaviors)
+            {
+                behavior.OnValueChanged += BehaviorChangeDetected;
+            }
+            if(Containment != null) Containment.OnValueChanged += BehaviorChangeDetected;
+        }
+
         private void OnValidate()
         {
             if (OnChanged != null) OnChanged.Invoke(this);
@@ -86,7 +96,7 @@ namespace CloudFine
             Containment.AddEntityData(entity, dstManager);
 
             dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
-
+            dstManager.AddComponentData(entity, new SteeringData { MaxSpeed = maxSpeed, MaxForce = maxForce });
         }
 
         #endregion
