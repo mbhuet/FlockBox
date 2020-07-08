@@ -55,7 +55,7 @@ namespace CloudFine
 
             if (toRemove >= 0)
             {
-                if(targetSettings.OnBehaviorRemoved != null) targetSettings.OnBehaviorRemoved.Invoke(targetSettings, targetSettings.GetBehavior(toRemove));
+                if(BehaviorSettings.OnBehaviorRemoved != null) BehaviorSettings.OnBehaviorRemoved.Invoke(targetSettings, targetSettings.GetBehavior(toRemove));
                 AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
@@ -167,7 +167,7 @@ namespace CloudFine
         {
             _behaviors.arraySize = _behaviors.arraySize + 1;
             SteeringBehavior newBehavior = CreateBehavior(behaviorType);
-            if(targetSettings.OnBehaviorAdded != null) targetSettings.OnBehaviorAdded.Invoke(targetSettings, newBehavior);
+            if(BehaviorSettings.OnBehaviorAdded != null) BehaviorSettings.OnBehaviorAdded.Invoke(targetSettings, newBehavior);
 
             _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
             serializedObject.ApplyModifiedProperties();

@@ -242,7 +242,7 @@ MonoBehaviour:
   maxCellCapacity: 10
   capCellCapacity: 1
   startingPopulations:
-  - prefab: {fileID: 3617397216089966378, guid: 3f54ff6b1c393c24c9c118d4094c26b8,
+  - prefab: {fileID: 3617397216089966378, guid: 5f95e44f7f5bd1643878e2d58c8347dd,
       type: 3}
     population: 2000
   drawGizmos: 1

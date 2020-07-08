@@ -10,28 +10,23 @@ using UnityEngine;
 public class BehaviorSettingsUpdateSystem : JobComponentSystem
 {
     protected EntityQuery m_Query;
-    private BehaviorSettings[] allSettings;
-    private EntityCommandBuffer ecb;
-
-    EndSimulationEntityCommandBufferSystem m_EndSimulationEcbSystem;
 
     protected override void OnCreate()
     {
         m_Query = GetEntityQuery(typeof(BehaviorSettingsData));
-        allSettings = Resources.FindObjectsOfTypeAll<BehaviorSettings>();
 
-        m_EndSimulationEcbSystem = World
-            .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        BehaviorSettings.OnSteeringValuesModified += OnSettingsChanged;
+        BehaviorSettings.OnBehaviorAdded += OnBehaviorAdded;
+        BehaviorSettings.OnBehaviorValuesModified += OnBehaviorModified;
+        BehaviorSettings.OnBehaviorRemoved += OnBehaviorRemoved;
+    }
 
-        ecb = m_EndSimulationEcbSystem.CreateCommandBuffer();//.ToConcurrent();
-
-        foreach (BehaviorSettings settings in allSettings)
-        {
-            settings.OnChanged += OnSettingsChanged;
-            settings.OnBehaviorAdded += OnBehaviorAdded;
-            settings.OnBehaviorModified += OnBehaviorModified;
-            settings.OnBehaviorRemoved += OnBehaviorRemoved;
-        }
+    protected override void OnDestroy()
+    {
+        BehaviorSettings.OnSteeringValuesModified -= OnSettingsChanged;
+        BehaviorSettings.OnBehaviorAdded -= OnBehaviorAdded;
+        BehaviorSettings.OnBehaviorValuesModified -= OnBehaviorModified;
+        BehaviorSettings.OnBehaviorRemoved -= OnBehaviorRemoved;
     }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)

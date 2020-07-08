@@ -1,12 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
-using System.Reflection;
-using System.Linq;
-using System.IO;
 using Unity.Entities;
-using System.CodeDom;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,10 +10,10 @@ namespace CloudFine
     [CreateAssetMenu(menuName = "BehaviorSettings")]
     public class BehaviorSettings : ScriptableObject
     {
-        public Action<BehaviorSettings> OnChanged;
-        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorAdded;
-        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorModified;
-        public Action<BehaviorSettings, SteeringBehavior> OnBehaviorRemoved;
+        public static Action<BehaviorSettings> OnSteeringValuesModified;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorAdded;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorValuesModified;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorRemoved;
 
         public float maxForce = 20;    // Maximum steering force
         public float maxSpeed = 30;    // Maximum speed 
@@ -38,22 +32,41 @@ namespace CloudFine
 
         private void OnEnable()
         {
+            OnBehaviorAdded += BehaviorAddDetected;
             //Subscribe to value changes in behaviors
             foreach(SteeringBehavior behavior in Behaviors)
             {
-                behavior.OnValueChanged += BehaviorChangeDetected;
+                ListenForBehaviorChanges(behavior);
             }
-            if(Containment != null) Containment.OnValueChanged += BehaviorChangeDetected;
+            if(Containment != null) ListenForBehaviorChanges(Containment);
+        }
+
+        private void OnDisable()
+        {
+            OnBehaviorAdded -= BehaviorAddDetected;
         }
 
         private void OnValidate()
         {
-            if (OnChanged != null) OnChanged.Invoke(this);
+            if (OnSteeringValuesModified != null) OnSteeringValuesModified.Invoke(this);
         }
 
         public void BehaviorChangeDetected(SteeringBehavior modBehavior)
         {
-            if(OnBehaviorModified != null) OnBehaviorModified.Invoke(this, modBehavior);
+            if(OnBehaviorValuesModified != null) OnBehaviorValuesModified.Invoke(this, modBehavior);
+        }
+
+        private void BehaviorAddDetected(BehaviorSettings settings, SteeringBehavior behavior)
+        {
+            if (settings == this)
+            {
+                ListenForBehaviorChanges(behavior);
+            }
+        }
+
+        private void ListenForBehaviorChanges(SteeringBehavior behavior)
+        {
+            behavior.OnValueChanged += BehaviorChangeDetected;
         }
 
 
