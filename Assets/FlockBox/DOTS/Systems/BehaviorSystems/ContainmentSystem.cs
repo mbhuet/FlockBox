@@ -1,36 +1,29 @@
-﻿using Unity.Burst;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
-[UpdateInGroup(typeof(SteeringSystemGroup))]
-public class ContainmentSystem : JobComponentSystem
+public class ContainmentSystem : SteeringBehaviorSystem<ContainmentData>
 {
-    [BurstCompile]
-    struct ContainmentJob : IJobForEach_BCC<NeighborData, Acceleration, AlignmentData>
+
+}
+
+public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
+{
+    public float3 Dimensions;
+    public float Buffer;
+
+    public float3 GetSteering(DynamicBuffer<NeighborData> neighbors)
     {
-
-
-        public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
-        {
-        }
+        return float3.zero;
     }
 
-    struct ContainmentPerceptionJob : IJobForEach<AlignmentData, PerceptionData>
+    public void AddPerception(PerceptionData perception)
     {
-        public void Execute(ref AlignmentData c0, ref PerceptionData c1)
-        {
-            //add perceptions
-        }
-    }
 
-    protected override JobHandle OnUpdate(JobHandle inputDeps)
-    { 
-        ContainmentJob job = new ContainmentJob
-        {
-
-        };
-        return job.Schedule(this, inputDeps);
     }
 }

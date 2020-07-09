@@ -1,41 +1,31 @@
-﻿using Unity.Burst;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
-[UpdateInGroup(typeof(SteeringSystemGroup))]
-public class AlignmentSystem : JobComponentSystem
+public class AlignmentSystem : SteeringBehaviorSystem<AlignmentData>
 {
-    [BurstCompile]
-    struct AlignmentJob : IJobForEach_BCC<NeighborData, Acceleration, AlignmentData>
+    
+}
+public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
+{
+    public float Radius;
+    public Int32 TagMask;
+
+
+    public float3 GetSteering(DynamicBuffer<NeighborData> neighbors)
     {
-
-
-        public void Execute(DynamicBuffer<NeighborData> b0, ref Acceleration c1, ref AlignmentData c2)
-        {
-            //if (TagMaskUtility.TagInMask(b0[0].Value.Tag, c2.TagMask))
-            {
-
-            }
-        }
+        return new float3(0, 1, 0);
     }
 
-    struct AlignmentPerceptionJob : IJobForEach<AlignmentData, PerceptionData>
+
+    public void AddPerception(PerceptionData perception)
     {
-        public void Execute(ref AlignmentData c0, ref PerceptionData c1)
-        {
-            //add perceptions
-            c1.perceptionRadius = Mathf.Max(c1.perceptionRadius, c0.Radius);
-        }
-    }
 
-    protected override JobHandle OnUpdate(JobHandle inputDeps)
-    { 
-        AlignmentJob job = new AlignmentJob
-        {
-
-        };
-        return job.Schedule(this, inputDeps);
     }
 }
