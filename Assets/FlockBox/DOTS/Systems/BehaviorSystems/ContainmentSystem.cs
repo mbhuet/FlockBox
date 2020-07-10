@@ -17,12 +17,12 @@ public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
     public float3 Dimensions;
     public float Buffer;
 
-    public float3 GetSteering(DynamicBuffer<NeighborData> neighbors)
+    public float3 GetSteering(ref AgentData mine, ref SteeringData steering, DynamicBuffer<NeighborData> neighbors)
     {
         return float3.zero;
     }
 
-    public void AddPerception(PerceptionData perception)
+    public void AddPerception(ref AgentData mine, ref PerceptionData perception)
     {
 
     }

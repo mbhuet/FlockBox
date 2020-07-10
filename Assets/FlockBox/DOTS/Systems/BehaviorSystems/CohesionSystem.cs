@@ -11,7 +11,6 @@ using UnityEngine;
 public class CohesionSystem : SteeringBehaviorSystem<CohesionData>
 {
 
-
 }
 
 public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
@@ -20,13 +19,33 @@ public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
     public Int32 TagMask;
 
 
-    public float3 GetSteering(DynamicBuffer<NeighborData> neighbors)
+    public float3 GetSteering(ref AgentData mine, ref SteeringData steering, DynamicBuffer<NeighborData> neighbors)
     {
+        float3 sum = float3.zero;
+        float count = 0;
+        for (int i = 0; i < neighbors.Length; i++)
+        {
+            AgentData other = neighbors[i].Value;
+            if (global::TagMaskUtility.TagInMask(other.Tag, TagMask))
+            {
+                if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
+                {
+                    sum += (other.Position);
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0)
+        {
+            return steering.GetSeekVector(sum / count, mine.Position, mine.Velocity);
+        }
+
         return float3.zero;
     }
 
 
-    public void AddPerception(PerceptionData perception)
+    public void AddPerception(ref AgentData mine, ref PerceptionData perception)
     {
 
     }

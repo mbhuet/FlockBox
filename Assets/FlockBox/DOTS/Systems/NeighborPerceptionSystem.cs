@@ -28,7 +28,8 @@ public class NeighborPerceptionSystem : JobComponentSystem
 
             for(int i= 0; i<neighbors.Length; i++)
             {
-                if (math.length(c2.Position - neighbors[i].Position) < 10) {
+                if (math.length(c2.Position - neighbors[i].Position) < 10) 
+                {
                     b0.Add(new NeighborData { Value = neighbors[i] });
                 }
             }

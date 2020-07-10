@@ -1,5 +1,28 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8362066606441875129
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1bc63d82f81e654f98689920bf1a025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  effectiveRadius: 10
+  fieldOfView: 360
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16,7 +39,9 @@ MonoBehaviour:
   maxSpeed: 30
   containmentBehavior: {fileID: 2923104719200550457}
   behaviors:
-  - {fileID: 5795831858785113222}
+  - {fileID: 3690119732318933899}
+  - {fileID: 6301307743451049247}
+  - {fileID: -8362066606441875129}
 --- !u!114 &2923104719200550457
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -39,7 +64,7 @@ MonoBehaviour:
   debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 1
---- !u!114 &5795831858785113222
+--- !u!114 &3690119732318933899
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,5 +85,28 @@ MonoBehaviour:
   debugDrawSteering: 0
   debugDrawProperties: 0
   foldout: 1
-  effectiveRadius: 13.4
+  effectiveRadius: 10
+  fieldOfView: 360
+--- !u!114 &6301307743451049247
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea8df8741560c5419c65741a80da967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  effectiveRadius: 10
   fieldOfView: 360

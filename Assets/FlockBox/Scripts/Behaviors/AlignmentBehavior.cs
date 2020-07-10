@@ -36,7 +36,7 @@ namespace CloudFine
 
         public AlignmentData Convert()
         {
-            return new AlignmentData { Radius = effectiveRadius, TagMask = TagMaskUtility.GetTagMask(filterTags) };
+            return new AlignmentData { Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) };
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
