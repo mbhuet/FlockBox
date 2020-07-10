@@ -31,9 +31,15 @@ public struct SeparationData : IComponentData, ISteeringBehaviorComponentData
                 if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
                 {
                     float3 diff = mine.Position - other.Position;
-                    Unity.Mathematics.Random rand = new Unity.Mathematics.Random();
+
                     //need to filter out "mine"
-                    //if (math.lengthsq(diff) < .001f) diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
+                    /*
+                    if (math.lengthsq(diff) < .001f)
+                    {
+                        Unity.Mathematics.Random rand = new Unity.Mathematics.Random();
+                        diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
+                    }
+                    */
                     if (math.lengthsq(diff) > .001f)
                     {
                         sum += (math.normalize(diff) / math.length(diff));
