@@ -34,7 +34,7 @@ namespace CloudFine
 
         public Action<SteeringBehavior> OnValueChanged;
 
-        public bool HasECSImplementation
+        public bool HasDOTSImplementation
         {
             get
             {

@@ -246,7 +246,7 @@ MonoBehaviour:
       type: 3}
     population: 2000
   drawGizmos: 1
-  useECS: 1
+  useDOTS: 1
 --- !u!4 &1385211393
 Transform:
   m_ObjectHideFlags: 0

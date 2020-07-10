@@ -64,7 +64,7 @@ namespace CloudFine
         private bool drawGizmos = true;
 
         [SerializeField]
-        private bool useECS = false;
+        private bool useDOTS = false;
 
         EntityManager manager;
         Entity agentEntityPrefab;
@@ -77,7 +77,7 @@ namespace CloudFine
             {
                 if (pop.prefab == null) continue;
 
-                if (useECS)
+                if (useDOTS)
                 {
                     agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, World.Active);
                     NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);

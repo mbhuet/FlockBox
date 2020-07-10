@@ -13,7 +13,7 @@ namespace CloudFine
     {
         const string activeStyle = "ProgressBarBar";
         const string inactiveStyle = "ProgressBarBack";
-        const string ecsBadgeStyle = "sv_label_4";
+        const string dotsBadgeStyle = "sv_label_4";
 
         private BehaviorSettings targetSettings;
         private SerializedProperty _behaviors;
@@ -97,6 +97,13 @@ namespace CloudFine
             serializedObject.ApplyModifiedProperties();
         }
 
+        public static void DOTSBadge()
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.GetStyle(dotsBadgeStyle));
+            style.fontSize = 8;
+            EditorGUILayout.LabelField(new GUIContent("DOTS", "Compatible with DOTS."), style, GUILayout.Width(36), GUILayout.Height(10));
+        }
+
         void DrawBehaviorBox(SteeringBehavior behavior, SerializedProperty property, int i, bool canRemove)
         {
             if (!behavior) return;
@@ -118,11 +125,9 @@ namespace CloudFine
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
-            if (behavior.HasECSImplementation)
+            if (behavior.HasDOTSImplementation)
             {
-                GUIStyle style = new GUIStyle(GUI.skin.GetStyle(ecsBadgeStyle));
-                style.fontSize = 8;
-                EditorGUILayout.LabelField(new GUIContent("ECS", "This behavior is compatible with ECS."), style, GUILayout.Width(32), GUILayout.Height(10));
+                DOTSBadge();
             }
             GUILayout.FlexibleSpace();
             if (canRemove)

@@ -25,7 +25,7 @@ namespace CloudFine
         private SerializedProperty _gizmos;
         private SerializedProperty _cellCapacity;
         private SerializedProperty _useCellCapacity;
-        private SerializedProperty _useECS;
+        private SerializedProperty _useDOTS;
 
         private bool optimizationFoldout = false;
         private bool debugFoldout = false;
@@ -45,11 +45,16 @@ namespace CloudFine
             _gizmos = serializedObject.FindProperty("drawGizmos");
             _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
-            _useECS = serializedObject.FindProperty("useECS");
+            _useDOTS = serializedObject.FindProperty("useDOTS");
         }
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.BeginHorizontal();
+            BehaviorSettingsEditor.DOTSBadge();
+            EditorGUILayout.PropertyField(_useDOTS);
+            EditorGUILayout.EndHorizontal();
+
             Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));
             dimensions.x = Math.Max(dimensions.x, 0);
             dimensions.y = Math.Max(dimensions.y, 0);
@@ -60,6 +65,7 @@ namespace CloudFine
 
             EditorGUILayout.PropertyField(_size);
             EditorGUILayout.PropertyField(_wrap);
+
 
             if (!_wrap.boolValue)
             {
@@ -87,7 +93,6 @@ namespace CloudFine
             if (optimizationFoldout)
             {
                 EditorGUI.indentLevel = 1;
-                EditorGUILayout.PropertyField(_useECS);
 
                 EditorGUILayout.Slider(_sleep, 0, 1);
                 EditorGUILayout.PropertyField(_useCellCapacity);
