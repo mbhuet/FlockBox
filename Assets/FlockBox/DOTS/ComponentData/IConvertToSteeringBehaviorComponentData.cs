@@ -15,8 +15,3 @@ public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponen
 {
     T Convert();
 }
-
-public interface IConvertToComponentData<T> : IConvertToComponentData where T : struct, IComponentData
-{
-    T Convert();
-}

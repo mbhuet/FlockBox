@@ -9,18 +9,19 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(MovementSystemGroup))]
 [UpdateAfter(typeof(AccelerationSystem))]
-public class VelocitySystem : JobComponentSystem
+public class RotationSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct VelocityJob : IJobForEach<Translation, AgentData>
+    struct VelocityJob : IJobForEach<Rotation, AgentData>
     {
         public float dt;
 
-
-        public void Execute(ref Translation c0, ref AgentData c1)
+        public void Execute(ref Rotation c0, ref AgentData c1)
         {
-            c1.Position += c1.Velocity * dt;
-            c0.Value = c1.Position;
+            if (!math.all(c1.Velocity == float3.zero)) {
+                c0.Value = quaternion.LookRotation(c1.Velocity, new float3(0, 1, 0));
+                c1.Forward = math.normalize(c1.Velocity); 
+            } 
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)

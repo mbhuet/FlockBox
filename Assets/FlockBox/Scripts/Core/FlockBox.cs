@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -22,12 +23,6 @@ namespace CloudFine
 
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
-
-
-        private NativeHashMap<int, NativeArray<Entity>> bucketToEntity = new NativeHashMap<int, NativeArray<Entity>>();
-        private NativeHashMap<Entity, NativeArray<int>> entityToBuckets = new NativeHashMap<Entity, NativeArray<int>>();
-
-
 
 
         [SerializeField]
@@ -85,13 +80,12 @@ namespace CloudFine
 
                     for (int i = 0; i < pop.population; i++)
                     {
-                        //add things and set data that is not part of the agent prefab.
-                        //the conversion utility will port data that is on the prefab.
-
-                        manager.SetComponentData(agents[i], new AgentData { 
-                            Position = RandomPosition(),
-                            Velocity = UnityEngine.Random.insideUnitSphere 
-                        });
+                        Entity entity = agents[i];
+                        AgentData data = manager.GetComponentData<AgentData>(entity);
+                        data.Position = RandomPosition();
+                        data.Velocity = UnityEngine.Random.insideUnitSphere;
+                        manager.SetComponentData(entity, data);
+                       
                         //add all component data, imitate agent.Spawn(this)
                     }
                     agents.Dispose();

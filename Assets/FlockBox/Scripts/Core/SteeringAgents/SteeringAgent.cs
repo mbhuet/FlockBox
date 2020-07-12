@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -167,7 +168,7 @@ namespace CloudFine
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius
             });
-            dstManager.AddComponentData(entity, new Acceleration());
+            dstManager.AddComponentData(entity, new Acceleration { Value  = float3.zero});
             dstManager.AddComponentData(entity, new PerceptionData());
 
             //give entity a buffer to hold info about surroundings
