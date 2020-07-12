@@ -57,9 +57,20 @@ namespace CloudFine
 
         public override void OnInspectorGUI()
         {
+            GUI.enabled = false;
+            SerializedProperty prop = serializedObject.FindProperty("m_Script");
+            EditorGUILayout.PropertyField(prop, true, new GUILayoutOption[0]);
+            GUI.enabled = true;
+
             EditorGUILayout.BeginHorizontal();
             BehaviorSettingsEditor.DOTSBadge();
+
+            if (Application.isPlaying)
+            {
+                GUI.enabled = false;
+            }
             EditorGUILayout.PropertyField(_useDOTS);
+            GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
 
             Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));

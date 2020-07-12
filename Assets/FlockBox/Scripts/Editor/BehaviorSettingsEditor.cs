@@ -35,6 +35,12 @@ namespace CloudFine
 
         public override void OnInspectorGUI()
         {
+            GUI.enabled = false;
+            SerializedProperty prop = serializedObject.FindProperty("m_Script");
+            EditorGUILayout.PropertyField(prop, true, new GUILayoutOption[0]);
+            GUI.enabled = true;
+
+
             if (_containment.objectReferenceValue == null)
             {
                 if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(target)))

@@ -12,23 +12,22 @@ using UnityEngine;
 public class RotationSystem : JobComponentSystem
 {
     [BurstCompile]
-    struct VelocityJob : IJobForEach<Rotation, AgentData>
+    struct RotationJob : IJobForEach<Rotation, AgentData>
     {
         public float dt;
 
         public void Execute(ref Rotation c0, ref AgentData c1)
         {
             if (!math.all(c1.Velocity == float3.zero)) {
-                c0.Value = quaternion.LookRotation(c1.Velocity, new float3(0, 1, 0));
+                c0.Value = quaternion.LookRotationSafe(c1.Velocity, new float3(0, 1, 0));
                 c1.Forward = math.normalize(c1.Velocity); 
             } 
         }
     }
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        VelocityJob job = new VelocityJob
+        RotationJob job = new RotationJob
         {
-            //pass input data into the job
             dt = Time.deltaTime
         };
         return job.Schedule(this, inputDeps);
