@@ -101,7 +101,7 @@ namespace CloudFine
         {
             GUIStyle style = new GUIStyle(GUI.skin.GetStyle(dotsBadgeStyle));
             style.fontSize = 8;
-            EditorGUILayout.LabelField(new GUIContent("DOTS", "Compatible with DOTS."), style, GUILayout.Width(36), GUILayout.Height(10));
+            EditorGUILayout.LabelField(new GUIContent("DOTS", "Compatible with DOTS."), style, GUILayout.Width(38), GUILayout.Height(10));
         }
 
         void DrawBehaviorBox(SteeringBehavior behavior, SerializedProperty property, int i, bool canRemove)
