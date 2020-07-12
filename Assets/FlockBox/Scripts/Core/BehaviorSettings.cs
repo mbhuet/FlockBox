@@ -48,12 +48,17 @@ namespace CloudFine
 
         private void OnValidate()
         {
-            if (OnSteeringValuesModified != null) OnSteeringValuesModified.Invoke(this);
+            MarkAsChanged();
         }
 
         public void BehaviorChangeDetected(SteeringBehavior modBehavior)
         {
             if(OnBehaviorValuesModified != null) OnBehaviorValuesModified.Invoke(this, modBehavior);
+        }
+
+        public void MarkAsChanged()
+        {
+            if (OnSteeringValuesModified != null) OnSteeringValuesModified.Invoke(this);
         }
 
         private void BehaviorAddDetected(BehaviorSettings settings, SteeringBehavior behavior)
@@ -111,9 +116,13 @@ namespace CloudFine
                 }
             }
             Containment.AddEntityData(entity, dstManager);
-
             dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
-            dstManager.AddComponentData(entity, new SteeringData { MaxSpeed = maxSpeed, MaxForce = maxForce });
+            dstManager.AddComponentData(entity, ConvertToComponentData());
+        }
+
+        public SteeringData ConvertToComponentData()
+        {
+            return new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed };
         }
 
         #endregion

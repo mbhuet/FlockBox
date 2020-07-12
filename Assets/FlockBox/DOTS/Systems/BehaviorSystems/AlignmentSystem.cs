@@ -15,6 +15,7 @@ public class AlignmentSystem : SteeringBehaviorSystem<AlignmentData>
 
 public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
 {
+    public float Weight;
     public float Radius;
     public Int32 TagMask;
 
@@ -38,7 +39,7 @@ public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
         }
         if (count > 0)
         {
-            return steering.GetSteerVector(sum/count, mine.Velocity);
+            return steering.GetSteerVector(sum/count, mine.Velocity) * Weight;
         }
 
         return float3.zero;

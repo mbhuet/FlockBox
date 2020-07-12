@@ -11,7 +11,12 @@ public interface IConvertToComponentData
     void RemoveEntityData(Entity entity, EntityManager entityManager);
 }
 
-public interface IConvertToComponentData<T> : IConvertToComponentData where T : struct, IComponentData, ISteeringBehaviorComponentData
+public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : struct, IComponentData, ISteeringBehaviorComponentData
+{
+    T Convert();
+}
+
+public interface IConvertToComponentData<T> : IConvertToComponentData where T : struct, IComponentData
 {
     T Convert();
 }

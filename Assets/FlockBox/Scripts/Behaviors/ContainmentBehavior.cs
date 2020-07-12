@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CloudFine
 {
-    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToComponentData<ContainmentData>
+    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ContainmentData>
     {
         public override bool CanUseTagFilter { get { return false; } }
         public override bool CanToggleActive { get { return false; } }
@@ -78,7 +78,7 @@ namespace CloudFine
 
         public ContainmentData Convert()
         {
-            return new ContainmentData { };
+            return new ContainmentData { Weight = weight};
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);

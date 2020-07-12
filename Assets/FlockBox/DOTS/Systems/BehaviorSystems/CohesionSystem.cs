@@ -15,6 +15,7 @@ public class CohesionSystem : SteeringBehaviorSystem<CohesionData>
 
 public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
 {
+    public float Weight;
     public float Radius;
     public Int32 TagMask;
 
@@ -38,7 +39,7 @@ public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
 
         if (count > 0)
         {
-            return steering.GetSeekVector(sum / count, mine.Position, mine.Velocity);
+            return steering.GetSeekVector(sum / count, mine.Position, mine.Velocity) * Weight;
         }
 
         return float3.zero;

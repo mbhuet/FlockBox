@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace CloudFine
 {
     [System.Serializable]
-    public class AlignmentBehavior : RadialSteeringBehavior, IConvertToComponentData<AlignmentData>
+    public class AlignmentBehavior : RadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<AlignmentData>
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
@@ -36,7 +36,7 @@ namespace CloudFine
 
         public AlignmentData Convert()
         {
-            return new AlignmentData { Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) };
+            return new AlignmentData { Weight = weight, Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) };
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
