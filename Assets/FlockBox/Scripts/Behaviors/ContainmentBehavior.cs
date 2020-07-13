@@ -76,7 +76,7 @@ namespace CloudFine
 
         public ContainmentData Convert()
         {
-            return new ContainmentData { Weight = weight, Margin = 10, Dimensions = new float3(100,100,100), LookAheadSeconds = 1};
+            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds, Margin = 10, Dimensions = new float3(100,100,100), LookAheadSeconds = 1};
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
