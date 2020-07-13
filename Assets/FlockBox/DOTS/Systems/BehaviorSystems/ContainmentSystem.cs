@@ -34,7 +34,6 @@ public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
         else
         {
             containedPosition.x = 0;
-            distanceToBorder = 0;
         }
 
         if (Dimensions.y > 0)
@@ -45,7 +44,6 @@ public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
         else
         {
             containedPosition.y = 0;
-            distanceToBorder = 0;
         }
 
         if (Dimensions.z > 0)
@@ -56,7 +54,6 @@ public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
         else
         {
             containedPosition.z = 0;
-            distanceToBorder = 0;
         }
 
         if (math.all(containedPosition == unclampedFuturePosition))

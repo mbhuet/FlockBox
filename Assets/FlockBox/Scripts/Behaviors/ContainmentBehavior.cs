@@ -29,7 +29,6 @@ namespace CloudFine
             else
             {
                 containedPosition.x = 0;
-                distanceToBorder = 0;
             }
 
             if (worldDimensions.y > 0)
@@ -40,7 +39,6 @@ namespace CloudFine
             else
             {
                 containedPosition.y = 0;
-                distanceToBorder = 0;
             }
 
             if (worldDimensions.z > 0)
@@ -51,7 +49,6 @@ namespace CloudFine
             else
             {
                 containedPosition.z = 0;
-                distanceToBorder = 0;
             }
 
             if (containedPosition == unclampedPosition)
@@ -76,7 +73,7 @@ namespace CloudFine
 
         public ContainmentData Convert()
         {
-            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds, Margin = 10, Dimensions = new float3(100,100,100), LookAheadSeconds = 1};
+            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds, Margin = 10, Dimensions = new float3(100,100,100)};
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
