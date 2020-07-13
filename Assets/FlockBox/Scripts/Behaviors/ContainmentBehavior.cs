@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace CloudFine
@@ -11,18 +12,18 @@ namespace CloudFine
         public override bool CanToggleActive { get { return false; } }
 
         private Vector3 containedPosition;
-        private float[] minArray = new float[3];
+        private Vector3 unclampedPosition;
+
         public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentMargin)
         {
-            containedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
+            unclampedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
+            containedPosition = unclampedPosition;
+
             float distanceToBorder = float.MaxValue;
 
             if (worldDimensions.x > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.x;
-                minArray[2] = worldDimensions.x - mine.Position.x;
-                distanceToBorder = Mathf.Min(minArray);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.x, worldDimensions.x - mine.Position.x));
                 containedPosition.x = Mathf.Clamp(containedPosition.x, containmentMargin, worldDimensions.x - containmentMargin);
             }
             else
@@ -30,12 +31,10 @@ namespace CloudFine
                 containedPosition.x = 0;
                 distanceToBorder = 0;
             }
+
             if (worldDimensions.y > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.y;
-                minArray[2] = worldDimensions.y - mine.Position.y;
-                distanceToBorder = Mathf.Min(minArray);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.y, worldDimensions.y - mine.Position.y));
                 containedPosition.y = Mathf.Clamp(containedPosition.y, containmentMargin, worldDimensions.y - containmentMargin);
             }
             else
@@ -43,12 +42,10 @@ namespace CloudFine
                 containedPosition.y = 0;
                 distanceToBorder = 0;
             }
+
             if (worldDimensions.z > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.z;
-                minArray[2] = worldDimensions.z - mine.Position.z;
-                distanceToBorder = Mathf.Min(minArray);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.z, worldDimensions.z - mine.Position.z));
                 containedPosition.z = Mathf.Clamp(containedPosition.z, containmentMargin, worldDimensions.z - containmentMargin);
             }
             else
@@ -56,7 +53,8 @@ namespace CloudFine
                 containedPosition.z = 0;
                 distanceToBorder = 0;
             }
-            if (containedPosition == mine.Position + mine.Velocity)
+
+            if (containedPosition == unclampedPosition)
             {
                 steer = Vector3.zero;
                 return;
@@ -78,7 +76,7 @@ namespace CloudFine
 
         public ContainmentData Convert()
         {
-            return new ContainmentData { Weight = weight};
+            return new ContainmentData { Weight = weight, Margin = 10, Dimensions = new float3(100,100,100), LookAheadSeconds = 1};
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
