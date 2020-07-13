@@ -6,6 +6,6 @@ using UnityEngine;
 
 public interface ISteeringBehaviorComponentData
 {
-    float3 GetSteering(ref AgentData mine, ref SteeringData steering, DynamicBuffer<NeighborData> neighbors);
+    float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors);
     void AddPerception(ref AgentData mine, ref PerceptionData perception);
 }

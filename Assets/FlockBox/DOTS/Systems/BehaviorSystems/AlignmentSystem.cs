@@ -20,7 +20,7 @@ public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
     public Int32 TagMask;
 
 
-    public float3 GetSteering(ref AgentData mine, ref SteeringData steering, DynamicBuffer<NeighborData> neighbors)
+    public float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors)
     {
         float3 sum = float3.zero;
         float count = 0;
