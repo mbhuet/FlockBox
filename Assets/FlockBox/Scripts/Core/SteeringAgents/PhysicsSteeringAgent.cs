@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [RequireComponent(typeof(Rigidbody))]
     public class PhysicsSteeringAgent : SteeringAgent

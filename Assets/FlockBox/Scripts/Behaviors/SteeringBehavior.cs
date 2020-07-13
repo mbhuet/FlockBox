@@ -8,7 +8,7 @@ using Unity.Entities;
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public abstract class SteeringBehavior : ScriptableObject

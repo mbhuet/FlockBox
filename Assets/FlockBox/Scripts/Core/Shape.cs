@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class Shape

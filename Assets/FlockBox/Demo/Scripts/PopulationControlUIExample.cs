@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace CloudFine{
+namespace CloudFine.FlockBox{
     /// <summary>
     /// Example of how Agent population can be modified.
     /// Click to anywhere to spawn a new Agent.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class SeparationBehavior : RadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<SeparationData>

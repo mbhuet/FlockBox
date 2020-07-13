@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public class BehaviorSettingsUIExample : MonoBehaviour
     {

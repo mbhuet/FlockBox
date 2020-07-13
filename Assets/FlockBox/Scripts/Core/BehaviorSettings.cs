@@ -5,7 +5,7 @@ using Unity.Entities;
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [CreateAssetMenu(menuName = "BehaviorSettings")]
     public class BehaviorSettings : ScriptableObject

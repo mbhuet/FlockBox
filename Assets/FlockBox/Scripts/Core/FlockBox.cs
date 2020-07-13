@@ -14,7 +14,7 @@ using UnityEngine;
 //
 
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public class FlockBox : MonoBehaviour
     {

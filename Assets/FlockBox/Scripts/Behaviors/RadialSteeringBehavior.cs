@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public abstract class RadialSteeringBehavior : SteeringBehavior
     {

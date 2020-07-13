@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class AlignmentBehavior : RadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<AlignmentData>

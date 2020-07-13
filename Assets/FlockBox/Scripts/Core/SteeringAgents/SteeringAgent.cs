@@ -7,7 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class SteeringAgent : Agent, IConvertGameObjectToEntity
