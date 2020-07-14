@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [CustomEditor(typeof(BehaviorSettings), true)]
     public class BehaviorSettingsEditor : Editor

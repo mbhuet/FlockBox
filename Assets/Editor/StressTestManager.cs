@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CloudFine {
+namespace CloudFine.FlockBox
+{
     public class StressTestManager : MonoBehaviour
     {
         public FlockBox testBox;

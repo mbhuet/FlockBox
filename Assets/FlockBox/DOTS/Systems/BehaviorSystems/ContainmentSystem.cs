@@ -19,6 +19,8 @@ public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
 
     public float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors)
     {
+        if (boundary.Wrap == 0) return float3.zero;
+
         float3 unclampedFuturePosition = mine.Position + mine.Velocity * LookAheadSeconds;
         float3 containedPosition = unclampedFuturePosition;
 

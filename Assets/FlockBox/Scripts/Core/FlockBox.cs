@@ -18,6 +18,8 @@ namespace CloudFine.FlockBox
 {
     public class FlockBox : MonoBehaviour
     {
+        public static Action<FlockBox> OnValuesModified;
+
         private Dictionary<int, HashSet<Agent>> bucketToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, HashSet<int>> agentToBuckets = new Dictionary<Agent, HashSet<int>>(); //get all buckets an agent is in
 
@@ -64,8 +66,16 @@ namespace CloudFine.FlockBox
         EntityManager manager;
         Entity agentEntityPrefab;
 
+        private void Awake()
+        {
+            _worldDimensions.x = dimensions_x * cellSize;
+            _worldDimensions.y = dimensions_y * cellSize;
+            _worldDimensions.z = dimensions_z * cellSize;
+        }
+
         void Start()
         {
+            
             manager = World.Active.EntityManager;
 
             foreach (AgentPopulation pop in startingPopulations)
@@ -85,7 +95,9 @@ namespace CloudFine.FlockBox
                         data.Position = RandomPosition();
                         data.Velocity = UnityEngine.Random.insideUnitSphere;
                         manager.SetComponentData(entity, data);
-                       
+
+                        manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+                        manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = ((byte)(wrapEdges ? 1 : 0)) });
                         //add all component data, imitate agent.Spawn(this)
                     }
                     agents.Dispose();
@@ -103,6 +115,11 @@ namespace CloudFine.FlockBox
 
         private void Update()
         {
+            if (transform.hasChanged)
+            {
+                MarkAsChanged();
+                transform.hasChanged = false;
+            }
             _worldDimensions.x = dimensions_x * cellSize;
             _worldDimensions.y = dimensions_y * cellSize;
             _worldDimensions.z = dimensions_z * cellSize;
@@ -113,8 +130,18 @@ namespace CloudFine.FlockBox
 #endif
         }
 
+        private void OnValidate()
+        {
+            MarkAsChanged();
+        }
 
-        
+        public void MarkAsChanged()
+        {
+            if (OnValuesModified != null) OnValuesModified.Invoke(this);
+        }
+
+
+
         public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> buckets, SurroundingsContainer surroundings)
         {
 

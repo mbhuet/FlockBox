@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     // IngredientDrawer
     [CustomPropertyDrawer(typeof(Shape))]

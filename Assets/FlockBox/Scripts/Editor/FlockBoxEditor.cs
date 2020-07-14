@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditorInternal;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [CustomEditor(typeof(FlockBox), true)]
     public class FlockBoxEditor : Editor

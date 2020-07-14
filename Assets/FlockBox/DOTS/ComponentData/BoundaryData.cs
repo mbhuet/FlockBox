@@ -7,4 +7,5 @@ public struct BoundaryData : IComponentData
 {
     public float3 Dimensions;
     public float Margin;
+    public byte Wrap;
 }

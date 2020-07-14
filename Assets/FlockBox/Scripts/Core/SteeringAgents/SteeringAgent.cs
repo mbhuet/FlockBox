@@ -175,7 +175,6 @@ namespace CloudFine.FlockBox
             dstManager.AddBuffer<NeighborData>(entity);
 
             //TODO this needs to move somewhere else
-            dstManager.AddComponentData(entity, new BoundaryData { Margin = 10, Dimensions = new float3(100, 100, 100) });
 
         }
 
