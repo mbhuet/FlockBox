@@ -17,9 +17,9 @@ public static class TagMaskUtility
         return (byte)_tagRegistry.IndexOf(tag);
     }
 
-    public static Int32 GetTagMask(params string[] args)
+    public static int GetTagMask(params string[] args)
     {
-        Int32 mask = 0;
+        int mask = 0;
         foreach(string arg in args)
         {
             mask = mask | 1 << TagToInt(arg);
@@ -28,13 +28,23 @@ public static class TagMaskUtility
         return mask;
     }
 
-    public static bool TagInMask(string tag, Int32 mask)
+    public static void AddTagToMask(string tag, ref int mask)
+    {
+        mask = mask | 1 << TagToInt(tag);
+    }
+
+    public static void AddTagToMask(byte tag, ref int mask)
+    {
+        mask = mask | 1 << tag;
+    }
+
+    public static bool TagInMask(string tag, int mask)
     {
         if (mask == 0) return true;
         return TagInMask(TagToInt(tag), mask);
     }
 
-    public static bool TagInMask(byte tag, Int32 mask)
+    public static bool TagInMask(byte tag, int mask)
     {
         if (mask == 0) return true;
         return (1 << tag & mask) != 0;

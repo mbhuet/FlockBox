@@ -8,7 +8,7 @@ public struct PerceptionData : IComponentData
     public float perceptionRadius;
     public float lookAheadSeconds;
     //bitmask for tags
-    public Int32 globalSearchTagMask;
+    public int globalSearchTagMask;
     //not sure how to implement this
     //public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
 
@@ -17,5 +17,20 @@ public struct PerceptionData : IComponentData
         perceptionRadius = 0;
         lookAheadSeconds = 0;
         globalSearchTagMask = 0;
+    }
+
+    public void ExpandPerceptionRadius(float radius)
+    {
+        perceptionRadius = math.max(radius, perceptionRadius);
+    }
+
+    public void ExpandLookAheadSeconds(float seconds)
+    {
+        lookAheadSeconds = math.max(lookAheadSeconds, seconds);
+    }
+
+    public void AddGlobalSearchTag(byte tag)
+    {
+        TagMaskUtility.AddTagToMask(tag, ref globalSearchTagMask);
     }
 }

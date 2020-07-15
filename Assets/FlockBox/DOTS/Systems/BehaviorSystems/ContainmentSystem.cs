@@ -70,7 +70,7 @@ namespace CloudFine.FlockBox.DOTS
         }
 
 
-        public void AddPerception(ref AgentData mine, ref PerceptionData perception)
+        public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
 
         }

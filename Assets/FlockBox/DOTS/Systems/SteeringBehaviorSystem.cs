@@ -12,20 +12,18 @@ namespace CloudFine.FlockBox.DOTS
         [BurstCompile]
         protected struct SteeringJob : IJobForEach_BCCCCC<NeighborData, AgentData, Acceleration, SteeringData, BoundaryData, T>
         {
-            public void Execute(DynamicBuffer<NeighborData> b0, ref AgentData agent, ref Acceleration accel, ref SteeringData steering, ref BoundaryData boundary, ref T c3)
+            public void Execute(DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref Acceleration accel, ref SteeringData steering, ref BoundaryData boundary, ref T behavior)
             {
-                float3 steer = c3.GetSteering(ref agent, ref steering, ref boundary, b0);
-                //cap with SteeringData
-                accel.Value += steer;
+                accel.Value += behavior.GetSteering(ref agent, ref steering, ref boundary, neighbors);
             }
         }
 
         [BurstCompile]
         protected struct PerceptionJob : IJobForEach<PerceptionData, AgentData, T>
         {
-            public void Execute(ref PerceptionData c1, ref AgentData c2, ref T c0)
+            public void Execute(ref PerceptionData perception, ref AgentData agent, ref T behavior)
             {
-                c0.AddPerception(ref c2, ref c1);
+                behavior.AddPerceptionRequirements(ref agent, ref perception);
             }
         }
 

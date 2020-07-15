@@ -9,6 +9,6 @@ namespace CloudFine.FlockBox.DOTS
     public interface ISteeringBehaviorComponentData
     {
         float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors);
-        void AddPerception(ref AgentData mine, ref PerceptionData perception);
+        void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception);
     }
 }
