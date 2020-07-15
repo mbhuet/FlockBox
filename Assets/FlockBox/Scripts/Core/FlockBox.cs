@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
-
+using CloudFine.FlockBox.DOTS;
 
 //Should not be a static class because I want to be able to define boundaries without editing the script
 //Class will manage itself if there are no instances by creating an instance
@@ -97,7 +93,7 @@ namespace CloudFine.FlockBox
                         manager.SetComponentData(entity, data);
 
                         manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
-                        manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = ((byte)(wrapEdges ? 1 : 0)) });
+                        manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges});
                         //add all component data, imitate agent.Spawn(this)
                     }
                     agents.Dispose();

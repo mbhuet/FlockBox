@@ -1,35 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(MovementSystemGroup))]
-[UpdateAfter(typeof(AccelerationSystem))]
-public class VelocitySystem : JobComponentSystem
+namespace CloudFine.FlockBox.DOTS
 {
-    [BurstCompile]
-    struct VelocityJob : IJobForEach<Translation, AgentData>
+    [UpdateInGroup(typeof(MovementSystemGroup))]
+    [UpdateAfter(typeof(AccelerationSystem))]
+    public class VelocitySystem : JobComponentSystem
     {
-        public float dt;
-
-
-        public void Execute(ref Translation c0, ref AgentData c1)
+        [BurstCompile]
+        struct VelocityJob : IJobForEach<AgentData>
         {
-            c1.Position += c1.Velocity * dt;
-            c0.Value = c1.Position;
+            public float dt;
+
+
+            public void Execute(ref AgentData c1)
+            {
+                c1.Position += c1.Velocity * dt;
+            }
         }
-    }
-    protected override JobHandle OnUpdate(JobHandle inputDeps)
-    {
-        VelocityJob job = new VelocityJob
+        protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            //pass input data into the job
-            dt = Time.deltaTime
-        };
-        return job.Schedule(this, inputDeps);
+            VelocityJob job = new VelocityJob
+            {
+                dt = Time.deltaTime
+            };
+            return job.Schedule(this, inputDeps);
+        }
     }
 }

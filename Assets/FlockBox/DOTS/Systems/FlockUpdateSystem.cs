@@ -1,12 +1,9 @@
-﻿using CloudFine;
-using Unity.Burst;
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
-namespace CloudFine.FlockBox {
-
+namespace CloudFine.FlockBox.DOTS
+{
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
     public class FlockUpdateSystem : JobComponentSystem
     {
@@ -30,7 +27,7 @@ namespace CloudFine.FlockBox {
 
         private void OnSettingsChanged(FlockBox changed)
         {
-            BoundaryData boundary = new BoundaryData { Dimensions = changed.WorldDimensions, Margin = changed.boundaryBuffer, Wrap = ((byte)(changed.wrapEdges ? 1 : 0)) };
+            BoundaryData boundary = new BoundaryData { Dimensions = changed.WorldDimensions, Margin = changed.boundaryBuffer, Wrap = changed.wrapEdges };
             m_Query.SetFilter(new FlockData { Flock = changed });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)

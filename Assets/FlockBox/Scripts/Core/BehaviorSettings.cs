@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using Unity.Entities;
+using CloudFine.FlockBox.DOTS;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

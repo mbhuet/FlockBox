@@ -173,9 +173,6 @@ namespace CloudFine.FlockBox
 
             //give entity a buffer to hold info about surroundings
             dstManager.AddBuffer<NeighborData>(entity);
-
-            //TODO this needs to move somewhere else
-
         }
 
 #if UNITY_EDITOR

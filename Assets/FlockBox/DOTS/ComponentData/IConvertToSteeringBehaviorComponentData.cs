@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Entities;
-using UnityEngine;
+﻿using Unity.Entities;
 
-public interface IConvertToComponentData
+namespace CloudFine.FlockBox.DOTS
 {
-    void AddEntityData(Entity entity, EntityManager entityManager);
-    void SetEntityData(Entity entity, EntityManager entityManager);
-    void RemoveEntityData(Entity entity, EntityManager entityManager);
-}
+    public interface IConvertToComponentData
+    {
+        void AddEntityData(Entity entity, EntityManager entityManager);
+        void SetEntityData(Entity entity, EntityManager entityManager);
+        void RemoveEntityData(Entity entity, EntityManager entityManager);
+    }
 
-public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : struct, IComponentData, ISteeringBehaviorComponentData
-{
-    T Convert();
+    public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : struct, IComponentData, ISteeringBehaviorComponentData
+    {
+        T Convert();
+    }
 }

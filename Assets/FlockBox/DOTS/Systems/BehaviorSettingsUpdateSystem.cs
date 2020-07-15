@@ -5,7 +5,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace CloudFine.FlockBox {
+namespace CloudFine.FlockBox.DOTS {
 
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
     public class BehaviorSettingsUpdateSystem : JobComponentSystem
