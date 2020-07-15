@@ -72,7 +72,7 @@ namespace CloudFine.FlockBox.DOTS
 
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
-
+            perception.ExpandLookAheadSeconds(LookAheadSeconds);
         }
     }
 }
