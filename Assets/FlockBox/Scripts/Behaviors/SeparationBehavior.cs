@@ -37,7 +37,13 @@ namespace CloudFine.FlockBox
 
         public SeparationData Convert()
         {
-            return new SeparationData { Weight = weight, Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0)};
+            return new SeparationData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0)
+            };
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);

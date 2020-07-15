@@ -34,7 +34,13 @@ namespace CloudFine.FlockBox
 
         public AlignmentData Convert()
         {
-            return new AlignmentData { Weight = weight, Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) };
+            return new AlignmentData
+            {
+                Active = IsActive,
+                Weight = weight, 
+                Radius = effectiveRadius, 
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) 
+            };
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);

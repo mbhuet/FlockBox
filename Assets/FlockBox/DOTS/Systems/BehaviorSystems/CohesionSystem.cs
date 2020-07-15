@@ -17,6 +17,7 @@ namespace CloudFine.FlockBox.DOTS
 
     public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
     {
+        public boolean Active;
         public float Weight;
         public float Radius;
         public Int32 TagMask;
@@ -24,6 +25,8 @@ namespace CloudFine.FlockBox.DOTS
 
         public float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors)
         {
+            if (!Active) return float3.zero;
+
             float3 sum = float3.zero;
             float count = 0;
             for (int i = 0; i < neighbors.Length; i++)

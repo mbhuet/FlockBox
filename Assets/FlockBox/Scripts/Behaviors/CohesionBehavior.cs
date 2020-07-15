@@ -36,7 +36,13 @@ namespace CloudFine.FlockBox
 
         public CohesionData Convert()
         {
-            return new CohesionData { Weight = weight, Radius = effectiveRadius, TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0) };
+            return new CohesionData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0)
+            };
         }
 
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
