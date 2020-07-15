@@ -38,6 +38,10 @@ namespace CloudFine.FlockBox
         {
             get { return _worldDimensions; } private set { _worldDimensions = value; }
         }
+        public float CellSize
+        {
+            get { return cellSize; }
+        }
 
         public bool wrapEdges = false;
         public float boundaryBuffer = 10;

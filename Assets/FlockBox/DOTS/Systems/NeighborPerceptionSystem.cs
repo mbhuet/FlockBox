@@ -1,61 +1,98 @@
-﻿using System.Collections;
+﻿using CloudFine.FlockBox;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine;
 
 
 [UpdateInGroup(typeof(PerceptionSystemGroup))]
 public class NeighborPerceptionSystem : JobComponentSystem
 {
-    protected EntityQuery m_Group;
-
+    protected EntityQuery flockQuery;
+    private List<FlockData> flocks;
 
     [BurstCompile]
     struct NeighborPerceptionJob : IJobForEach_BCC<NeighborData, PerceptionData, AgentData>
     {
-        [DeallocateOnJobCompletion]
-        [NativeDisableParallelForRestriction]
-        public NativeArray<AgentData> neighbors;
+        //[DeallocateOnJobCompletion]
+        //[NativeDisableParallelForRestriction]
+        [ReadOnly]
+        public NativeHashMap<int, NativeList<AgentData>> map;
+        public float cellSize;
 
-        public void Execute(DynamicBuffer<NeighborData> b0, ref PerceptionData c1, ref AgentData c2)
+        public void Execute(DynamicBuffer<NeighborData> neighbors, ref PerceptionData perception, ref AgentData agent)
         {
-            b0.Clear();
+            neighbors.Clear();
+         
+            //use map to fill in b0
 
-            for(int i= 0; i<neighbors.Length; i++)
-            {
-                if (math.length(c2.Position - neighbors[i].Position) < 10) 
-                {
-                    b0.Add(new NeighborData { Value = neighbors[i] });
-                }
-            }
-
-            c1.Clear();
+            perception.Clear();
         }
+    }
+
+    [BurstCompile]
+    struct SpatialHashJob : IJobForEach_C<AgentData>
+    {
+        public NativeHashMap<int, NativeList<AgentData>> map;
+        public float cellSize;
+
+        public void Execute(ref AgentData agent)
+        {
+            int hash = 0;
+
+            if (!map.ContainsKey(hash))
+            {
+                map.TryAdd(hash, new NativeList<AgentData>());
+            }
+            map[hash].Add(agent);
+        }
+
+        
     }
 
     protected override void OnCreate()
     {
         base.OnCreate();
-        m_Group = GetEntityQuery(typeof(AgentData));
+        flockQuery = GetEntityQuery(typeof(FlockData));
 
     }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        //create a hash map of all occupied cells in each particular flock box
-        //pass it into the job
-        //use data on agent to decide which flock to pull from
+        NativeHashMap<int, NativeList<AgentData>> spatialHash = new NativeHashMap<int, NativeList<AgentData>>();
 
+        //Get all FlockBoxes
+        EntityManager.GetAllUniqueSharedComponentData<FlockData>(flocks);
 
-        NeighborPerceptionJob job = new NeighborPerceptionJob
+        //Iterate through FlockBoxes
+        for (int flockIndex = 0; flockIndex < flocks.Count; flockIndex++)
         {
-            neighbors = m_Group.ToComponentDataArray<AgentData>(Allocator.TempJob)
-        };
+            FlockData flock = flocks[flockIndex];
+            float cellSize = flock.Flock.CellSize;
 
-        return job.Schedule(this, inputDeps);
+            flockQuery.SetFilter(flock);
+            spatialHash.Clear();
+
+            //FILL IN SPATIAL HASH MAP
+            SpatialHashJob hashJob = new SpatialHashJob
+            {
+                map = spatialHash,
+                cellSize = cellSize,
+            };
+            inputDeps = hashJob.Schedule(flockQuery, inputDeps);
+
+
+            //Fill each Agent's neighbors buffer using the completed spatial map
+            NeighborPerceptionJob perceptionJob = new NeighborPerceptionJob
+            {
+                map = spatialHash,
+                cellSize = cellSize,
+            };
+            inputDeps = perceptionJob.Schedule(flockQuery, inputDeps);
+        }
+
+        spatialHash.Dispose();
+        return inputDeps;
     }
 }
