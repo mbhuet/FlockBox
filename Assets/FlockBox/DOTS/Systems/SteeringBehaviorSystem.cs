@@ -7,7 +7,7 @@ using Unity.Mathematics;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract class SteeringBehaviorSystem<T> : JobComponentSystem where T : struct, IComponentData, ISteeringBehaviorComponentData
+    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData
     {
         [BurstCompile]
         protected struct SteeringJob : IJobForEach_BCCCCC<NeighborData, AgentData, Acceleration, SteeringData, BoundaryData, T>
@@ -25,6 +25,13 @@ namespace CloudFine.FlockBox.DOTS
             {
                 behavior.AddPerceptionRequirements(ref agent, ref perception);
             }
+        }
+
+        protected override void OnUpdate()
+        {
+            
+
+
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
