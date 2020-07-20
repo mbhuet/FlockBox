@@ -39,7 +39,7 @@ namespace CloudFine.FlockBox.DOTS {
         private void OnSettingsChanged(BehaviorSettings changed)
         {
             SteeringData steerData = changed.ConvertToComponentData();
-            m_Query.SetFilter(new BehaviorSettingsData { Settings = changed });
+            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = changed });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {
@@ -54,7 +54,7 @@ namespace CloudFine.FlockBox.DOTS {
             if (convert == null) return;
 
             Debug.Log("behavior add " + settings.ToString() + " " + add.ToString());
-            m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
+            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {
@@ -70,7 +70,7 @@ namespace CloudFine.FlockBox.DOTS {
             if (convert == null) return;
             Debug.Log("behavior mod " + settings.ToString() + " " + mod.ToString());
 
-            m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
+            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {
@@ -88,7 +88,7 @@ namespace CloudFine.FlockBox.DOTS {
 
             Debug.Log("behavior rem " + settings.ToString() + " " + rem.ToString());
 
-            m_Query.SetFilter(new BehaviorSettingsData { Settings = settings });
+            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {

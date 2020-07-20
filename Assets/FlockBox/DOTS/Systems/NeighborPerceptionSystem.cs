@@ -61,7 +61,12 @@ namespace CloudFine.FlockBox.DOTS
 
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected JobHandle OnUpdate(JobHandle inputDeps)
         {
 
             //Get all FlockBoxes
@@ -73,7 +78,7 @@ namespace CloudFine.FlockBox.DOTS
                 FlockData flock = flocks[flockIndex];
                 float cellSize = flock.Flock.CellSize;
 
-                flockQuery.SetFilter(flock);
+                flockQuery.SetSharedComponentFilter(flock);
 
                 int agentCount = flockQuery.CalculateChunkCount();
                 if (agentCount == 0)
@@ -91,7 +96,7 @@ namespace CloudFine.FlockBox.DOTS
                 //FILL IN SPATIAL HASH MAP
                 SpatialHashJob hashJob = new SpatialHashJob
                 {
-                    map = spatialHash,
+                    //map = hashMap,
                     cellSize = cellSize,
                 };
                 inputDeps = hashJob.Schedule(flockQuery, inputDeps);
@@ -100,13 +105,13 @@ namespace CloudFine.FlockBox.DOTS
                 //Fill each Agent's neighbors buffer using the completed spatial map
                 NeighborPerceptionJob perceptionJob = new NeighborPerceptionJob
                 {
-                    map = spatialHash,
+                    //map = hashMap,
                     cellSize = cellSize,
                 };
                 inputDeps = perceptionJob.Schedule(flockQuery, inputDeps);
             }
 
-            spatialHash.Dispose();
+            //hashMap.Dispose();
             return inputDeps;
         }
     }

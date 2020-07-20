@@ -3,7 +3,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 
 namespace CloudFine.FlockBox.DOTS
@@ -30,7 +29,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             RotationJob job = new RotationJob
             {
-                dt = Time.deltaTime
+                dt = Time.DeltaTime
             };
             return job.Schedule(this, inputDeps);
         }

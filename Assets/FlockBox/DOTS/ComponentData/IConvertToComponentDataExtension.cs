@@ -11,7 +11,7 @@ namespace CloudFine.FlockBox.DOTS
         }
         public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, EntityQuery query, EntityManager entityManager) where T : struct, IComponentData, ISteeringBehaviorComponentData
         {
-            entityManager.AddChunkComponentData<T>(query, value.Convert());
+            //entityManager.AddChunkComponentData<T>(query, value.Convert());
         }
         public static void SetEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData, ISteeringBehaviorComponentData
         {

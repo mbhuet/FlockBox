@@ -28,7 +28,7 @@ namespace CloudFine.FlockBox.DOTS
         private void OnSettingsChanged(FlockBox changed)
         {
             BoundaryData boundary = new BoundaryData { Dimensions = changed.WorldDimensions, Margin = changed.boundaryBuffer, Wrap = changed.wrapEdges };
-            m_Query.SetFilter(new FlockData { Flock = changed });
+            m_Query.SetSharedComponentFilter(new FlockData { Flock = changed });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {

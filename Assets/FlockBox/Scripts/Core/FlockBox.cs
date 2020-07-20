@@ -76,7 +76,7 @@ namespace CloudFine.FlockBox
         void Start()
         {
             
-            manager = World.Active.EntityManager;
+            manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             foreach (AgentPopulation pop in startingPopulations)
             {
@@ -84,7 +84,11 @@ namespace CloudFine.FlockBox
 
                 if (useDOTS)
                 {
-                    agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, World.Active);
+                    GameObjectConversionSettings settings = new GameObjectConversionSettings()
+                    {
+                        DestinationWorld = World.DefaultGameObjectInjectionWorld
+                    };
+                    agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, settings);
                     NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);
                     manager.Instantiate(agentEntityPrefab, agents);
 

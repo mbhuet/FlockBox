@@ -1,7 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
 
 
 namespace CloudFine.FlockBox.DOTS
@@ -29,12 +28,10 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnUpdate()
         {
-            
-
-
+            throw new System.NotImplementedException();
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected JobHandle OnUpdate(JobHandle inputDeps)
         {
             PerceptionJob perceptJob = new PerceptionJob
             {

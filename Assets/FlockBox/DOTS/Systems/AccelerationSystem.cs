@@ -28,7 +28,7 @@ namespace CloudFine.FlockBox.DOTS
             AccelerationJob job = new AccelerationJob
             {
                 //pass input data into the job
-                dt = Time.deltaTime
+                dt = Time.DeltaTime
             };
             return job.Schedule(this, inputDeps);
         }

@@ -1,7 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -24,7 +23,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             VelocityJob job = new VelocityJob
             {
-                dt = Time.deltaTime
+                dt = Time.DeltaTime
             };
             return job.Schedule(this, inputDeps);
         }
