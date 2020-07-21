@@ -53,7 +53,7 @@ namespace CloudFine.FlockBox.DOTS {
             IConvertToComponentData convert = add as IConvertToComponentData;
             if (convert == null) return;
 
-            Debug.Log("behavior add " + settings.ToString() + " " + add.ToString());
+//            Debug.Log("behavior add " + settings.ToString() + " " + add.ToString());
             m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
@@ -68,7 +68,7 @@ namespace CloudFine.FlockBox.DOTS {
         {
             IConvertToComponentData convert = mod as IConvertToComponentData;
             if (convert == null) return;
-            Debug.Log("behavior mod " + settings.ToString() + " " + mod.ToString());
+//            Debug.Log("behavior mod " + settings.ToString() + " " + mod.ToString());
 
             m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
@@ -86,7 +86,7 @@ namespace CloudFine.FlockBox.DOTS {
             IConvertToComponentData convert = rem as IConvertToComponentData;
             if (convert == null) return;
 
-            Debug.Log("behavior rem " + settings.ToString() + " " + rem.ToString());
+//            Debug.Log("behavior rem " + settings.ToString() + " " + rem.ToString());
 
             m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
             NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);

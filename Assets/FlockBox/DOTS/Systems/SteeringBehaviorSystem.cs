@@ -28,7 +28,7 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnUpdate()
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
 
         protected JobHandle OnUpdate(JobHandle inputDeps)

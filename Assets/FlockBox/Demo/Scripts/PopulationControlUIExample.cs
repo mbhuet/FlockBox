@@ -24,10 +24,7 @@ namespace CloudFine.FlockBox{
 
         private void Start()
         {
-            for(int i=0; i<_initialPopulation; i++)
-            {
-                AddAgent();
-            }
+            AddAgent(_initialPopulation);
         }
 
         private void Update()
@@ -45,7 +42,7 @@ namespace CloudFine.FlockBox{
                 //check to see if the click was over UI
                 if ((!EventSystem.current.IsPointerOverGameObject()))
                 {
-                    RemoveAgent();
+                    RemoveAgent(1);
                 }
             }
         }
@@ -58,33 +55,41 @@ namespace CloudFine.FlockBox{
             }
         }
 
-        public void AddAgent()
+        public void AddAgent(int toAdd)
         {
-            Agent agent;
-            if (_cachedAgents.Count > 0)
+            for (int i = 0; i < toAdd; i++)
             {
-                agent = _cachedAgents[0];
-                _cachedAgents.RemoveAt(0);
+                Agent agent;
+                if (_cachedAgents.Count > 0)
+                {
+                    agent = _cachedAgents[0];
+                    _cachedAgents.RemoveAt(0);
+                }
+                else
+                {
+                    agent = GameObject.Instantiate<Agent>(_agent);
+                }
+                _spawnedAgents.Add(agent);
+                agent.Spawn(_flockBox);
+                RefreshPopulationCount();
             }
-            else
-            {
-                agent = GameObject.Instantiate<Agent>(_agent);
-            }
-            _spawnedAgents.Add(agent);
-            agent.Spawn(_flockBox);
-            RefreshPopulationCount();
         }
 
-        public void RemoveAgent()
+
+
+        public void RemoveAgent(int toRemove)
         {
-            if (_spawnedAgents.Count > 0)
+            for (int i = 0; i < toRemove; i++)
             {
-                Agent toDestroy = _spawnedAgents[0];
-                _spawnedAgents.RemoveAt(0);
-                //use kill to deactivate and cache the Agent instead of destroying
-                toDestroy.Kill();
-                _cachedAgents.Add(toDestroy);
-                RefreshPopulationCount();
+                if (_spawnedAgents.Count > 0)
+                {
+                    Agent toDestroy = _spawnedAgents[0];
+                    _spawnedAgents.RemoveAt(0);
+                    //use kill to deactivate and cache the Agent instead of destroying
+                    toDestroy.Kill();
+                    _cachedAgents.Add(toDestroy);
+                    RefreshPopulationCount();
+                }
             }
         }
 
