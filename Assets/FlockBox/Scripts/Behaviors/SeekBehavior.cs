@@ -21,7 +21,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    mine.DisengagePursuit(chosenTargetID);
+                    DisengagePursuit(mine, chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -33,7 +33,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    mine.DisengagePursuit(chosenTargetID);
+                    DisengagePursuit(mine, chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -42,14 +42,24 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                mine.DisengagePursuit(chosenTargetID);
-                mine.EngagePursuit(closestTarget);
+                DisengagePursuit(mine, chosenTargetID);
+                EngagePursuit(mine, closestTarget);
             }
 
             mine.AttemptCatch(closestTarget);
             Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
+        }
+
+        protected static void EngagePursuit(SteeringAgent mine, Agent target)
+        {
+            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, target.agentID);
+        }
+
+        protected static void DisengagePursuit(SteeringAgent mine, int targetID)
+        {
+            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
 
@@ -78,16 +88,6 @@ namespace CloudFine.FlockBox
         {
             if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName)) return false;
             return mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName) >= 0;
-        }
-
-        public static void EngagePursuit(this SteeringAgent mine, Agent target)
-        {
-            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, target.agentID);
-        }
-
-        public static void DisengagePursuit(this SteeringAgent mine, int targetID)
-        {
-            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
         public static void AttemptCatch(this SteeringAgent mine, Agent target)
