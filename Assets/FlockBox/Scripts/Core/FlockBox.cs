@@ -168,23 +168,7 @@ namespace CloudFine.FlockBox
             {
                 foreach (System.Tuple<Shape, Vector3> s in surroundings.perceptionShapes)
                 {
-                    switch (s.Item1.type)
-                    {
-                        case Shape.ShapeType.POINT:
-                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
-                            break;
-                        case Shape.ShapeType.SPHERE:
-                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
-                            break;
-                        case Shape.ShapeType.LINE:
-                            //TODO: assumes Line Perception will only be in direction of Velocity
-                            GetBucketsOverlappingLine(s.Item2, velocity.normalized * s.Item1.length, buckets);
-                            break;
-                        case Shape.ShapeType.CYLINDER:
-                            //TODO: assumes Cylinder Perception will only be in direction of Velocity
-                            GetBucketsOverlappingCylinder(s.Item2, velocity.normalized * s.Item1.length, s.Item1.radius, buckets);
-                            break;
-                    }
+                    GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
                 }
             }
 
@@ -296,12 +280,6 @@ namespace CloudFine.FlockBox
                     break;
                 case Shape.ShapeType.POINT:
                     buckets.Add ( GetBucketOverlappingPoint(agent.Position) );
-                    break;
-                case Shape.ShapeType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, buckets);
-                    break;
-                case Shape.ShapeType.CYLINDER:
-                    GetBucketsOverlappingCylinder(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
                     break;
                 default:
                     buckets.Add( GetBucketOverlappingPoint(agent.Position) );

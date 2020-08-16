@@ -35,14 +35,6 @@ namespace CloudFine.FlockBox
                 case Shape.ShapeType.SPHERE:
                     totalHeight += DrawProperty(property, propRect, "radius");
                     break;
-                case Shape.ShapeType.LINE:
-                    totalHeight += DrawProperty(property, propRect, "radius");
-                    totalHeight += DrawProperty(property, propRect, "length");
-                    break;
-                case Shape.ShapeType.CYLINDER:
-                    totalHeight += DrawProperty(property, propRect, "radius");
-                    totalHeight += DrawProperty(property, propRect, "length");
-                    break;
             }
             //EditorGUI.indentLevel = indent;
             totalHeight -= 2;

@@ -419,37 +419,14 @@ namespace CloudFine.FlockBox
         #region ShapeUtils
         public bool Overlaps(Agent other)
         {
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return other.OverlapsSphere(Position, shape.radius);
-                case Shape.ShapeType.SPHERE:
-                    return other.OverlapsSphere(Position, shape.radius);
-                case Shape.ShapeType.LINE:
-                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
-                case Shape.ShapeType.CYLINDER:
-                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
-                default:
-                    return other.OverlapsSphere(Position, shape.radius);
-            }
+            return other.OverlapsSphere(Position, shape.radius);
         }
 
         public bool OverlapsSphere(Vector3 center, float radius)
         {
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-                case Shape.ShapeType.SPHERE:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-                case Shape.ShapeType.LINE:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
-                case Shape.ShapeType.CYLINDER:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
-                default:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-            }
+            return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
         }
+
         public bool OverlapsLine(Vector3 start, Vector3 end, float thickness)
         {
             switch (shape.type)
@@ -458,10 +435,6 @@ namespace CloudFine.FlockBox
                     return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
                 case Shape.ShapeType.SPHERE:
                     return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
-                case Shape.ShapeType.LINE:
-                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
-                case Shape.ShapeType.CYLINDER:
-                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
                 default:
                     return false;
             }
@@ -476,19 +449,7 @@ namespace CloudFine.FlockBox
         public bool RaycastToShape(Ray ray, float rayRadius, float perceptionDistance, out RaycastHit hit)
         {
             hit = new RaycastHit();
-
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.LINE:
-                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.CYLINDER:
-                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.SPHERE:
-                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
-            }
-            return false;
+            return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
         }
 
         float mu1, mu2;
@@ -526,48 +487,15 @@ namespace CloudFine.FlockBox
 
         public void FindNormalToSteerAwayFromShape(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal)
         {
-            if (shape.type == Shape.ShapeType.POINT || shape.type == Shape.ShapeType.SPHERE)
+            //if inside the sphere, steer out
+            if (hit.distance == 0)
             {
-                //if inside the sphere, steer out
-                if (hit.distance == 0)
-                {
-                    normal = (ray.origin - Position).normalized;
-                    return;
-                }
-                // approaching the sphere, find perpendicular
-                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
-                normal = (p1 - Position).normalized;
+                normal = (ray.origin - Position).normalized;
+                return;
             }
-            else if (shape.type == Shape.ShapeType.LINE || shape.type == Shape.ShapeType.CYLINDER)
-            {
-                //inside of cylinder, steer out
-                if (hit.distance == 0)
-                {
-                    normal = hit.normal;
-                    return;
-                }
-                if(GeometryUtility.LinesIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, ref mu1, ref mu2)){
-                    p1 = ray.origin + ray.direction * mu1;
-                    p2 = Vector3.LerpUnclamped(LineStartPoint, LineEndPoint, mu2);
-                    //this is likely a 2d simulation, use hit normal
-                    if((p1-p2).sqrMagnitude < .01f)
-                    {
-                        normal = hit.normal;
-                        return;
-                    }
-                    else if (Vector3.Cross(hit.normal, Forward).sqrMagnitude < 1) //hit a cap in 3D, use hit normal
-                    {
-                        normal = hit.normal;
-                        return;
-                    }
-                    // approaching the cylinder from the side, find perpendicular
-                    normal  = (p1-p2).normalized;
-
-                    return;
-                }
-                normal = hit.normal;
-
-            }
+            // approaching the sphere, find perpendicular
+            GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
+            normal = (p1 - Position).normalized;
         }
 
 
