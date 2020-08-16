@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 0649
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Transforms;
@@ -6,65 +7,6 @@ using UnityEngine.Serialization;
 
 namespace CloudFine.FlockBox
 {
-    [System.Serializable]
-    public class SurroundingsContainer
-    {
-        public float perceptionRadius { get; private set; }
-        public float lookAheadSeconds { get; private set; }
-        public HashSet<string> globalSearchTags { get; private set; }
-        public HashSet<Agent> allAgents { get; private set; }
-        public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
-
-        public SurroundingsContainer()
-        {
-            globalSearchTags = new HashSet<string>();
-            allAgents = new HashSet<Agent>();
-            perceptionShapes = new List<System.Tuple<Shape, Vector3>>();
-        }
-
-        public void Clear()
-        {
-            perceptionRadius = 0;
-            lookAheadSeconds = 0;
-            allAgents.Clear();
-            perceptionShapes.Clear();
-            globalSearchTags.Clear();
-        }
-
-        public void SetMinPerceptionRadius(float radius)
-        {
-            perceptionRadius = Mathf.Max(radius, perceptionRadius);
-        }
-
-        public void SetMinLookAheadSeconds(float seconds)
-        {
-            lookAheadSeconds = Mathf.Max(lookAheadSeconds, seconds);
-        }
-
-        public void AddGlobalSearchTag(string tag)
-        {
-            globalSearchTags.Add(tag);
-        }
-
-        public void AddAgent(Agent a)
-        {
-            allAgents.Add(a);
-        }
-
-        public void AddAgents(HashSet<Agent> agents)
-        {
-            foreach(Agent a in agents)
-            {
-                AddAgent(a);
-            }
-        }
-
-        public void AddPerceptionShape(Shape shape, Vector3 position)
-        {
-            perceptionShapes.Add(new System.Tuple<Shape, Vector3>(shape,position));
-        }
-    }
-
     [System.Serializable]
     public class Agent : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -113,14 +55,6 @@ namespace CloudFine.FlockBox
         {
             get { return FlockBoxToWorldDirection(Forward); }
         }
-
-
-
-        [SerializeField][HideInInspector]
-        private float m_radius = 1f;
-        [HideInInspector][SerializeField]
-        private int neighborType;
-
 
         protected FlockBox myNeighborhood;
 
