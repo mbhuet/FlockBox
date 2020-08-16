@@ -17,9 +17,9 @@ namespace CloudFine.FlockBox
 
             if (allTargets.Count == 0)
             {
-                if (HasPursuitTarget(mine))
+                if (mine.HasPursuitTarget())
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.DisengagePursuit(chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -29,9 +29,9 @@ namespace CloudFine.FlockBox
 
             if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
             {
-                if (HasPursuitTarget(mine))
+                if (mine.HasPursuitTarget())
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.DisengagePursuit(chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -39,15 +39,15 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
+                mine.DisengagePursuit(chosenTargetID);
+                mine.EngagePursuit(closestTarget);
             }
 
             Vector3 distance = closestTarget.Position - mine.Position;
             float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
             Vector3 predictedInterceptPosition = closestTarget.Position + closestTarget.Velocity * est_timeToIntercept;
 
-            AttemptCatch(mine, closestTarget);
+            mine.AttemptCatch(closestTarget);
 
             mine.GetSeekVector(out steer, predictedInterceptPosition);
         }

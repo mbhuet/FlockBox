@@ -21,4 +21,14 @@ namespace CloudFine.FlockBox
             mine.GetSeekVector(out steer, mine.GetAgentProperty<Vector3>(seekPositionPropName));
         }
     }
+
+    public static class SeekPositionExtensions
+    {
+        public static void SetSeekPosition(this SteeringAgent agent, Vector3 position)
+        {
+            agent.SetAgentProperty<Vector3>(SeekPositionBehavior.seekPositionPropName, position);
+        }
+
+
+    }
 }

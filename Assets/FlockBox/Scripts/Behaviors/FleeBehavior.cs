@@ -26,7 +26,7 @@ namespace CloudFine.FlockBox
             if (count > 0)
             {
                 fleeMidpoint /= (count);
-                mine.GetSteerVector(out steer, (mine.Position-fleeMidpoint));
+                mine.GetSteerVector(out steer, (mine.Position - fleeMidpoint));
                 mine.SetAgentProperty(fleeAttributeName, true);
             }
             else
@@ -34,6 +34,14 @@ namespace CloudFine.FlockBox
                 mine.SetAgentProperty(fleeAttributeName, false);
                 steer = Vector3.zero;
             }
+        }
+    }
+
+    public static class FleeExtensions
+    {
+        public static bool IsFleeing(this SteeringAgent agent)
+        {
+            return agent.GetAgentProperty<bool>(FleeBehavior.fleeAttributeName);
         }
     }
 }

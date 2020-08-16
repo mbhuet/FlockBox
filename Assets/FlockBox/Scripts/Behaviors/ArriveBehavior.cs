@@ -25,7 +25,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.DisengagePursuit(chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -37,7 +37,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.DisengagePursuit(chosenTargetID);
                 }
                 steer = Vector3.zero;
                 return;
@@ -45,11 +45,11 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
+                mine.DisengagePursuit(chosenTargetID);
+                mine.EngagePursuit(closestTarget);
             }
 
-            AttemptCatch(mine, closestTarget);
+            mine.AttemptCatch(closestTarget);
             Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, stoppingDistance);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);

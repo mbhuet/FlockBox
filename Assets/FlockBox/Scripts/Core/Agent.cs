@@ -182,15 +182,6 @@ namespace CloudFine.FlockBox
         {
             return agentProperties.ContainsKey(name);
         }
-
-        [System.Obsolete("Use GetAgentProperty<T>() instead.")]
-        public object GetAttribute(string name) { return GetAgentProperty<object>(name); }
-        [System.Obsolete("Use SetAgentProperty<T>() instead.")]
-        public void SetAttribute(string name, object value) { SetAgentProperty(name, value); }
-        [System.Obsolete("Use RemoveAgentProperty() instead.")]
-        public void RemoveAttribute(string name, object value) { RemoveAgentProperty(name); }
-        [System.Obsolete("Use HasAgentProperty() instead.")]
-        public bool HasAttribute(string name) { return HasAgentProperty(name); }
     
     #endregion
 
