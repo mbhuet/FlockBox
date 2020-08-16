@@ -5,11 +5,6 @@ using Unity.Entities;
 using UnityEngine;
 using CloudFine.FlockBox.DOTS;
 
-//Should not be a static class because I want to be able to define boundaries without editing the script
-//Class will manage itself if there are no instances by creating an instance
-//
-
-
 namespace CloudFine.FlockBox
 {
     public class FlockBox : MonoBehaviour
