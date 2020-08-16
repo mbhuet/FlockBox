@@ -115,16 +115,6 @@ namespace CloudFine.FlockBox
         }
 
 
-        private Vector3 LineStartPoint
-        {
-            get { return Position; }
-        }
-        private Vector3 LineEndPoint
-        {
-            get { return Position + Forward * shape.length; }
-        }
-
-
 
         [SerializeField][HideInInspector]
         private float m_radius = 1f;
@@ -472,9 +462,9 @@ namespace CloudFine.FlockBox
             return false;
         }
 
-        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
+        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, Vector3 lineStart, Vector3 lineEnd, ref RaycastHit hit)
         {
-            if (GeometryUtility.RayCylinderIntersection(ray, LineStartPoint, LineEndPoint, shape.radius + rayRadius, ref t, ref norm))
+            if (GeometryUtility.RayCylinderIntersection(ray, lineStart, lineEnd, shape.radius + rayRadius, ref t, ref norm))
             {
                 hit.normal = norm;
                 hit.point = ray.GetPoint(t);

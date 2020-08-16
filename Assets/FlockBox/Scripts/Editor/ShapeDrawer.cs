@@ -20,7 +20,6 @@ namespace CloudFine.FlockBox
 
             var shapeProperty = property.FindPropertyRelative("type");
             var radiusProperty = property.FindPropertyRelative("radius");
-            var lengthProperty = property.FindPropertyRelative("length");
 
             totalHeight = 0;
             propRect = new Rect(position.x, position.y+ totalHeight, position.width, EditorGUIUtility.singleLineHeight);
