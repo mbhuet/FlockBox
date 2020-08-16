@@ -223,8 +223,6 @@ namespace CloudFine.FlockBox
                     Debug.LogWarning("Agent " + this.name + " is not a child of a FlockBox object.", this);
                 }
             }
-
-            MigrateData();
         }
 
         protected virtual void OnDestroy()
@@ -232,26 +230,6 @@ namespace CloudFine.FlockBox
             if (hasSpawned || isAlive) Kill();
         }
 
-        private void OnValidate()
-        {
-            MigrateData();
-        }
-
-        private void MigrateData()
-        {
-            if (shape == null) return;
-            //MIGRATION
-            if (m_radius != 0)
-            {
-                shape.radius = m_radius;
-                m_radius = 0;
-            }
-            if (neighborType != 0 && shape.type == 0)
-            {
-                shape.type = (Shape.ShapeType)neighborType;
-                neighborType = 0;
-            }
-        }
 
         protected void RegisterNewAgent()
         {
