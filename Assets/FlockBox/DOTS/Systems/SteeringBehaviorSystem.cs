@@ -1,4 +1,5 @@
 ﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
@@ -8,40 +9,105 @@ namespace CloudFine.FlockBox.DOTS
     [UpdateInGroup(typeof(SteeringSystemGroup))]
     public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData
     {
-        [BurstCompile]
-        protected struct SteeringJob : IJobForEach_BCCCCC<NeighborData, AgentData, Acceleration, SteeringData, BoundaryData, T>
+        private EntityQuery perceptionQuery;
+        private EntityQuery steeringQuery;
+
+        protected override void OnCreate()
         {
-            public void Execute(DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref Acceleration accel, ref SteeringData steering, ref BoundaryData boundary, ref T behavior)
+            steeringQuery = GetEntityQuery(new EntityQueryDesc()
             {
-                accel.Value += behavior.GetSteering(ref agent, ref steering, ref boundary, neighbors);
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadWrite<Acceleration>(),
+                    ComponentType.ReadOnly<NeighborData>(),
+                    ComponentType.ReadOnly<AgentData>(),
+                    ComponentType.ReadOnly<SteeringData>(),
+                    ComponentType.ReadOnly<BoundaryData>(),
+                    ComponentType.ReadOnly<T>(),
+                }
+            });
+
+            perceptionQuery = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadWrite<PerceptionData>(),
+                    ComponentType.ReadOnly<AgentData>(),
+                    ComponentType.ReadOnly<T>(),
+                }
+            });
+        }
+
+
+        [BurstCompile]
+        protected struct SteeringJob : IJobChunk
+        {
+            public ArchetypeChunkComponentType<Acceleration> AccelerationDataType;
+            [ReadOnly] public ArchetypeChunkBufferType<NeighborData> NeighborDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<AgentData> AgentDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<SteeringData> SteeringDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<BoundaryData> BoundaryDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<T> BehaviorDataType;
+
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                var accelerations = chunk.GetNativeArray(AccelerationDataType);
+                var agents = chunk.GetNativeArray(AgentDataType);
+                var behaviors = chunk.GetNativeArray(BehaviorDataType);
+                var boundaries = chunk.GetNativeArray(BoundaryDataType);
+                var steerings = chunk.GetNativeArray(SteeringDataType);
+                var neighborhood = chunk.GetBufferAccessor(NeighborDataType);
+
+                for (var i = 0; i < chunk.Count; i++)
+                {
+                    var acceleration = accelerations[i];
+                    var agent = agents[i];
+                    var behavior = behaviors[i];
+                    var boundary = boundaries[i];
+                    var steering = steerings[i];
+                    var neighbors = neighborhood[i];
+
+                    acceleration.Value += behavior.GetSteering(ref agent, ref steering, ref boundary, neighbors);
+                }
             }
         }
 
         [BurstCompile]
-        protected struct PerceptionJob : IJobForEach<PerceptionData, AgentData, T>
+        protected struct PerceptionJob : IJobChunk
         {
-            public void Execute(ref PerceptionData perception, ref AgentData agent, ref T behavior)
+            public ArchetypeChunkComponentType<PerceptionData> PerceptionDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<AgentData> AgentDataType;
+            [ReadOnly] public ArchetypeChunkComponentType<T> BehaviorDataType;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                behavior.AddPerceptionRequirements(ref agent, ref perception);
+                var perceptions = chunk.GetNativeArray(PerceptionDataType);
+                var agents = chunk.GetNativeArray(AgentDataType);
+                var behaviors = chunk.GetNativeArray(BehaviorDataType);
+
+                for (var i = 0; i < chunk.Count; i++)
+                {
+                    var perception = perceptions[i];
+                    var agent = agents[i];
+                    var behavior = behaviors[i];
+
+                    behavior.AddPerceptionRequirements(ref agent, ref perception);
+                }
             }
         }
 
         protected override void OnUpdate()
         {
-            //throw new System.NotImplementedException();
-        }
-
-        protected JobHandle OnUpdate(JobHandle inputDeps)
-        {
             PerceptionJob perceptJob = new PerceptionJob
             {
             };
-            inputDeps = perceptJob.Schedule(this, inputDeps);
+            var perceptJobHandle = perceptJob.Schedule(perceptionQuery);
 
             SteeringJob job = new SteeringJob
             {
             };
-            return job.Schedule(this, inputDeps);
+            var steeringJobHandle = job.Schedule(steeringQuery);
         }
     }
 }
