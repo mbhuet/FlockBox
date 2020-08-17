@@ -101,13 +101,22 @@ namespace CloudFine.FlockBox.DOTS
         {
             PerceptionJob perceptJob = new PerceptionJob
             {
+                PerceptionDataType = GetArchetypeChunkComponentType<PerceptionData>(false),
+                BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
+                AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
             };
-            var perceptJobHandle = perceptJob.Schedule(perceptionQuery);
+            Dependency = perceptJob.Schedule(perceptionQuery, Dependency);
 
             SteeringJob job = new SteeringJob
             {
+                AccelerationDataType = GetArchetypeChunkComponentType<Acceleration>(false),
+                NeighborDataType = GetArchetypeChunkBufferType<NeighborData>(true),
+                AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
+                SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
+                BoundaryDataType = GetArchetypeChunkComponentType<BoundaryData>(true),
+                BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
             };
-            var steeringJobHandle = job.Schedule(steeringQuery);
+            Dependency = job.Schedule(steeringQuery, Dependency);
         }
     }
 }
