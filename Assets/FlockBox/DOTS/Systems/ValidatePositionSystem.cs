@@ -23,6 +23,7 @@ namespace CloudFine.FlockBox.DOTS
             })
             .ScheduleParallel(Dependency);
 
+            Dependency = validationJob;
         }
     }
 }

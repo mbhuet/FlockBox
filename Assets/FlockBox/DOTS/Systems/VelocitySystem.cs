@@ -11,12 +11,13 @@ namespace CloudFine.FlockBox.DOTS
         protected override void OnUpdate()
         {
             float dt = Time.DeltaTime;
-            var rotJob = Entities.ForEach((ref AgentData agent) =>
+            var velocityJob = Entities.ForEach((ref AgentData agent) =>
             {
                 agent.Position += agent.Velocity * dt;
             })
             .ScheduleParallel(Dependency);
 
+            Dependency = velocityJob;
         }
     }
 }
