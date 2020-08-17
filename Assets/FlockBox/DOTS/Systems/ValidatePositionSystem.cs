@@ -12,23 +12,17 @@ namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
     [UpdateAfter(typeof(VelocitySystem))]
-    public class ValidatePositionSystem : JobComponentSystem
+    public class ValidatePositionSystem : SystemBase
     {
-        [BurstCompile]
-        struct ValidatePositionJob : IJobForEach<Translation, AgentData, BoundaryData>
+        protected override void OnUpdate()
         {
-            public void Execute(ref Translation c0, ref AgentData c1, ref BoundaryData c2)
+            var validationJob = Entities.ForEach((ref AgentData agent, ref Translation translation, ref BoundaryData boundary) =>
             {
-                c2.ValidatePosition(ref c1.Position);
-                c0.Value = c1.Position;
-            }
-        }
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
-        {
-            ValidatePositionJob job = new ValidatePositionJob
-            {
-            };
-            return job.Schedule(this, inputDeps);
+                boundary.ValidatePosition(ref agent.Position);
+                translation.Value = agent.Position;
+            })
+            .ScheduleParallel(Dependency);
+
         }
     }
 }

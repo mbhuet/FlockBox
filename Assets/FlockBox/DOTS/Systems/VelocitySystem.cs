@@ -11,7 +11,7 @@ namespace CloudFine.FlockBox.DOTS
         protected override void OnUpdate()
         {
             float dt = Time.DeltaTime;
-            var velocityJob = Entities.ForEach((ref AgentData agent) =>
+            var rotJob = Entities.ForEach((ref AgentData agent) =>
             {
                 agent.Position += agent.Velocity * dt;
             })

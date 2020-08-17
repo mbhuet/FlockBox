@@ -9,29 +9,21 @@ namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
     [UpdateAfter(typeof(AccelerationSystem))]
-    public class RotationSystem : JobComponentSystem
+    public class RotationSystem : SystemBase
     {
-        [BurstCompile]
-        struct RotationJob : IJobForEach<Rotation, AgentData>
+        protected override void OnUpdate()
         {
-            public float dt;
-
-            public void Execute(ref Rotation c0, ref AgentData c1)
+            float dt = Time.DeltaTime;
+            var rotationJob = Entities.ForEach((ref AgentData agent, ref Rotation rot) =>
             {
-                if (!math.all(c1.Velocity == float3.zero))
+                if (!math.all(agent.Velocity == float3.zero))
                 {
-                    c0.Value = quaternion.LookRotationSafe(c1.Velocity, new float3(0, 1, 0));
-                    c1.Forward = math.normalize(c1.Velocity);
+                    rot.Value = quaternion.LookRotationSafe(agent.Velocity, new float3(0, 1, 0));
+                    agent.Forward = math.normalize(agent.Velocity);
                 }
-            }
-        }
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
-        {
-            RotationJob job = new RotationJob
-            {
-                dt = Time.DeltaTime
-            };
-            return job.Schedule(this, inputDeps);
+            })
+            .ScheduleParallel(Dependency);
+
         }
     }
 }
