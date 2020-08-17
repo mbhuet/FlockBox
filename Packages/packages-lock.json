@@ -20,7 +20,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.dots.editor": {
-      "version": "0.8.0-preview.1",
+      "version": "0.8.2-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -175,7 +175,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.14",
+      "version": "1.1.16",
       "depth": 2,
       "source": "registry",
       "dependencies": {

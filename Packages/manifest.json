@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.dots.editor": "0.8.0-preview.1",
+    "com.unity.dots.editor": "0.8.2-preview",
     "com.unity.entities": "0.11.1-preview.4",
     "com.unity.ide.vscode": "1.2.1",
     "com.unity.postprocessing": "2.3.0",
