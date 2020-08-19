@@ -15,6 +15,60 @@ namespace CloudFine.FlockBox.DOTS
         protected EntityQuery flockQuery;
         private List<FlockData> flocks;
 
+        protected override void OnCreate()
+        {
+            flockQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new[] { ComponentType.ReadOnly<FlockData>() },
+            });
+
+        }
+
+
+        protected override void OnUpdate()
+        {
+            EntityManager.GetAllUniqueSharedComponentData(flocks);
+
+            // Each variant of the Boid represents a different value of the SharedComponentData and is self-contained,
+            // meaning Boids of the same variant only interact with one another. Thus, this loop processes each
+            // variant type individually.
+            for (int flockIndex = 0; flockIndex < flocks.Count; flockIndex++)
+            {
+                var settings = flocks[flockIndex];
+                flockQuery.AddSharedComponentFilter(settings);
+
+                var boidCount = flockQuery.CalculateEntityCount();
+
+                if (boidCount == 0)
+                {
+                    // Early out. If the given variant includes no Boids, move on to the next loop.
+                    // For example, variant 0 will always exit early bc it's it represents a default, uninitialized
+                    // Boid struct, which does not appear in this sample.
+                    flockQuery.ResetFilter();
+                    continue;
+                }
+
+                // DO THINGS HERE
+
+
+
+
+
+
+                // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
+                // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without
+                // the add dependency call here, the safety system will throw an error, because we're accessing multiple
+                // pieces of boid data and it would think there could possibly be a race condition.
+
+                flockQuery.AddDependency(Dependency);
+                flockQuery.ResetFilter();
+            }
+            flocks.Clear();
+        
+        }
+
+
+
         [BurstCompile]
         struct NeighborPerceptionJob : IJobForEach_BCC<NeighborData, PerceptionData, AgentData>
         {
@@ -54,18 +108,8 @@ namespace CloudFine.FlockBox.DOTS
 
         }
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-            flockQuery = GetEntityQuery(typeof(FlockData));
 
-        }
 
-        protected override void OnUpdate()
-        {
-            return;
-            //throw new System.NotImplementedException();
-        }
 
         protected JobHandle OnUpdate(JobHandle inputDeps)
         {
