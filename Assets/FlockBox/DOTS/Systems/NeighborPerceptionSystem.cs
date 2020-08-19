@@ -20,7 +20,7 @@ namespace CloudFine.FlockBox.DOTS
             flocks = new List<FlockData>();
             flockQuery = GetEntityQuery(new EntityQueryDesc
             {
-                All = new[] { ComponentType.ReadOnly<FlockData>() },
+                All = new[] { ComponentType.ReadOnly<FlockData>(), ComponentType.ReadWrite<AgentData>()},
             });
 
         }
@@ -50,20 +50,50 @@ namespace CloudFine.FlockBox.DOTS
                 }
 
                 FlockBox flockData = settings.Flock;
-                float cellSize = settings.Flock.CellSize;
-                Vector3 dimensions = settings.Flock.WorldDimensions;
 
-                NativeMultiHashMap<int, NativeArray<AgentData>> cells = new NativeMultiHashMap<int, NativeArray<AgentData>>(flockData.TotalCells, Allocator.TempJob);
+
+                NativeArray<AgentData> map = flockQuery.ToComponentDataArray<AgentData>(Allocator.TempJob);
+
+
+                var fillJobHandle = Entities
+                    .WithSharedComponentFilter(settings)
+                    .WithReadOnly(map)
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref PerceptionData perception) =>
+                    {
+                        
+                        neighbors.Clear();
+
+                        for (int i=0; i< map.Length; i++)
+                        {
+                            if (math.length(map[i].Position - agent.Position) < 10)// perception.perceptionRadius)
+                            {
+                                neighbors.Add(map[i]);
+                            }
+                        }
+
+                        perception.Clear();
+                        
+                    })
+                    .ScheduleParallel(Dependency);
+
+                Dependency = fillJobHandle;
+                map.Dispose(Dependency);
+
+                //NativeMultiHashMap<int, NativeArray<AgentData>> cells = new NativeMultiHashMap<int, NativeArray<AgentData>>(flockData.TotalCells, Allocator.TempJob);
 
                 // DO THINGS HERE
 
                 //hash job
                 //each agent gets one index in the map
                 //agent's occupying cells (hashed) are added to map at that index
-                
+
                 //merge job
                 //map is read in, read only
                 //new map is created, one index per cell
+
+                //steer job
+                //merged map is read in, read only
+                //cell within perception are added to neighbor buffer
 
                 /*
                 var initialCellAlignmentJobHandle = Entities
@@ -73,7 +103,7 @@ namespace CloudFine.FlockBox.DOTS
                         //cellAlignment[entityInQueryIndex] = localToWorld.Forward;
                     })
                     .ScheduleParallel(Dependency);
-*/              
+*/
 
                 // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
                 // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without

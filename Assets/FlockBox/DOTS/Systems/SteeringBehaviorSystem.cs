@@ -101,7 +101,9 @@ namespace CloudFine.FlockBox.DOTS
         {
             PerceptionJob perceptJob = new PerceptionJob
             {
+                //write
                 PerceptionDataType = GetArchetypeChunkComponentType<PerceptionData>(false),
+                //read
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
             };
@@ -109,7 +111,9 @@ namespace CloudFine.FlockBox.DOTS
 
             SteeringJob job = new SteeringJob
             {
+                //write
                 AccelerationDataType = GetArchetypeChunkComponentType<Acceleration>(false),
+                //read
                 NeighborDataType = GetArchetypeChunkBufferType<NeighborData>(true),
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
                 SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
