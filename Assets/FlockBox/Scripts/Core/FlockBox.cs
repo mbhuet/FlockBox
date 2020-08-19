@@ -4,6 +4,8 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using CloudFine.FlockBox.DOTS;
+using Unity.Transforms;
+using UnityEngine.Jobs;
 
 namespace CloudFine.FlockBox
 {
@@ -71,7 +73,6 @@ namespace CloudFine.FlockBox
         void Start()
         {
             
-            manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             foreach (AgentPopulation pop in startingPopulations)
             {
@@ -79,6 +80,22 @@ namespace CloudFine.FlockBox
 
                 if (useDOTS)
                 {
+                    manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+                    //
+                    // Set up root entity that will follow FlockBox GameObject
+                    //
+                    Entity root = manager.CreateEntity(new ComponentType[]{
+                        typeof(LocalToWorld),
+                    });
+
+                    manager.AddComponentObject(root, this.transform);
+                    manager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject {});
+                    
+
+                    //
+                    //Create entity template for agents with Conversion System
+                    //
                     GameObjectConversionSettings settings = new GameObjectConversionSettings()
                     {
                         DestinationWorld = World.DefaultGameObjectInjectionWorld
@@ -87,6 +104,7 @@ namespace CloudFine.FlockBox
                     NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);
                     manager.Instantiate(agentEntityPrefab, agents);
 
+
                     for (int i = 0; i < pop.population; i++)
                     {
                         Entity entity = agents[i];
@@ -94,6 +112,10 @@ namespace CloudFine.FlockBox
                         data.Position = RandomPosition();
                         data.Velocity = UnityEngine.Random.insideUnitSphere;
                         manager.SetComponentData(entity, data);
+
+                        //parent the agent to the flockbox root
+                        manager.AddComponentData<Parent>(entity, new Parent { Value = root });
+                        manager.AddComponentData<LocalToParent>(entity, new LocalToParent());
 
                         manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
                         manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges});

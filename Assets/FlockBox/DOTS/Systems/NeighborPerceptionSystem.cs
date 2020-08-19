@@ -17,6 +17,7 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnCreate()
         {
+            flocks = new List<FlockData>();
             flockQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new[] { ComponentType.ReadOnly<FlockData>() },
@@ -50,10 +51,15 @@ namespace CloudFine.FlockBox.DOTS
 
                 // DO THINGS HERE
 
-
-
-
-
+                /*
+                var initialCellAlignmentJobHandle = Entities
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((int entityInQueryIndex, in LocalToWorld localToWorld) =>
+                    {
+                        //cellAlignment[entityInQueryIndex] = localToWorld.Forward;
+                    })
+                    .ScheduleParallel(Dependency);
+*/  
 
                 // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
                 // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without
