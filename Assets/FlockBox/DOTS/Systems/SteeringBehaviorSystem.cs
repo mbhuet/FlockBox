@@ -69,6 +69,8 @@ namespace CloudFine.FlockBox.DOTS
                     var neighbors = neighborhood[i];
 
                     acceleration.Value += behavior.GetSteering(ref agent, ref steering, ref boundary, neighbors);
+
+                    accelerations[i] = acceleration;
                 }
             }
         }
@@ -90,9 +92,10 @@ namespace CloudFine.FlockBox.DOTS
                 {
                     var perception = perceptions[i];
                     var agent = agents[i];
-                    var behavior = behaviors[i];
+                    
+                    behaviors[i].AddPerceptionRequirements(ref agent, ref perception);
 
-                    behavior.AddPerceptionRequirements(ref agent, ref perception);
+                    perceptions[i] = perception;
                 }
             }
         }
