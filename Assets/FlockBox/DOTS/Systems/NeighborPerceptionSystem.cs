@@ -5,7 +5,7 @@ using Unity.Jobs;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
-
+using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -49,7 +49,21 @@ namespace CloudFine.FlockBox.DOTS
                     continue;
                 }
 
+                FlockBox flockData = settings.Flock;
+                float cellSize = settings.Flock.CellSize;
+                Vector3 dimensions = settings.Flock.WorldDimensions;
+
+                NativeMultiHashMap<int, NativeArray<AgentData>> cells = new NativeMultiHashMap<int, NativeArray<AgentData>>(flockData.TotalCells, Allocator.TempJob);
+
                 // DO THINGS HERE
+
+                //hash job
+                //each agent gets one index in the map
+                //agent's occupying cells (hashed) are added to map at that index
+                
+                //merge job
+                //map is read in, read only
+                //new map is created, one index per cell
 
                 /*
                 var initialCellAlignmentJobHandle = Entities
@@ -59,7 +73,7 @@ namespace CloudFine.FlockBox.DOTS
                         //cellAlignment[entityInQueryIndex] = localToWorld.Forward;
                     })
                     .ScheduleParallel(Dependency);
-*/  
+*/              
 
                 // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
                 // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without

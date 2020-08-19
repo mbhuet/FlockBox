@@ -39,6 +39,10 @@ namespace CloudFine.FlockBox
         {
             get { return cellSize; }
         }
+        public int TotalCells
+        {
+            get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
+        }
 
         public bool wrapEdges = false;
         public float boundaryBuffer = 10;
@@ -570,6 +574,8 @@ namespace CloudFine.FlockBox
         {
             return new Vector3Int(ToCellFloor(position.x), ToCellFloor(position.y), ToCellFloor(position.z));
         }
+
+
 
         private int CellPositionToHash(int x, int y, int z)
         {
