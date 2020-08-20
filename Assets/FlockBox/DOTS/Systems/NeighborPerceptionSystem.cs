@@ -20,9 +20,35 @@ namespace CloudFine.FlockBox.DOTS
             flocks = new List<FlockData>();
             flockQuery = GetEntityQuery(new EntityQueryDesc
             {
-                All = new[] { ComponentType.ReadOnly<FlockData>(), ComponentType.ReadWrite<AgentData>()},
+                All = new[] { ComponentType.ReadOnly<FlockData>(), ComponentType.ReadWrite<AgentData>() },
             });
 
+        }
+
+        public static int[] GetOccupyingCells(float3 Position, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z)
+        {
+            //TODO check Point vs Sphere shape
+            return new int[] { WorldPositionToHash(Position.x, Position.y, Position.z, cellSize, dimensions_x, dimensions_y, dimensions_z) };
+        }
+
+        public static int[] GetPercievedCells(float3 Position, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z, ref PerceptionData perception)
+        {
+            return new int[] { WorldPositionToHash(Position.x, Position.y, Position.z, cellSize, dimensions_x, dimensions_y, dimensions_z) };
+        }
+
+        private static int CellPositionToHash(int x, int y, int z, int dimensions_x, int dimensions_y, int demensions_z)
+        {
+            if (x < 0 || y < 0 || z < 0) return -1;
+
+            return (
+                 x
+               + y * (dimensions_x + 1) // +1 in case dimension is 0, will still produce unique hash
+               + z * (dimensions_x + 1) * (dimensions_y + 1));
+        }
+
+        private static int WorldPositionToHash(float x, float y, float z, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z)
+        {
+            return CellPositionToHash((int)(x / cellSize), (int)(y / cellSize), (int)(z / cellSize), dimensions_x, dimensions_y, dimensions_z);
         }
 
 
@@ -38,9 +64,9 @@ namespace CloudFine.FlockBox.DOTS
                 var settings = flocks[flockIndex];
                 flockQuery.AddSharedComponentFilter(settings);
 
-                var boidCount = flockQuery.CalculateEntityCount();
+                var agentCount = flockQuery.CalculateEntityCount();
 
-                if (boidCount == 0)
+                if (agentCount == 0)
                 {
                     // Early out. If the given variant includes no Boids, move on to the next loop.
                     // For example, variant 0 will always exit early bc it's it represents a default, uninitialized
@@ -49,11 +75,77 @@ namespace CloudFine.FlockBox.DOTS
                     continue;
                 }
 
-                FlockBox flockData = settings.Flock;
+                FlockBox flockBox = settings.Flock;
+                float cellSize = flockBox.CellSize;
+                int dimensions_x = flockBox.DimensionX;
+                int dimensions_y = flockBox.DimensionY;
+                int dimensions_z = flockBox.DimensionZ;
 
+                var hashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
+
+
+                var parallelHashMap = hashMap.AsParallelWriter();
+                var hashPositionsJobHandle = Entities
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((in AgentData agent) =>
+                    {
+                        var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
+
+
+                        var cells = new NativeList<int>(Allocator.Temp);
+                        cells.Add(hash);
+                        
+                        for (int i = 0; i < cells.Length; i++)
+                        {
+                            parallelHashMap.Add(cells[i], agent);
+                        }
+                    })
+                    .ScheduleParallel(Dependency);
+
+                Dependency = hashPositionsJobHandle;
+
+
+                var fillJobHandle = Entities
+                    .WithSharedComponentFilter(settings)
+                    .WithReadOnly(hashMap)
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref PerceptionData perception) =>
+                    {
+
+                        neighbors.Clear();
+                        var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
+
+                        var cells = new NativeList<int>(Allocator.Temp);
+                        cells.Add(hash);
+                        
+                        AgentData value;
+
+                        for (int i = 0; i < cells.Length; i++)
+                        {
+                            if (hashMap.TryGetFirstValue(cells[i], out value, out var iterator))
+                            {
+                                do
+                                {
+                                    neighbors.Add(value);
+
+                                } while (hashMap.TryGetNextValue(out value, ref iterator));
+                            }
+                        }
+                        perception.Clear();
+
+                    })
+                    .ScheduleParallel(Dependency);
+
+
+                Dependency = fillJobHandle;
+
+
+
+                var disposeJobHandle = hashMap.Dispose(Dependency);
+
+
+                /*
 
                 NativeArray<AgentData> map = flockQuery.ToComponentDataArray<AgentData>(Allocator.TempJob);
-
 
                 var fillJobHandle = Entities
                     .WithSharedComponentFilter(settings)
@@ -78,6 +170,7 @@ namespace CloudFine.FlockBox.DOTS
 
                 Dependency = fillJobHandle;
                 map.Dispose(Dependency);
+                */
 
                 //NativeMultiHashMap<int, NativeArray<AgentData>> cells = new NativeMultiHashMap<int, NativeArray<AgentData>>(flockData.TotalCells, Allocator.TempJob);
 

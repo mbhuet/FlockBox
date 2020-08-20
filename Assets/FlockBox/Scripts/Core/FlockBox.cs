@@ -35,6 +35,18 @@ namespace CloudFine.FlockBox
         {
             get { return _worldDimensions; } private set { _worldDimensions = value; }
         }
+        public int DimensionX
+        {
+            get { return dimensions_x; }
+        }
+        public int DimensionY
+        {
+            get { return dimensions_y; }
+        }
+        public int DimensionZ
+        {
+            get { return dimensions_z; }
+        }
         public float CellSize
         {
             get { return cellSize; }
