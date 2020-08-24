@@ -153,7 +153,8 @@ namespace CloudFine.FlockBox.DOTS
 
                 Dependency = findNeighborsJobHandle;
 
-                var disposeJobHandle = spatialHashMap.Dispose(Dependency);
+                Dependency = spatialHashMap.Dispose(Dependency);
+                Dependency = tagHashMap.Dispose(Dependency);
 
                 // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
                 // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without
