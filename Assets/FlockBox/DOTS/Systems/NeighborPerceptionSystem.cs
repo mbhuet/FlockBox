@@ -54,6 +54,7 @@ namespace CloudFine.FlockBox.DOTS
                 int dimensions_x = flockBox.DimensionX;
                 int dimensions_y = flockBox.DimensionY;
                 int dimensions_z = flockBox.DimensionZ;
+                int cellCap = flockBox.CellCapacity;
 
                 var spatialHashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
                 var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
@@ -133,17 +134,18 @@ namespace CloudFine.FlockBox.DOTS
 
                         var cells = new NativeList<int>(Allocator.Temp);
                         cells.Add(hash);
-                        
 
+                        int capBreak = 0;
                         for (int i = 0; i < cells.Length; i++)
                         {
+                            capBreak = 0;
                             if (spatialHashMap.TryGetFirstValue(cells[i], out neighbor, out var iterator))
                             {
                                 do
                                 {
                                     neighbors.Add(neighbor);
-
-                                } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                    capBreak++;
+                                } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator) && capBreak<cellCap);
                             }
                         }
                         perception.Clear();

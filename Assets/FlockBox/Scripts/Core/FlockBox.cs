@@ -56,6 +56,14 @@ namespace CloudFine.FlockBox
             get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
         }
 
+        public int CellCapacity
+        {
+            get
+            {
+                if (!capCellCapacity) return int.MaxValue;
+                return maxCellCapacity;
+            }
+        }
         public bool wrapEdges = false;
         public float boundaryBuffer = 10;
         public float sleepChance;
