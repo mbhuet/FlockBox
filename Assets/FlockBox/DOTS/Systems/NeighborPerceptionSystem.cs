@@ -55,34 +55,38 @@ namespace CloudFine.FlockBox.DOTS
                 int dimensions_y = flockBox.DimensionY;
                 int dimensions_z = flockBox.DimensionZ;
 
-                var hashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
+                var spatialHashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
+                var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
 
-                var parallelHashMap = hashMap.AsParallelWriter();
+                var parallelSpatialHashMap = spatialHashMap.AsParallelWriter();
+                var parallelTagHashMap = tagHashMap.AsParallelWriter();
+
                 var hashPositionsJobHandle = Entities
                     .WithSharedComponentFilter(settings)
                     .ForEach((in AgentData agent) =>
                     {
-
+                        //keep track of all agents by tag
+                        parallelTagHashMap.Add(agent.Tag, agent);
 
                         if (agent.Fill)
                         {
-                            int neighborhoodRadius = 1 + (int)((agent.Radius - .01f) / cellSize);
-                            var center = new int3(math.floor(agent.Position / cellSize));
+                            int cellRange = 1 + (int)((agent.Radius - .01f) / cellSize);
+                            var centerCell = new int3(math.floor(agent.Position / cellSize));
 
-                            for (int x = center.x - neighborhoodRadius; x <= center.x + neighborhoodRadius; x++)
+                            for (int x = centerCell.x - cellRange; x <= centerCell.x + cellRange; x++)
                             {
-                                for (int y = center.y - neighborhoodRadius; y <= center.y + neighborhoodRadius; y++)
+                                for (int y = centerCell.y - cellRange; y <= centerCell.y + cellRange; y++)
                                 {
-                                    for (int z = center.z - neighborhoodRadius; z <= center.z + neighborhoodRadius; z++)
+                                    for (int z = centerCell.z - cellRange; z <= centerCell.z + cellRange; z++)
                                     {
-                                        if (x < 0 || x > dimensions_x
+                                        if (       x < 0 || x > dimensions_x
                                                 || y < 0 || y > dimensions_y
                                                 || z < 0 || z > dimensions_z)
                                         {
                                             continue;
                                         }
-                                        parallelHashMap.Add((int)math.hash(new int3(x,y,z)), agent);
+                                        parallelSpatialHashMap.Add((int)math.hash(new int3(x,y,z)), agent);
 
                                     }
                                 }
@@ -90,7 +94,7 @@ namespace CloudFine.FlockBox.DOTS
                         }
                         else
                         {
-                            parallelHashMap.Add((int)math.hash(new int3(math.floor(agent.Position / cellSize))), agent);
+                            parallelSpatialHashMap.Add((int)math.hash(new int3(math.floor(agent.Position / cellSize))), agent);
                         }                        
                     })
                     .ScheduleParallel(Dependency);
@@ -98,29 +102,48 @@ namespace CloudFine.FlockBox.DOTS
                 Dependency = hashPositionsJobHandle;
 
 
-                var fillJobHandle = Entities
+                var findNeighborsJobHandle = Entities
                     .WithSharedComponentFilter(settings)
-                    .WithReadOnly(hashMap)
+                    .WithReadOnly(spatialHashMap)
+                    .WithReadOnly(tagHashMap)
                     .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref PerceptionData perception) =>
                     {
-
+                        AgentData neighbor;
                         neighbors.Clear();
+
+                        //Check for global search tags
+                        int mask = perception.globalSearchTagMask;
+                        for (byte tag = 0; tag<sizeof(int); tag++)
+                        {
+                            if ((1 << tag & mask) != 0)
+                            {
+                                if (tagHashMap.TryGetFirstValue(tag, out neighbor, out var iterator))
+                                {
+                                    do
+                                    {
+                                        neighbors.Add(neighbor);
+                                    } while (tagHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                }
+                            }
+                        }
+
+
+                        //check cells in perception range
                         var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
 
                         var cells = new NativeList<int>(Allocator.Temp);
                         cells.Add(hash);
                         
-                        AgentData value;
 
                         for (int i = 0; i < cells.Length; i++)
                         {
-                            if (hashMap.TryGetFirstValue(cells[i], out value, out var iterator))
+                            if (spatialHashMap.TryGetFirstValue(cells[i], out neighbor, out var iterator))
                             {
                                 do
                                 {
-                                    neighbors.Add(value);
+                                    neighbors.Add(neighbor);
 
-                                } while (hashMap.TryGetNextValue(out value, ref iterator));
+                                } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator));
                             }
                         }
                         perception.Clear();
@@ -128,68 +151,9 @@ namespace CloudFine.FlockBox.DOTS
                     })
                     .ScheduleParallel(Dependency);
 
+                Dependency = findNeighborsJobHandle;
 
-                Dependency = fillJobHandle;
-
-
-
-                var disposeJobHandle = hashMap.Dispose(Dependency);
-
-
-                /*
-
-                NativeArray<AgentData> map = flockQuery.ToComponentDataArray<AgentData>(Allocator.TempJob);
-
-                var fillJobHandle = Entities
-                    .WithSharedComponentFilter(settings)
-                    .WithReadOnly(map)
-                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref PerceptionData perception) =>
-                    {
-                        
-                        neighbors.Clear();
-
-                        for (int i=0; i< map.Length; i++)
-                        {
-                            if (math.length(map[i].Position - agent.Position) < 10)// perception.perceptionRadius)
-                            {
-                                neighbors.Add(map[i]);
-                            }
-                        }
-
-                        perception.Clear();
-                        
-                    })
-                    .ScheduleParallel(Dependency);
-
-                Dependency = fillJobHandle;
-                map.Dispose(Dependency);
-                */
-
-                //NativeMultiHashMap<int, NativeArray<AgentData>> cells = new NativeMultiHashMap<int, NativeArray<AgentData>>(flockData.TotalCells, Allocator.TempJob);
-
-                // DO THINGS HERE
-
-                //hash job
-                //each agent gets one index in the map
-                //agent's occupying cells (hashed) are added to map at that index
-
-                //merge job
-                //map is read in, read only
-                //new map is created, one index per cell
-
-                //steer job
-                //merged map is read in, read only
-                //cell within perception are added to neighbor buffer
-
-                /*
-                var initialCellAlignmentJobHandle = Entities
-                    .WithSharedComponentFilter(settings)
-                    .ForEach((int entityInQueryIndex, in LocalToWorld localToWorld) =>
-                    {
-                        //cellAlignment[entityInQueryIndex] = localToWorld.Forward;
-                    })
-                    .ScheduleParallel(Dependency);
-*/
+                var disposeJobHandle = spatialHashMap.Dispose(Dependency);
 
                 // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
                 // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without
