@@ -25,32 +25,6 @@ namespace CloudFine.FlockBox.DOTS
 
         }
 
-        public static int[] GetOccupyingCells(float3 Position, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z)
-        {
-            //TODO check Point vs Sphere shape
-            return new int[] { WorldPositionToHash(Position.x, Position.y, Position.z, cellSize, dimensions_x, dimensions_y, dimensions_z) };
-        }
-
-        public static int[] GetPercievedCells(float3 Position, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z, ref PerceptionData perception)
-        {
-            return new int[] { WorldPositionToHash(Position.x, Position.y, Position.z, cellSize, dimensions_x, dimensions_y, dimensions_z) };
-        }
-
-        private static int CellPositionToHash(int x, int y, int z, int dimensions_x, int dimensions_y, int demensions_z)
-        {
-            if (x < 0 || y < 0 || z < 0) return -1;
-
-            return (
-                 x
-               + y * (dimensions_x + 1) // +1 in case dimension is 0, will still produce unique hash
-               + z * (dimensions_x + 1) * (dimensions_y + 1));
-        }
-
-        private static int WorldPositionToHash(float x, float y, float z, float cellSize, int dimensions_x, int dimensions_y, int dimensions_z)
-        {
-            return CellPositionToHash((int)(x / cellSize), (int)(y / cellSize), (int)(z / cellSize), dimensions_x, dimensions_y, dimensions_z);
-        }
-
 
         protected override void OnUpdate()
         {
@@ -89,16 +63,35 @@ namespace CloudFine.FlockBox.DOTS
                     .WithSharedComponentFilter(settings)
                     .ForEach((in AgentData agent) =>
                     {
-                        var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
 
 
-                        var cells = new NativeList<int>(Allocator.Temp);
-                        cells.Add(hash);
-                        
-                        for (int i = 0; i < cells.Length; i++)
+                        if (agent.Fill)
                         {
-                            parallelHashMap.Add(cells[i], agent);
+                            int neighborhoodRadius = 1 + (int)((agent.Radius - .01f) / cellSize);
+                            var center = new int3(math.floor(agent.Position / cellSize));
+
+                            for (int x = center.x - neighborhoodRadius; x <= center.x + neighborhoodRadius; x++)
+                            {
+                                for (int y = center.y - neighborhoodRadius; y <= center.y + neighborhoodRadius; y++)
+                                {
+                                    for (int z = center.z - neighborhoodRadius; z <= center.z + neighborhoodRadius; z++)
+                                    {
+                                        if (x < 0 || x > dimensions_x
+                                                || y < 0 || y > dimensions_y
+                                                || z < 0 || z > dimensions_z)
+                                        {
+                                            continue;
+                                        }
+                                        parallelHashMap.Add((int)math.hash(new int3(x,y,z)), agent);
+
+                                    }
+                                }
+                            }
                         }
+                        else
+                        {
+                            parallelHashMap.Add((int)math.hash(new int3(math.floor(agent.Position / cellSize))), agent);
+                        }                        
                     })
                     .ScheduleParallel(Dependency);
 
