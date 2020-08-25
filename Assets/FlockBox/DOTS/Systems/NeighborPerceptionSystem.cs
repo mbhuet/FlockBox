@@ -6,6 +6,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using System.Net;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -55,10 +56,23 @@ namespace CloudFine.FlockBox.DOTS
                 int dimensions_y = flockBox.DimensionY;
                 int dimensions_z = flockBox.DimensionZ;
                 int cellCap = flockBox.CellCapacity;
+                float sleepChance = flockBox.sleepChance;
 
                 var spatialHashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
                 var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
+
+                //Randomly distribute sleeping
+                var sleepJobHandle = Entities
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((ref AgentData agent) =>
+                    {
+                        var rnd = new Unity.Mathematics.Random(345234597);
+                        agent.Sleeping = (rnd.NextDouble() < sleepChance);
+                    })
+                    .ScheduleParallel(Dependency);
+
+                Dependency = sleepJobHandle;
 
                 var parallelSpatialHashMap = spatialHashMap.AsParallelWriter();
                 var parallelTagHashMap = tagHashMap.AsParallelWriter();
@@ -107,48 +121,52 @@ namespace CloudFine.FlockBox.DOTS
                     .WithSharedComponentFilter(settings)
                     .WithReadOnly(spatialHashMap)
                     .WithReadOnly(tagHashMap)
-                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref AgentData agent, ref PerceptionData perception) =>
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref PerceptionData perception, in AgentData agent) =>
                     {
-                        AgentData neighbor;
-                        neighbors.Clear();
-
-                        //Check for global search tags
-                        int mask = perception.globalSearchTagMask;
-                        for (byte tag = 0; tag<sizeof(int); tag++)
+                        if (!agent.Sleeping)
                         {
-                            if ((1 << tag & mask) != 0)
+
+                            AgentData neighbor;
+                            neighbors.Clear();
+
+                            //Check for global search tags
+                            int mask = perception.globalSearchTagMask;
+                            for (byte tag = 0; tag < sizeof(int); tag++)
                             {
-                                if (tagHashMap.TryGetFirstValue(tag, out neighbor, out var iterator))
+                                if ((1 << tag & mask) != 0)
+                                {
+                                    if (tagHashMap.TryGetFirstValue(tag, out neighbor, out var iterator))
+                                    {
+                                        do
+                                        {
+                                            neighbors.Add(neighbor);
+                                        } while (tagHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                    }
+                                }
+                            }
+
+
+                            //check cells in perception range
+                            var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
+
+                            var cells = new NativeList<int>(Allocator.Temp);
+                            cells.Add(hash);
+
+                            int capBreak = 0;
+                            for (int i = 0; i < cells.Length; i++)
+                            {
+                                capBreak = 0;
+                                if (spatialHashMap.TryGetFirstValue(cells[i], out neighbor, out var iterator))
                                 {
                                     do
                                     {
                                         neighbors.Add(neighbor);
-                                    } while (tagHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                        capBreak++;
+                                    } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator) && capBreak < cellCap);
                                 }
                             }
+                            perception.Clear();
                         }
-
-
-                        //check cells in perception range
-                        var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
-
-                        var cells = new NativeList<int>(Allocator.Temp);
-                        cells.Add(hash);
-
-                        int capBreak = 0;
-                        for (int i = 0; i < cells.Length; i++)
-                        {
-                            capBreak = 0;
-                            if (spatialHashMap.TryGetFirstValue(cells[i], out neighbor, out var iterator))
-                            {
-                                do
-                                {
-                                    neighbors.Add(neighbor);
-                                    capBreak++;
-                                } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator) && capBreak<cellCap);
-                            }
-                        }
-                        perception.Clear();
 
                     })
                     .ScheduleParallel(Dependency);

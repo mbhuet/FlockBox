@@ -61,8 +61,10 @@ namespace CloudFine.FlockBox.DOTS
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
-                    var acceleration = accelerations[i];
                     var agent = agents[i];
+                    if (agent.Sleeping) continue;
+
+                    var acceleration = accelerations[i];
                     var behavior = behaviors[i];
                     var boundary = boundaries[i];
                     var steering = steerings[i];
@@ -90,9 +92,11 @@ namespace CloudFine.FlockBox.DOTS
 
                 for (var i = 0; i < chunk.Count; i++)
                 {
-                    var perception = perceptions[i];
                     var agent = agents[i];
-                    
+                    if (agent.Sleeping) continue;
+
+                    var perception = perceptions[i];
+
                     behaviors[i].AddPerceptionRequirements(ref agent, ref perception);
 
                     perceptions[i] = perception;

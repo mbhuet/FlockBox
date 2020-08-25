@@ -14,6 +14,8 @@ public struct AgentData : IComponentData
     public float3 Velocity;
     public float3 Forward;
 
+    public bool Sleeping;
+
     public bool TagInMask(int mask)
     {
         return ((1 << Tag & mask) != 0);
