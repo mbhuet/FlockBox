@@ -61,19 +61,19 @@ namespace CloudFine.FlockBox.DOTS
                 var spatialHashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
                 var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
+                var rnd = new Unity.Mathematics.Random((uint)(Time.ElapsedTime * 1000 +1));
 
                 //Randomly distribute sleeping
                 var sleepJobHandle = Entities
                     .WithSharedComponentFilter(settings)
-                    .ForEach((ref AgentData agent) =>
+                    .ForEach((int entityInQueryIndex, ref AgentData agent) =>
                     {
-                        var rnd = new Unity.Mathematics.Random(345234597);
                         agent.Sleeping = (rnd.NextDouble() < sleepChance);
                     })
                     .ScheduleParallel(Dependency);
 
                 Dependency = sleepJobHandle;
-
+                
                 var parallelSpatialHashMap = spatialHashMap.AsParallelWriter();
                 var parallelTagHashMap = tagHashMap.AsParallelWriter();
 
