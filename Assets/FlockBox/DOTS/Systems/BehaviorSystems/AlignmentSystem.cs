@@ -40,17 +40,15 @@ namespace CloudFine.FlockBox.DOTS
                         count++;
                     }
                 }
-
             }
+
             if (count > 0)
             {
                 return steering.GetSteerVector(sum / count, mine.Velocity) * Weight;
             }
 
             return float3.zero;
-
         }
-
 
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
