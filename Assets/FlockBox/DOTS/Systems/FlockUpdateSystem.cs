@@ -5,7 +5,7 @@ using Unity.Jobs;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
-    public class FlockUpdateSystem : JobComponentSystem
+    public class FlockUpdateSystem : SystemBase
     {
         protected EntityQuery m_Query;
 
@@ -20,9 +20,9 @@ namespace CloudFine.FlockBox.DOTS
             FlockBox.OnValuesModified -= OnSettingsChanged;
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
-            return inputDeps;
+
         }
 
         private void OnSettingsChanged(FlockBox changed)

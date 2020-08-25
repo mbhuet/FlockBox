@@ -171,7 +171,7 @@ namespace CloudFine.FlockBox
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
-            bucketsToDraw.Clear();
+            bucketsToDebugDraw.Clear();
 #endif
         }
 
@@ -619,7 +619,7 @@ namespace CloudFine.FlockBox
 
 #if UNITY_EDITOR
 
-        private List<int> bucketsToDraw = new List<int>(); //useful for debugging
+        private List<int> bucketsToDebugDraw = new List<int>(); //useful for debugging
 
         private void OnDrawGizmos()
         {
@@ -659,7 +659,7 @@ namespace CloudFine.FlockBox
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
                         int bucket = WorldPositionToHash(corner);
 
-                        if (bucketsToDraw.Contains(bucket))
+                        if (bucketsToDebugDraw.Contains(bucket))
                         {
                             Gizmos.color = Color.red * .8f;
                             Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
