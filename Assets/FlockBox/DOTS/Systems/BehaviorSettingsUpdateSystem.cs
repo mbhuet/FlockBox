@@ -1,4 +1,6 @@
 ﻿using CloudFine;
+using System;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -8,7 +10,7 @@ using UnityEngine;
 namespace CloudFine.FlockBox.DOTS {
 
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
-    public class BehaviorSettingsUpdateSystem : JobComponentSystem
+    public class BehaviorSettingsUpdateSystem : SystemBase
     {
         protected EntityQuery m_Query;
         protected override void OnCreate()
@@ -17,7 +19,6 @@ namespace CloudFine.FlockBox.DOTS {
 
             BehaviorSettings.OnSteeringValuesModified += OnSettingsChanged;
             BehaviorSettings.OnBehaviorAdded += OnBehaviorAdded;
-            BehaviorSettings.OnBehaviorValuesModified += OnBehaviorModified;
             BehaviorSettings.OnBehaviorRemoved += OnBehaviorRemoved;
         }
 
@@ -25,13 +26,11 @@ namespace CloudFine.FlockBox.DOTS {
         {
             BehaviorSettings.OnSteeringValuesModified -= OnSettingsChanged;
             BehaviorSettings.OnBehaviorAdded -= OnBehaviorAdded;
-            BehaviorSettings.OnBehaviorValuesModified -= OnBehaviorModified;
             BehaviorSettings.OnBehaviorRemoved -= OnBehaviorRemoved;
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
-            return inputDeps;
         }
 
 
@@ -61,21 +60,7 @@ namespace CloudFine.FlockBox.DOTS {
             entities.Dispose();
         }
 
-        private void OnBehaviorModified(BehaviorSettings settings, SteeringBehavior mod)
-        {
-            IConvertToComponentData convert = mod as IConvertToComponentData;
-            if (convert == null) return;
 
-            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
-            NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
-            foreach (Entity entity in entities)
-            {
-
-                convert.SetEntityData(entity, EntityManager);
-                //convert.EntityCommandBufferSet(entity, ecb);
-            }
-            entities.Dispose();
-        }
 
         private void OnBehaviorRemoved(BehaviorSettings settings, SteeringBehavior rem)
         {
