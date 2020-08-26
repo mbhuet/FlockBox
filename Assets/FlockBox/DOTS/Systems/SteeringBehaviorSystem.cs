@@ -168,7 +168,7 @@ namespace CloudFine.FlockBox.DOTS
                     BehaviorDataType = GetArchetypeChunkComponentType<T>(false),
                     template = temp
                 };
-                Dependency = updateJob.Schedule(updateQuery, Dependency);              
+                Dependency = updateJob.ScheduleParallel(updateQuery, Dependency);              
             }
 
             toUpdate.Clear();            
@@ -181,7 +181,7 @@ namespace CloudFine.FlockBox.DOTS
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
             };
-            Dependency = perceptJob.Schedule(perceptionQuery, Dependency);
+            Dependency = perceptJob.ScheduleParallel(perceptionQuery, Dependency);
 
             SteeringJob job = new SteeringJob
             {
@@ -194,7 +194,7 @@ namespace CloudFine.FlockBox.DOTS
                 BoundaryDataType = GetArchetypeChunkComponentType<BoundaryData>(true),
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
             };
-            Dependency = job.Schedule(steeringQuery, Dependency);
+            Dependency = job.ScheduleParallel(steeringQuery, Dependency);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace CloudFine.FlockBox.DOTS {
     public class BehaviorSettingsUpdateSystem : SystemBase
     {
         protected EntityQuery m_Query;
+        private List<BehaviorSettings> toUpdate = new List<BehaviorSettings>();
+
         protected override void OnCreate()
         {
             m_Query = GetEntityQuery(typeof(BehaviorSettingsData));
@@ -31,19 +33,28 @@ namespace CloudFine.FlockBox.DOTS {
 
         protected override void OnUpdate()
         {
+            foreach(BehaviorSettings changed in toUpdate)
+            {
+                float maxSpeed = changed.maxSpeed;
+                float maxForce = changed.maxForce;
+
+                BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed };
+                Dependency = Entities
+                    .WithSharedComponentFilter(filterData)
+                    .ForEach((ref SteeringData data) =>
+                    {
+                        data.MaxForce = maxForce;
+                        data.MaxSpeed = maxSpeed;
+
+                    }).ScheduleParallel(Dependency);
+            }
+            toUpdate.Clear();
         }
 
 
         private void OnSettingsChanged(BehaviorSettings changed)
         {
-            SteeringData steerData = changed.ConvertToComponentData();
-            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = changed });
-            NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
-            foreach (Entity entity in entities)
-            {
-                EntityManager.SetComponentData(entity, steerData);
-            }
-            entities.Dispose();
+            toUpdate.Add(changed);
         }
 
         private void OnBehaviorAdded(BehaviorSettings settings, SteeringBehavior add)
