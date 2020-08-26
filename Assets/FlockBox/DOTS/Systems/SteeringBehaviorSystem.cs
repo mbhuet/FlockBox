@@ -1,4 +1,7 @@
-﻿using Unity.Burst;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -7,10 +10,14 @@ using Unity.Jobs;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData
+    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData, ICopyFrom<T>
     {
         private EntityQuery perceptionQuery;
         private EntityQuery steeringQuery;
+        private EntityQuery updateQuery;
+
+        protected List<Tuple<BehaviorSettings, SteeringBehavior>> toUpdate = new List<Tuple<BehaviorSettings, SteeringBehavior>>();
+
 
         protected override void OnCreate()
         {
@@ -36,6 +43,28 @@ namespace CloudFine.FlockBox.DOTS
                     ComponentType.ReadOnly<T>(),
                 }
             });
+
+            updateQuery = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<BehaviorSettingsData>(),
+                    ComponentType.ReadWrite<T>(),
+                }
+            });
+
+            BehaviorSettings.OnBehaviorValuesModified += OnBehaviorModified;
+
+        }
+
+        protected override void OnDestroy()
+        {
+            BehaviorSettings.OnBehaviorValuesModified -= OnBehaviorModified;
+        }
+
+        private void OnBehaviorModified(BehaviorSettings settings, SteeringBehavior mod)
+        {
+            toUpdate.Add(new Tuple<BehaviorSettings, SteeringBehavior>(settings, mod));
         }
 
 
@@ -104,8 +133,46 @@ namespace CloudFine.FlockBox.DOTS
             }
         }
 
+
+        [BurstCompile]
+        protected struct UpdateDataJob : IJobChunk
+        {
+            public ArchetypeChunkComponentType<T> BehaviorDataType;
+            public T template;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                var behaviors = chunk.GetNativeArray(BehaviorDataType);
+
+                for (var i = 0; i < chunk.Count; i++)
+                {
+                    behaviors[i] = template;
+                }
+            }
+        }
+
         protected override void OnUpdate()
         {
+            
+            foreach (Tuple<BehaviorSettings, SteeringBehavior> tuple in toUpdate)
+            {               
+                IConvertToSteeringBehaviorComponentData<T> convert = tuple.Item2 as IConvertToSteeringBehaviorComponentData<T>;
+                if (convert == null) continue;
+                
+                BehaviorSettingsData data = new BehaviorSettingsData { Settings = tuple.Item1 };
+                updateQuery.SetSharedComponentFilter(data);
+
+                T temp = convert.Convert();
+                UpdateDataJob updateJob = new UpdateDataJob
+                {
+                    BehaviorDataType = GetArchetypeChunkComponentType<T>(false),
+                    template = temp
+                };
+                Dependency = updateJob.Schedule(updateQuery, Dependency);              
+            }
+
+            toUpdate.Clear();            
+
             PerceptionJob perceptJob = new PerceptionJob
             {
                 //write
