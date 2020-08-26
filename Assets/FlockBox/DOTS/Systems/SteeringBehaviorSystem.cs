@@ -10,7 +10,7 @@ using Unity.Jobs;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData, ICopyFrom<T>
+    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData
     {
         private EntityQuery perceptionQuery;
         private EntityQuery steeringQuery;

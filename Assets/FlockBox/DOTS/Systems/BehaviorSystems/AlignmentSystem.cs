@@ -15,7 +15,7 @@ namespace CloudFine.FlockBox.DOTS
 
     }
 
-    public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData, ICopyFrom<AlignmentData>
+    public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
     {
         public boolean Active;
         public float Weight;
@@ -53,14 +53,6 @@ namespace CloudFine.FlockBox.DOTS
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandPerceptionRadius(Radius);
-        }
-
-        public void CopyFrom(AlignmentData reference)
-        {
-            Active = reference.Active;
-            Weight = reference.Weight;
-            Radius = reference.Radius;
-            TagMask = reference.TagMask;
         }
     }
 }
