@@ -1,6 +1,8 @@
-﻿using Unity.Collections;
+﻿using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -8,6 +10,7 @@ namespace CloudFine.FlockBox.DOTS
     public class FlockUpdateSystem : SystemBase
     {
         protected EntityQuery m_Query;
+        private List<FlockBox> toUpdate = new List<FlockBox>();
 
         protected override void OnCreate()
         {
@@ -22,21 +25,27 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnUpdate()
         {
+            foreach(FlockBox changed in toUpdate)
+            {
+                FlockData data = new FlockData { Flock = changed };
+                float3 dimensions = changed.WorldDimensions;
+                float margin = changed.boundaryBuffer;
+                bool wrap = changed.wrapEdges;
 
+                Dependency = Entities
+                    .WithSharedComponentFilter(data)
+                    .ForEach((ref BoundaryData boundary) => {
+                        boundary.Dimensions = dimensions;
+                        boundary.Margin = margin;
+                        boundary.Wrap = wrap;
+                    }).ScheduleParallel(Dependency);
+            }
+            toUpdate.Clear();
         }
 
         private void OnSettingsChanged(FlockBox changed)
         {
-            BoundaryData boundary = new BoundaryData { Dimensions = changed.WorldDimensions, Margin = changed.boundaryBuffer, Wrap = changed.wrapEdges };
-            m_Query.SetSharedComponentFilter(new FlockData { Flock = changed });
-            NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
-            foreach (Entity entity in entities)
-            {
-                EntityManager.SetComponentData(entity, boundary);
-            }
-            entities.Dispose();
+            toUpdate.Add(changed);
         }
-
-
     }
 }
