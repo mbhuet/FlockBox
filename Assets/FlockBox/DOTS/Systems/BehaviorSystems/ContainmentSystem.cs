@@ -15,7 +15,7 @@ namespace CloudFine.FlockBox.DOTS
 
     }
 
-    public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
+    public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData, ICopyFrom<ContainmentData>
     {
         public float Weight;
         public float LookAheadSeconds;
@@ -73,6 +73,12 @@ namespace CloudFine.FlockBox.DOTS
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandLookAheadSeconds(LookAheadSeconds);
+        }
+
+        public void CopyFrom(ContainmentData reference)
+        {
+            Weight = reference.Weight;
+            LookAheadSeconds = reference.LookAheadSeconds;
         }
     }
 }

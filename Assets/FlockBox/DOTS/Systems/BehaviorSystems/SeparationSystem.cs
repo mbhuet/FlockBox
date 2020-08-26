@@ -9,7 +9,7 @@ namespace CloudFine.FlockBox.DOTS
 
     }
 
-    public struct SeparationData : IComponentData, ISteeringBehaviorComponentData
+    public struct SeparationData : IComponentData, ISteeringBehaviorComponentData, ICopyFrom<SeparationData>
     {
         public boolean Active;
         public float Weight;
@@ -62,6 +62,14 @@ namespace CloudFine.FlockBox.DOTS
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandPerceptionRadius(Radius);
+        }
+
+        public void CopyFrom(SeparationData reference)
+        {
+            Active = reference.Active;
+            Weight = reference.Weight;
+            Radius = reference.Radius;
+            TagMask = reference.TagMask;
         }
     }
 }

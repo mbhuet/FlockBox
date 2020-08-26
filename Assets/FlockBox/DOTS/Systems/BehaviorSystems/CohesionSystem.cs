@@ -15,7 +15,7 @@ namespace CloudFine.FlockBox.DOTS
 
     }
 
-    public struct CohesionData : IComponentData, ISteeringBehaviorComponentData
+    public struct CohesionData : IComponentData, ISteeringBehaviorComponentData, ICopyFrom<CohesionData>
     {
         public boolean Active;
         public float Weight;
@@ -54,6 +54,14 @@ namespace CloudFine.FlockBox.DOTS
         public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandPerceptionRadius(Radius);
+        }
+
+        public void CopyFrom(CohesionData reference)
+        {
+            Active = reference.Active;
+            Weight = reference.Weight;
+            Radius = reference.Radius;
+            TagMask = reference.TagMask;
         }
     }
 }
