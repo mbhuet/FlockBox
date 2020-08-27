@@ -116,11 +116,7 @@ namespace CloudFine.FlockBox.DOTS
                     var agent = agents[i];
                     if (agent.Sleeping) continue;
 
-                    var perception = perceptions[i];
-
-                    behaviors[i].AddPerceptionRequirements(agent, ref perception);
-
-                    perceptions[i] = perception;
+                    perceptions[i] = behaviors[i].AddPerceptionRequirements(agent, perceptions[i]);
                 }
             }
         }

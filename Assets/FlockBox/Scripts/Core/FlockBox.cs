@@ -84,8 +84,74 @@ namespace CloudFine.FlockBox
         [SerializeField]
         private bool useDOTS = false;
 
-        EntityManager manager;
-        Entity agentEntityPrefab;
+        private Entity agentEntityPrefab;
+        private Entity syncedEntityTransform
+        {
+            get
+            {
+                if (_syncedEntityTransform == Entity.Null)
+                {
+                    _syncedEntityTransform = CreateSyncedRoot();
+                }
+                return _syncedEntityTransform;
+            }
+        }
+        private Entity _syncedEntityTransform;
+
+
+        #region DOTS
+
+        private Entity CreateSyncedRoot()
+        {
+            EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            //
+            // Set up root entity that will follow FlockBox GameObject
+            //
+            Entity root = manager.CreateEntity(new ComponentType[]{
+                        typeof(LocalToWorld),
+                    });
+
+            manager.AddComponentObject(root, this.transform);
+            manager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject { });
+            return root;
+        }
+
+        private void InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
+        {
+            EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            //
+            //Create entity template for agents with Conversion System
+            //
+            GameObjectConversionSettings settings = new GameObjectConversionSettings()
+            {
+                DestinationWorld = World.DefaultGameObjectInjectionWorld
+            };
+            agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab.gameObject, settings);
+            NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.TempJob);
+            manager.Instantiate(agentEntityPrefab, agents);
+
+
+            for (int i = 0; i < population; i++)
+            {
+                Entity entity = agents[i];
+                AgentData data = manager.GetComponentData<AgentData>(entity);
+                data.Position = RandomPosition();
+                data.Velocity = UnityEngine.Random.insideUnitSphere;
+                manager.SetComponentData(entity, data);
+
+                //parent the agent to the flockbox root
+                manager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
+                manager.AddComponentData<LocalToParent>(entity, new LocalToParent());
+
+                manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+                manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
+                //add all component data, imitate agent.Spawn(this)
+            }
+            agents.Dispose();
+        }
+
+
+        #endregion
 
         private void Awake()
         {
@@ -96,56 +162,13 @@ namespace CloudFine.FlockBox
 
         void Start()
         {
-            
-
             foreach (AgentPopulation pop in startingPopulations)
             {
                 if (pop.prefab == null) continue;
 
                 if (useDOTS)
                 {
-                    manager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-                    //
-                    // Set up root entity that will follow FlockBox GameObject
-                    //
-                    Entity root = manager.CreateEntity(new ComponentType[]{
-                        typeof(LocalToWorld),
-                    });
-
-                    manager.AddComponentObject(root, this.transform);
-                    manager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject {});
-                    
-
-                    //
-                    //Create entity template for agents with Conversion System
-                    //
-                    GameObjectConversionSettings settings = new GameObjectConversionSettings()
-                    {
-                        DestinationWorld = World.DefaultGameObjectInjectionWorld
-                    };
-                    agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(pop.prefab.gameObject, settings);
-                    NativeArray<Entity> agents = new NativeArray<Entity>(pop.population, Allocator.TempJob);
-                    manager.Instantiate(agentEntityPrefab, agents);
-
-
-                    for (int i = 0; i < pop.population; i++)
-                    {
-                        Entity entity = agents[i];
-                        AgentData data = manager.GetComponentData<AgentData>(entity);
-                        data.Position = RandomPosition();
-                        data.Velocity = UnityEngine.Random.insideUnitSphere;
-                        manager.SetComponentData(entity, data);
-
-                        //parent the agent to the flockbox root
-                        manager.AddComponentData<Parent>(entity, new Parent { Value = root });
-                        manager.AddComponentData<LocalToParent>(entity, new LocalToParent());
-
-                        manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
-                        manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges});
-                        //add all component data, imitate agent.Spawn(this)
-                    }
-                    agents.Dispose();
+                    InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
                 }
                 else
                 {

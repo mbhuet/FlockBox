@@ -94,9 +94,10 @@ namespace CloudFine.FlockBox.DOTS
         }
 
 
-        public void AddPerceptionRequirements(AgentData mine, ref PerceptionData perception)
+        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
         {
             perception.ExpandLookAheadSeconds(LookAheadSeconds);
+            return perception;
         }
     }
 }

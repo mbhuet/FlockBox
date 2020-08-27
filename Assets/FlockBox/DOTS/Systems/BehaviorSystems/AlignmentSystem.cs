@@ -50,9 +50,10 @@ namespace CloudFine.FlockBox.DOTS
             return float3.zero;
         }
 
-        public void AddPerceptionRequirements(AgentData mine, ref PerceptionData perception)
+        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
         {
             perception.ExpandPerceptionRadius(Radius);
+            return perception;
         }
     }
 }
