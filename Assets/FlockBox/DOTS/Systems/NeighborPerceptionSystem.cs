@@ -21,7 +21,9 @@ namespace CloudFine.FlockBox.DOTS
             flocks = new List<FlockData>();
             flockQuery = GetEntityQuery(new EntityQueryDesc
             {
-                All = new[] { ComponentType.ReadOnly<FlockData>(), ComponentType.ReadWrite<AgentData>() },
+                All = new[] { 
+                    ComponentType.ReadOnly<FlockData>(), 
+                    ComponentType.ReadOnly<AgentData>() },
             });
 
         }
@@ -58,7 +60,28 @@ namespace CloudFine.FlockBox.DOTS
                 int cellCap = flockBox.CellCapacity;
                 float sleepChance = flockBox.sleepChance;
 
-                var spatialHashMap = new NativeMultiHashMap<int, AgentData>(agentCount, Allocator.TempJob);
+                //We need to calculate the exact capacity the spatial hashmap is going to need
+                //if each agent was guaranteed to only occupy 1 cell, this would not be necessary
+                //but some agents (AgentData.Fill = true) will need occupy multiple cells
+                int mapCapacity = 0;
+                Entities
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((in AgentData agent) =>
+                    {
+                        if (agent.Fill)
+                        {
+                            //the bounding box around a filled sphere will occupy at least 9 cells
+                            //center cell (1) + extension in either direction (x2)
+                            int boundingCubeSideLength = 1 + (1 + (int)((agent.Radius - .01f) / cellSize))*2;
+                            mapCapacity += boundingCubeSideLength * boundingCubeSideLength * boundingCubeSideLength;
+                        }
+                        else
+                        {
+                            mapCapacity++;
+                        }
+                    }).Run();
+
+                var spatialHashMap = new NativeMultiHashMap<int, AgentData>(mapCapacity, Allocator.TempJob);
                 var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
                 var rnd = new Unity.Mathematics.Random((uint)(Time.ElapsedTime * 1000 +1));

@@ -161,13 +161,15 @@ namespace CloudFine.FlockBox
             activeSettings.Convert(entity, dstManager, conversionSystem);
 
             //AgentData holds everything a behavior needs to react to another Agent
-            dstManager.AddComponentData(entity, new AgentData { 
+            dstManager.AddComponentData(entity, new AgentData
+            {
                 Position = Position,
                 Velocity = Velocity,
                 Forward = Forward,
                 Tag = TagMaskUtility.TagToInt(tag),
-                Radius = shape.radius
-            });
+                Radius = shape.radius,
+                Fill = shape.type == Shape.ShapeType.SPHERE,
+            }) ;
             dstManager.AddComponentData(entity, new Acceleration { Value  = float3.zero});
             dstManager.AddComponentData(entity, new PerceptionData());
 

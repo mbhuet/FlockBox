@@ -17,7 +17,7 @@ namespace CloudFine.FlockBox.DOTS {
 
         protected override void OnCreate()
         {
-            m_Query = GetEntityQuery(typeof(BehaviorSettingsData));
+            m_Query = GetEntityQuery(ComponentType.ReadOnly<BehaviorSettingsData>());
 
             BehaviorSettings.OnSteeringValuesModified += OnSettingsChanged;
             BehaviorSettings.OnBehaviorAdded += OnBehaviorAdded;

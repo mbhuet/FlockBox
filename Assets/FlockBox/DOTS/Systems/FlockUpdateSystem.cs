@@ -14,7 +14,7 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnCreate()
         {
-            m_Query = GetEntityQuery(typeof(FlockData));
+            m_Query = GetEntityQuery(ComponentType.ReadOnly<FlockData>());
             FlockBox.OnValuesModified += OnSettingsChanged;
         }
 
