@@ -23,7 +23,7 @@ namespace CloudFine.FlockBox.DOTS
         public Int32 TagMask;
 
 
-        public float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors)
+        public float3 GetSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;
 
@@ -50,7 +50,7 @@ namespace CloudFine.FlockBox.DOTS
             return float3.zero;
         }
 
-        public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
+        public void AddPerceptionRequirements(AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandPerceptionRadius(Radius);
         }

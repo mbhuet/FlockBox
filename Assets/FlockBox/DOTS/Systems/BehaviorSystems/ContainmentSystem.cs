@@ -12,6 +12,18 @@ namespace CloudFine.FlockBox.DOTS
 {
     public class ContainmentSystem : SteeringBehaviorSystem<ContainmentData>
     {
+        /// <summary>
+        /// Unlike other behaviors, Containment requires access to BoundaryData, and does not need to be aware of neighbors. Here the default steering job is overridden with a custom job.
+        /// </summary>
+        protected override void DoSteering()
+        {
+            Dependency = Entities
+                .ForEach((ref Acceleration acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
+                {
+                    acceleration.Value += behavior.GetSteering(agent, steering, boundary);
+
+                }).ScheduleParallel(Dependency);
+        }
 
     }
 
@@ -20,7 +32,19 @@ namespace CloudFine.FlockBox.DOTS
         public float Weight;
         public float LookAheadSeconds;
 
-        public float3 GetSteering(ref AgentData mine, ref SteeringData steering, ref BoundaryData boundary, DynamicBuffer<NeighborData> neighbors)
+        public float3 GetSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
+        {
+            return float3.zero;
+        }
+
+        /// <summary>
+        /// This overload of GetSteering requires a BoundaryData instead of a DynamicBuffer<NeighborData>
+        /// </summary>
+        /// <param name="mine"></param>
+        /// <param name="steering"></param>
+        /// <param name="boundary"></param>
+        /// <returns></returns>
+        public float3 GetSteering(AgentData mine, SteeringData steering, BoundaryData boundary)
         {
             if (boundary.Wrap) return float3.zero;
 
@@ -70,7 +94,7 @@ namespace CloudFine.FlockBox.DOTS
         }
 
 
-        public void AddPerceptionRequirements(ref AgentData mine, ref PerceptionData perception)
+        public void AddPerceptionRequirements(AgentData mine, ref PerceptionData perception)
         {
             perception.ExpandLookAheadSeconds(LookAheadSeconds);
         }

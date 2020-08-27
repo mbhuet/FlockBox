@@ -75,7 +75,6 @@ namespace CloudFine.FlockBox.DOTS
             [ReadOnly] public ArchetypeChunkBufferType<NeighborData> NeighborDataType;
             [ReadOnly] public ArchetypeChunkComponentType<AgentData> AgentDataType;
             [ReadOnly] public ArchetypeChunkComponentType<SteeringData> SteeringDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<BoundaryData> BoundaryDataType;
             [ReadOnly] public ArchetypeChunkComponentType<T> BehaviorDataType;
 
 
@@ -84,7 +83,6 @@ namespace CloudFine.FlockBox.DOTS
                 var accelerations = chunk.GetNativeArray(AccelerationDataType);
                 var agents = chunk.GetNativeArray(AgentDataType);
                 var behaviors = chunk.GetNativeArray(BehaviorDataType);
-                var boundaries = chunk.GetNativeArray(BoundaryDataType);
                 var steerings = chunk.GetNativeArray(SteeringDataType);
                 var neighborhood = chunk.GetBufferAccessor(NeighborDataType);
 
@@ -94,13 +92,7 @@ namespace CloudFine.FlockBox.DOTS
                     if (agent.Sleeping) continue;
 
                     var acceleration = accelerations[i];
-                    var behavior = behaviors[i];
-                    var boundary = boundaries[i];
-                    var steering = steerings[i];
-                    var neighbors = neighborhood[i];
-
-                    acceleration.Value += behavior.GetSteering(ref agent, ref steering, ref boundary, neighbors);
-
+                    acceleration.Value += behaviors[i].GetSteering(agent, steerings[i], neighborhood[i]);
                     accelerations[i] = acceleration;
                 }
             }
@@ -126,7 +118,7 @@ namespace CloudFine.FlockBox.DOTS
 
                     var perception = perceptions[i];
 
-                    behaviors[i].AddPerceptionRequirements(ref agent, ref perception);
+                    behaviors[i].AddPerceptionRequirements(agent, ref perception);
 
                     perceptions[i] = perception;
                 }
@@ -153,12 +145,20 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnUpdate()
         {
-            
+            DoBehaviorDataUpdate();
+
+            DoPerception();
+
+            DoSteering();
+        }
+
+        protected void DoBehaviorDataUpdate()
+        {
             foreach (Tuple<BehaviorSettings, SteeringBehavior> tuple in toUpdate)
-            {               
+            {
                 IConvertToSteeringBehaviorComponentData<T> convert = tuple.Item2 as IConvertToSteeringBehaviorComponentData<T>;
                 if (convert == null) continue;
-                
+
                 BehaviorSettingsData data = new BehaviorSettingsData { Settings = tuple.Item1 };
                 updateQuery.SetSharedComponentFilter(data);
 
@@ -168,11 +168,14 @@ namespace CloudFine.FlockBox.DOTS
                     BehaviorDataType = GetArchetypeChunkComponentType<T>(false),
                     template = temp
                 };
-                Dependency = updateJob.ScheduleParallel(updateQuery, Dependency);              
+                Dependency = updateJob.ScheduleParallel(updateQuery, Dependency);
             }
 
-            toUpdate.Clear();            
+            toUpdate.Clear();
+        }
 
+        protected virtual void DoPerception()
+        {
             PerceptionJob perceptJob = new PerceptionJob
             {
                 //write
@@ -182,7 +185,10 @@ namespace CloudFine.FlockBox.DOTS
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
             };
             Dependency = perceptJob.ScheduleParallel(perceptionQuery, Dependency);
+        }
 
+        protected virtual void DoSteering()
+        {
             SteeringJob job = new SteeringJob
             {
                 //write
@@ -191,7 +197,6 @@ namespace CloudFine.FlockBox.DOTS
                 NeighborDataType = GetArchetypeChunkBufferType<NeighborData>(true),
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
                 SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
-                BoundaryDataType = GetArchetypeChunkComponentType<BoundaryData>(true),
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
             };
             Dependency = job.ScheduleParallel(steeringQuery, Dependency);
