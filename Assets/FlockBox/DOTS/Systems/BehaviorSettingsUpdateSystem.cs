@@ -1,11 +1,7 @@
-﻿using CloudFine;
-using System;
-using System.Collections.Generic;
-using Unity.Burst;
+﻿using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS {
 

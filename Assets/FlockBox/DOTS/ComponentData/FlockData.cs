@@ -1,10 +1,7 @@
-﻿using CloudFine;
-using System;
+﻿using System;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
-namespace CloudFine.FlockBox {
+namespace CloudFine.FlockBox.DOTS {
     public struct FlockData : ISharedComponentData, IEquatable<FlockData>
     {
         public FlockBox Flock;

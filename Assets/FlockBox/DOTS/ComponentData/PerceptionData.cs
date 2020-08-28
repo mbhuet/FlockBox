@@ -1,35 +1,36 @@
-﻿using System;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
-public struct PerceptionData : IComponentData
+namespace CloudFine.FlockBox.DOTS
 {
-    public float perceptionRadius;
-    public float lookAheadSeconds;
-    public int globalSearchTagMask;
-    //not sure how to implement this
-    //public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
-
-    public void Clear()
+    public struct PerceptionData : IComponentData
     {
-        perceptionRadius = 0;
-        lookAheadSeconds = 0;
-        globalSearchTagMask = 0;
-    }
+        public float perceptionRadius;
+        public float lookAheadSeconds;
+        public int globalSearchTagMask;
+        //not sure how to implement this
+        //public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
 
-    public void ExpandPerceptionRadius(float radius)
-    {
-        perceptionRadius = math.max(radius, perceptionRadius);
-    }
+        public void Clear()
+        {
+            perceptionRadius = 0;
+            lookAheadSeconds = 0;
+            globalSearchTagMask = 0;
+        }
 
-    public void ExpandLookAheadSeconds(float seconds)
-    {
-        lookAheadSeconds = math.max(lookAheadSeconds, seconds);
-    }
+        public void ExpandPerceptionRadius(float radius)
+        {
+            perceptionRadius = math.max(radius, perceptionRadius);
+        }
 
-    public void AddGlobalSearchTag(byte tag)
-    {
-        globalSearchTagMask = globalSearchTagMask | 1 << tag;
+        public void ExpandLookAheadSeconds(float seconds)
+        {
+            lookAheadSeconds = math.max(lookAheadSeconds, seconds);
+        }
+
+        public void AddGlobalSearchTag(byte tag)
+        {
+            globalSearchTagMask = globalSearchTagMask | 1 << tag;
+        }
     }
 }

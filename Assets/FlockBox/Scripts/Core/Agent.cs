@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine.Serialization;
+using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox
 {

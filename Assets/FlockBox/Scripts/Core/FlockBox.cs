@@ -6,6 +6,7 @@ using UnityEngine;
 using CloudFine.FlockBox.DOTS;
 using Unity.Transforms;
 using UnityEngine.Jobs;
+using System.ComponentModel.Design.Serialization;
 
 namespace CloudFine.FlockBox
 {

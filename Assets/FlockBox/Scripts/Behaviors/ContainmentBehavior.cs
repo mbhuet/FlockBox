@@ -2,7 +2,6 @@
 using UnityEngine;
 using CloudFine.FlockBox.DOTS;
 
-
 namespace CloudFine.FlockBox
 {
     public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ContainmentData>

@@ -1,8 +1,10 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
-public struct Acceleration : IComponentData
+namespace CloudFine.FlockBox.DOTS
 {
-    public float3 Value;
+    public struct Acceleration : IComponentData
+    {
+        public float3 Value;
+    }
 }

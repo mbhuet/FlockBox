@@ -1,13 +1,9 @@
-﻿using Unity.Burst;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
-
 
 namespace CloudFine.FlockBox.DOTS
 {
-
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public class AccelerationSystem : SystemBase
     {
@@ -24,7 +20,5 @@ namespace CloudFine.FlockBox.DOTS
 
             Dependency = accelerationJob;
         }
-
-
     }
 }

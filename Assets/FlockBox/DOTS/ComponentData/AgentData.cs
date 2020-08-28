@@ -1,23 +1,24 @@
-﻿using System;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
-public struct AgentData : IComponentData
+namespace CloudFine.FlockBox.DOTS
 {
-    public byte Tag;
-    public float Radius;
-
-    public bool Fill;
-
-    public float3 Position;
-    public float3 Velocity;
-    public float3 Forward;
-
-    public bool Sleeping;
-
-    public bool TagInMask(int mask)
+    public struct AgentData : IComponentData
     {
-        return ((1 << Tag & mask) != 0);
+        public byte Tag;
+        public float Radius;
+
+        public bool Fill;
+
+        public float3 Position;
+        public float3 Velocity;
+        public float3 Forward;
+
+        public bool Sleeping;
+
+        public bool TagInMask(int mask)
+        {
+            return ((1 << Tag & mask) != 0);
+        }
     }
 }

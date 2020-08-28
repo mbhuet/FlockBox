@@ -1,10 +1,7 @@
-﻿using CloudFine;
-using System;
+﻿using System;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
-namespace CloudFine.FlockBox {
+namespace CloudFine.FlockBox.DOTS {
     public struct BehaviorSettingsData : ISharedComponentData, IEquatable<BehaviorSettingsData>
     {
         public BehaviorSettings Settings;
