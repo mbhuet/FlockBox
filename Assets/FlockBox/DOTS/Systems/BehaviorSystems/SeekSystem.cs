@@ -12,7 +12,7 @@ namespace CloudFine.FlockBox.DOTS
 
     public struct SeekData : IComponentData, ISteeringBehaviorComponentData
     {
-        public boolean Active;
+        public bool Active;
         public float Weight;
         public float Radius;
         public Int32 TagMask;

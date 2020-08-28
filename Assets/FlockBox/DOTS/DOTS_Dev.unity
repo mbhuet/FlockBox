@@ -246,6 +246,9 @@ MonoBehaviour:
   - prefab: {fileID: 3617397216089966378, guid: 5f95e44f7f5bd1643878e2d58c8347dd,
       type: 3}
     population: 20000
+  - prefab: {fileID: 1823620649583104859, guid: 69b6f1a612abd534e8c5ebcd1df22b03,
+      type: 3}
+    population: 10
   drawGizmos: 1
   useDOTS: 1
 --- !u!4 &1385211393

@@ -23,6 +23,31 @@ MonoBehaviour:
   foldout: 1
   effectiveRadius: 10
   fieldOfView: 360
+--- !u!114 &-3704237729128849241
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78db39d311e6a9447827614d27fa82e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 0.5
+  useTagFilter: 1
+  filterTags:
+  - Food
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  effectiveRadius: 100
+  fieldOfView: 360
+  globalTagSearch: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,6 +67,7 @@ MonoBehaviour:
   - {fileID: 3690119732318933899}
   - {fileID: 6301307743451049247}
   - {fileID: -8362066606441875129}
+  - {fileID: -3704237729128849241}
 --- !u!114 &2923104719200550457
 MonoBehaviour:
   m_ObjectHideFlags: 1

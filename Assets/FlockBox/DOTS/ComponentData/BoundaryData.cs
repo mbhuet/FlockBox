@@ -7,7 +7,7 @@ namespace CloudFine.FlockBox.DOTS
     {
         public float3 Dimensions;
         public float Margin;
-        public boolean Wrap;
+        public bool Wrap;
 
 
         public void ValidatePosition(ref float3 position)

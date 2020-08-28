@@ -44,12 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca30d25de2ecd7488f81da0eaebe811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 0
-  neighborType: 0
   shape:
     type: 0
     radius: 1
-    length: 1
   debugDrawShape: 0
   activeSettings: {fileID: 11400000, guid: 7a823eadedcd5f84fbb3622ee02291b8, type: 2}
 --- !u!1 &7765479890752917496
@@ -106,6 +103,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
