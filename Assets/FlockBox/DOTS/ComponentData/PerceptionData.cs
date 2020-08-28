@@ -32,5 +32,10 @@ namespace CloudFine.FlockBox.DOTS
         {
             globalSearchTagMask = globalSearchTagMask | 1 << tag;
         }
+
+        public void AddGlobalSearchTagMask(int mask)
+        {
+            globalSearchTagMask = globalSearchTagMask | mask;
+        }
     }
 }

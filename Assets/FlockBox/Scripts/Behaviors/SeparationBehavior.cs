@@ -42,7 +42,7 @@ namespace CloudFine.FlockBox
                 Active = IsActive,
                 Weight = weight,
                 Radius = effectiveRadius,
-                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : 0)
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
             };
         }
 

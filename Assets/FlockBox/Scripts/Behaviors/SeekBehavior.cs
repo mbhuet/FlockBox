@@ -1,12 +1,15 @@
-﻿using System;
+﻿using CloudFine.FlockBox.DOTS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Entities;
 using UnityEngine;
 
 namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class SeekBehavior : GlobalRadialSteeringBehavior
+    public class SeekBehavior : GlobalRadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<SeekData>
     {
         public const string targetIDAttributeName = "seekTargetID";
 
@@ -62,8 +65,6 @@ namespace CloudFine.FlockBox
             mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
-
-
         public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
         {
             if (nearbyTargets.Count == 0) return null;
@@ -80,6 +81,22 @@ namespace CloudFine.FlockBox
             }
             return closeTarget;
         }
+
+        public SeekData Convert()
+        {
+            return new SeekData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                GlobalTagSearch = globalTagSearch,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
+            };
+        }
+
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
     }
 
     public static class SeekExtensions
