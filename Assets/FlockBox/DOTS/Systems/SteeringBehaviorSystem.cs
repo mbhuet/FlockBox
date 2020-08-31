@@ -144,9 +144,11 @@ namespace CloudFine.FlockBox.DOTS
         {
             DoBehaviorDataUpdate();
 
-            DoPerception();
+            var perceptionHandle = DoPerception();
 
-            DoSteering();
+            var steeringHandle = DoSteering();
+
+            Dependency = JobHandle.CombineDependencies(steeringHandle, perceptionHandle, Dependency);
         }
 
         protected void DoBehaviorDataUpdate()
@@ -171,7 +173,7 @@ namespace CloudFine.FlockBox.DOTS
             toUpdate.Clear();
         }
 
-        protected virtual void DoPerception()
+        protected virtual JobHandle DoPerception()
         {
             PerceptionJob perceptJob = new PerceptionJob
             {
@@ -181,10 +183,10 @@ namespace CloudFine.FlockBox.DOTS
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
             };
-            Dependency = perceptJob.ScheduleParallel(perceptionQuery, Dependency);
+            return perceptJob.ScheduleParallel(perceptionQuery, Dependency);
         }
 
-        protected virtual void DoSteering()
+        protected virtual JobHandle DoSteering()
         {
             SteeringJob job = new SteeringJob
             {
@@ -196,7 +198,7 @@ namespace CloudFine.FlockBox.DOTS
                 SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
             };
-            Dependency = job.ScheduleParallel(steeringQuery, Dependency);
+            return job.ScheduleParallel(steeringQuery, Dependency);
         }
     }
 }

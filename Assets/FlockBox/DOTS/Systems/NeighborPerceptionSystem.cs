@@ -233,16 +233,8 @@ namespace CloudFine.FlockBox.DOTS
                             {
                                 int3 p0 = (int3)math.floor(agent.Position);
                                 int3 p1 = (int3)math.floor(agent.Position + agent.Velocity * perception.lookAheadSeconds);
-                                int3 delta = new int3(
-                                    math.abs(p1.x - p0.x),
-                                    math.abs(p1.y - p0.y),
-                                     math.abs(p1.z - p0.z)
-                                    );
-                                int3 sign = new int3(
-                                    p0.x < p1.x ? 1 : -1,
-                                    p0.y < p1.y ? 1 : -1,
-                                    p0.z < p1.z ? 1 : -1
-                                    );
+                                int3 delta = math.abs(p1 - p0);
+                                int3 sign = (int3)math.sign(p1 - p0);                            
 
                                 int deltaMax = math.cmax(delta);
                                 p1.x = p1.y = p1.z = deltaMax / 2; /* error offset */

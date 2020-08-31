@@ -9,9 +9,9 @@ namespace CloudFine.FlockBox.DOTS
         /// <summary>
         /// Unlike other behaviors, Containment requires access to BoundaryData, and does not need to be aware of neighbors. Here the default steering job is overridden with a custom job.
         /// </summary>
-        protected override void DoSteering()
+        protected override JobHandle DoSteering()
         {
-            Dependency = Entities
+            return Entities
                 .ForEach((ref Acceleration acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
                 {
                     acceleration.Value += behavior.GetSteering(agent, steering, boundary);
