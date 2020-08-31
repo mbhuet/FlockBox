@@ -28,9 +28,10 @@ namespace CloudFine.FlockBox.DOTS
                 AgentData other = neighbors[i].Value;
                 if (other.TagInMask(TagMask))
                 {
-                    if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
+                    float3 diff = mine.Position - other.Position;
+                    float dist = math.length(diff);
+                    if (dist < Radius)
                     {
-                        float3 diff = mine.Position - other.Position;
 
                         //need to filter out "mine"
                         /*
@@ -40,9 +41,9 @@ namespace CloudFine.FlockBox.DOTS
                             diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
                         }
                         */
-                        if (math.lengthsq(diff) > .001f)
+                        if (dist > .001f)
                         {
-                            sum += (math.normalize(diff) / math.length(diff));
+                            sum += (math.normalize(diff) / dist);
                             count++;
                         }
                     }

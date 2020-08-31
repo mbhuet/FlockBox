@@ -62,6 +62,7 @@ namespace CloudFine.FlockBox.DOTS
                 //but some agents (AgentData.Fill = true) will need occupy multiple cells
                 int mapCapacity = 0;
                 Entities
+                    .WithName("CalculateMapCapacity")
                     .WithSharedComponentFilter(settings)
                     .ForEach((in AgentData agent) =>
                     {
@@ -85,8 +86,9 @@ namespace CloudFine.FlockBox.DOTS
 
                 //Randomly distribute sleeping
                 var sleepJobHandle = Entities
+                    .WithName("RandomSleep")
                     .WithSharedComponentFilter(settings)
-                    .ForEach((int entityInQueryIndex, ref AgentData agent) =>
+                    .ForEach((ref AgentData agent) =>
                     {
                         agent.Sleeping = (rnd.NextDouble() < sleepChance);
                     })
@@ -97,7 +99,9 @@ namespace CloudFine.FlockBox.DOTS
                 var parallelSpatialHashMap = spatialHashMap.AsParallelWriter();
                 var parallelTagHashMap = tagHashMap.AsParallelWriter();
 
+
                 var hashPositionsJobHandle = Entities
+                    .WithName("BuildSpatialHashMap")
                     .WithSharedComponentFilter(settings)
                     .ForEach((in AgentData agent) =>
                     {
@@ -137,42 +141,143 @@ namespace CloudFine.FlockBox.DOTS
                 Dependency = hashPositionsJobHandle;
 
 
+
+                //clear neighbors
+                var clearNeighborsJobHandle = Entities
+                    .WithName("ClearNeighbors")
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors) =>
+                    {
+                        neighbors.Clear();
+                    }).ScheduleParallel(Dependency);
+
+                Dependency = clearNeighborsJobHandle;
+
+
+
+                var findNeighborsTagJobHandle = Entities
+                    .WithName("FindNeighborsTag")
+                    .WithSharedComponentFilter(settings)
+                    .WithReadOnly(tagHashMap)
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors, in PerceptionData perception, in AgentData agent) =>
+                    {
+                        if (!agent.Sleeping)
+                        {
+                            //Check for global search tags
+                            int mask = perception.globalSearchTagMask;
+                            if (mask != 0)
+                            {
+                                AgentData neighbor;
+                                for (byte tag = 0; tag < sizeof(int); tag++)
+                                {
+                                    if ((1 << tag & mask) != 0)
+                                    {
+                                        if (tagHashMap.TryGetFirstValue(tag, out neighbor, out var iterator))
+                                        {
+                                            do
+                                            {
+                                                neighbors.Add(neighbor);
+                                            } while (tagHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }).ScheduleParallel(Dependency);
+
+                Dependency = findNeighborsTagJobHandle;
+
+
+
                 var findNeighborsJobHandle = Entities
+                    .WithName("FindNeighborsSpatial")
                     .WithSharedComponentFilter(settings)
                     .WithReadOnly(spatialHashMap)
-                    .WithReadOnly(tagHashMap)
                     .ForEach((ref DynamicBuffer<NeighborData> neighbors, ref PerceptionData perception, in AgentData agent) =>
                     {
                         if (!agent.Sleeping)
                         {
+                            var cells = new NativeList<int>(Allocator.Temp);
 
-                            AgentData neighbor;
-                            neighbors.Clear();
-
-                            //Check for global search tags
-                            int mask = perception.globalSearchTagMask;
-                            for (byte tag = 0; tag < sizeof(int); tag++)
+                            //check cells within perception range sphere
+                            if (perception.perceptionRadius > 0)
                             {
-                                if ((1 << tag & mask) != 0)
+                                int cellRange = 1 + (int)((perception.perceptionRadius - .01f) / cellSize);
+                                var centerCell = new int3(math.floor(agent.Position / cellSize));
+
+                                for (int x = centerCell.x - cellRange; x <= centerCell.x + cellRange; x++)
                                 {
-                                    if (tagHashMap.TryGetFirstValue(tag, out neighbor, out var iterator))
+                                    for (int y = centerCell.y - cellRange; y <= centerCell.y + cellRange; y++)
                                     {
-                                        do
+                                        for (int z = centerCell.z - cellRange; z <= centerCell.z + cellRange; z++)
                                         {
-                                            neighbors.Add(neighbor);
-                                        } while (tagHashMap.TryGetNextValue(out neighbor, ref iterator));
+                                            if (x < 0 || x > dimensions_x
+                                                    || y < 0 || y > dimensions_y
+                                                    || z < 0 || z > dimensions_z)
+                                            {
+                                                continue;
+                                            }
+                                            var cell = (int)math.hash(new int3(x, y, z));
+                                            if (!cells.Contains(cell))
+                                            {
+                                                cells.Add(cell);
+                                            }
+                                        }
                                     }
                                 }
                             }
 
 
-                            //check cells in perception range
-                            var hash = (int)math.hash(new int3(math.floor(agent.Position / cellSize)));
+                            //check cells within lookahead seconds
+                            if (perception.lookAheadSeconds > 0)
+                            {
+                                int3 p0 = (int3)math.floor(agent.Position);
+                                int3 p1 = (int3)math.floor(agent.Position + agent.Velocity * perception.lookAheadSeconds);
+                                int3 delta = new int3(
+                                    math.abs(p1.x - p0.x),
+                                    math.abs(p1.y - p0.y),
+                                     math.abs(p1.z - p0.z)
+                                    );
+                                int3 sign = new int3(
+                                    p0.x < p1.x ? 1 : -1,
+                                    p0.y < p1.y ? 1 : -1,
+                                    p0.z < p1.z ? 1 : -1
+                                    );
 
-                            var cells = new NativeList<int>(Allocator.Temp);
-                            cells.Add(hash);
+                                int deltaMax = math.cmax(delta);
+                                p1.x = p1.y = p1.z = deltaMax / 2; /* error offset */
+
+                                var startCell = (int)math.hash(p0);
+                                if (!cells.Contains(startCell))
+                                {
+                                    cells.Add(startCell);
+                                }
+
+
+                                for (int i = deltaMax; i > 0; i--)
+                                {
+                                    if (dimensions_x > 0 && (p0.x < 0 || p0.x >= dimensions_x)) break;
+                                    if (dimensions_y > 0 && (p0.y < 0 || p0.y >= dimensions_y)) break;
+                                    if (dimensions_z > 0 && (p0.z < 0 || p0.z >= dimensions_z)) break;
+
+                                    var lookCell = (int)math.hash(p0);
+                                    if (!cells.Contains(lookCell))
+                                    {
+                                        cells.Add(lookCell);
+                                    }
+
+                                    if (i == 1) break;
+
+                                    p1.x -= delta.x; if (p1.x < 0) { p1.x += deltaMax; p0.x += sign.x; }
+                                    p1.y -= delta.y; if (p1.y < 0) { p1.y += deltaMax; p0.y += sign.y; }
+                                    p1.z -= delta.z; if (p1.z < 0) { p1.z += deltaMax; p0.z += sign.z; }
+                                }
+                            }
+
+
 
                             int capBreak = 0;
+                            AgentData neighbor;
                             for (int i = 0; i < cells.Length; i++)
                             {
                                 capBreak = 0;
@@ -180,18 +285,32 @@ namespace CloudFine.FlockBox.DOTS
                                 {
                                     do
                                     {
-                                        neighbors.Add(neighbor);
-                                        capBreak++;
+                                        if (true)//!neighbors.Contains(neighbor))
+                                        {
+                                            neighbors.Add(neighbor);
+                                            if (!neighbor.Fill)
+                                            {
+                                                capBreak++;
+                                            }
+                                        }
                                     } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator) && capBreak < cellCap);
                                 }
                             }
-                            perception.Clear();
                         }
-
                     })
                     .ScheduleParallel(Dependency);
 
                 Dependency = findNeighborsJobHandle;
+
+                var clearPerpectionJob = Entities
+                    .WithSharedComponentFilter(settings)
+                    .WithName("ClearPerceptionsJob")
+                    .ForEach((ref PerceptionData perception) =>
+                        perception.Clear()
+                    ).Schedule(Dependency);
+
+                Dependency = clearPerpectionJob;
+
 
                 Dependency = spatialHashMap.Dispose(Dependency);
                 Dependency = tagHashMap.Dispose(Dependency);

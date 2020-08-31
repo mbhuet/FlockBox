@@ -28,7 +28,6 @@ namespace CloudFine.FlockBox.DOTS
                     ComponentType.ReadOnly<NeighborData>(),
                     ComponentType.ReadOnly<AgentData>(),
                     ComponentType.ReadOnly<SteeringData>(),
-                    ComponentType.ReadOnly<BoundaryData>(),
                     ComponentType.ReadOnly<T>(),
                 }
             });
@@ -40,8 +39,10 @@ namespace CloudFine.FlockBox.DOTS
                     ComponentType.ReadWrite<PerceptionData>(),
                     ComponentType.ReadOnly<AgentData>(),
                     ComponentType.ReadOnly<T>(),
-                }
+                },                
             });
+            //perceptionQuery.SetChangedVersionFilter(ComponentType.ReadOnly<T>());
+
 
             updateQuery = GetEntityQuery(new EntityQueryDesc()
             {
@@ -51,6 +52,7 @@ namespace CloudFine.FlockBox.DOTS
                     ComponentType.ReadWrite<T>(),
                 }
             });
+
 
             BehaviorSettings.OnBehaviorValuesModified += OnBehaviorModified;
 
