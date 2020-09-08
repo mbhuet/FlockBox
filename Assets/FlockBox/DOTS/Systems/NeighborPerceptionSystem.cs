@@ -94,7 +94,18 @@ namespace CloudFine.FlockBox.DOTS
                     })
                     .ScheduleParallel(Dependency);
 
-                Dependency = sleepJobHandle;
+
+                //clear neighbors
+                var clearNeighborsJobHandle = Entities
+                    .WithName("ClearNeighbors")
+                    .WithSharedComponentFilter(settings)
+                    .ForEach((ref DynamicBuffer<NeighborData> neighbors) =>
+                    {
+                        neighbors.Clear();
+                    }).ScheduleParallel(Dependency);
+
+
+                Dependency = JobHandle.CombineDependencies(Dependency, sleepJobHandle, clearNeighborsJobHandle);
                 
                 var parallelSpatialHashMap = spatialHashMap.AsParallelWriter();
                 var parallelTagHashMap = tagHashMap.AsParallelWriter();
@@ -142,16 +153,6 @@ namespace CloudFine.FlockBox.DOTS
 
 
 
-                //clear neighbors
-                var clearNeighborsJobHandle = Entities
-                    .WithName("ClearNeighbors")
-                    .WithSharedComponentFilter(settings)
-                    .ForEach((ref DynamicBuffer<NeighborData> neighbors) =>
-                    {
-                        neighbors.Clear();
-                    }).ScheduleParallel(Dependency);
-
-                Dependency = clearNeighborsJobHandle;
 
 
 
