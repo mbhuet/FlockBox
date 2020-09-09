@@ -32,7 +32,7 @@ namespace CloudFine.FlockBox.DOTS
             }
 
             float rayDist = LookAheadSeconds * math.length(mine.Velocity);
-            float closestHitDist = float.MaxValue;
+            float closestHitDist = rayDist;
             float hitDist = 0;
             float3 hitCenter = float3.zero;
 
@@ -57,7 +57,13 @@ namespace CloudFine.FlockBox.DOTS
                 return float3.zero;
             }
 
-            return steering.GetSteerVector(mine.Position + mine.Forward * closestHitDist - hitCenter, mine.Velocity) * (1f - (closestHitDist / rayDist)) * Weight;
+            //inside obstacle, steer out
+            if(closestHitDist == 0)
+            {
+                return math.normalize(mine.Position - hitCenter) * steering.MaxForce;
+            }
+            
+            return (mine.Position + mine.Forward * math.dot(hitCenter - mine.Position, mine.Forward) - hitCenter) * steering.MaxForce * Weight * (1f - (closestHitDist / rayDist));
         }
 
 

@@ -51,9 +51,9 @@ namespace CloudFine.FlockBox
                 steer = Vector3.zero;
                 return;
             }
-
             mostImmediateObstacle.FindNormalToSteerAwayFromShape(myRay, closestHit, mine.shape.radius, ref normal);
-            mine.GetSteerVector(out steer, normal);
+            steer = normal;
+            steer = steer.normalized * mine.activeSettings.maxForce;
             steer *= (1f - (closestHit.distance / rayDist));
         }
 

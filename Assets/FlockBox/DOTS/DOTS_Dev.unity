@@ -234,19 +234,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dimensions_x: 30
-  dimensions_y: 30
+  dimensions_y: 0
   dimensions_z: 30
   cellSize: 10
   wrapEdges: 0
   boundaryBuffer: 10
-  sleepChance: 0.5
+  sleepChance: 0
   maxCellCapacity: 10
   capCellCapacity: 1
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: 5f95e44f7f5bd1643878e2d58c8347dd,
       type: 3}
-    population: 10000
-  - prefab: {fileID: 1823620649583104859, guid: 69b6f1a612abd534e8c5ebcd1df22b03,
+    population: 1000
+  - prefab: {fileID: 3617397216089966378, guid: 33488b7a8684b5d409d7a42bf59efc1a,
       type: 3}
     population: 10
   drawGizmos: 1

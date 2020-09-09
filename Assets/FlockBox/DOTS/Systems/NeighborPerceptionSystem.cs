@@ -232,8 +232,8 @@ namespace CloudFine.FlockBox.DOTS
                             //check cells within lookahead seconds
                             if (perception.lookAheadSeconds > 0)
                             {
-                                int3 p0 = (int3)math.floor(agent.Position);
-                                int3 p1 = (int3)math.floor(agent.Position + agent.Velocity * perception.lookAheadSeconds);
+                                int3 p0 = (int3)math.floor(agent.Position/cellSize);
+                                int3 p1 = (int3)math.floor((agent.Position + agent.Velocity * perception.lookAheadSeconds)/cellSize);
                                 int3 delta = math.abs(p1 - p0);
                                 int3 sign = (int3)math.sign(p1 - p0);                            
 
