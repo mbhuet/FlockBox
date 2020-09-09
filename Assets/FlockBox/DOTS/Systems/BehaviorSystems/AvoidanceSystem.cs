@@ -62,8 +62,8 @@ namespace CloudFine.FlockBox.DOTS
             {
                 return math.normalize(mine.Position - hitCenter) * steering.MaxForce;
             }
-            
-            return (mine.Position + mine.Forward * math.dot(hitCenter - mine.Position, mine.Forward) - hitCenter) * steering.MaxForce * Weight * (1f - (closestHitDist / rayDist));
+            float3 steer = (mine.Position + mine.Forward * math.dot(hitCenter - mine.Position, mine.Forward) - hitCenter) * steering.MaxForce * Weight * (1f - (closestHitDist / rayDist));
+            return steer;
         }
 
 

@@ -238,7 +238,7 @@ MonoBehaviour:
   dimensions_z: 30
   cellSize: 10
   wrapEdges: 0
-  boundaryBuffer: 10
+  boundaryBuffer: 47.31
   sleepChance: 0
   maxCellCapacity: 10
   capCellCapacity: 1
