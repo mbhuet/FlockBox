@@ -93,7 +93,7 @@ namespace CloudFine.FlockBox.DOTS
                     if (agent.Sleeping) continue;
 
                     var acceleration = accelerations[i];
-                    acceleration.Value += behaviors[i].GetSteering(agent, steerings[i], neighborhood[i]);
+                    acceleration.Value += behaviors[i].CalculateSteering(agent, steerings[i], neighborhood[i]);
                     accelerations[i] = acceleration;
                 }
             }
