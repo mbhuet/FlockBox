@@ -25,5 +25,11 @@ namespace CloudFine.FlockBox.DOTS
                 position = math.clamp(position, float3.zero, Dimensions);
             }
         }
+        public void ValidateVelocity(ref float3 velocity)
+        {
+            if (Dimensions.x == 0) velocity.x = 0;
+            if (Dimensions.y == 0) velocity.y = 0;
+            if (Dimensions.z == 0) velocity.z = 0;           
+        }
     }
 }

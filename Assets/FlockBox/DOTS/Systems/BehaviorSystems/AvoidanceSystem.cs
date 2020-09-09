@@ -30,7 +30,7 @@ namespace CloudFine.FlockBox.DOTS
             }
 
             float rayDist = LookAheadSeconds * math.length(mine.Velocity);
-            float closestHitDist = rayDist;
+            float closestHitDist = float.MaxValue;
             float hitDist = 0;
             float3 hitCenter = float3.zero;
 
