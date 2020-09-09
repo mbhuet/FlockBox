@@ -10,7 +10,7 @@ namespace CloudFine.FlockBox.DOTS
         public bool Wrap;
 
 
-        public void ValidatePosition(ref float3 position)
+        public float3 ValidatePosition(float3 position)
         {
             if (Wrap)
             {
@@ -24,12 +24,15 @@ namespace CloudFine.FlockBox.DOTS
             {
                 position = math.clamp(position, float3.zero, Dimensions);
             }
+            return position;
         }
-        public void ValidateVelocity(ref float3 velocity)
+        public float3 ValidateVelocity(float3 velocity)
         {
             if (Dimensions.x == 0) velocity.x = 0;
             if (Dimensions.y == 0) velocity.y = 0;
-            if (Dimensions.z == 0) velocity.z = 0;           
+            if (Dimensions.z == 0) velocity.z = 0;
+            return velocity;
         }
+
     }
 }

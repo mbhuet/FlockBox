@@ -16,10 +16,10 @@ namespace CloudFine.FlockBox.DOTS
     {
         protected override void OnUpdate()
         {
-            var validationJob = Entities.ForEach((ref AgentData agent, ref Translation translation, ref BoundaryData boundary) =>
+            var validationJob = Entities.ForEach((ref AgentData agent, ref Translation translation, in BoundaryData boundary) =>
             {
-                boundary.ValidatePosition(ref agent.Position);
-                //boundary.ValidateVelocity(ref agent.Velocity);
+                agent.Position = boundary.ValidatePosition(agent.Position);
+                agent.Velocity = boundary.ValidateVelocity(agent.Velocity);
                 translation.Value = agent.Position;
             })
             .ScheduleParallel(Dependency);
