@@ -16,8 +16,19 @@ namespace CloudFine.FlockBox.DOTS
         public float Radius;
         public Int32 TagMask;
 
+        public float3 Steering;
+        public float3 GetSteering()
+        {
+            return Steering;
+        }
 
-        public float3 GetSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
+        public void SetSteering(float3 steer)
+        {
+            Steering = steer;
+        }
+
+
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;
 
@@ -26,29 +37,32 @@ namespace CloudFine.FlockBox.DOTS
             for (int i = 0; i < neighbors.Length; i++)
             {
                 AgentData other = neighbors[i].Value;
-                if (other.TagInMask(TagMask))
-                {
-                    float3 diff = mine.Position - other.Position;
-                    float dist = math.length(diff);
-                    if (dist < Radius)
-                    {
 
-                        //need to filter out "mine"
-                        /*
-                        if (math.lengthsq(diff) < .001f)
+                    if (other.TagInMask(TagMask))
+                    {
+                    if (!mine.Equals(other))
+                    {
+                        float3 diff = mine.Position - other.Position;
+                        float dist = math.length(diff);
+                        if (dist < Radius)
                         {
-                            Unity.Mathematics.Random rand = new Unity.Mathematics.Random();
-                            diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
-                        }
-                        */
-                        if (dist > .001f)
-                        {
-                            sum += (math.normalize(diff) / dist);
-                            count++;
+
+                            //need to filter out "mine"
+                            /*
+                            if (math.lengthsq(diff) < .001f)
+                            {
+                                Unity.Mathematics.Random rand = new Unity.Mathematics.Random();
+                                diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
+                            }
+                            */
+                            if (dist > .001f)
+                            {
+                                sum += (math.normalize(diff) / dist);
+                                count++;
+                            }
                         }
                     }
                 }
-
             }
             if (count > 0)
             {
@@ -56,7 +70,6 @@ namespace CloudFine.FlockBox.DOTS
             }
 
             return float3.zero;
-
         }
 
 

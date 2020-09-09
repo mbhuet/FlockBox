@@ -1,9 +1,10 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public struct AgentData : IComponentData
+    public struct AgentData : IComponentData, IEquatable<AgentData>
     {
         public byte Tag;
         public float Radius;
@@ -56,6 +57,11 @@ namespace CloudFine.FlockBox.DOTS
                     return false;
                 }
             }
+        }
+
+        public bool Equals(AgentData other)
+        {
+            return math.all(Position == other.Position);
         }
     }
 }

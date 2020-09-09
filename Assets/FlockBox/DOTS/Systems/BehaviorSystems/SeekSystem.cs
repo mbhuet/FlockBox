@@ -18,8 +18,20 @@ namespace CloudFine.FlockBox.DOTS
         public Int32 TagMask;
         public bool GlobalTagSearch;
 
+
+        public float3 Steering;
+        public float3 GetSteering()
+        {
+            return Steering;
+        }
+
+        public void SetSteering(float3 steer)
+        {
+            Steering = steer;
+        }
+
         //TODO keep track for current target for later retrieval
-        public float3 GetSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;
 
@@ -30,20 +42,23 @@ namespace CloudFine.FlockBox.DOTS
             }
             float closeSqrDist = float.MaxValue;
             bool foundTarget = false;
-            AgentData closeTarget = new AgentData
-            {
-                Position = float3.zero
-            };
+            float3 closeTargetPosition = float3.zero;
+
             for (int i =0; i<neighbors.Length; i++)
             {
-                AgentData target = neighbors[i];
-                if (target.TagInMask(TagMask)) {
-                    float sqrDist = math.lengthsq(target.Position - mine.Position);
-                    if (sqrDist < closeSqrDist && sqrDist < Radius * Radius)
+                AgentData other = neighbors[i];
+
+                    if (other.TagInMask(TagMask))
                     {
-                        closeSqrDist = sqrDist;
-                        closeTarget = target;
-                        foundTarget = true;
+                    if (!mine.Equals(other))
+                    {
+                        float sqrDist = math.lengthsq(other.Position - mine.Position);
+                        if (sqrDist < closeSqrDist && sqrDist < Radius * Radius)
+                        {
+                            closeSqrDist = sqrDist;
+                            closeTargetPosition = other.Position;
+                            foundTarget = true;
+                        }
                     }
                 }
             }
@@ -53,7 +68,7 @@ namespace CloudFine.FlockBox.DOTS
                 return float3.zero;
             }
 
-            return steering.GetSteerVector((closeTarget.Position - mine.Position), mine.Velocity) * Weight;
+            return steering.GetSteerVector((closeTargetPosition - mine.Position), mine.Velocity) * Weight;
         }
 
 

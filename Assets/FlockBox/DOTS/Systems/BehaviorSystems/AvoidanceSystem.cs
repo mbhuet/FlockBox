@@ -18,8 +18,20 @@ namespace CloudFine.FlockBox.DOTS
         public float Clearance;
         public Int32 TagMask;
 
+
+        public float3 Steering;
+        public float3 GetSteering()
+        {
+            return Steering;
+        }
+
+        public void SetSteering(float3 steer)
+        {
+            Steering = steer;
+        }
+
         //TODO keep track for current target for later retrieval
-        public float3 GetSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;
 
