@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
+using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,7 +11,7 @@ using UnityEditor;
 namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class WanderBehavior : SteeringBehavior
+    public class WanderBehavior : SteeringBehavior, IConvertToSteeringBehaviorComponentData<WanderData>
     {
         [Range(0,360f), Tooltip("The maximum deviation from the current direction of travel that a wander force can be.")]
         public float wanderScope = 90;
@@ -58,6 +60,20 @@ namespace CloudFine.FlockBox
                 Handles.Label(startHoriz * wanderRadius, new GUIContent("Wander Scope"));
             }
         }
+
+        public WanderData Convert()
+        {
+            return new WanderData
+            {
+                Weight = weight,
+                Intensity = wanderIntensity,
+                Scope = wanderScope,
+            };
+        }
+
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
 #endif
 
     }
