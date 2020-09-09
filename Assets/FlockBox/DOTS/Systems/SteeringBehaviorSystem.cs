@@ -197,8 +197,10 @@ namespace CloudFine.FlockBox.DOTS
                 AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
                 SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
                 BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
+
             };
             return job.ScheduleParallel(steeringQuery, Dependency);
+            
         }
     }
 }

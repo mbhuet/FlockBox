@@ -20,5 +20,42 @@ namespace CloudFine.FlockBox.DOTS
         {
             return ((1 << Tag & mask) != 0);
         }
+
+        public bool FindRayIntersection(float3 rayOrigin, float3 rayDirection, float rayDist, float rayRadius, ref float t)
+        {
+            rayRadius += Radius;
+
+            float3 oc = rayOrigin - Position;
+            float a = math.dot(rayDirection, rayDirection);
+            float b = 2f * math.dot(oc, rayDirection);
+            float c = math.dot(oc, oc) - rayRadius * rayRadius;
+            float discriminant = b * b - 4 * a * c;
+            if (discriminant < 0)
+            {
+                return false;
+            }
+            else
+            {
+                float numerator = -b - math.sqrt(discriminant);
+                if (numerator > 0)
+                {
+                    t = numerator / (2f * a);
+                    return true;
+                }
+
+                numerator = -b + math.sqrt(discriminant);
+                if (numerator > 0)
+                {
+                    //currently inside sphere
+                    t = 0;
+                    //t = numerator / (2f * a);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

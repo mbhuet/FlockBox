@@ -131,7 +131,6 @@ namespace CloudFine.FlockBox
             NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.TempJob);
             manager.Instantiate(agentEntityPrefab, agents);
 
-
             for (int i = 0; i < population; i++)
             {
                 Entity entity = agents[i];
@@ -148,6 +147,7 @@ namespace CloudFine.FlockBox
                 manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
                 //add all component data, imitate agent.Spawn(this)
             }
+            manager.DestroyEntity(agentEntityPrefab);
             agents.Dispose();
         }
 
