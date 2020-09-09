@@ -60,10 +60,14 @@ namespace CloudFine.FlockBox.DOTS
             //inside obstacle, steer out
             if(closestHitDist == 0)
             {
-                return math.normalize(mine.Position - hitCenter) * steering.MaxForce;
+                return math.normalize(mine.Position - hitCenter) * steering.MaxForce * Weight;
             }
-            float3 steer = (mine.Position + mine.Forward * math.dot(hitCenter - mine.Position, mine.Forward) - hitCenter) * steering.MaxForce * Weight * (1f - (closestHitDist / rayDist));
-            return steer;
+
+            //use projection to find steering direction perpendicular to current forward and away from obstacle center
+            return math.normalize(mine.Position + mine.Forward * math.dot(hitCenter - mine.Position, mine.Forward) - hitCenter) 
+                * steering.MaxForce 
+                * Weight 
+                * (1f - (closestHitDist / rayDist));
         }
 
 
