@@ -137,6 +137,7 @@ namespace CloudFine.FlockBox
                 AgentData data = manager.GetComponentData<AgentData>(entity);
                 data.Position = RandomPosition();
                 data.Velocity = UnityEngine.Random.insideUnitSphere;
+                data.UniqueID = (int)(UnityEngine.Random.value * int.MaxValue);
                 manager.SetComponentData(entity, data);
 
                 //parent the agent to the flockbox root

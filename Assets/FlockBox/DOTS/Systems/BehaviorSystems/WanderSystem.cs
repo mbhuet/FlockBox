@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using System.Xml;
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -12,7 +13,7 @@ namespace CloudFine.FlockBox.DOTS
             return Entities
                 .ForEach((ref Acceleration acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
                 {
-                    acceleration.Value += behavior.GetSteering(agent, steering, (float)time);
+                    acceleration.Value += behavior.CalculateSteering(agent, steering, (float)time);
 
                 }).ScheduleParallel(Dependency);
         }
@@ -24,7 +25,6 @@ namespace CloudFine.FlockBox.DOTS
         public float Weight;
         public float Scope;
         public float Intensity;
-        public float UniqueID;
 
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
@@ -32,14 +32,16 @@ namespace CloudFine.FlockBox.DOTS
         }
 
         /// <summary>
-        /// This overload of GetSteering requires a BoundaryData instead of a DynamicBuffer<NeighborData>
+        /// This overload of GetSteering requires time instead of a DynamicBuffer<NeighborData>
         /// </summary>
         /// <param name="mine"></param>
         /// <param name="steering"></param>
-        /// <param name="boundary"></param>
         /// <returns></returns>
-        public float3 GetSteering(AgentData mine, SteeringData steering, float time)
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, float time)
         {
+            float UniqueID = mine.UniqueID *.001f;
+            UniqueID *= UniqueID;
+
             float3 dir = new float3(
                 noise.cnoise(new float2((time * Intensity), UniqueID) - .5f) * Scope,
                 noise.cnoise(new float2((time * Intensity) + UniqueID, UniqueID) - .5f) * Scope,

@@ -16,6 +16,7 @@ namespace CloudFine.FlockBox.DOTS
         public float3 Forward;
 
         public bool Sleeping;
+        public int UniqueID;
 
         public bool TagInMask(int mask)
         {

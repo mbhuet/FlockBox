@@ -457,9 +457,8 @@ namespace CloudFine.FlockBox
                 Forward = Forward,
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius,
-                Fill = shape.type == Shape.ShapeType.SPHERE
-
-            }); ;
+                Fill = shape.type == Shape.ShapeType.SPHERE,
+            });
         }
     }
 }
