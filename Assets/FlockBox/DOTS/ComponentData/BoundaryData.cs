@@ -14,11 +14,46 @@ namespace CloudFine.FlockBox.DOTS
         {
             if (Wrap)
             {
-                position = math.fmod(position, Dimensions);
-                if (position.x < 0) position.x += Dimensions.x;
-                if (position.y < 0) position.y += Dimensions.y;
-                if (position.z < 0) position.z += Dimensions.z;
+                //if any dimension is 0, using fmod will cause an error
 
+                if (Dimensions.x > 0)
+                {
+                    position.x = math.fmod(position.x, Dimensions.x);
+                    if (position.x < 0)
+                    {
+                        position.x += Dimensions.x;
+                    }
+                }
+                else
+                {
+                    position.x = 0;
+                }
+
+                if(Dimensions.y > 0)
+                {
+                    position.y = math.fmod(position.y, Dimensions.y);
+                    if (position.y < 0)
+                    {
+                        position.y += Dimensions.y;
+                    }
+                }
+                else
+                {
+                    position.y = 0;
+                }
+
+                if(Dimensions.z > 0)
+                {
+                    position.z = math.fmod(position.z, Dimensions.z);
+                    if (position.z < 0)
+                    {
+                        position.z += Dimensions.z;
+                    }
+                }
+                else
+                {
+                    position.z = 0;
+                }
             }
             else
             {
