@@ -1,16 +1,34 @@
 ﻿using System;
-using System.Linq;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
     public class AvoidanceSystem : SteeringBehaviorSystem<AvoidanceData>
     {
+        protected override JobHandle DoPerception()
+        {
+            return Entities
+                .ForEach((ref PerceptionData perception, in AvoidanceData avoidance) =>
+                {
+                    perception.ExpandLookAheadSeconds(avoidance.LookAheadSeconds);
+                }
+                ).ScheduleParallel(Dependency);
+        }
 
+        protected override JobHandle DoSteering()
+        {
+            return Entities
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref Acceleration acceleration, in AgentData agent, in SteeringData steering, in AvoidanceData avoidance) =>
+                {
+                    acceleration.Value += avoidance.CalculateSteering(agent, steering, neighbors);
+                }
+                ).ScheduleParallel(Dependency);
+        }
     }
 
-    public struct AvoidanceData : IComponentData, ISteeringBehaviorComponentData
+    public struct AvoidanceData : IComponentData
     {
         public bool Active;
         public float Weight;
@@ -68,13 +86,6 @@ namespace CloudFine.FlockBox.DOTS
                 * steering.MaxForce 
                 * Weight 
                 * (1f - (closestHitDist / rayDist));
-        }
-
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            perception.ExpandLookAheadSeconds(LookAheadSeconds);
-            return perception;
         }
     }
 }

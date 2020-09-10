@@ -1,5 +1,4 @@
-﻿using System.Xml;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -7,6 +6,12 @@ namespace CloudFine.FlockBox.DOTS
 {
     public class WanderSystem : SteeringBehaviorSystem<WanderData>
     {
+
+        protected override JobHandle DoPerception()
+        {
+            return Dependency;
+        }
+
         protected override JobHandle DoSteering()
         {
             double time = Time.ElapsedTime;
@@ -14,22 +19,18 @@ namespace CloudFine.FlockBox.DOTS
                 .ForEach((ref Acceleration acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
                 {
                     acceleration.Value += behavior.CalculateSteering(agent, steering, (float)time);
-
-                }).ScheduleParallel(Dependency);
+                }
+                ).ScheduleParallel(Dependency);
         }
 
     }
 
-    public struct WanderData : IComponentData, ISteeringBehaviorComponentData
+    public struct WanderData : IComponentData
     {
         public float Weight;
         public float Scope;
         public float Intensity;
 
-        public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
-        {
-            return float3.zero;
-        }
 
         /// <summary>
         /// This overload of GetSteering requires time instead of a DynamicBuffer<NeighborData>
@@ -50,12 +51,6 @@ namespace CloudFine.FlockBox.DOTS
             return math.mul(quaternion.Euler(dir), mine.Forward)
                     * steering.MaxForce
                     * Weight;
-        }
-
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            return perception;
         }
     }
 }

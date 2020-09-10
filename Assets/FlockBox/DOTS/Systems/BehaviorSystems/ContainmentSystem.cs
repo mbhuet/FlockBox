@@ -6,6 +6,12 @@ namespace CloudFine.FlockBox.DOTS
 {
     public class ContainmentSystem : SteeringBehaviorSystem<ContainmentData>
     {
+
+        protected override JobHandle DoPerception()
+        {
+            return Dependency;
+        }
+
         /// <summary>
         /// Unlike other behaviors, Containment requires access to BoundaryData, and does not need to be aware of neighbors. Here the default steering job is overridden with a custom job.
         /// </summary>
@@ -14,23 +20,19 @@ namespace CloudFine.FlockBox.DOTS
             return Entities
                 .ForEach((ref Acceleration acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
                 {
-                    acceleration.Value += behavior.GetSteering(agent, steering, boundary);
+                    acceleration.Value += behavior.CalculateSteering(agent, steering, boundary);
 
-                }).ScheduleParallel(Dependency);
+                }
+                ).ScheduleParallel(Dependency);
         }
 
     }
 
-    public struct ContainmentData : IComponentData, ISteeringBehaviorComponentData
+    public struct ContainmentData : IComponentData
     {
         public float Weight;
         public float LookAheadSeconds;
 
-
-        public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
-        {
-            return float3.zero;
-        }
 
         /// <summary>
         /// This overload of GetSteering requires a BoundaryData instead of a DynamicBuffer<NeighborData>
@@ -39,7 +41,7 @@ namespace CloudFine.FlockBox.DOTS
         /// <param name="steering"></param>
         /// <param name="boundary"></param>
         /// <returns></returns>
-        public float3 GetSteering(AgentData mine, SteeringData steering, BoundaryData boundary)
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, BoundaryData boundary)
         {
             if (boundary.Wrap) return float3.zero;
 
@@ -86,13 +88,6 @@ namespace CloudFine.FlockBox.DOTS
             if (distanceToBorder <= 0) distanceToBorder = .001f;
 
             return steering.GetSeekVector(containedPosition, mine.Position, mine.Velocity) * (boundary.Margin / distanceToBorder) * Weight;
-        }
-
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            perception.ExpandLookAheadSeconds(LookAheadSeconds);
-            return perception;
         }
     }
 }

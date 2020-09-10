@@ -1,16 +1,41 @@
 ﻿using System;
-using System.Linq;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
     public class SeekSystem : SteeringBehaviorSystem<SeekData>
     {
+        protected override JobHandle DoPerception()
+        {
+            return Entities
+                .ForEach((ref PerceptionData perception, in SeekData seek) =>
+                {
+                    if (seek.GlobalTagSearch)
+                    {
+                        perception.AddGlobalSearchTagMask(seek.TagMask);
+                    }
+                    else
+                    {
+                        perception.ExpandPerceptionRadius(seek.Radius);
+                    }
+                }
+                ).ScheduleParallel(Dependency);
+        }
 
+        protected override JobHandle DoSteering()
+        {
+            return Entities
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref Acceleration acceleration, in SeekData seek, in AgentData agent, in SteeringData steering) =>
+                {
+                    acceleration.Value += seek.CalculateSteering(agent, steering, neighbors);
+                }
+                ).ScheduleParallel(Dependency);
+        }
     }
 
-    public struct SeekData : IComponentData, ISteeringBehaviorComponentData
+    public struct SeekData : IComponentData
     {
         public bool Active;
         public float Weight;
@@ -59,21 +84,6 @@ namespace CloudFine.FlockBox.DOTS
             }
 
             return steering.GetSteerVector((closeTargetPosition - mine.Position), mine.Velocity) * Weight;
-        }
-
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            if (GlobalTagSearch)
-            {
-                perception.AddGlobalSearchTagMask(TagMask);
-            }
-            else
-            {
-                perception.ExpandPerceptionRadius(Radius);
-            }
-
-            return perception;
         }
     }
 }

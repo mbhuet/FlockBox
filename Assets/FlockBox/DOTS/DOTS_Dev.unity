@@ -237,7 +237,7 @@ MonoBehaviour:
   dimensions_y: 0
   dimensions_z: 30
   cellSize: 10
-  wrapEdges: 0
+  wrapEdges: 1
   boundaryBuffer: 47.31
   sleepChance: 0
   maxCellCapacity: 10
@@ -245,7 +245,7 @@ MonoBehaviour:
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: 5f95e44f7f5bd1643878e2d58c8347dd,
       type: 3}
-    population: 6000
+    population: 1000
   - prefab: {fileID: 3617397216089966378, guid: 33488b7a8684b5d409d7a42bf59efc1a,
       type: 3}
     population: 10

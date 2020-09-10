@@ -1,21 +1,36 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
     public class SeparationSystem : SteeringBehaviorSystem<SeparationData>
     {
+        protected override JobHandle DoPerception()
+        {
+            return Entities.ForEach((ref PerceptionData perception, in SeparationData separation) =>
+            {
+                perception.ExpandPerceptionRadius(separation.Radius);
+            }).ScheduleParallel(Dependency);
+        }
 
+        protected override JobHandle DoSteering()
+        {
+            return Entities
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref Acceleration acceleration, in AgentData agent, in SteeringData steering, in SeparationData separation) =>
+                {
+                    acceleration.Value += separation.CalculateSteering(agent, steering, neighbors);
+                }).ScheduleParallel(Dependency);
+        }
     }
 
-    public struct SeparationData : IComponentData, ISteeringBehaviorComponentData
+    public struct SeparationData : IComponentData
     {
         public bool Active;
         public float Weight;
         public float Radius;
         public Int32 TagMask;
-
 
 
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
@@ -36,15 +51,6 @@ namespace CloudFine.FlockBox.DOTS
                         float dist = math.length(diff);
                         if (dist < Radius)
                         {
-
-                            //need to filter out "mine"
-                            /*
-                            if (math.lengthsq(diff) < .001f)
-                            {
-                                Unity.Mathematics.Random rand = new Unity.Mathematics.Random();
-                                diff = new float3(rand.NextFloat(1), rand.NextFloat(1), rand.NextFloat(1)) * .01f;
-                            }
-                            */
                             if (dist > .001f)
                             {
                                 sum += (math.normalize(diff) / dist);
@@ -62,11 +68,5 @@ namespace CloudFine.FlockBox.DOTS
             return float3.zero;
         }
 
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            perception.ExpandPerceptionRadius(Radius);
-            return perception;
-        }
     }
 }

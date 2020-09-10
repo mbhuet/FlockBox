@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1bc63d82f81e654f98689920bf1a025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   weight: 1.4
   useTagFilter: 0
   filterTags: []
@@ -23,6 +23,29 @@ MonoBehaviour:
   foldout: 1
   effectiveRadius: 8
   fieldOfView: 360
+--- !u!114 &-7189989977421063699
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  wanderScope: 90
+  wanderIntensity: 2.83
 --- !u!114 &-3704237729128849241
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -69,6 +92,7 @@ MonoBehaviour:
   - {fileID: -8362066606441875129}
   - {fileID: -3704237729128849241}
   - {fileID: 1286683144658095590}
+  - {fileID: -7189989977421063699}
 --- !u!114 &1286683144658095590
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -81,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 991e65c331b0e6748af0d23822cd3eb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   weight: 3
   useTagFilter: 1
   filterTags:
@@ -113,7 +137,7 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
   debugDrawProperties: 0
-  foldout: 1
+  foldout: 0
   lookAheadSeconds: 1
 --- !u!114 &3690119732318933899
 MonoBehaviour:
@@ -127,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7172dbec51051c438e5cb95fbc2154c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   weight: 1
   useTagFilter: 0
   filterTags: []
@@ -135,7 +159,7 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
   debugDrawProperties: 0
-  foldout: 1
+  foldout: 0
   effectiveRadius: 10
   fieldOfView: 360
 --- !u!114 &6301307743451049247
@@ -150,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea8df8741560c5419c65741a80da967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   weight: 1
   useTagFilter: 0
   filterTags: []
@@ -158,6 +182,6 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
   debugDrawProperties: 0
-  foldout: 1
+  foldout: 0
   effectiveRadius: 10
   fieldOfView: 360

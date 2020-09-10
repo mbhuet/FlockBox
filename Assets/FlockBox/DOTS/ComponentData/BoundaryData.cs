@@ -15,7 +15,6 @@ namespace CloudFine.FlockBox.DOTS
             if (Wrap)
             {
                 //if any dimension is 0, using fmod will cause an error
-
                 if (Dimensions.x > 0)
                 {
                     position.x = math.fmod(position.x, Dimensions.x);

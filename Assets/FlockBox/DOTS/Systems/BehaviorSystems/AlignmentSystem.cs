@@ -1,22 +1,40 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
     public class AlignmentSystem : SteeringBehaviorSystem<AlignmentData>
     {
+        protected override JobHandle DoPerception()
+        {
+            return Entities
+                .ForEach((ref PerceptionData perception, in AlignmentData alignment) =>
+                {
+                    perception.ExpandPerceptionRadius(alignment.Radius);
+                }
+                ).ScheduleParallel(Dependency);
+        }
 
+        protected override JobHandle DoSteering()
+        {
+            return Entities
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref Acceleration acceleration, in AgentData agent, in SteeringData steering, in AlignmentData alignment) =>
+                {
+                    acceleration.Value += alignment.CalculateSteering(agent, steering, neighbors);
+                }
+                ).ScheduleParallel(Dependency);
+        }
     }
 
-    public struct AlignmentData : IComponentData, ISteeringBehaviorComponentData
+
+    public struct AlignmentData : IComponentData
     {
         public bool Active;
         public float Weight;
         public float Radius;
         public Int32 TagMask;
-
-
 
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
@@ -49,12 +67,6 @@ namespace CloudFine.FlockBox.DOTS
             }
 
             return float3.zero;
-        }
-
-        public PerceptionData AddPerceptionRequirements(AgentData mine, PerceptionData perception)
-        {
-            perception.ExpandPerceptionRadius(Radius);
-            return perception;
         }
     }
 }

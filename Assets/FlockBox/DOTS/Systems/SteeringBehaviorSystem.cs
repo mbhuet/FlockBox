@@ -8,11 +8,14 @@ using Unity.Jobs;
 
 namespace CloudFine.FlockBox.DOTS
 {
+    /// <summary>
+    /// This base System will handle updating data from associated BehaviorSettings
+    /// Subclasses will need to implement steering and perception behavior.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData, ISteeringBehaviorComponentData
+    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData
     {
-        private EntityQuery perceptionQuery;
-        private EntityQuery steeringQuery;
         private EntityQuery updateQuery;
 
         protected List<Tuple<BehaviorSettings, SteeringBehavior>> toUpdate = new List<Tuple<BehaviorSettings, SteeringBehavior>>();
@@ -20,30 +23,6 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnCreate()
         {
-            steeringQuery = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[]
-                {
-                    ComponentType.ReadWrite<Acceleration>(),
-                    ComponentType.ReadOnly<NeighborData>(),
-                    ComponentType.ReadOnly<AgentData>(),
-                    ComponentType.ReadOnly<SteeringData>(),
-                    ComponentType.ReadOnly<T>(),
-                }
-            });
-
-            perceptionQuery = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[]
-                {
-                    ComponentType.ReadWrite<PerceptionData>(),
-                    ComponentType.ReadOnly<AgentData>(),
-                    ComponentType.ReadOnly<T>(),
-                },                
-            });
-            //perceptionQuery.SetChangedVersionFilter(ComponentType.ReadOnly<T>());
-
-
             updateQuery = GetEntityQuery(new EntityQueryDesc()
             {
                 All = new ComponentType[]
@@ -53,9 +32,7 @@ namespace CloudFine.FlockBox.DOTS
                 }
             });
 
-
             BehaviorSettings.OnBehaviorValuesModified += OnBehaviorModified;
-
         }
 
         protected override void OnDestroy()
@@ -66,60 +43,6 @@ namespace CloudFine.FlockBox.DOTS
         private void OnBehaviorModified(BehaviorSettings settings, SteeringBehavior mod)
         {
             toUpdate.Add(new Tuple<BehaviorSettings, SteeringBehavior>(settings, mod));
-        }
-
-
-        [BurstCompile]
-        protected struct SteeringJob : IJobChunk
-        {
-            public ArchetypeChunkComponentType<Acceleration> AccelerationDataType;
-            [ReadOnly] public ArchetypeChunkBufferType<NeighborData> NeighborDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<AgentData> AgentDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<SteeringData> SteeringDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<T> BehaviorDataType;
-
-
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                var accelerations = chunk.GetNativeArray(AccelerationDataType);
-                var agents = chunk.GetNativeArray(AgentDataType);
-                var behaviors = chunk.GetNativeArray(BehaviorDataType);
-                var steerings = chunk.GetNativeArray(SteeringDataType);
-                var neighborhood = chunk.GetBufferAccessor(NeighborDataType);
-
-                for (var i = 0; i < chunk.Count; i++)
-                {
-                    var agent = agents[i];
-                    if (agent.Sleeping) continue;
-
-                    var acceleration = accelerations[i];
-                    acceleration.Value += behaviors[i].CalculateSteering(agent, steerings[i], neighborhood[i]);
-                    accelerations[i] = acceleration;
-                }
-            }
-        }
-
-        [BurstCompile]
-        protected struct PerceptionJob : IJobChunk
-        {
-            public ArchetypeChunkComponentType<PerceptionData> PerceptionDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<AgentData> AgentDataType;
-            [ReadOnly] public ArchetypeChunkComponentType<T> BehaviorDataType;
-
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                var perceptions = chunk.GetNativeArray(PerceptionDataType);
-                var agents = chunk.GetNativeArray(AgentDataType);
-                var behaviors = chunk.GetNativeArray(BehaviorDataType);
-
-                for (var i = 0; i < chunk.Count; i++)
-                {
-                    var agent = agents[i];
-                    if (agent.Sleeping) continue;
-
-                    perceptions[i] = behaviors[i].AddPerceptionRequirements(agent, perceptions[i]);
-                }
-            }
         }
 
 
@@ -173,34 +96,8 @@ namespace CloudFine.FlockBox.DOTS
             toUpdate.Clear();
         }
 
-        protected virtual JobHandle DoPerception()
-        {
-            PerceptionJob perceptJob = new PerceptionJob
-            {
-                //write
-                PerceptionDataType = GetArchetypeChunkComponentType<PerceptionData>(false),
-                //read
-                BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
-                AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
-            };
-            return perceptJob.ScheduleParallel(perceptionQuery, Dependency);
-        }
 
-        protected virtual JobHandle DoSteering()
-        {
-            SteeringJob job = new SteeringJob
-            {
-                //write
-                AccelerationDataType = GetArchetypeChunkComponentType<Acceleration>(false),
-                //read
-                NeighborDataType = GetArchetypeChunkBufferType<NeighborData>(true),
-                AgentDataType = GetArchetypeChunkComponentType<AgentData>(true),
-                SteeringDataType = GetArchetypeChunkComponentType<SteeringData>(true),
-                BehaviorDataType = GetArchetypeChunkComponentType<T>(true),
-
-            };
-            return job.ScheduleParallel(steeringQuery, Dependency);
-            
-        }
+        protected abstract JobHandle DoPerception();
+        protected abstract JobHandle DoSteering();
     }
 }

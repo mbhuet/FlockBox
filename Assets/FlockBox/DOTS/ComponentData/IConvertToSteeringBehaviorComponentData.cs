@@ -9,7 +9,7 @@ namespace CloudFine.FlockBox.DOTS
         void RemoveEntityData(Entity entity, EntityManager entityManager);
     }
 
-    public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : struct, IComponentData, ISteeringBehaviorComponentData
+    public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : struct, IComponentData
     {
         T Convert();
     }
