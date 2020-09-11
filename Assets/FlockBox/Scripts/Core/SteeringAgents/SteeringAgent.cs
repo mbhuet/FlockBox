@@ -50,17 +50,17 @@ namespace CloudFine.FlockBox
         }
 
 
-        private Vector3 steerCached = Vector3.zero;
+        private Vector3 steerBuffer = Vector3.zero;
 
         void Flock(SurroundingsContainer surroundings)
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
                 if (!behavior.IsActive) continue;
-                behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
-                steerCached *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
-                ApplyForce(steerCached);
+                behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
+                steerBuffer *= behavior.weight;
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), behavior.debugColor);
+                ApplyForce(steerBuffer);
             }
         }
 
@@ -68,9 +68,9 @@ namespace CloudFine.FlockBox
         {
             if (!myNeighborhood.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
-                ApplyForce(steerCached);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
+                ApplyForce(steerBuffer);
             }
         }
 

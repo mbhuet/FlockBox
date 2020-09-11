@@ -1,4 +1,6 @@
-﻿using Unity.Entities;
+﻿using Drawing;
+using System.Xml.Schema;
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -18,11 +20,11 @@ namespace CloudFine.FlockBox.DOTS
             return Entities
                 .ForEach((ref Acceleration acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
                 {
-                    acceleration.Value += behavior.CalculateSteering(agent, steering, (float)time);
+                    var steer = behavior.CalculateSteering(agent, steering, (float)time);
+                    acceleration.Value += steer;
                 }
                 ).ScheduleParallel(Dependency);
         }
-
     }
 
     public struct WanderData : IComponentData
@@ -43,25 +45,14 @@ namespace CloudFine.FlockBox.DOTS
             float UniqueID = mine.UniqueID *.001f;
             UniqueID *= UniqueID;
 
-            /*
-             *             float noiseScale = 1;
-
+            //noise.cnoise() will return a value (-1, 1)
             float3 dir = new float3(
-                noise.cnoise(new float2(UniqueID, UniqueID) * noiseScale + new float2(1, 1) * (time * Intensity)),
-                noise.cnoise(new float2(UniqueID, UniqueID + 4.32452513f) * noiseScale + new float2(1, 1) * (time * Intensity)),
-                noise.cnoise(new float2(UniqueID, UniqueID + -1.82344354f) * noiseScale + new float2(1, 1) * (time * Intensity))
-                ) * 0.5f * Scope;
-             * 
-             * 
-             */
-             
-            float3 dir = new float3(
-                noise.cnoise(new float2((time * Intensity), UniqueID) - .5f) * Scope,
-                noise.cnoise(new float2((time * Intensity) + UniqueID, UniqueID) - .5f) * Scope,
-                noise.cnoise(new float2((time * Intensity) + UniqueID * 2, UniqueID) - .5f) * Scope
+                (noise.cnoise(new float2((time * Intensity), UniqueID))) * Scope * .5f,
+                (noise.cnoise(new float2((time * Intensity) + UniqueID, UniqueID))) * Scope * .5f,
+                (noise.cnoise(new float2((time * Intensity) + UniqueID * 2, UniqueID))) * Scope * .5f
                 );
-            //UnityEngine.Debug.Log("id " + UniqueID + " " + dir);
-            return math.mul(quaternion.Euler(dir), mine.Forward)
+//            UnityEngine.Debug.Log("id " + UniqueID + " " + dir + "   " + noise.cnoise(new float2((time * Intensity), UniqueID)));
+            return math.mul(quaternion.Euler(math.radians(dir)), mine.Forward)
                     * steering.MaxForce
                     * Weight;
         }

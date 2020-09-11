@@ -371,11 +371,8 @@ namespace CloudFine.FlockBox
                 {
                     bucketToAgents.Add(bucket, new HashSet<Agent>() { agent});
                     agentToBuckets[agent].Add(bucket);
-
                 }
             }
-
-
         }
 
         public int GetBucketOverlappingPoint(Vector3 point)
