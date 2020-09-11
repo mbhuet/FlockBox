@@ -154,7 +154,7 @@ namespace CloudFine.FlockBox
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            activeSettings.Convert(entity, dstManager, conversionSystem);
+            activeSettings.ApplyToEntity(entity, dstManager);
 
             //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData

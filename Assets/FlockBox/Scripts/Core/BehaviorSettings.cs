@@ -106,19 +106,65 @@ namespace CloudFine.FlockBox
 
         #region DOTS
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        /// <summary>
+        /// Used to set the BehaviorSettings of an Entity. Will clean up old ComponentData.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="dstManager"></param>
+        public void ApplyToEntity(Entity entity, EntityManager dstManager)
+        {
+            //if this entity already has a behaviorSettingsData, clean it up
+            if (dstManager.HasComponent<BehaviorSettingsData>(entity))
+            {
+                BehaviorSettings oldSettings = dstManager.GetSharedComponentData<BehaviorSettingsData>(entity).Settings;
+                if(oldSettings != null)
+                {
+                    oldSettings.CleanupBehaviorsOnEntity(entity, dstManager);
+                }
+                dstManager.SetSharedComponentData<BehaviorSettingsData>(entity, new BehaviorSettingsData { Settings = this });
+            }
+            //otherwise add new component data
+            else
+            {
+                dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
+            }
+
+            if (dstManager.HasComponent<SteeringData>(entity))
+            {
+                dstManager.SetComponentData(entity, ConvertToComponentData());
+            }
+            else
+            {
+                dstManager.AddComponentData(entity, ConvertToComponentData());
+            }
+
+            ApplyBehaviorsToEntity(entity, dstManager);   
+        }
+
+        private void CleanupBehaviorsOnEntity(Entity entity, EntityManager dstManager)
         {
             foreach (SteeringBehavior behavior in Behaviors)
             {
-                if(behavior is IConvertToComponentData)
+                if (behavior is IConvertToComponentData)
+                {
+                    (behavior as IConvertToComponentData).RemoveEntityData(entity, dstManager);
+
+                }
+            }
+            Containment.RemoveEntityData(entity, dstManager);
+        }
+
+        private void ApplyBehaviorsToEntity(Entity entity, EntityManager dstManager)
+        {
+            foreach (SteeringBehavior behavior in Behaviors)
+            {
+                if (behavior is IConvertToComponentData)
                 {
                     (behavior as IConvertToComponentData).AddEntityData(entity, dstManager);
 
                 }
             }
             Containment.AddEntityData(entity, dstManager);
-            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
-            dstManager.AddComponentData(entity, ConvertToComponentData());
         }
 
         public SteeringData ConvertToComponentData()
