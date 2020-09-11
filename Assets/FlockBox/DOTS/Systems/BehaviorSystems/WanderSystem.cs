@@ -43,11 +43,24 @@ namespace CloudFine.FlockBox.DOTS
             float UniqueID = mine.UniqueID *.001f;
             UniqueID *= UniqueID;
 
+            /*
+             *             float noiseScale = 1;
+
+            float3 dir = new float3(
+                noise.cnoise(new float2(UniqueID, UniqueID) * noiseScale + new float2(1, 1) * (time * Intensity)),
+                noise.cnoise(new float2(UniqueID, UniqueID + 4.32452513f) * noiseScale + new float2(1, 1) * (time * Intensity)),
+                noise.cnoise(new float2(UniqueID, UniqueID + -1.82344354f) * noiseScale + new float2(1, 1) * (time * Intensity))
+                ) * 0.5f * Scope;
+             * 
+             * 
+             */
+             
             float3 dir = new float3(
                 noise.cnoise(new float2((time * Intensity), UniqueID) - .5f) * Scope,
                 noise.cnoise(new float2((time * Intensity) + UniqueID, UniqueID) - .5f) * Scope,
                 noise.cnoise(new float2((time * Intensity) + UniqueID * 2, UniqueID) - .5f) * Scope
                 );
+            //UnityEngine.Debug.Log("id " + UniqueID + " " + dir);
             return math.mul(quaternion.Euler(dir), mine.Forward)
                     * steering.MaxForce
                     * Weight;
