@@ -70,8 +70,14 @@ namespace CloudFine.FlockBox
                 GUI.enabled = false;
             }
             EditorGUILayout.PropertyField(_useDOTS);
+
             GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
+            
+            if (_useDOTS.boolValue)
+            {
+                EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
+            }
 
             Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));
             dimensions.x = Math.Max(dimensions.x, 0);
