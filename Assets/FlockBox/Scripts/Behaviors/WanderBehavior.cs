@@ -31,6 +31,20 @@ namespace CloudFine.FlockBox
                     * mine.Forward * mine.activeSettings.maxForce;
         }
 
+        public WanderData Convert()
+        {
+            return new WanderData
+            {
+                Weight = weight,
+                Intensity = wanderIntensity,
+                Scope = wanderScope,
+            };
+        }
+
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+
 #if UNITY_EDITOR
         public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
         {
@@ -60,20 +74,6 @@ namespace CloudFine.FlockBox
                 Handles.Label(startHoriz * wanderRadius, new GUIContent("Wander Scope"));
             }
         }
-
-        public WanderData Convert()
-        {
-            return new WanderData
-            {
-                Weight = weight,
-                Intensity = wanderIntensity,
-                Scope = wanderScope,
-            };
-        }
-
-        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
-        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
-        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
 #endif
 
     }

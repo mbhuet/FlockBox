@@ -16,5 +16,7 @@ namespace CloudFine.FlockBox
                 testBox.sleepChance = 1f - fidelity;
             }
         }
+
+
     }
 }

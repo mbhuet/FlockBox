@@ -57,6 +57,11 @@ namespace CloudFine.FlockBox
             get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
         }
 
+        public bool DOTSEnabled
+        {
+            get { return useDOTS; }
+        }
+
         public int CellCapacity
         {
             get
@@ -101,27 +106,38 @@ namespace CloudFine.FlockBox
         }
         private Entity _syncedEntityTransform;
 
+        private EntityManager entityManager
+        {
+            get
+            {
+                if(_entityManager == null)
+                {
+                    _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                }
+                return _entityManager;
+            }
+        }
+        private EntityManager _entityManager;
+
 
         #region DOTS
 
         private Entity CreateSyncedRoot()
         {
-            EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
             //
             // Set up root entity that will follow FlockBox GameObject
             //
-            Entity root = manager.CreateEntity(new ComponentType[]{
+            Entity root = entityManager.CreateEntity(new ComponentType[]{
                         typeof(LocalToWorld),
                     });
 
-            manager.AddComponentObject(root, this.transform);
-            manager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject { });
+            entityManager.AddComponentObject(root, this.transform);
+            entityManager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject { });
             return root;
         }
 
-        private void InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
+        public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
         {
-            EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
             //
             //Create entity template for agents with Conversion System
             //
@@ -131,27 +147,30 @@ namespace CloudFine.FlockBox
             };
             agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab.gameObject, settings);
             NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.TempJob);
-            manager.Instantiate(agentEntityPrefab, agents);
+            entityManager.Instantiate(agentEntityPrefab, agents);
 
             for (int i = 0; i < population; i++)
             {
                 Entity entity = agents[i];
-                AgentData data = manager.GetComponentData<AgentData>(entity);
-                data.Position = RandomPosition();
-                data.Velocity = UnityEngine.Random.insideUnitSphere;
-                data.UniqueID = (int)(UnityEngine.Random.value * 100000);
-                manager.SetComponentData(entity, data);
+                SteeringData steering = entityManager.GetComponentData<SteeringData>(entity);
+                AgentData agent = entityManager.GetComponentData<AgentData>(entity);
+                agent.Position = RandomPosition();
+                agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
+                agent.UniqueID = (int)(UnityEngine.Random.value * 100000);
+                entityManager.SetComponentData(entity, agent);
 
                 //parent the agent to the flockbox root
-                manager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
-                manager.AddComponentData<LocalToParent>(entity, new LocalToParent());
+                entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
+                entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
 
-                manager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
-                manager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
+                entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+                entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
                 //add all component data, imitate agent.Spawn(this)
             }
-            manager.DestroyEntity(agentEntityPrefab);
+            entityManager.DestroyEntity(agentEntityPrefab);
+            Entity[] output = agents.ToArray();
             agents.Dispose();
+            return output;
         }
 
 
@@ -201,6 +220,7 @@ namespace CloudFine.FlockBox
             bucketsToDebugDraw.Clear();
 #endif
         }
+
 
         private void OnValidate()
         {
