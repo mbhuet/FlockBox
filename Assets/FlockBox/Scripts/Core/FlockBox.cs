@@ -80,7 +80,9 @@ namespace CloudFine.FlockBox
         public List<AgentPopulation> startingPopulations;
 
         [SerializeField]
-        private bool drawGizmos = true;
+        private bool drawBoundary = true;
+        [SerializeField]
+        private bool drawOccupiedCells = false;
 
         [SerializeField]
         private bool useDOTS = false;
@@ -645,7 +647,7 @@ namespace CloudFine.FlockBox
 
         private void OnDrawGizmos()
         {
-            if (drawGizmos)
+            if (drawBoundary)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
@@ -660,11 +662,15 @@ namespace CloudFine.FlockBox
                             Mathf.Max(0, dimensions_y * cellSize - boundaryBuffer * 2f),
                             Mathf.Max(0, dimensions_z * cellSize - boundaryBuffer * 2f)));
                 }
-                DrawNeighborHoods();
             }
+            if (drawOccupiedCells)
+            {
+                DrawOccupiedCells();
+            }
+
         }
 
-        void DrawNeighborHoods()
+        void DrawOccupiedCells()
         {
             if (bucketToAgents == null) return;
             

@@ -23,7 +23,9 @@ namespace CloudFine.FlockBox
         private SerializedProperty _sleep;
 
         private SerializedProperty _populations;
-        private SerializedProperty _gizmos;
+        private SerializedProperty _drawBoundary;
+        private SerializedProperty _drawOccupiedCells;
+
         private SerializedProperty _cellCapacity;
         private SerializedProperty _useCellCapacity;
         private SerializedProperty _useDOTS;
@@ -44,7 +46,9 @@ namespace CloudFine.FlockBox
             _wrap = serializedObject.FindProperty("wrapEdges");
             _sleep = serializedObject.FindProperty("sleepChance");
             _populations = serializedObject.FindProperty("startingPopulations");
-            _gizmos = serializedObject.FindProperty("drawGizmos");
+            _drawBoundary = serializedObject.FindProperty("drawBoundary");
+            _drawOccupiedCells = serializedObject.FindProperty("drawOccupiedCells");
+
             _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
             _useDOTS = serializedObject.FindProperty("useDOTS");
@@ -133,7 +137,9 @@ namespace CloudFine.FlockBox
             if (debugFoldout)
             {
                 EditorGUI.indentLevel = 1;
-                EditorGUILayout.PropertyField(_gizmos);
+                EditorGUILayout.PropertyField(_drawBoundary);
+                EditorGUILayout.PropertyField(_drawOccupiedCells);
+
                 EditorGUI.indentLevel = 0;
 
             }
