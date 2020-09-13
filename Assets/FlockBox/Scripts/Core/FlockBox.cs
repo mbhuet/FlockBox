@@ -136,15 +136,17 @@ namespace CloudFine.FlockBox
             return root;
         }
 
-        public void ConvertGameObjectsToEntities(List<Agent> objects)
+        public void ConvertGameObjectsToEntities(Agent[] agents)
         {
             GameObjectConversionSettings settings = new GameObjectConversionSettings()
             {
                 DestinationWorld = World.DefaultGameObjectInjectionWorld
             };
-            for(int i =0; i<objects.Count; i++)
+            for(int i =0; i<agents.Length; i++)
             {
-                Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(objects[i].gameObject, settings);
+                Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(agents[i].gameObject, settings);
+                SetupEntity(e);
+                GameObject.Destroy(agents[i].gameObject);
             }
         }
 
@@ -207,6 +209,7 @@ namespace CloudFine.FlockBox
                 if (useDOTS)
                 {
                     InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
+                    ConvertGameObjectsToEntities(GetComponentsInChildren<Agent>());
                 }
                 else
                 {
