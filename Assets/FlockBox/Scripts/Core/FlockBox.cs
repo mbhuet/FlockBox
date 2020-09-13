@@ -110,7 +110,7 @@ namespace CloudFine.FlockBox
         {
             get
             {
-                if(_entityManager == null)
+                if(_entityManager == default)
                 {
                     _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
                 }
@@ -136,11 +136,29 @@ namespace CloudFine.FlockBox
             return root;
         }
 
+        public void ConvertGameObjectsToEntities(List<Agent> objects)
+        {
+            GameObjectConversionSettings settings = new GameObjectConversionSettings()
+            {
+                DestinationWorld = World.DefaultGameObjectInjectionWorld
+            };
+            for(int i =0; i<objects.Count; i++)
+            {
+                Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(objects[i].gameObject, settings);
+            }
+        }
+
+        private void SetupEntity(Entity entity)
+        {
+            entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
+            entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
+
+            entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+            entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
+        }
+
         public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
         {
-            //
-            //Create entity template for agents with Conversion System
-            //
             GameObjectConversionSettings settings = new GameObjectConversionSettings()
             {
                 DestinationWorld = World.DefaultGameObjectInjectionWorld
@@ -152,20 +170,17 @@ namespace CloudFine.FlockBox
             for (int i = 0; i < population; i++)
             {
                 Entity entity = agents[i];
-                SteeringData steering = entityManager.GetComponentData<SteeringData>(entity);
                 AgentData agent = entityManager.GetComponentData<AgentData>(entity);
+                if (entityManager.HasComponent<SteeringData>(entity))
+                {
+                    SteeringData steering = entityManager.GetComponentData<SteeringData>(entity);
+                    agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
+                }
                 agent.Position = RandomPosition();
-                agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
                 agent.UniqueID = (int)(UnityEngine.Random.value * 100000);
                 entityManager.SetComponentData(entity, agent);
 
-                //parent the agent to the flockbox root
-                entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
-                entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
-
-                entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
-                entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
-                //add all component data, imitate agent.Spawn(this)
+                SetupEntity(entity);
             }
             entityManager.DestroyEntity(agentEntityPrefab);
             Entity[] output = agents.ToArray();
@@ -267,6 +282,7 @@ namespace CloudFine.FlockBox
                     surroundings.AddAgents(_bucketContentsCache);
                 }
             }
+
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
@@ -305,9 +321,7 @@ namespace CloudFine.FlockBox
                 }
                 agentToBuckets[agent].Clear();
             }
-
         }
-
 
         private HashSet<Agent> _bucketContentsCache;
         private HashSet<int> _bucketListCache;
@@ -315,8 +329,6 @@ namespace CloudFine.FlockBox
 
         private void AddAgentToBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
         {
-
-
             if(lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
             {
                 //check for changes
@@ -404,7 +416,6 @@ namespace CloudFine.FlockBox
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> buckets)
         {
-            
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
 
@@ -414,7 +425,6 @@ namespace CloudFine.FlockBox
             int z0 = ToCellFloor(start.z);
             int z1 = ToCellFloor(end.z);     
 
-
             int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
             int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
             int dz = Math.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
@@ -423,7 +433,6 @@ namespace CloudFine.FlockBox
             x1 = y1 = z1 = dm / 2; /* error offset */
 
             buckets.Add(CellPositionToHash(x0, y0, z0));
-
 
             for (; ; )
             {  /* loop */
@@ -435,15 +444,12 @@ namespace CloudFine.FlockBox
 
                 if (i-- == 0) break;
 
-
                 x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
                 y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
                 z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
             }
-
         }
-
-        
+  
         public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> buckets)
         {
             Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
@@ -468,8 +474,6 @@ namespace CloudFine.FlockBox
                     }
                 }
             }
-
-
         }
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, HashSet<int> buckets)
