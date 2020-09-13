@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using CloudFine.FlockBox.DOTS;
+using System.Runtime.CompilerServices;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -39,7 +41,7 @@ namespace CloudFine.FlockBox
         {
             get
             {
-                return this is IConvertToComponentData;
+                return GetType().GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConvertToSteeringBehaviorComponentData<>));         
             }
         }
 
