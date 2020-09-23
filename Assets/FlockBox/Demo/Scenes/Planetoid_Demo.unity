@@ -198,7 +198,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014376891}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50, y: 50, z: 0}
+  m_LocalPosition: {x: 50, y: 50, z: -66.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -245,7 +245,7 @@ MonoBehaviour:
   startingPopulations:
   - prefab: {fileID: -7840802583321757603, guid: cf7f88b5ef4e65f4c8784013d1595412,
       type: 3}
-    population: 50
+    population: 200
   drawBoundary: 1
   drawOccupiedCells: 1
   useDOTS: 0
