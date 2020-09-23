@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -29,6 +30,18 @@ namespace CloudFine.FlockBox.DOTS {
 
         protected override void OnUpdate()
         {
+            /*
+            Entities
+                .WithChangeFilter<BehaviorSettingsData>()
+                .WithoutBurst()
+                .ForEach((Entity e, in BehaviorSettingsData settings) =>
+                {
+                    UnityEngine.Debug.Log("settings change detected");
+                    //this will not know which componentdata to remove, that happens inside SteeringBehaviorSystem
+                    settings.Settings.ApplyToEntity(e, EntityManager);
+                }).Run();
+            */
+
             foreach(BehaviorSettings changed in toUpdate)
             {
                 float maxSpeed = changed.maxSpeed;

@@ -144,6 +144,7 @@ namespace CloudFine.FlockBox
 
         private void CleanupBehaviorsOnEntity(Entity entity, EntityManager dstManager)
         {
+            return;
             foreach (SteeringBehavior behavior in Behaviors)
             {
                 if (behavior is IConvertToComponentData)
@@ -157,6 +158,7 @@ namespace CloudFine.FlockBox
 
         private void ApplyBehaviorsToEntity(Entity entity, EntityManager dstManager)
         {
+            return;
             foreach (SteeringBehavior behavior in Behaviors)
             {
                 if (behavior is IConvertToComponentData)

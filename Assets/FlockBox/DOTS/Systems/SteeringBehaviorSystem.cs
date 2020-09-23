@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -104,6 +105,8 @@ namespace CloudFine.FlockBox.DOTS
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
+                UnityEngine.Debug.Log("removeData");
+                
                 BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
                 if (!settings.Settings.RequiresComponentData<T>())
                 {
@@ -114,6 +117,8 @@ namespace CloudFine.FlockBox.DOTS
                         //em.RemoveComponent<T>(entities[i]);
                     }
                 }
+                
+                
             }
         }
 
@@ -127,6 +132,8 @@ namespace CloudFine.FlockBox.DOTS
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
+                UnityEngine.Debug.Log("addData");
+                
                 BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
                 if (settings.Settings.RequiresComponentData<T>())
                 {
@@ -134,9 +141,9 @@ namespace CloudFine.FlockBox.DOTS
                     for (var i = 0; i < chunk.Count; i++)
                     {
                         buffer.AddComponent<T>(entities[i]);
-                        //em.RemoveComponent<T>(entities[i]);
                     }
                 }
+                
             }
         }
 
@@ -153,19 +160,40 @@ namespace CloudFine.FlockBox.DOTS
 
         protected void DoBehaviorDataUpdate()
         {
+            //TODO use query.entitycount to decide if any of this is worth doing
+
+
             var ecb = m_EndSimulationEcbSystem.CreateCommandBuffer();
+            ArchetypeChunkSharedComponentType<BehaviorSettingsData> settingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>();
+            ArchetypeChunkEntityType entityType = GetArchetypeChunkEntityType();
 
             //if an Entity's BehaviorSettings have changed, check to make sure this componentData is still needed. Remove if not.
             RemoveDataJob removeJob = new RemoveDataJob
             {
-                BehaviorSettingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>(),
-                EntityType = GetArchetypeChunkEntityType(),
+                BehaviorSettingsDataType = settingsDataType,
+                EntityType = entityType,
                 em = EntityManager,
                 buffer = ecb
             };
-            var removeHandle = removeJob.ScheduleParallel(removeQuery, Dependency);
+            //var removeHandle = 
+            removeJob.Run(removeQuery);//, Dependency);
 
-            m_EndSimulationEcbSystem.AddJobHandleForProducer(removeHandle);
+            //Dependency = removeHandle;
+
+            //if an Entity's BehaviorSettings have changed, check to make sure needed componentdata is in place. Add if not.
+            AddDataJob addJob = new AddDataJob
+            {
+                BehaviorSettingsDataType = settingsDataType,
+                EntityType = entityType,
+                em = EntityManager,
+                buffer = ecb
+            };
+            //var addHandle = 
+            addJob.Run(addQuery);//, Dependency);
+
+            //Dependency = addHandle;
+
+            m_EndSimulationEcbSystem.AddJobHandleForProducer(Dependency);
 
             foreach (Tuple<BehaviorSettings, SteeringBehavior> tuple in toUpdate)
             {
