@@ -100,13 +100,11 @@ namespace CloudFine.FlockBox
             UpdateTransform();
         }
 
-
         protected override void FindNeighborhoodBuckets()
         {
             if (myNeighborhood)
                 myNeighborhood.UpdateAgentBuckets(this, buckets, false);
         }
-
 
         public override void Spawn(FlockBox neighborhood, Vector3 position)
         {
@@ -128,8 +126,6 @@ namespace CloudFine.FlockBox
         {
             freezePosition = isLocked;
         }
-
-
        
         protected Quaternion LookRotation(Vector3 desiredForward)
         {
@@ -184,18 +180,12 @@ namespace CloudFine.FlockBox
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.color = Color.grey;
                 shape.DrawGizmo();
-
-
             }
-
-           
 
             if (UnityEditor.Selection.activeGameObject != transform.gameObject)
             {
                 return;
             }
-
-            
         }
 
         void OnDrawGizmos()
