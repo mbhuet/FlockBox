@@ -2,6 +2,7 @@
 using System;
 using Unity.Entities;
 using CloudFine.FlockBox.DOTS;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -165,6 +166,11 @@ namespace CloudFine.FlockBox
                 }
             }
             Containment.AddEntityData(entity, dstManager);
+        }
+
+        public bool RequiresComponentData<T>() where T : struct, IComponentData
+        {
+            return behaviors.Any(x => (x as IConvertToSteeringBehaviorComponentData<T>) != null);
         }
 
         public SteeringData ConvertToComponentData()
