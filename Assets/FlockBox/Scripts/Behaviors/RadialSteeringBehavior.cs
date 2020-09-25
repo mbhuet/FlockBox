@@ -19,7 +19,7 @@ namespace CloudFine
         {
             if (mine == other) return false;
             return (
-                Vector3.SqrMagnitude(mine.Position - other.Position) < effectiveRadius * effectiveRadius //inside radius
+                Vector3.SqrMagnitude(mine.Position - other.Position) < (effectiveRadius + other.shape.radius) * (effectiveRadius + other.shape.radius) //inside radius
                 && Vector3.Angle(mine.Forward, other.Position - mine.Position) <= fieldOfView); // inside fov
         }
 
