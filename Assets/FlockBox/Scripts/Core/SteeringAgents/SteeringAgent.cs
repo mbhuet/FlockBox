@@ -150,10 +150,18 @@ namespace CloudFine.FlockBox
 
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
+
+            SteeringData steerData = new SteeringData();
             if (activeSettings)
             {
-                activeSettings.ApplyToEntity(entity, dstManager);
+                dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = activeSettings });
+                steerData.MaxForce = activeSettings.maxForce;
+                steerData.MaxSpeed = activeSettings.maxSpeed;
             }
+
+            dstManager.AddComponentData(entity, steerData);
+
 
             //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData

@@ -31,9 +31,9 @@ namespace CloudFine.FlockBox.DOTS {
 
         protected override void OnUpdate()
         {
-            //The problem is that I either need a commandbuffer in this foreach or a new IJobChunk that can work with a query
-
-
+            //TODO this is a huge bottleneck
+            
+            
             Entities
                 .WithChangeFilter<BehaviorSettingsData>()
                 .WithStructuralChanges()
@@ -42,7 +42,7 @@ namespace CloudFine.FlockBox.DOTS {
                     settings.Settings.ApplyToEntity(e, EntityManager);
                 }
                 ).Run();
-
+            
 
             foreach(BehaviorSettings changed in toUpdate)
             {
@@ -61,26 +61,6 @@ namespace CloudFine.FlockBox.DOTS {
             }
             toUpdate.Clear();
         }
-
-        //cannot BurstCompile
-        
-        protected struct ApplySettingsJob : IJobChunk
-        {
-            [ReadOnly] public ArchetypeChunkSharedComponentType<BehaviorSettingsData> BehaviorSettingsDataType;
-            [ReadOnly] public ArchetypeChunkEntityType EntityType;
-            public EntityManager em;
-
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
-                var chunkEntities = chunk.GetNativeArray(EntityType);
-                for (var i = 0; i < chunk.Count; i++)
-                {
-                }
-
-            }
-        }
-
 
         private void OnSettingsChanged(BehaviorSettings changed)
         {

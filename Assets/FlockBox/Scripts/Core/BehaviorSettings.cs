@@ -108,56 +108,49 @@ namespace CloudFine.FlockBox
         #region DOTS
 
         /// <summary>
-        /// Used to set the BehaviorSettings of an Entity. Will clean up old ComponentData.
+        /// Used to apply necessary behavior ComponentData to an Entity
+        /// Clean-up of ComponentData that is no longer needed is handled by each SteeringBehaviorSystem
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="dstManager"></param>
         public void ApplyToEntity(Entity entity, EntityManager dstManager)
         {
-            //if this entity already has a behaviorSettingsData, update it
-            if (dstManager.HasComponent<BehaviorSettingsData>(entity))
-            {
-                dstManager.SetSharedComponentData<BehaviorSettingsData>(entity, new BehaviorSettingsData { Settings = this });
-            }
-            //otherwise add new component data
-            else
-            {
-                dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
-            }
-
-            if (dstManager.HasComponent<SteeringData>(entity))
-            {
-                dstManager.SetComponentData(entity, ConvertToComponentData());
-            }
-            else
-            {
-                dstManager.AddComponentData(entity, ConvertToComponentData());
-            }
-
-            ApplyBehaviorsToEntity(entity, dstManager);   
-        }
-
-
-        private void ApplyBehaviorsToEntity(Entity entity, EntityManager dstManager)
-        {
+            dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
+         
             foreach (SteeringBehavior behavior in Behaviors)
             {
-                if (behavior is IConvertToComponentData)
+                IConvertToComponentData convert = (behavior as IConvertToComponentData);
+                if (convert != null)
                 {
-                    (behavior as IConvertToComponentData).AddEntityData(entity, dstManager);
+                    if (convert.HasEntityData(entity, dstManager))
+                    {
+                        convert.SetEntityData(entity, dstManager);
+                    }
+                    else
+                    {
+                        convert.AddEntityData(entity, dstManager);
+                    }
                 }
             }
-            Containment.AddEntityData(entity, dstManager);
+            if (Containment.HasEntityData(entity, dstManager))
+            {
+                Containment.SetEntityData(entity, dstManager);
+            }
+            else
+            {
+                Containment.AddEntityData(entity, dstManager);
+            }
+           
         }
 
+        /// <summary>
+        /// TODO this could be optimized with a dictionary
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public bool RequiresComponentData<T>() where T : struct, IComponentData
         {
             return (typeof(T) == (typeof(ContainmentData))) || behaviors.Any(x => (x as IConvertToSteeringBehaviorComponentData<T>) != null);
-        }
-
-        public SteeringData ConvertToComponentData()
-        {
-            return new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed };
         }
 
         #endregion
