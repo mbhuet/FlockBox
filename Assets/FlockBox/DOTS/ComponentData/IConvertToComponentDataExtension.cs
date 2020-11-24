@@ -5,16 +5,13 @@ namespace CloudFine.FlockBox.DOTS
 {
     public static class IConvertToComponentDataExtension
     {
+        public static bool HasEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData
+        {
+            return (entityManager.HasComponent<T>(entity));
+        }
         public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData
         {
-            if (entityManager.HasComponent<T>(entity))
-            {
-                value.SetEntityData(entity, entityManager);
-            }
-            else
-            {
-                entityManager.AddComponentData<T>(entity, value.Convert());
-            }
+            entityManager.AddComponentData<T>(entity, value.Convert());
         }
         public static void SetEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData
         {
