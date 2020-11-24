@@ -7,11 +7,14 @@ namespace CloudFine.FlockBox.DOTS
     {
         public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData
         {
-            entityManager.AddComponentData<T>(entity, value.Convert());
-        }
-        public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, EntityQuery query, EntityManager entityManager) where T : struct, IComponentData
-        {
-            //entityManager.AddChunkComponentData<T>(query, value.Convert());
+            if (entityManager.HasComponent<T>(entity))
+            {
+                value.SetEntityData(entity, entityManager);
+            }
+            else
+            {
+                entityManager.AddComponentData<T>(entity, value.Convert());
+            }
         }
         public static void SetEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityManager entityManager) where T : struct, IComponentData
         {
@@ -29,16 +32,13 @@ namespace CloudFine.FlockBox.DOTS
         {
             buf.AddComponent<T>(entity);
         }
-
         public static void EntityCommandBufferRemove<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityCommandBuffer buf) where T : struct, IComponentData
         {
             buf.RemoveComponent<T>(entity);
         }
-
         public static void EntityCommandBufferSet<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, EntityCommandBuffer buf) where T : struct, IComponentData
         {
             buf.SetComponent<T>(entity, value.Convert());
         }
-
     }
 }

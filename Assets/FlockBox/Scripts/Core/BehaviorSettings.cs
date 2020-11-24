@@ -145,7 +145,6 @@ namespace CloudFine.FlockBox
                 if (behavior is IConvertToComponentData)
                 {
                     (behavior as IConvertToComponentData).AddEntityData(entity, dstManager);
-
                 }
             }
             Containment.AddEntityData(entity, dstManager);
@@ -153,7 +152,7 @@ namespace CloudFine.FlockBox
 
         public bool RequiresComponentData<T>() where T : struct, IComponentData
         {
-            return behaviors.Any(x => (x as IConvertToSteeringBehaviorComponentData<T>) != null);
+            return (typeof(T) == (typeof(ContainmentData))) || behaviors.Any(x => (x as IConvertToSteeringBehaviorComponentData<T>) != null);
         }
 
         public SteeringData ConvertToComponentData()

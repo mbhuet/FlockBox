@@ -92,12 +92,11 @@ namespace CloudFine.FlockBox.DOTS
             public EntityManager em;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                UnityEngine.Debug.Log("clean up data " + typeof(T).Name);
-                
+            {         
                 BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
                 if (!settings.Settings.RequiresComponentData<T>())
                 {
+                    UnityEngine.Debug.Log("clean up data " + typeof(T).Name);
                     var entities = chunk.GetNativeArray(EntityType);
                     for (var i = 0; i < chunk.Count; i++)            
                     {

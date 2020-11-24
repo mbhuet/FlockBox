@@ -33,16 +33,15 @@ namespace CloudFine.FlockBox.DOTS {
         {
             //The problem is that I either need a commandbuffer in this foreach or a new IJobChunk that can work with a query
 
-            if (settingsChangeQuery.CalculateEntityCount() > 0)
-            {
-                ApplySettingsJob applyJob = new ApplySettingsJob
+
+            Entities
+                .WithChangeFilter<BehaviorSettingsData>()
+                .WithStructuralChanges()
+                .ForEach((Entity e, in BehaviorSettingsData settings) =>
                 {
-                    em = EntityManager,
-                    EntityType = this.GetArchetypeChunkEntityType(),
-                    BehaviorSettingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>(),
-                };
-                applyJob.Run(settingsChangeQuery);
-            }
+                    settings.Settings.ApplyToEntity(e, EntityManager);
+                }
+                ).Run();
 
 
             foreach(BehaviorSettings changed in toUpdate)
@@ -64,6 +63,7 @@ namespace CloudFine.FlockBox.DOTS {
         }
 
         //cannot BurstCompile
+        
         protected struct ApplySettingsJob : IJobChunk
         {
             [ReadOnly] public ArchetypeChunkSharedComponentType<BehaviorSettingsData> BehaviorSettingsDataType;
@@ -76,7 +76,6 @@ namespace CloudFine.FlockBox.DOTS {
                 var chunkEntities = chunk.GetNativeArray(EntityType);
                 for (var i = 0; i < chunk.Count; i++)
                 {
-                    settings.Settings.ApplyToEntity(chunkEntities[i], em);
                 }
 
             }
