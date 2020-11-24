@@ -115,6 +115,7 @@ namespace CloudFine.FlockBox
         /// <param name="dstManager"></param>
         public void ApplyToEntity(Entity entity, EntityManager dstManager)
         {
+            dstManager.SetSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
             dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
          
             foreach (SteeringBehavior behavior in Behaviors)

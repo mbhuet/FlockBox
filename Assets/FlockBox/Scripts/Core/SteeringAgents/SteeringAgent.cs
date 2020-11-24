@@ -152,16 +152,13 @@ namespace CloudFine.FlockBox
         {
             //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
 
-            SteeringData steerData = new SteeringData();
+            dstManager.AddComponent<SteeringData>(entity);
+            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = activeSettings });
+
             if (activeSettings)
             {
-                dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = activeSettings });
-                steerData.MaxForce = activeSettings.maxForce;
-                steerData.MaxSpeed = activeSettings.maxSpeed;
+                activeSettings.ApplyToEntity(entity, dstManager);
             }
-
-            dstManager.AddComponentData(entity, steerData);
-
 
             //AgentData holds everything a behavior needs to react to another Agent
             dstManager.AddComponentData(entity, new AgentData
