@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using CloudFine.FlockBox.DOTS;
 using Unity.Entities;
 #if UNITY_EDITOR
