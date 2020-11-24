@@ -114,14 +114,9 @@ namespace CloudFine.FlockBox
         /// <param name="dstManager"></param>
         public void ApplyToEntity(Entity entity, EntityManager dstManager)
         {
-            //if this entity already has a behaviorSettingsData, clean it up
+            //if this entity already has a behaviorSettingsData, update it
             if (dstManager.HasComponent<BehaviorSettingsData>(entity))
             {
-                BehaviorSettings oldSettings = dstManager.GetSharedComponentData<BehaviorSettingsData>(entity).Settings;
-                if(oldSettings != null)
-                {
-                    oldSettings.CleanupBehaviorsOnEntity(entity, dstManager);
-                }
                 dstManager.SetSharedComponentData<BehaviorSettingsData>(entity, new BehaviorSettingsData { Settings = this });
             }
             //otherwise add new component data
@@ -142,23 +137,9 @@ namespace CloudFine.FlockBox
             ApplyBehaviorsToEntity(entity, dstManager);   
         }
 
-        private void CleanupBehaviorsOnEntity(Entity entity, EntityManager dstManager)
-        {
-            return;
-            foreach (SteeringBehavior behavior in Behaviors)
-            {
-                if (behavior is IConvertToComponentData)
-                {
-                    (behavior as IConvertToComponentData).RemoveEntityData(entity, dstManager);
-
-                }
-            }
-            Containment.RemoveEntityData(entity, dstManager);
-        }
 
         private void ApplyBehaviorsToEntity(Entity entity, EntityManager dstManager)
         {
-            return;
             foreach (SteeringBehavior behavior in Behaviors)
             {
                 if (behavior is IConvertToComponentData)
@@ -185,7 +166,6 @@ namespace CloudFine.FlockBox
 #if UNITY_EDITOR
         public void DrawPropertyGizmos(SteeringAgent agent)
         {
-
             foreach (SteeringBehavior behavior in behaviors)
             {
                 if (behavior.DrawProperties)
@@ -194,9 +174,6 @@ namespace CloudFine.FlockBox
                 }
             }
         }
-
-
 #endif
-
     }
 }

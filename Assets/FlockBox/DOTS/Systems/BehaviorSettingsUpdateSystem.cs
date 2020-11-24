@@ -9,12 +9,13 @@ namespace CloudFine.FlockBox.DOTS {
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
     public class BehaviorSettingsUpdateSystem : SystemBase
     {
-        protected EntityQuery m_Query;
+        protected EntityQuery settingsChangeQuery;
         private List<BehaviorSettings> toUpdate = new List<BehaviorSettings>();
 
         protected override void OnCreate()
         {
-            m_Query = GetEntityQuery(ComponentType.ReadOnly<BehaviorSettingsData>());
+            settingsChangeQuery = GetEntityQuery(ComponentType.ReadOnly<BehaviorSettingsData>());
+            settingsChangeQuery.AddChangedVersionFilter(ComponentType.ReadOnly<BehaviorSettingsData>());
 
             BehaviorSettings.OnSteeringValuesModified += OnSettingsChanged;
             BehaviorSettings.OnBehaviorAdded += OnBehaviorAdded;
@@ -30,17 +31,19 @@ namespace CloudFine.FlockBox.DOTS {
 
         protected override void OnUpdate()
         {
-            /*
-            Entities
-                .WithChangeFilter<BehaviorSettingsData>()
-                .WithoutBurst()
-                .ForEach((Entity e, in BehaviorSettingsData settings) =>
+            //The problem is that I either need a commandbuffer in this foreach or a new IJobChunk that can work with a query
+
+            if (settingsChangeQuery.CalculateEntityCount() > 0)
+            {
+                ApplySettingsJob applyJob = new ApplySettingsJob
                 {
-                    UnityEngine.Debug.Log("settings change detected");
-                    //this will not know which componentdata to remove, that happens inside SteeringBehaviorSystem
-                    settings.Settings.ApplyToEntity(e, EntityManager);
-                }).Run();
-            */
+                    em = EntityManager,
+                    EntityType = this.GetArchetypeChunkEntityType(),
+                    BehaviorSettingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>(),
+                };
+                applyJob.Run(settingsChangeQuery);
+            }
+
 
             foreach(BehaviorSettings changed in toUpdate)
             {
@@ -54,10 +57,29 @@ namespace CloudFine.FlockBox.DOTS {
                     {
                         data.MaxForce = maxForce;
                         data.MaxSpeed = maxSpeed;
-
-                    }).ScheduleParallel(Dependency);
+                    }
+                    ).ScheduleParallel(Dependency);
             }
             toUpdate.Clear();
+        }
+
+        //cannot BurstCompile
+        protected struct ApplySettingsJob : IJobChunk
+        {
+            [ReadOnly] public ArchetypeChunkSharedComponentType<BehaviorSettingsData> BehaviorSettingsDataType;
+            [ReadOnly] public ArchetypeChunkEntityType EntityType;
+            public EntityManager em;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
+                var chunkEntities = chunk.GetNativeArray(EntityType);
+                for (var i = 0; i < chunk.Count; i++)
+                {
+                    settings.Settings.ApplyToEntity(chunkEntities[i], em);
+                }
+
+            }
         }
 
 
@@ -71,8 +93,8 @@ namespace CloudFine.FlockBox.DOTS {
             IConvertToComponentData convert = add as IConvertToComponentData;
             if (convert == null) return;
 
-            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
-            NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
+            settingsChangeQuery.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
+            NativeArray<Entity> entities = settingsChangeQuery.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {
                 convert.AddEntityData(entity, EntityManager);
@@ -87,8 +109,8 @@ namespace CloudFine.FlockBox.DOTS {
             IConvertToComponentData convert = rem as IConvertToComponentData;
             if (convert == null) return;
 
-            m_Query.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
-            NativeArray<Entity> entities = m_Query.ToEntityArray(Allocator.TempJob);
+            settingsChangeQuery.SetSharedComponentFilter(new BehaviorSettingsData { Settings = settings });
+            NativeArray<Entity> entities = settingsChangeQuery.ToEntityArray(Allocator.TempJob);
             foreach (Entity entity in entities)
             {
                 convert.RemoveEntityData(entity, EntityManager);

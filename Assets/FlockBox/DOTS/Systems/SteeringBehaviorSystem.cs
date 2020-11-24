@@ -18,8 +18,7 @@ namespace CloudFine.FlockBox.DOTS
     public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData
     {
         private EntityQuery updateQuery;
-        private EntityQuery removeQuery;
-        private EntityQuery addQuery;
+        private EntityQuery cleanUpQuery;
 
         EndSimulationEntityCommandBufferSystem m_EndSimulationEcbSystem;
 
@@ -37,7 +36,8 @@ namespace CloudFine.FlockBox.DOTS
                 }
             });
 
-            removeQuery = GetEntityQuery(new EntityQueryDesc()
+           
+            cleanUpQuery = GetEntityQuery(new EntityQueryDesc()
             {
                 All = new ComponentType[]
                 {
@@ -45,20 +45,8 @@ namespace CloudFine.FlockBox.DOTS
                     ComponentType.ReadOnly<T>(),
                 }
             });
-            addQuery = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[]
-                {
-                    ComponentType.ReadOnly<BehaviorSettingsData>(),
-                },
-                None = new ComponentType[]
-                {
-                    ComponentType.ReadOnly<T>()
-                }
-    
-            });
-            removeQuery.SetChangedVersionFilter(typeof(BehaviorSettingsData));
-            addQuery.SetChangedVersionFilter(typeof(BehaviorSettingsData));
+            cleanUpQuery.SetChangedVersionFilter(typeof(BehaviorSettingsData));
+
 
             m_EndSimulationEcbSystem = World
             .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
@@ -96,7 +84,7 @@ namespace CloudFine.FlockBox.DOTS
         }
 
         //cannot BurstCompile
-        protected struct RemoveDataJob : IJobChunk
+        protected struct CleanUpDataJob : IJobChunk
         {
             [ReadOnly] public ArchetypeChunkSharedComponentType<BehaviorSettingsData> BehaviorSettingsDataType;
             [ReadOnly] public ArchetypeChunkEntityType EntityType;
@@ -105,7 +93,7 @@ namespace CloudFine.FlockBox.DOTS
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                UnityEngine.Debug.Log("removeData");
+                UnityEngine.Debug.Log("clean up data " + typeof(T).Name);
                 
                 BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
                 if (!settings.Settings.RequiresComponentData<T>())
@@ -114,7 +102,6 @@ namespace CloudFine.FlockBox.DOTS
                     for (var i = 0; i < chunk.Count; i++)            
                     {
                         buffer.RemoveComponent<T>(entities[i]);
-                        //em.RemoveComponent<T>(entities[i]);
                     }
                 }
                 
@@ -122,30 +109,6 @@ namespace CloudFine.FlockBox.DOTS
             }
         }
 
-        //cannot BurstCompile
-        protected struct AddDataJob : IJobChunk
-        {
-            [ReadOnly] public ArchetypeChunkSharedComponentType<BehaviorSettingsData> BehaviorSettingsDataType;
-            [ReadOnly] public ArchetypeChunkEntityType EntityType;
-            public EntityCommandBuffer buffer;
-            public EntityManager em;
-
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                UnityEngine.Debug.Log("addData");
-                
-                BehaviorSettingsData settings = chunk.GetSharedComponentData(BehaviorSettingsDataType, em);
-                if (settings.Settings.RequiresComponentData<T>())
-                {
-                    var entities = chunk.GetNativeArray(EntityType);
-                    for (var i = 0; i < chunk.Count; i++)
-                    {
-                        buffer.AddComponent<T>(entities[i]);
-                    }
-                }
-                
-            }
-        }
 
         protected override void OnUpdate()
         {
@@ -160,46 +123,30 @@ namespace CloudFine.FlockBox.DOTS
 
         protected void DoBehaviorDataUpdate()
         {
-            //TODO use query.entitycount to decide if any of this is worth doing
-
-
-            var ecb = m_EndSimulationEcbSystem.CreateCommandBuffer();
-            ArchetypeChunkSharedComponentType<BehaviorSettingsData> settingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>();
-            ArchetypeChunkEntityType entityType = GetArchetypeChunkEntityType();
-
-            //if an Entity's BehaviorSettings have changed, check to make sure this componentData is still needed. Remove if not.
-            RemoveDataJob removeJob = new RemoveDataJob
+            if (cleanUpQuery.CalculateEntityCount() > 0)
             {
-                BehaviorSettingsDataType = settingsDataType,
-                EntityType = entityType,
-                em = EntityManager,
-                buffer = ecb
+                //if an Entity's BehaviorSettings have changed, check to make sure this componentData is still needed. Remove if not.
+                CleanUpDataJob cleanUpJob = new CleanUpDataJob
+                {
+                    BehaviorSettingsDataType = GetArchetypeChunkSharedComponentType<BehaviorSettingsData>(),
+                    EntityType = GetArchetypeChunkEntityType(),
+                    em = EntityManager,
+                    buffer = m_EndSimulationEcbSystem.CreateCommandBuffer()
             };
-            //var removeHandle = 
-            removeJob.Run(removeQuery);//, Dependency);
+                cleanUpJob.Run(cleanUpQuery);
 
-            //Dependency = removeHandle;
+                //make sure the buffer gets processed
+                m_EndSimulationEcbSystem.AddJobHandleForProducer(Dependency);
+            }
 
-            //if an Entity's BehaviorSettings have changed, check to make sure needed componentdata is in place. Add if not.
-            AddDataJob addJob = new AddDataJob
-            {
-                BehaviorSettingsDataType = settingsDataType,
-                EntityType = entityType,
-                em = EntityManager,
-                buffer = ecb
-            };
-            //var addHandle = 
-            addJob.Run(addQuery);//, Dependency);
-
-            //Dependency = addHandle;
-
-            m_EndSimulationEcbSystem.AddJobHandleForProducer(Dependency);
-
+            //this helps behaviors respond to changes made in the Inspector
             foreach (Tuple<BehaviorSettings, SteeringBehavior> tuple in toUpdate)
             {
+                //make sure the SteeringBehavior can be converted to component data that corresponds to this behavior
                 IConvertToSteeringBehaviorComponentData<T> convert = tuple.Item2 as IConvertToSteeringBehaviorComponentData<T>;
                 if (convert == null) continue;
 
+                //query for all entities that use the changed BehaviorSettings
                 BehaviorSettingsData data = new BehaviorSettingsData { Settings = tuple.Item1 };
                 updateQuery.SetSharedComponentFilter(data);
 
