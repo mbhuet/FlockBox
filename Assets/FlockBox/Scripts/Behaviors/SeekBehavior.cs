@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
     public class SeekBehavior : GlobalRadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<SeekData>
     {
@@ -113,6 +114,20 @@ namespace CloudFine.FlockBox
             {
                 mine.CatchAgent(target);
             }
+        }
+
+        public static Agent GetTarget(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName))
+            {
+                return null;
+            }
+            int chosenTargetID = mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName);
+            if (chosenTargetID != -1)
+            {
+                return Agent.GetAgentById(chosenTargetID);
+            }
+            return null;
         }
     }
 }

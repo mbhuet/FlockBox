@@ -37,15 +37,6 @@ namespace CloudFine.FlockBox
 
         public Action<SteeringBehavior> OnValueChanged;
 
-        public bool HasDOTSImplementation
-        {
-            get
-            {
-                return GetType().GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConvertToSteeringBehaviorComponentData<>));         
-            }
-        }
-
-
         public bool DrawProperties
         {
             get

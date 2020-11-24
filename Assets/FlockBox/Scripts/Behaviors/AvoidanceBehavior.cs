@@ -8,6 +8,7 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
     public class AvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<AvoidanceData>
     {

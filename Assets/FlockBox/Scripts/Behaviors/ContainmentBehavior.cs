@@ -4,6 +4,7 @@ using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ContainmentData>
     {
         public override bool CanUseTagFilter { get { return false; } }

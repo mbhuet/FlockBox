@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace CloudFine.FlockBox
 {
@@ -131,7 +129,7 @@ namespace CloudFine.FlockBox
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
-            if (behavior.HasDOTSImplementation)
+            if (behavior.GetType().IsDefined(typeof(DOTSCompatibleAttribute), false))
             {
                 DOTSBadge();
             }

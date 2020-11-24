@@ -4,6 +4,7 @@ using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
     public class CohesionBehavior : RadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<CohesionData>
     {

@@ -10,6 +10,7 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
     public class WanderBehavior : SteeringBehavior, IConvertToSteeringBehaviorComponentData<WanderData>
     {
