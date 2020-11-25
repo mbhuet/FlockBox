@@ -3,7 +3,6 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -17,6 +16,7 @@ namespace CloudFine.FlockBox.DOTS
         private BehaviorSettings stateASettings;
         private BehaviorSettings stateBSettings;
 
+        /*
         protected override void OnCreate()
         {
             Addressables.LoadAssetAsync<BehaviorSettings>("StateDemoA").Completed += OnLoadDoneA;
@@ -31,6 +31,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             stateBSettings = obj.Result;
         }
+        */
 
         protected override void OnUpdate()
         {
