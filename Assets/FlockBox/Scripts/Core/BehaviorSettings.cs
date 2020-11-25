@@ -109,12 +109,26 @@ namespace CloudFine.FlockBox
 
         /// <summary>
         /// Used to apply necessary behavior ComponentData to an Entity
-        /// Clean-up of ComponentData that is no longer needed is handled by each SteeringBehaviorSystem
+        /// Will reference current BehaviorSettingsData to clean up ComponentData that is no longer needed.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="dstManager"></param>
         public void ApplyToEntity(Entity entity, EntityManager dstManager)
         {
+            //there could be existing componentdata that needs to be removed from this entity first
+            BehaviorSettingsData toClean = dstManager.GetSharedComponentData<BehaviorSettingsData>(entity);
+            if(toClean.Settings != null)
+            {
+                foreach (SteeringBehavior behavior in toClean.Settings.behaviors)
+                {
+                    IConvertToComponentData convert = (behavior as IConvertToComponentData);
+                    if (convert != null)
+                    {
+                        convert.RemoveEntityData(entity, dstManager);
+                    }
+                }
+            }
+
             dstManager.SetSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
             dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
          
@@ -122,17 +136,11 @@ namespace CloudFine.FlockBox
             {
                 IConvertToComponentData convert = (behavior as IConvertToComponentData);
                 if (convert != null)
-                {
-                    if (convert.HasEntityData(entity, dstManager))
-                    {
-                        convert.SetEntityData(entity, dstManager);
-                    }
-                    else
-                    {
-                        convert.AddEntityData(entity, dstManager);
-                    }
+                {                  
+                    convert.AddEntityData(entity, dstManager);                    
                 }
             }
+
             if (Containment.HasEntityData(entity, dstManager))
             {
                 Containment.SetEntityData(entity, dstManager);
@@ -141,19 +149,7 @@ namespace CloudFine.FlockBox
             {
                 Containment.AddEntityData(entity, dstManager);
             }
-           
         }
-
-        /// <summary>
-        /// TODO this could be optimized with a dictionary
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public bool RequiresComponentData<T>() where T : struct, IComponentData
-        {
-            return (typeof(T) == (typeof(ContainmentData))) || behaviors.Any(x => (x as IConvertToSteeringBehaviorComponentData<T>) != null);
-        }
-
         #endregion
 
 #if UNITY_EDITOR
