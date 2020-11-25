@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Unity.Entities;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
-    public class CohesionBehavior : RadialSteeringBehavior
+    public class CohesionBehavior : RadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<CohesionData>
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
@@ -30,5 +31,22 @@ namespace CloudFine
                 steer = Vector3.zero;
             }
         }
+
+
+        public CohesionData Convert()
+        {
+            return new CohesionData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
+            };
+        }
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+
     }
 }

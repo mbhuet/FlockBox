@@ -1,12 +1,16 @@
-﻿using System;
+﻿using CloudFine.FlockBox.DOTS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Entities;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
-    public class SeekBehavior : GlobalRadialSteeringBehavior
+    public class SeekBehavior : GlobalRadialSteeringBehavior, IConvertToSteeringBehaviorComponentData<SeekData>
     {
         public const string targetIDAttributeName = "seekTargetID";
 
@@ -46,34 +50,20 @@ namespace CloudFine
                 EngagePursuit(mine, closestTarget);
             }
 
-            AttemptCatch(mine, closestTarget);
+            mine.AttemptCatch(closestTarget);
             Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
 
-        public static bool HasPursuitTarget(SteeringAgent mine)
-        {
-            if (!mine.HasAgentProperty(targetIDAttributeName)) return false;
-            return mine.GetAgentProperty<int>(targetIDAttributeName) >= 0;
-        }
-
         protected static void EngagePursuit(SteeringAgent mine, Agent target)
         {
-            mine.SetAgentProperty(targetIDAttributeName, target.agentID);
+            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, target.agentID);
         }
 
         protected static void DisengagePursuit(SteeringAgent mine, int targetID)
         {
-            mine.SetAgentProperty(targetIDAttributeName, -1);
-        }
-
-        protected static void AttemptCatch(SteeringAgent mine, Agent target)
-        {
-            if (mine.Overlaps(target))
-            {
-                mine.CatchAgent(target);
-            }
+            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
         public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
@@ -91,6 +81,54 @@ namespace CloudFine
                 }
             }
             return closeTarget;
+        }
+
+        public SeekData Convert()
+        {
+            return new SeekData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                GlobalTagSearch = globalTagSearch,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+    }
+
+    public static class SeekExtensions
+    {
+        public static bool HasPursuitTarget(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName)) return false;
+            return mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName) >= 0;
+        }
+
+        public static void AttemptCatch(this SteeringAgent mine, Agent target)
+        {
+            if (mine.Overlaps(target))
+            {
+                mine.CatchAgent(target);
+            }
+        }
+
+        public static Agent GetTarget(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName))
+            {
+                return null;
+            }
+            int chosenTargetID = mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName);
+            if (chosenTargetID != -1)
+            {
+                return Agent.GetAgentById(chosenTargetID);
+            }
+            return null;
         }
     }
 }

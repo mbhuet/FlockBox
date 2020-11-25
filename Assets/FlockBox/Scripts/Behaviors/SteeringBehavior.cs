@@ -1,12 +1,17 @@
-﻿using System.Collections;
+﻿#pragma warning disable 0649
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using CloudFine.FlockBox.DOTS;
+using System.Runtime.CompilerServices;
+using System.Linq;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace CloudFine
+
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public abstract class SteeringBehavior : ScriptableObject
@@ -30,6 +35,8 @@ namespace CloudFine
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawProperties;
 
+        public Action<SteeringBehavior> OnValueChanged;
+
         public bool DrawProperties
         {
             get
@@ -45,7 +52,17 @@ namespace CloudFine
             }
         }
 
-        
+        private void OnValidate()
+        {
+            MarkAsChanged();
+        }
+
+        public void MarkAsChanged()
+        {
+            if (OnValueChanged != null) OnValueChanged(this);
+        }
+
+
 
         //supress "field declared but not used" warning. foldout is used by PropertyDrawer
 #pragma warning disable 0414

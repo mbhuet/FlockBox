@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     /// <summary>
     /// Will point the direction of Acceleration, not Velocity

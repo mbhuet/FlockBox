@@ -1,18 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
-using System.Reflection;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [CustomEditor(typeof(BehaviorSettings), true)]
     public class BehaviorSettingsEditor : Editor
     {
         const string activeStyle = "ProgressBarBar";
         const string inactiveStyle = "ProgressBarBack";
+        const string dotsBadgeStyle = "sv_label_4";
 
         private BehaviorSettings targetSettings;
         private SerializedProperty _behaviors;
@@ -34,6 +33,12 @@ namespace CloudFine
 
         public override void OnInspectorGUI()
         {
+            GUI.enabled = false;
+            SerializedProperty prop = serializedObject.FindProperty("m_Script");
+            EditorGUILayout.PropertyField(prop, true, new GUILayoutOption[0]);
+            GUI.enabled = true;
+
+
             if (_containment.objectReferenceValue == null)
             {
                 if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(target)))
@@ -54,6 +59,7 @@ namespace CloudFine
 
             if (toRemove >= 0)
             {
+                if(BehaviorSettings.OnBehaviorRemoved != null) BehaviorSettings.OnBehaviorRemoved.Invoke(targetSettings, targetSettings.GetBehavior(toRemove));
                 AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
@@ -95,6 +101,13 @@ namespace CloudFine
             serializedObject.ApplyModifiedProperties();
         }
 
+        public static void DOTSBadge()
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.GetStyle(dotsBadgeStyle));
+            style.fontSize = 8;
+            EditorGUILayout.LabelField(new GUIContent("DOTS", "Compatible with DOTS."), style, GUILayout.Width(38), GUILayout.Height(10));
+        }
+
         void DrawBehaviorBox(SteeringBehavior behavior, SerializedProperty property, int i, bool canRemove)
         {
             if (!behavior) return;
@@ -116,7 +129,10 @@ namespace CloudFine
             foldoutProperty.boolValue = foldout;
 
             behaviorObject.ApplyModifiedProperties();
-
+            if (behavior.GetType().IsDefined(typeof(DOTSCompatibleAttribute), false))
+            {
+                DOTSBadge();
+            }
             GUILayout.FlexibleSpace();
             if (canRemove)
             {
@@ -158,11 +174,12 @@ namespace CloudFine
 
         void AddBehavior(object behaviorType)
         {
+            _behaviors.arraySize = _behaviors.arraySize + 1;
+            SteeringBehavior newBehavior = CreateBehavior(behaviorType);
+            if(BehaviorSettings.OnBehaviorAdded != null) BehaviorSettings.OnBehaviorAdded.Invoke(targetSettings, newBehavior);
 
-                _behaviors.arraySize = _behaviors.arraySize + 1;
-                _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)CreateBehavior(behaviorType);
-                serializedObject.ApplyModifiedProperties();
-
+            _behaviors.GetArrayElementAtIndex(_behaviors.arraySize - 1).objectReferenceValue = (UnityEngine.Object)newBehavior;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

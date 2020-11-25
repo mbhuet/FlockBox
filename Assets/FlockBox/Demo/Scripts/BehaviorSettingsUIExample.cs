@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public class BehaviorSettingsUIExample : MonoBehaviour
     {
@@ -48,6 +46,7 @@ namespace CloudFine
             if (alignment)
             {
                 alignment.weight = t*maxWeight;
+                alignment.MarkAsChanged();
                 MarkSettingsDirty();
             }
         }
@@ -57,6 +56,7 @@ namespace CloudFine
             if (cohesion)
             {
                 cohesion.weight = t*maxWeight;
+                cohesion.MarkAsChanged();
                 MarkSettingsDirty();
             }
         }
@@ -66,6 +66,7 @@ namespace CloudFine
             if (separation)
             {
                 separation.weight = t*maxWeight;
+                separation.MarkAsChanged();
                 MarkSettingsDirty();
             }
         }

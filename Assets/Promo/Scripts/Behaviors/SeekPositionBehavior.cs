@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class SeekPositionBehavior : SteeringBehavior
@@ -18,7 +18,22 @@ namespace CloudFine
                 return;
             }
 
-            mine.GetSeekVector(out steer, mine.GetAgentProperty<Vector3>(seekPositionPropName));
+            mine.GetSeekVector(out steer, mine.GetSeekPosition());
         }
+    }
+
+    public static class SeekPositionExtensions
+    {
+        public static void SetSeekPosition(this SteeringAgent agent, Vector3 position)
+        {
+            agent.SetAgentProperty<Vector3>(SeekPositionBehavior.seekPositionPropName, position);
+        }
+
+        public static Vector3 GetSeekPosition(this SteeringAgent agent)
+        {
+            return agent.GetAgentProperty<Vector3>(SeekPositionBehavior.seekPositionPropName);
+        }
+
+
     }
 }

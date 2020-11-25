@@ -1,71 +1,80 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Unity.Entities;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
-    public class ContainmentBehavior : ForecastSteeringBehavior
+    [DOTSCompatible]
+    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ContainmentData>
     {
         public override bool CanUseTagFilter { get { return false; } }
         public override bool CanToggleActive { get { return false; } }
 
-        private Vector3 bufferedPosition;
-        private float[] minArray = new float[3];
-        public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentBuffer)
+        private Vector3 containedPosition;
+        private Vector3 unclampedPosition;
+
+        public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentMargin)
         {
-            bufferedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
+            unclampedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
+            containedPosition = unclampedPosition;
+
             float distanceToBorder = float.MaxValue;
 
             if (worldDimensions.x > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.x;
-                minArray[2] = worldDimensions.x - mine.Position.x;
-                distanceToBorder = Mathf.Min(minArray);
-                bufferedPosition.x = Mathf.Clamp(bufferedPosition.x, containmentBuffer, worldDimensions.x - containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.x, worldDimensions.x - mine.Position.x));
+                containedPosition.x = Mathf.Clamp(containedPosition.x, containmentMargin, worldDimensions.x - containmentMargin);
             }
             else
             {
-                bufferedPosition.x = 0;
+                containedPosition.x = 0;
             }
+
             if (worldDimensions.y > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.y;
-                minArray[2] = worldDimensions.y - mine.Position.y;
-                distanceToBorder = Mathf.Min(minArray);
-                bufferedPosition.y = Mathf.Clamp(bufferedPosition.y, containmentBuffer, worldDimensions.y - containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.y, worldDimensions.y - mine.Position.y));
+                containedPosition.y = Mathf.Clamp(containedPosition.y, containmentMargin, worldDimensions.y - containmentMargin);
             }
             else
             {
-                bufferedPosition.y = 0;
+                containedPosition.y = 0;
             }
+
             if (worldDimensions.z > 0)
             {
-                minArray[0] = distanceToBorder;
-                minArray[1] = mine.Position.z;
-                minArray[2] = worldDimensions.z - mine.Position.z;
-                distanceToBorder = Mathf.Min(minArray);
-                bufferedPosition.z = Mathf.Clamp(bufferedPosition.z, containmentBuffer, worldDimensions.z - containmentBuffer);
+                distanceToBorder = Mathf.Min(distanceToBorder, Mathf.Min(mine.Position.z, worldDimensions.z - mine.Position.z));
+                containedPosition.z = Mathf.Clamp(containedPosition.z, containmentMargin, worldDimensions.z - containmentMargin);
             }
             else
             {
-                bufferedPosition.z = 0;
+                containedPosition.z = 0;
             }
-            if (bufferedPosition == mine.Position + mine.Velocity)
+
+            if (containedPosition == unclampedPosition)
             {
                 steer = Vector3.zero;
                 return;
             }
             if (distanceToBorder <= 0) distanceToBorder = .001f;
 
-            mine.GetSeekVector(out steer, bufferedPosition);
-            steer *= containmentBuffer / distanceToBorder;
+            mine.GetSeekVector(out steer, containedPosition);
+            steer *= containmentMargin / distanceToBorder;
         }
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
             steer = Vector3.zero;
         }
+
+
+        public ContainmentData Convert()
+        {
+            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds};
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
     }
 }

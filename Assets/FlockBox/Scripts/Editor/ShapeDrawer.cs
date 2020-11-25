@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     // IngredientDrawer
     [CustomPropertyDrawer(typeof(Shape))]
@@ -20,7 +20,6 @@ namespace CloudFine
 
             var shapeProperty = property.FindPropertyRelative("type");
             var radiusProperty = property.FindPropertyRelative("radius");
-            var lengthProperty = property.FindPropertyRelative("length");
 
             totalHeight = 0;
             propRect = new Rect(position.x, position.y+ totalHeight, position.width, EditorGUIUtility.singleLineHeight);
@@ -34,14 +33,6 @@ namespace CloudFine
                     break;
                 case Shape.ShapeType.SPHERE:
                     totalHeight += DrawProperty(property, propRect, "radius");
-                    break;
-                case Shape.ShapeType.LINE:
-                    totalHeight += DrawProperty(property, propRect, "radius");
-                    totalHeight += DrawProperty(property, propRect, "length");
-                    break;
-                case Shape.ShapeType.CYLINDER:
-                    totalHeight += DrawProperty(property, propRect, "radius");
-                    totalHeight += DrawProperty(property, propRect, "length");
                     break;
             }
             //EditorGUI.indentLevel = indent;

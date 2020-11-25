@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [CustomPropertyDrawer(typeof(SteeringBehavior), true)]
     public class SteeringBehaviorDrawer : PropertyDrawer

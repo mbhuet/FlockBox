@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public class LeaderFollowBehavior : GlobalBehavior
     {

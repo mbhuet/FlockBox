@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class PursuitBehavior : SeekBehavior
@@ -17,7 +17,7 @@ namespace CloudFine
 
             if (allTargets.Count == 0)
             {
-                if (HasPursuitTarget(mine))
+                if (mine.HasPursuitTarget())
                 {
                     DisengagePursuit(mine, chosenTargetID);
                 }
@@ -29,7 +29,7 @@ namespace CloudFine
 
             if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
             {
-                if (HasPursuitTarget(mine))
+                if (mine.HasPursuitTarget())
                 {
                     DisengagePursuit(mine, chosenTargetID);
                 }
@@ -47,7 +47,7 @@ namespace CloudFine
             float est_timeToIntercept = distance.magnitude / mine.activeSettings.maxSpeed;
             Vector3 predictedInterceptPosition = closestTarget.Position + closestTarget.Velocity * est_timeToIntercept;
 
-            AttemptCatch(mine, closestTarget);
+            mine.AttemptCatch(closestTarget);
 
             mine.GetSeekVector(out steer, predictedInterceptPosition);
         }

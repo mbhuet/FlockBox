@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Unity.Collections;
+using Unity.Entities;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
+using Unity.Transforms;
+using UnityEngine.Jobs;
+using System.ComponentModel.Design.Serialization;
 
-
-//Should not be a static class because I want to be able to define boundaries without editing the script
-//Class will manage itself if there are no instances by creating an instance
-//
-
-
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     public class FlockBox : MonoBehaviour
     {
+        public static Action<FlockBox> OnValuesModified;
+
         private Dictionary<int, HashSet<Agent>> bucketToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a bucket
         private Dictionary<Agent, HashSet<int>> agentToBuckets = new Dictionary<Agent, HashSet<int>>(); //get all buckets an agent is in
 
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
-
 
 
         [SerializeField]
@@ -37,7 +36,40 @@ namespace CloudFine
         {
             get { return _worldDimensions; } private set { _worldDimensions = value; }
         }
+        public int DimensionX
+        {
+            get { return dimensions_x; }
+        }
+        public int DimensionY
+        {
+            get { return dimensions_y; }
+        }
+        public int DimensionZ
+        {
+            get { return dimensions_z; }
+        }
+        public float CellSize
+        {
+            get { return cellSize; }
+        }
+        public int TotalCells
+        {
+            get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
+        }
 
+        public bool DOTSEnabled
+        {
+            get { return useDOTS; }
+        }
+
+        public int CellCapacity
+        {
+            get
+            {
+                if (!capCellCapacity) return int.MaxValue;
+                return maxCellCapacity;
+            }
+        }
         public bool wrapEdges = false;
         public float boundaryBuffer = 10;
         public float sleepChance;
@@ -53,36 +85,173 @@ namespace CloudFine
         public List<AgentPopulation> startingPopulations;
 
         [SerializeField]
-        private bool drawGizmos = true;
+        private bool drawBoundary = true;
+        [SerializeField]
+        private bool drawOccupiedCells = false;
 
+        [SerializeField]
+        private bool useDOTS = false;
+
+        private Entity agentEntityPrefab;
+        private Entity syncedEntityTransform
+        {
+            get
+            {
+                if (_syncedEntityTransform == Entity.Null)
+                {
+                    _syncedEntityTransform = CreateSyncedRoot();
+                }
+                return _syncedEntityTransform;
+            }
+        }
+        private Entity _syncedEntityTransform;
+
+        private EntityManager entityManager
+        {
+            get
+            {
+                if(_entityManager == default)
+                {
+                    _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                }
+                return _entityManager;
+            }
+        }
+        private EntityManager _entityManager;
+
+
+        #region DOTS
+
+        private Entity CreateSyncedRoot()
+        {
+            //
+            // Set up root entity that will follow FlockBox GameObject
+            //
+            Entity root = entityManager.CreateEntity(new ComponentType[]{
+                        typeof(LocalToWorld),
+                    });
+
+            entityManager.AddComponentObject(root, this.transform);
+            entityManager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject { });
+            return root;
+        }
+
+        public void ConvertGameObjectsToEntities(Agent[] agents)
+        {
+            GameObjectConversionSettings settings = new GameObjectConversionSettings()
+            {
+                DestinationWorld = World.DefaultGameObjectInjectionWorld
+            };
+            for(int i =0; i<agents.Length; i++)
+            {
+                Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(agents[i].gameObject, settings);
+                SetupEntity(e);
+                GameObject.Destroy(agents[i].gameObject);
+            }
+        }
+
+        private void SetupEntity(Entity entity)
+        {
+            entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
+            entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
+
+            entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+            entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
+        }
+
+        public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
+        {
+            GameObjectConversionSettings settings = new GameObjectConversionSettings()
+            {
+                DestinationWorld = World.DefaultGameObjectInjectionWorld
+            };
+            agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab.gameObject, settings);
+            NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.TempJob);
+            entityManager.Instantiate(agentEntityPrefab, agents);
+
+            for (int i = 0; i < population; i++)
+            {
+                Entity entity = agents[i];
+                AgentData agent = entityManager.GetComponentData<AgentData>(entity);
+                if (entityManager.HasComponent<SteeringData>(entity))
+                {
+                    SteeringData steering = entityManager.GetComponentData<SteeringData>(entity);
+                    agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
+                }
+                agent.Position = RandomPosition();
+                agent.UniqueID = (int)(UnityEngine.Random.value * 100000);
+                entityManager.SetComponentData(entity, agent);
+
+                SetupEntity(entity);
+            }
+            entityManager.DestroyEntity(agentEntityPrefab);
+            Entity[] output = agents.ToArray();
+            agents.Dispose();
+            return output;
+        }
+
+
+        #endregion
+
+        private void Awake()
+        {
+            _worldDimensions.x = dimensions_x * cellSize;
+            _worldDimensions.y = dimensions_y * cellSize;
+            _worldDimensions.z = dimensions_z * cellSize;
+        }
 
         void Start()
         {
             foreach (AgentPopulation pop in startingPopulations)
             {
-                if (pop.prefab == null) return;
-                for (int i = 0; i < pop.population; i++)
+                if (pop.prefab == null) continue;
+
+                if (useDOTS)
                 {
-                    Agent agent = GameObject.Instantiate<Agent>(pop.prefab);
-                    agent.Spawn(this);
+                    InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
+                    ConvertGameObjectsToEntities(GetComponentsInChildren<Agent>());
+                }
+                else
+                {
+                    for(int i =0; i<pop.population; i++)
+                    {
+                        Agent agent = GameObject.Instantiate(pop.prefab);
+                        agent.Spawn(this);
+                    }
                 }
             }
         }
 
         private void Update()
         {
+            if (transform.hasChanged)
+            {
+                MarkAsChanged();
+                transform.hasChanged = false;
+            }
             _worldDimensions.x = dimensions_x * cellSize;
             _worldDimensions.y = dimensions_y * cellSize;
             _worldDimensions.z = dimensions_z * cellSize;
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
-            bucketsToDraw.Clear();
+            bucketsToDebugDraw.Clear();
 #endif
         }
 
 
-        
+        private void OnValidate()
+        {
+            MarkAsChanged();
+        }
+
+        public void MarkAsChanged()
+        {
+            if (OnValuesModified != null) OnValuesModified.Invoke(this);
+        }
+
+
+
         public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> buckets, SurroundingsContainer surroundings)
         {
 
@@ -105,23 +274,7 @@ namespace CloudFine
             {
                 foreach (System.Tuple<Shape, Vector3> s in surroundings.perceptionShapes)
                 {
-                    switch (s.Item1.type)
-                    {
-                        case Shape.ShapeType.POINT:
-                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
-                            break;
-                        case Shape.ShapeType.SPHERE:
-                            GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
-                            break;
-                        case Shape.ShapeType.LINE:
-                            //TODO: assumes Line Perception will only be in direction of Velocity
-                            GetBucketsOverlappingLine(s.Item2, velocity.normalized * s.Item1.length, buckets);
-                            break;
-                        case Shape.ShapeType.CYLINDER:
-                            //TODO: assumes Cylinder Perception will only be in direction of Velocity
-                            GetBucketsOverlappingCylinder(s.Item2, velocity.normalized * s.Item1.length, s.Item1.radius, buckets);
-                            break;
-                    }
+                    GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
                 }
             }
 
@@ -132,6 +285,7 @@ namespace CloudFine
                     surroundings.AddAgents(_bucketContentsCache);
                 }
             }
+
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
@@ -170,9 +324,7 @@ namespace CloudFine
                 }
                 agentToBuckets[agent].Clear();
             }
-
         }
-
 
         private HashSet<Agent> _bucketContentsCache;
         private HashSet<int> _bucketListCache;
@@ -180,8 +332,6 @@ namespace CloudFine
 
         private void AddAgentToBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
         {
-
-
             if(lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
             {
                 //check for changes
@@ -234,12 +384,6 @@ namespace CloudFine
                 case Shape.ShapeType.POINT:
                     buckets.Add ( GetBucketOverlappingPoint(agent.Position) );
                     break;
-                case Shape.ShapeType.LINE:
-                    GetBucketsOverlappingLine(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, buckets);
-                    break;
-                case Shape.ShapeType.CYLINDER:
-                    GetBucketsOverlappingCylinder(agent.Position, agent.Position + agent.transform.localRotation * Vector3.forward * agent.shape.length, agent.shape.radius, buckets);
-                    break;
                 default:
                     buckets.Add( GetBucketOverlappingPoint(agent.Position) );
                     break;
@@ -264,11 +408,8 @@ namespace CloudFine
                 {
                     bucketToAgents.Add(bucket, new HashSet<Agent>() { agent});
                     agentToBuckets[agent].Add(bucket);
-
                 }
             }
-
-
         }
 
         public int GetBucketOverlappingPoint(Vector3 point)
@@ -278,7 +419,6 @@ namespace CloudFine
 
         public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> buckets)
         {
-            
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
 
@@ -288,7 +428,6 @@ namespace CloudFine
             int z0 = ToCellFloor(start.z);
             int z1 = ToCellFloor(end.z);     
 
-
             int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
             int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
             int dz = Math.Abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
@@ -297,7 +436,6 @@ namespace CloudFine
             x1 = y1 = z1 = dm / 2; /* error offset */
 
             buckets.Add(CellPositionToHash(x0, y0, z0));
-
 
             for (; ; )
             {  /* loop */
@@ -309,15 +447,12 @@ namespace CloudFine
 
                 if (i-- == 0) break;
 
-
                 x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
                 y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
                 z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
             }
-
         }
-
-        
+  
         public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> buckets)
         {
             Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
@@ -342,8 +477,6 @@ namespace CloudFine
                     }
                 }
             }
-
-
         }
 
         public void GetBucketsOverlappingSphere(Vector3 center, float radius, HashSet<int> buckets)
@@ -513,6 +646,8 @@ namespace CloudFine
             return new Vector3Int(ToCellFloor(position.x), ToCellFloor(position.y), ToCellFloor(position.z));
         }
 
+
+
         private int CellPositionToHash(int x, int y, int z)
         {
             if (x < 0 || y < 0 || z < 0) return -1;
@@ -535,11 +670,11 @@ namespace CloudFine
 
 #if UNITY_EDITOR
 
-        private List<int> bucketsToDraw = new List<int>(); //useful for debugging
+        private List<int> bucketsToDebugDraw = new List<int>(); //useful for debugging
 
         private void OnDrawGizmos()
         {
-            if (drawGizmos)
+            if (drawBoundary)
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
@@ -554,11 +689,15 @@ namespace CloudFine
                             Mathf.Max(0, dimensions_y * cellSize - boundaryBuffer * 2f),
                             Mathf.Max(0, dimensions_z * cellSize - boundaryBuffer * 2f)));
                 }
-                DrawNeighborHoods();
             }
+            if (drawOccupiedCells)
+            {
+                DrawOccupiedCells();
+            }
+
         }
 
-        void DrawNeighborHoods()
+        void DrawOccupiedCells()
         {
             if (bucketToAgents == null) return;
             
@@ -575,7 +714,7 @@ namespace CloudFine
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
                         int bucket = WorldPositionToHash(corner);
 
-                        if (bucketsToDraw.Contains(bucket))
+                        if (bucketsToDebugDraw.Contains(bucket))
                         {
                             Gizmos.color = Color.red * .8f;
                             Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);

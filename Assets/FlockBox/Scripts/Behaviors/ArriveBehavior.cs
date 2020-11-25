@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
     public class ArriveBehavior : SeekBehavior
@@ -49,7 +47,7 @@ namespace CloudFine
                 EngagePursuit(mine, closestTarget);
             }
 
-            AttemptCatch(mine, closestTarget);
+            mine.AttemptCatch(closestTarget);
             Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, stoppingDistance);
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);

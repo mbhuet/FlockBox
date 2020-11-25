@@ -1,19 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
-using System.Reflection;
+using Unity.Entities;
+using CloudFine.FlockBox.DOTS;
 using System.Linq;
-using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
-    [CreateAssetMenu(menuName = "BehaviorSettings")]
+    [CreateAssetMenu(menuName = "FlockBox/BehaviorSettings")]
     public class BehaviorSettings : ScriptableObject
     {
+        public static Action<BehaviorSettings> OnSteeringValuesModified;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorAdded;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorValuesModified;
+        public static Action<BehaviorSettings, SteeringBehavior> OnBehaviorRemoved;
+
         public float maxForce = 20;    // Maximum steering force
         public float maxSpeed = 30;    // Maximum speed 
 
@@ -29,6 +32,50 @@ namespace CloudFine
             get { return behaviors.Length; }
         }
 
+        private void OnEnable()
+        {
+            OnBehaviorAdded += BehaviorAddDetected;
+            //Subscribe to value changes in behaviors
+            foreach(SteeringBehavior behavior in Behaviors)
+            {
+                ListenForBehaviorChanges(behavior);
+            }
+            if(Containment != null) ListenForBehaviorChanges(Containment);
+        }
+
+        private void OnDisable()
+        {
+            OnBehaviorAdded -= BehaviorAddDetected;
+        }
+
+        private void OnValidate()
+        {
+            MarkAsChanged();
+        }
+
+        public void BehaviorChangeDetected(SteeringBehavior modBehavior)
+        {
+            if(OnBehaviorValuesModified != null) OnBehaviorValuesModified.Invoke(this, modBehavior);
+        }
+
+        public void MarkAsChanged()
+        {
+            if (OnSteeringValuesModified != null) OnSteeringValuesModified.Invoke(this);
+        }
+
+        private void BehaviorAddDetected(BehaviorSettings settings, SteeringBehavior behavior)
+        {
+            if (settings == this)
+            {
+                ListenForBehaviorChanges(behavior);
+            }
+        }
+
+        private void ListenForBehaviorChanges(SteeringBehavior behavior)
+        {
+            behavior.OnValueChanged += BehaviorChangeDetected;
+        }
+
 
         public SteeringBehavior GetBehavior(int index)
         {
@@ -38,9 +85,9 @@ namespace CloudFine
 
         public T GetBehavior<T>() where T : SteeringBehavior
         {
-            foreach(SteeringBehavior behavior in Behaviors)
+            foreach (SteeringBehavior behavior in Behaviors)
             {
-                if(behavior.GetType() == typeof(T))
+                if (behavior.GetType() == typeof(T))
                 {
                     return (T)behavior;
                 }
@@ -52,16 +99,62 @@ namespace CloudFine
         {
 
             surroundings.Clear();
-            for(int i=0; i<behaviors.Length; i++)
+            for (int i = 0; i < behaviors.Length; i++)
             {
                 behaviors[i].AddPerception(agent, surroundings);
             }
         }
 
+        #region DOTS
+
+        /// <summary>
+        /// Used to apply necessary behavior ComponentData to an Entity
+        /// Will reference current BehaviorSettingsData to clean up ComponentData that is no longer needed.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="dstManager"></param>
+        public void ApplyToEntity(Entity entity, EntityManager dstManager)
+        {
+            //there could be existing componentdata that needs to be removed from this entity first
+            BehaviorSettingsData toClean = dstManager.GetSharedComponentData<BehaviorSettingsData>(entity);
+            if(toClean.Settings != null)
+            {
+                foreach (SteeringBehavior behavior in toClean.Settings.behaviors)
+                {
+                    IConvertToComponentData convert = (behavior as IConvertToComponentData);
+                    if (convert != null)
+                    {
+                        convert.RemoveEntityData(entity, dstManager);
+                    }
+                }
+            }
+
+            dstManager.SetSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
+            dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
+         
+            foreach (SteeringBehavior behavior in Behaviors)
+            {
+                IConvertToComponentData convert = (behavior as IConvertToComponentData);
+                if (convert != null)
+                {                  
+                    convert.AddEntityData(entity, dstManager);                    
+                }
+            }
+
+            if (Containment.HasEntityData(entity, dstManager))
+            {
+                Containment.SetEntityData(entity, dstManager);
+            }
+            else
+            {
+                Containment.AddEntityData(entity, dstManager);
+            }
+        }
+        #endregion
+
 #if UNITY_EDITOR
         public void DrawPropertyGizmos(SteeringAgent agent)
         {
-
             foreach (SteeringBehavior behavior in behaviors)
             {
                 if (behavior.DrawProperties)
@@ -71,6 +164,5 @@ namespace CloudFine
             }
         }
 #endif
-
     }
 }

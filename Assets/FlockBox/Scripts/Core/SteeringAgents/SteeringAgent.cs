@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
 
-
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class SteeringAgent : Agent
+    public class SteeringAgent : Agent, IConvertGameObjectToEntity
     {
 
         public Vector3 Acceleration { get; private set; }
@@ -51,28 +50,27 @@ namespace CloudFine
         }
 
 
-        private Vector3 steerCached = Vector3.zero;
+        private Vector3 steerBuffer = Vector3.zero;
 
         void Flock(SurroundingsContainer surroundings)
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
                 if (!behavior.IsActive) continue;
-                behavior.GetSteeringBehaviorVector(out steerCached, this, surroundings);
-                steerCached *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), behavior.debugColor);
-                ApplyForce(steerCached);
+                behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
+                steerBuffer *= behavior.weight;
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), behavior.debugColor);
+                ApplyForce(steerBuffer);
             }
-            
         }
 
         void Contain()
         {
             if (!myNeighborhood.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerCached, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerCached), activeSettings.Containment.debugColor);
-                ApplyForce(steerCached);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
+                ApplyForce(steerBuffer);
             }
         }
 
@@ -102,13 +100,11 @@ namespace CloudFine
             UpdateTransform();
         }
 
-
         protected override void FindNeighborhoodBuckets()
         {
             if (myNeighborhood)
                 myNeighborhood.UpdateAgentBuckets(this, buckets, false);
         }
-
 
         public override void Spawn(FlockBox neighborhood, Vector3 position)
         {
@@ -126,12 +122,10 @@ namespace CloudFine
             }
         }
 
-        protected void LockPosition(bool isLocked)
+        public void LockPosition(bool isLocked)
         {
             freezePosition = isLocked;
         }
-
-
        
         protected Quaternion LookRotation(Vector3 desiredForward)
         {
@@ -154,6 +148,35 @@ namespace CloudFine
             }
         }
 
+        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
+
+            dstManager.AddComponent<SteeringData>(entity);
+            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = null });
+
+            if (activeSettings)
+            {
+                activeSettings.ApplyToEntity(entity, dstManager);
+            }
+
+            //AgentData holds everything a behavior needs to react to another Agent
+            dstManager.AddComponentData(entity, new AgentData
+            {
+                Position = Position,
+                Velocity = Velocity,
+                Forward = Forward,
+                Tag = TagMaskUtility.TagToInt(tag),
+                Radius = shape.radius,
+                Fill = shape.type == Shape.ShapeType.SPHERE,
+            }) ;
+            dstManager.AddComponentData(entity, new AccelerationData { Value  = float3.zero});
+            dstManager.AddComponentData(entity, new PerceptionData());
+
+            //give entity a buffer to hold info about surroundings
+            dstManager.AddBuffer<NeighborData>(entity);
+        }
+
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
@@ -165,18 +188,12 @@ namespace CloudFine
                 UnityEditor.Handles.matrix = this.transform.localToWorldMatrix;
                 UnityEditor.Handles.color = Color.grey;
                 shape.DrawGizmo();
-
-
             }
-
-           
 
             if (UnityEditor.Selection.activeGameObject != transform.gameObject)
             {
                 return;
             }
-
-            
         }
 
         void OnDrawGizmos()

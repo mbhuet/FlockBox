@@ -1,0 +1,39 @@
+{
+    "author": {
+        "email": "aron.granberg@gmail.com",
+        "name": "Aron Granberg",
+        "url": "https://www.arongranberg.com"
+    },
+    "dependencies": {
+        "com.unity.burst": "1.3.0",
+        "com.unity.collections": "0.7.0-preview.2",
+        "com.unity.mathematics": "1.1.0",
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.ugui": "1.0.0"
+    },
+    "description": "ALINE is a complete replacement for Unity's built-in Debug.Draw and Gizmo drawing functionality and much more. It is faster, has more features and has better rendering quality.",
+    "displayName": "ALINE",
+    "documentation": "https://arongranberg.com/aline/docs",
+    "keywords": [
+        "drawing",
+        "vector",
+        "canvas",
+        "debug",
+        "sketch",
+        "gizmo"
+    ],
+    "name": "com.arongranberg.aline",
+    "publishConfig": {
+        "registry": "https://arongranberg.com/packages_forward/"
+    },
+    "samples": [
+        {
+            "description": "Additional examples",
+            "displayName": "Example scenes",
+            "path": "ExampleScenes~"
+        }
+    ],
+    "unity": "2019.3",
+    "unityRelease": "0f3",
+    "version": "1.2.3"
+}

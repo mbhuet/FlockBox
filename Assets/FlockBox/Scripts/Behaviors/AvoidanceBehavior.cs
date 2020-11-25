@@ -1,14 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
+using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
-    public class AvoidanceBehavior : ForecastSteeringBehavior
+    public class AvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<AvoidanceData>
     {
         [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
         public float clearance;
@@ -53,12 +55,29 @@ namespace CloudFine
             mostImmediateObstacle.FindNormalToSteerAwayFromShape(myRay, closestHit, mine.shape.radius, ref normal);
             steer = normal;
             steer = steer.normalized * mine.activeSettings.maxForce;
-
             steer *= (1f - (closestHit.distance / rayDist));
         }
 
-    #if UNITY_EDITOR
-            protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
+
+        public AvoidanceData Convert()
+        {
+            return new AvoidanceData
+            {
+                Active = IsActive,
+                Weight = weight,
+                LookAheadSeconds = lookAheadSeconds,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue),
+                Clearance = clearance,
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+
+#if UNITY_EDITOR
+        protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
             {
                 DrawCylinderGizmo(agent.shape.radius + clearance, distance);
                 Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);

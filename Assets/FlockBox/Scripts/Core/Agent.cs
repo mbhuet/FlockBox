@@ -1,70 +1,14 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 0649
+using System.Collections.Generic;
 using UnityEngine;
+using Unity.Entities;
 using UnityEngine.Serialization;
+using CloudFine.FlockBox.DOTS;
 
-namespace CloudFine
+namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class SurroundingsContainer
-    {
-        public float perceptionRadius { get; private set; }
-        public float lookAheadSeconds { get; private set; }
-        public HashSet<string> globalSearchTags { get; private set; }
-        public HashSet<Agent> allAgents { get; private set; }
-        public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
-
-        public SurroundingsContainer()
-        {
-            globalSearchTags = new HashSet<string>();
-            allAgents = new HashSet<Agent>();
-            perceptionShapes = new List<System.Tuple<Shape, Vector3>>();
-        }
-
-        public void Clear()
-        {
-            perceptionRadius = 0;
-            lookAheadSeconds = 0;
-            allAgents.Clear();
-            perceptionShapes.Clear();
-            globalSearchTags.Clear();
-        }
-
-        public void SetMinPerceptionRadius(float radius)
-        {
-            perceptionRadius = Mathf.Max(radius, perceptionRadius);
-        }
-
-        public void SetMinLookAheadSeconds(float seconds)
-        {
-            lookAheadSeconds = Mathf.Max(lookAheadSeconds, seconds);
-        }
-
-        public void AddGlobalSearchTag(string tag)
-        {
-            globalSearchTags.Add(tag);
-        }
-
-        public void AddAgent(Agent a)
-        {
-            allAgents.Add(a);
-        }
-
-        public void AddAgents(HashSet<Agent> agents)
-        {
-            foreach(Agent a in agents)
-            {
-                AddAgent(a);
-            }
-        }
-
-        public void AddPerceptionShape(Shape shape, Vector3 position)
-        {
-            perceptionShapes.Add(new System.Tuple<Shape, Vector3>(shape,position));
-        }
-    }
-
-    [System.Serializable]
-    public class Agent : MonoBehaviour
+    public class Agent : MonoBehaviour, IConvertGameObjectToEntity
     {
         private Vector3 m_position = Vector3.zero;
         /// <summary>
@@ -111,24 +55,6 @@ namespace CloudFine
         {
             get { return FlockBoxToWorldDirection(Forward); }
         }
-
-
-        private Vector3 LineStartPoint
-        {
-            get { return Position; }
-        }
-        private Vector3 LineEndPoint
-        {
-            get { return Position + Forward * shape.length; }
-        }
-
-
-
-        [SerializeField][HideInInspector]
-        private float m_radius = 1f;
-        [HideInInspector][SerializeField]
-        private int neighborType;
-
 
         protected FlockBox myNeighborhood;
 
@@ -180,15 +106,6 @@ namespace CloudFine
         {
             return agentProperties.ContainsKey(name);
         }
-
-        [System.Obsolete("Use GetAgentProperty<T>() instead.")]
-        public object GetAttribute(string name) { return GetAgentProperty<object>(name); }
-        [System.Obsolete("Use SetAgentProperty<T>() instead.")]
-        public void SetAttribute(string name, object value) { SetAgentProperty(name, value); }
-        [System.Obsolete("Use RemoveAgentProperty() instead.")]
-        public void RemoveAttribute(string name, object value) { RemoveAgentProperty(name); }
-        [System.Obsolete("Use HasAgentProperty() instead.")]
-        public bool HasAttribute(string name) { return HasAgentProperty(name); }
     
     #endregion
 
@@ -230,8 +147,6 @@ namespace CloudFine
                     Debug.LogWarning("Agent " + this.name + " is not a child of a FlockBox object.", this);
                 }
             }
-
-            MigrateData();
         }
 
         protected virtual void OnDestroy()
@@ -239,26 +154,6 @@ namespace CloudFine
             if (hasSpawned || isAlive) Kill();
         }
 
-        private void OnValidate()
-        {
-            MigrateData();
-        }
-
-        private void MigrateData()
-        {
-            if (shape == null) return;
-            //MIGRATION
-            if (m_radius != 0)
-            {
-                shape.radius = m_radius;
-                m_radius = 0;
-            }
-            if (neighborType != 0 && shape.type == 0)
-            {
-                shape.type = (Shape.ShapeType)neighborType;
-                neighborType = 0;
-            }
-        }
 
         protected void RegisterNewAgent()
         {
@@ -448,37 +343,14 @@ namespace CloudFine
         #region ShapeUtils
         public bool Overlaps(Agent other)
         {
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return other.OverlapsSphere(Position, shape.radius);
-                case Shape.ShapeType.SPHERE:
-                    return other.OverlapsSphere(Position, shape.radius);
-                case Shape.ShapeType.LINE:
-                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
-                case Shape.ShapeType.CYLINDER:
-                    return other.OverlapsLine(LineStartPoint, LineEndPoint, shape.radius);
-                default:
-                    return other.OverlapsSphere(Position, shape.radius);
-            }
+            return other.OverlapsSphere(Position, shape.radius);
         }
 
         public bool OverlapsSphere(Vector3 center, float radius)
         {
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-                case Shape.ShapeType.SPHERE:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-                case Shape.ShapeType.LINE:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
-                case Shape.ShapeType.CYLINDER:
-                    return GeometryUtility.SphereLineOverlap(center, radius + shape.radius, LineStartPoint, LineEndPoint, ref p1);
-                default:
-                    return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
-            }
+            return GeometryUtility.SphereOverlap(center, radius, Position, shape.radius);
         }
+
         public bool OverlapsLine(Vector3 start, Vector3 end, float thickness)
         {
             switch (shape.type)
@@ -487,10 +359,6 @@ namespace CloudFine
                     return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
                 case Shape.ShapeType.SPHERE:
                     return GeometryUtility.SphereLineOverlap(Position, shape.radius + thickness, start, end, ref p1);
-                case Shape.ShapeType.LINE:
-                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
-                case Shape.ShapeType.CYLINDER:
-                    return GeometryUtility.LineSegementsIntersect(start, end, LineStartPoint, LineEndPoint, shape.radius + thickness, ref p1, ref p2);
                 default:
                     return false;
             }
@@ -505,19 +373,7 @@ namespace CloudFine
         public bool RaycastToShape(Ray ray, float rayRadius, float perceptionDistance, out RaycastHit hit)
         {
             hit = new RaycastHit();
-
-            switch (shape.type)
-            {
-                case Shape.ShapeType.POINT:
-                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.LINE:
-                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.CYLINDER:
-                    return RaycastToLineShape(ray, rayRadius, perceptionDistance, ref hit);
-                case Shape.ShapeType.SPHERE:
-                    return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
-            }
-            return false;
+            return RaycastToSphereShape(ray, rayRadius, perceptionDistance, ref hit);
         }
 
         float mu1, mu2;
@@ -540,9 +396,9 @@ namespace CloudFine
             return false;
         }
 
-        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit)
+        private bool RaycastToLineShape(Ray ray, float rayRadius, float perceptionDistance, Vector3 lineStart, Vector3 lineEnd, ref RaycastHit hit)
         {
-            if (GeometryUtility.RayCylinderIntersection(ray, LineStartPoint, LineEndPoint, shape.radius + rayRadius, ref t, ref norm))
+            if (GeometryUtility.RayCylinderIntersection(ray, lineStart, lineEnd, shape.radius + rayRadius, ref t, ref norm))
             {
                 hit.normal = norm;
                 hit.point = ray.GetPoint(t);
@@ -555,48 +411,15 @@ namespace CloudFine
 
         public void FindNormalToSteerAwayFromShape(Ray ray, RaycastHit hit, float clearanceRadius, ref Vector3 normal)
         {
-            if (shape.type == Shape.ShapeType.POINT || shape.type == Shape.ShapeType.SPHERE)
+            //if inside the sphere, steer out
+            if (hit.distance == 0)
             {
-                //if inside the sphere, steer out
-                if (hit.distance == 0)
-                {
-                    normal = (ray.origin - Position).normalized;
-                    return;
-                }
-                // approaching the sphere, find perpendicular
-                GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
-                normal = (p1 - Position).normalized;
+                normal = (ray.origin - Position).normalized;
+                return;
             }
-            else if (shape.type == Shape.ShapeType.LINE || shape.type == Shape.ShapeType.CYLINDER)
-            {
-                //inside of cylinder, steer out
-                if (hit.distance == 0)
-                {
-                    normal = hit.normal;
-                    return;
-                }
-                if(GeometryUtility.LinesIntersect(ray.origin, ray.origin + ray.direction, LineStartPoint, LineEndPoint, ref mu1, ref mu2)){
-                    p1 = ray.origin + ray.direction * mu1;
-                    p2 = Vector3.LerpUnclamped(LineStartPoint, LineEndPoint, mu2);
-                    //this is likely a 2d simulation, use hit normal
-                    if((p1-p2).sqrMagnitude < .01f)
-                    {
-                        normal = hit.normal;
-                        return;
-                    }
-                    else if (Vector3.Cross(hit.normal, Forward).sqrMagnitude < 1) //hit a cap in 3D, use hit normal
-                    {
-                        normal = hit.normal;
-                        return;
-                    }
-                    // approaching the cylinder from the side, find perpendicular
-                    normal  = (p1-p2).normalized;
-
-                    return;
-                }
-                normal = hit.normal;
-
-            }
+            // approaching the sphere, find perpendicular
+            GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
+            normal = (p1 - Position).normalized;
         }
 
 
@@ -621,6 +444,21 @@ namespace CloudFine
                 shape.DrawGizmo();
             }
         }
+
 #endif
+
+
+        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            dstManager.AddComponentData(entity, new AgentData
+            {
+                Position = Position,
+                Velocity = Velocity,
+                Forward = Forward,
+                Tag = TagMaskUtility.TagToInt(tag),
+                Radius = shape.radius,
+                Fill = shape.type == Shape.ShapeType.SPHERE,
+            });
+        }
     }
 }
