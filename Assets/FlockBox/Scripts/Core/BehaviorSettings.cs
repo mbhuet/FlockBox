@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
-    [CreateAssetMenu(menuName = "BehaviorSettings")]
+    [CreateAssetMenu(menuName = "FlockBox/BehaviorSettings")]
     public class BehaviorSettings : ScriptableObject
     {
         public static Action<BehaviorSettings> OnSteeringValuesModified;

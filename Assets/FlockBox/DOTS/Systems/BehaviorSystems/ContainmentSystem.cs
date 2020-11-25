@@ -18,7 +18,7 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             return Entities
-                .ForEach((ref Acceleration acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
+                .ForEach((ref AccelerationData acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
                 {
                     acceleration.Value += behavior.CalculateSteering(agent, steering, boundary);
 

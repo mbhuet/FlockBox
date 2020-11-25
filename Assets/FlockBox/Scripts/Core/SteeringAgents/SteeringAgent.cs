@@ -170,7 +170,7 @@ namespace CloudFine.FlockBox
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
             }) ;
-            dstManager.AddComponentData(entity, new Acceleration { Value  = float3.zero});
+            dstManager.AddComponentData(entity, new AccelerationData { Value  = float3.zero});
             dstManager.AddComponentData(entity, new PerceptionData());
 
             //give entity a buffer to hold info about surroundings

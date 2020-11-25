@@ -18,7 +18,7 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             return Entities
-                .ForEach((DynamicBuffer<NeighborData> neighbors, ref Acceleration acceleration, in AgentData agent, in SteeringData steering, in SeparationData separation) =>
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in SeparationData separation) =>
                 {
                     acceleration.Value += separation.CalculateSteering(agent, steering, neighbors);
                 }).ScheduleParallel(Dependency);

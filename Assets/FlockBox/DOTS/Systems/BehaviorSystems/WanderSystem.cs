@@ -18,7 +18,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             double time = Time.ElapsedTime;
             return Entities
-                .ForEach((ref Acceleration acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
+                .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
                 {
                     var steer = behavior.CalculateSteering(agent, steering, (float)time);
                     acceleration.Value += steer;

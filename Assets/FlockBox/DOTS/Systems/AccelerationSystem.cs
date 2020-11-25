@@ -10,7 +10,7 @@ namespace CloudFine.FlockBox.DOTS
         protected override void OnUpdate()
         {
             float dt = Time.DeltaTime;
-            var accelerationJob = Entities.ForEach((ref AgentData agent, ref SteeringData steer, ref Acceleration accel) =>
+            var accelerationJob = Entities.ForEach((ref AgentData agent, ref SteeringData steer, ref AccelerationData accel) =>
             {
                 agent.Velocity += accel.Value * dt;
                 agent.Velocity = math.normalize(agent.Velocity) * math.min(math.length(agent.Velocity), steer.MaxSpeed);
