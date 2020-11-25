@@ -234,10 +234,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dimensions_x: 30
-  dimensions_y: 0
+  dimensions_y: 30
   dimensions_z: 30
   cellSize: 10
-  wrapEdges: 1
+  wrapEdges: 0
   boundaryBuffer: 47.31
   sleepChance: 0
   maxCellCapacity: 10
@@ -248,8 +248,9 @@ MonoBehaviour:
     population: 1
   - prefab: {fileID: 3617397216089966378, guid: 33488b7a8684b5d409d7a42bf59efc1a,
       type: 3}
-    population: 10
-  drawGizmos: 1
+    population: 0
+  drawBoundary: 1
+  drawOccupiedCells: 0
   useDOTS: 1
 --- !u!4 &1385211393
 Transform:
