@@ -6,14 +6,14 @@ class MyEditorScript
 {
     static string[] SCENES = FindEnabledEditorScenes();
 
-    static string APP_NAME = "YourProject";
-    static string TARGET_DIR = "target";
+    static string APP_NAME = "FlockBox";
+    static string TARGET_DIR = "CIBuilds";
 
-    [MenuItem("Custom/CI/Build Mac OS X")]
-    static void PerformMacOSXBuild()
+    [MenuItem("Custom/CI/Build Windows")]
+    static void PerformWindowsBuild()
     {
-        string target_dir = APP_NAME + ".app";
-        GenericBuild(SCENES, TARGET_DIR + "/" + target_dir, BuildTarget.StandaloneOSXIntel, BuildOptions.None);
+        string target_dir = APP_NAME + ".exe";
+        GenericBuild(SCENES, TARGET_DIR + "/" + target_dir, BuildTarget.StandaloneWindows, BuildTargetGroup.Standalone, BuildOptions.None);
     }
 
     private static string[] FindEnabledEditorScenes()
@@ -27,14 +27,16 @@ class MyEditorScript
         return EditorScenes.ToArray();
     }
 
-    static void GenericBuild(string[] scenes, string target_dir, BuildTarget build_target, BuildOptions build_options)
+    static void GenericBuild(string[] scenes, string target_dir, BuildTarget build_target, BuildTargetGroup group, BuildOptions build_options)
     {
-        EditorUserBuildSettings.SwitchActiveBuildTarget(build_target);
+        EditorUserBuildSettings.SwitchActiveBuildTarget(group, build_target);
         BuildPlayerOptions options = new BuildPlayerOptions();
         options.options = build_options;
         options.target = build_target;
         options.scenes = scenes;
+        options.locationPathName = target_dir;
         UnityEditor.Build.Reporting.BuildReport res = BuildPipeline.BuildPlayer(options);
+        UnityEngine.Debug.Log(res);
         if (res.summary.result == UnityEditor.Build.Reporting.BuildResult.Failed)
         {
             throw new Exception("BuildPlayer failure: " + res);
