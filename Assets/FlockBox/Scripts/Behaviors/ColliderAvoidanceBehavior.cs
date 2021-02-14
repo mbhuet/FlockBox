@@ -25,6 +25,8 @@ SOFTWARE.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
+using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -32,7 +34,7 @@ using UnityEditor;
 namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class ColliderAvoidanceBehavior : ForecastSteeringBehavior
+    public class ColliderAvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ColliderAvoidanceData>
     {
         [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
         public float clearance;
@@ -121,7 +123,6 @@ namespace CloudFine.FlockBox
 
         Vector3 forward;
         Quaternion rot;
-        Vector3[] rayDirections;
 
         Vector3 ObstacleRays(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit, LayerMask mask)
         {
@@ -143,6 +144,23 @@ namespace CloudFine.FlockBox
 
             return forward;
         }
+
+        public ColliderAvoidanceData Convert()
+        {
+            return new ColliderAvoidanceData
+            {
+                Active = IsActive,
+                Weight = weight,
+                LookAheadSeconds = lookAheadSeconds,
+                LayerMask = mask,
+                Clearance = clearance,
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
 
 #if UNITY_EDITOR
         protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
