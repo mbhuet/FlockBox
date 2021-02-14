@@ -49,8 +49,8 @@ namespace CloudFine.FlockBox.DOTS
 
         [BurstCompile]
         protected struct UpdateDataJob : IJobChunk
-        {
-            public ArchetypeChunkComponentType<T> BehaviorDataType;
+        {          
+            public ComponentTypeHandle<T> BehaviorDataType;
             public T template;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
@@ -91,7 +91,7 @@ namespace CloudFine.FlockBox.DOTS
                 T temp = convert.Convert();
                 UpdateDataJob updateJob = new UpdateDataJob
                 {
-                    BehaviorDataType = GetArchetypeChunkComponentType<T>(false),
+                    BehaviorDataType = GetComponentTypeHandle<T>(false),
                     template = temp
                 };
                 Dependency = updateJob.ScheduleParallel(updateQuery, Dependency);
