@@ -33,6 +33,7 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
+    [DOTSCompatible]
     [System.Serializable]
     public class ColliderAvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ColliderAvoidanceData>
     {
