@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b81d4f1c37cfb9b4696d982df08a7441, type: 3}
-  m_Name: ClassicBoid
+  m_Name: ClassicBoid _DOTS
   m_EditorClassIdentifier: 
   maxForce: 20
   maxSpeed: 30

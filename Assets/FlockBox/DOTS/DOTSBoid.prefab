@@ -49,7 +49,7 @@ MonoBehaviour:
     type: 0
     radius: 1
   debugDrawShape: 0
-  activeSettings: {fileID: 11400000, guid: 6d6ed21c3f478994da82f1950a1dd3f7, type: 2}
+  activeSettings: {fileID: 11400000, guid: b82738b8131974144a7b17edd7f4df57, type: 2}
 --- !u!33 &7266994078565999572
 MeshFilter:
   m_ObjectHideFlags: 0

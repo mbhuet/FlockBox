@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This utility was written to port the tag masking system into a DOTS-friendly data structure.
+/// </summary>
 public static class TagMaskUtility
 {
     private static List<string> _tagRegistry;
