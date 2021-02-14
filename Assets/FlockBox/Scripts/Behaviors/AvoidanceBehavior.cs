@@ -43,7 +43,7 @@ namespace CloudFine.FlockBox
                         closestHit = hit;
                         mostImmediateObstacle = obstacle;
                     }
-                    foundObstacleInPath = true;      
+                    foundObstacleInPath = true;
                 }
             }
 
@@ -78,9 +78,9 @@ namespace CloudFine.FlockBox
 
 #if UNITY_EDITOR
         protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)
-            {
-                DrawCylinderGizmo(agent.shape.radius + clearance, distance);
-                Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);
+        {
+            DrawCylinderGizmo(agent.shape.radius + clearance, distance);
+            Handles.DrawWireDisc(Vector3.forward * distance, Vector3.forward, agent.shape.radius);
             Handles.Label(Vector3.forward * distance + Vector3.up * agent.shape.radius, new GUIContent("Agent Radius"));
             Handles.Label(Vector3.forward * distance + Vector3.up * (agent.shape.radius + clearance), new GUIContent("Clearance"));
         }
