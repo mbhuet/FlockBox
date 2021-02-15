@@ -6,32 +6,13 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
 {
+
     public class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
-
-        [BurstCompile]
-        public struct RaycastJob : IJob
-        {
-            public RaycastInput RaycastInput;
-            public NativeList<RaycastHit> RaycastHits;
-            public bool CollectAllHits;
-            [ReadOnly] public PhysicsWorld World;
-
-            public void Execute()
-            {
-                if (CollectAllHits)
-                {
-                    World.CastRay(RaycastInput, ref RaycastHits);
-                }
-                else if (World.CastRay(RaycastInput, out RaycastHit hit))
-                {
-                    RaycastHits.Add(hit);
-                }
-            }
-        }
 
         protected override JobHandle DoPerception()
         {
@@ -43,6 +24,7 @@ namespace CloudFine.FlockBox.DOTS
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
 
             return Entities
+                .WithoutBurst()
                 .WithReadOnly(physicsWorld)
                 .ForEach((ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in ColliderAvoidanceData avoidance) =>
                 {
@@ -52,7 +34,28 @@ namespace CloudFine.FlockBox.DOTS
                         CollidesWith = (uint)avoidance.LayerMask
                     };
                     //TODO use LocalToWorld to get world position
-                    physicsWorld.SphereCast(agent.Position, agent.Radius + avoidance.Clearance, agent.Forward, lookDist, filter);
+                    float3 worldPosition = agent.Position;
+                    float3 worldForward = agent.Forward;
+
+                    RaycastInput input = new RaycastInput()
+                    {
+                        Start = worldPosition,
+                        End = worldPosition + worldForward * 10,
+                        Filter = CollisionFilter.Default,                    
+                    };
+                    //Something was hit, find best avoidance direction
+                    if (physicsWorld.CastRay(input))
+                    //physicsWorld.SphereCast(worldPosition, agent.Radius + avoidance.Clearance, worldForward, lookDist, filter))
+                    {
+                        Debug.Log("hit");
+                        acceleration.Value -= worldForward * 10;
+                    }
+
+                    else
+                    {
+                        //avoidance.LastClearDirection = worldForward;
+                    }
+
                 }
                 ).ScheduleParallel(Dependency);
         }

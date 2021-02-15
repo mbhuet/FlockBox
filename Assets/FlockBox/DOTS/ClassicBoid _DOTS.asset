@@ -22,7 +22,7 @@ MonoBehaviour:
   debugDrawProperties: 0
   foldout: 0
   lookAheadSeconds: 1
---- !u!114 &-6742341320620086265
+--- !u!114 &-4307516360332120654
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -31,43 +31,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1bc63d82f81e654f98689920bf1a025, type: 3}
+  m_Script: {fileID: 11500000, guid: 16cbaa050cabba8498e4fd8da6072155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1.37
+  weight: 1
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
   debugDrawProperties: 0
-  foldout: 0
-  effectiveRadius: 8
-  fieldOfView: 360
---- !u!114 &-1352800339391299551
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7172dbec51051c438e5cb95fbc2154c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 0.811
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  debugDrawSteering: 0
-  debugDrawProperties: 0
-  foldout: 0
-  effectiveRadius: 10
-  fieldOfView: 360
+  foldout: 1
+  lookAheadSeconds: 10
+  clearance: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  drawVisionRays: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,29 +65,4 @@ MonoBehaviour:
   maxSpeed: 30
   containmentBehavior: {fileID: -7725174596085115582}
   behaviors:
-  - {fileID: 3267645291290633549}
-  - {fileID: -1352800339391299551}
-  - {fileID: -6742341320620086265}
---- !u!114 &3267645291290633549
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ea8df8741560c5419c65741a80da967, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  weight: 0.73
-  useTagFilter: 0
-  filterTags: []
-  drawDebug: 0
-  debugColor: {r: 1, g: 1, b: 1, a: 1}
-  debugDrawSteering: 0
-  debugDrawProperties: 0
-  foldout: 0
-  effectiveRadius: 10
-  fieldOfView: 360
+  - {fileID: -4307516360332120654}
