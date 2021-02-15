@@ -161,12 +161,9 @@ namespace CloudFine.FlockBox
 
         public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
         {
-            GameObjectConversionSettings settings = new GameObjectConversionSettings()
-            {
-                DestinationWorld = World.DefaultGameObjectInjectionWorld
-            };
+            var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab.gameObject, settings);
-            NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.TempJob);
+            NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.Temp);
             entityManager.Instantiate(agentEntityPrefab, agents);
 
             for (int i = 0; i < population; i++)
@@ -184,9 +181,11 @@ namespace CloudFine.FlockBox
 
                 SetupEntity(entity);
             }
+
             entityManager.DestroyEntity(agentEntityPrefab);
             Entity[] output = agents.ToArray();
             agents.Dispose();
+            settings.BlobAssetStore.Dispose();
             return output;
         }
 
