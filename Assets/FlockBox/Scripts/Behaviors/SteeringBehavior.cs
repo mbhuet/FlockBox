@@ -52,6 +52,11 @@ namespace CloudFine.FlockBox
             }
         }
 
+        public void SetActive(bool active)
+        {
+            isActive = active;
+        }
+
         private void OnValidate()
         {
             MarkAsChanged();
