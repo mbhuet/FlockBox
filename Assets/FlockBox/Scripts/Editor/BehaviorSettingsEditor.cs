@@ -149,10 +149,11 @@ namespace CloudFine
             newBehavior.hideFlags = HideFlags.HideInHierarchy;
 
             AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(target));
+#if!UNITY_2020_1_OR_NEWER
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
-
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+#endif
             return newBehavior;
         }
 
