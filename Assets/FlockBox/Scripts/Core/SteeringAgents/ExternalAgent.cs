@@ -7,6 +7,7 @@ namespace CloudFine
     public class ExternalAgent : Agent
     {
         public FlockBox neighborhood;
+        private Vector3 _lastPosition;
 
         protected override FlockBox FindNeighborhood()
         {
@@ -25,6 +26,12 @@ namespace CloudFine
                 if (neighborhood != null)
                 {
                     Position = myNeighborhood.transform.InverseTransformPoint(transform.position);
+                    Velocity = myNeighborhood.transform.InverseTransformDirection((transform.position - _lastPosition)/Time.deltaTime);
+                    ValidateVelocity();
+                    if(Velocity != Vector3.zero)
+                    {
+                        Forward = Velocity.normalized;
+                    }
                 }
                 if (ValidatePosition())
                 {
@@ -36,6 +43,8 @@ namespace CloudFine
                 }
                 transform.hasChanged = false;
             }
+            _lastPosition = transform.position;
+
         }
     }
 }
