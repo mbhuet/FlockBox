@@ -1,5 +1,4 @@
 ﻿using System;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -13,6 +12,25 @@ namespace CloudFine.FlockBox.DOTS
 
     public class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
+        private float3[] Directions;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            Vector3[] vector3Directions = ColliderAvoidanceBehavior.Directions;
+            Directions = new float3[vector3Directions.Length];
+            for(int i=0; i<vector3Directions.Length; i++)
+            {
+                Directions[i] = (float3)vector3Directions[i];
+            }
+            
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
 
         protected override JobHandle DoPerception()
         {
@@ -22,13 +40,16 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
+            Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
 
-            return Entities
+            Entities
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
-                .ForEach((ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in ColliderAvoidanceData avoidance) =>
+                //.WithReadOnly(dirs)
+                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering) =>
                 {
                     float lookDist = math.length(agent.Velocity) * avoidance.LookAheadSeconds;
+                    float castRadius = agent.Radius + avoidance.Clearance;
                     CollisionFilter filter = new CollisionFilter()
                     {
                         CollidesWith = (uint)avoidance.LayerMask
@@ -40,24 +61,58 @@ namespace CloudFine.FlockBox.DOTS
                     RaycastInput input = new RaycastInput()
                     {
                         Start = worldPosition,
-                        End = worldPosition + worldForward * 10,
-                        Filter = CollisionFilter.Default,                    
+                        End = worldPosition + worldForward * lookDist,
+                        //TODO: LayerMask is not working
+                        Filter = CollisionFilter.Default
                     };
+
                     //Something was hit, find best avoidance direction
-                    if (physicsWorld.CastRay(input))
-                    //physicsWorld.SphereCast(worldPosition, agent.Radius + avoidance.Clearance, worldForward, lookDist, filter))
+                    if (physicsWorld.CastRay(input, out hit))
                     {
-                        Debug.Log("hit");
                         acceleration.Value -= worldForward * 10;
+
+                        /*
+                        float hitDist = math.length(hit.Position - worldPosition);
+                        if (math.all(avoidance.LastClearWorldDirection == float3.zero))
+                        {
+                            avoidance.LastClearWorldDirection = worldForward;
+                        }
+
+                        float3 clearWorldDirection = worldForward;
+
+                        float3 up = new float3(0, 1, 0);
+                        quaternion rot = quaternion.LookRotation(worldForward, up);
+
+                        for (int i = 0; i < Directions.Length; i++)
+                        {
+                            float3 dir = math.mul(rot, Directions[i]);
+                            input.End = worldPosition + dir * lookDist;
+                            if (!physicsWorld.CastRay(input, out hit))
+                            {
+                                clearWorldDirection = dir;
+                                break;
+                            }
+                        }
+
+
+                        avoidance.LastClearWorldDirection = clearWorldDirection;
+                        float smooth = (1f - (hitDist / lookDist));
+
+                        //TODO world to local
+                        float3 clearLocalDirection = clearWorldDirection;
+                        acceleration.Value += steering.GetSteerVector(clearLocalDirection, agent.Velocity) * avoidance.Weight * smooth;
+                        */
                     }
 
                     else
                     {
-                        //avoidance.LastClearDirection = worldForward;
+                        avoidance.LastClearWorldDirection = worldForward;
                     }
 
                 }
-                ).ScheduleParallel(Dependency);
+                //TODO schedule
+                ).Run();// ScheduleParallel(Dependency);
+            return Dependency;
         }
     }
 
@@ -68,5 +123,6 @@ namespace CloudFine.FlockBox.DOTS
         public float LookAheadSeconds;
         public float Clearance;
         public Int32 LayerMask;
+        public float3 LastClearWorldDirection;
     }
 }

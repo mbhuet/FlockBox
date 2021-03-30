@@ -49,7 +49,7 @@ namespace CloudFine.FlockBox
         public override bool CanUseTagFilter { get { return false; } }
 
         const int numViewDirections = 360;
-        private static Vector3[] Directions
+        public static Vector3[] Directions
         {
             get
             {
