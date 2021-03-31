@@ -52,8 +52,10 @@ namespace CloudFine.FlockBox.DOTS
                     float castRadius = agent.Radius + avoidance.Clearance;
                     CollisionFilter filter = new CollisionFilter()
                     {
-                        CollidesWith = (uint)avoidance.LayerMask
+                        BelongsTo = (uint)avoidance.LayerMask,
+                        CollidesWith = (uint)avoidance.LayerMask,
                     };
+
                     //TODO use LocalToWorld to get world position
                     float3 worldPosition = agent.Position;
                     float3 worldForward = agent.Forward;
@@ -62,14 +64,16 @@ namespace CloudFine.FlockBox.DOTS
                     {
                         Start = worldPosition,
                         End = worldPosition + worldForward * lookDist,
-                        //TODO: LayerMask is not working
-                        Filter = CollisionFilter.Default
+                        Filter = filter
                     };
+
 
                     //Something was hit, find best avoidance direction
                     if (physicsWorld.CastRay(input, out hit))
                     {
-                        acceleration.Value -= worldForward * 10;
+                        UnityEngine.Debug.DrawRay(worldPosition, worldForward * lookDist, Color.magenta);
+
+                        //acceleration.Value -= worldForward * 10;
 
                         /*
                         float hitDist = math.length(hit.Position - worldPosition);
@@ -106,6 +110,8 @@ namespace CloudFine.FlockBox.DOTS
 
                     else
                     {
+                        UnityEngine.Debug.DrawRay(worldPosition, worldForward * lookDist, Color.yellow);
+
                         avoidance.LastClearWorldDirection = worldForward;
                     }
 

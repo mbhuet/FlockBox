@@ -478,11 +478,11 @@ MonoBehaviour:
   dimensions_y: 0
   dimensions_z: 30
   cellSize: 10
-  wrapEdges: 0
+  wrapEdges: 1
   boundaryBuffer: 30
-  sleepChance: 0.5
+  sleepChance: 0
   maxCellCapacity: 10
-  capCellCapacity: 1
+  capCellCapacity: 0
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: 5f95e44f7f5bd1643878e2d58c8347dd,
       type: 3}
