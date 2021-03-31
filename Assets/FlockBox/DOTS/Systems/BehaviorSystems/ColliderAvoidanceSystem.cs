@@ -42,6 +42,7 @@ namespace CloudFine.FlockBox.DOTS
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
             Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
 
+            //TODO use burst
             Entities
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
@@ -69,20 +70,18 @@ namespace CloudFine.FlockBox.DOTS
 
 
                     //Something was hit, find best avoidance direction
+                    //TODO sphere cast instead of ray
                     if (physicsWorld.CastRay(input, out hit))
                     {
-                        UnityEngine.Debug.DrawRay(worldPosition, worldForward * lookDist, Color.magenta);
-
-                        //acceleration.Value -= worldForward * 10;
-
-                        /*
+                        UnityEngine.Debug.DrawLine(input.Start, input.End, Color.magenta);
+                        
                         float hitDist = math.length(hit.Position - worldPosition);
                         if (math.all(avoidance.LastClearWorldDirection == float3.zero))
                         {
                             avoidance.LastClearWorldDirection = worldForward;
                         }
 
-                        float3 clearWorldDirection = worldForward;
+                        float3 clearWorldDirection = avoidance.LastClearWorldDirection;
 
                         float3 up = new float3(0, 1, 0);
                         quaternion rot = quaternion.LookRotation(worldForward, up);
@@ -91,8 +90,12 @@ namespace CloudFine.FlockBox.DOTS
                         {
                             float3 dir = math.mul(rot, Directions[i]);
                             input.End = worldPosition + dir * lookDist;
+                            UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
+
                             if (!physicsWorld.CastRay(input, out hit))
                             {
+                                UnityEngine.Debug.DrawLine(input.Start, input.End, Color.cyan);
+
                                 clearWorldDirection = dir;
                                 break;
                             }
@@ -104,13 +107,12 @@ namespace CloudFine.FlockBox.DOTS
 
                         //TODO world to local
                         float3 clearLocalDirection = clearWorldDirection;
-                        acceleration.Value += steering.GetSteerVector(clearLocalDirection, agent.Velocity) * avoidance.Weight * smooth;
-                        */
+                        //acceleration.Value += steering.GetSteerVector(clearLocalDirection, agent.Velocity) * avoidance.Weight * smooth;
+                        
                     }
 
                     else
                     {
-                        UnityEngine.Debug.DrawRay(worldPosition, worldForward * lookDist, Color.yellow);
 
                         avoidance.LastClearWorldDirection = worldForward;
                     }

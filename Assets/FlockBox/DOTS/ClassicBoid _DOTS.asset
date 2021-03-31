@@ -38,9 +38,9 @@ MonoBehaviour:
   weight: 1
   useTagFilter: 0
   filterTags: []
-  drawDebug: 0
+  drawDebug: 1
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  debugDrawSteering: 0
+  debugDrawSteering: 1
   debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 3
@@ -48,7 +48,7 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 4294967295
-  drawVisionRays: 0
+  drawVisionRays: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
