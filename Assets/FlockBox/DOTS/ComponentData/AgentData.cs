@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -22,6 +23,78 @@ namespace CloudFine.FlockBox.DOTS
         {
             return ((1 << Tag & mask) != 0);
         }
+
+        public float3 GetWorldPosition(in LocalToWorld ltw, in LocalToParent ltp)
+        {
+            return FlockToWorldPoint(ltw, ltp, Position);
+        }
+
+        public float3 GetWorldForward(in LocalToWorld ltw, in LocalToParent ltp)
+        {
+            return FlockToWorldDirection(ltw, ltp, Forward);
+        }
+
+
+        //Flock To Local
+        public static float3 FlockToLocalPoint(in LocalToParent flockLtp, float3 flockPoint)
+        {
+            return math.transform(math.inverse(flockLtp.Value), flockPoint);
+        }
+
+        public static float3 FlockToLocalDirection(in LocalToParent flockLtp, float3 flockDirection)
+        {
+           return math.rotate(math.inverse(flockLtp.Value), flockDirection);
+        }
+
+
+        //Local To Flock
+        public static float3 LocalToFlockPoint(in LocalToParent flockLtp, float3 localPoint)
+        {
+            return math.transform(flockLtp.Value, localPoint);
+        }
+
+        public static float3 LocalToFlockDirection(in LocalToParent flockLtp, float3 localDirection)
+        {
+            return math.rotate(flockLtp.Value, localDirection);
+        }
+
+
+        //Flock To World
+        public static float3 FlockToWorldPoint(in LocalToWorld agentLtw, in LocalToParent flockLtp, float3 flockPoint)
+        {
+            return math.transform(agentLtw.Value, FlockToLocalPoint(flockLtp, flockPoint));
+        }
+        
+        public static float3 FlockToWorldDirection(in LocalToWorld agentLtw, in LocalToParent flockLtp, float3 flockDirection)
+        {
+            return math.rotate(agentLtw.Rotation, FlockToLocalDirection(flockLtp, flockDirection));
+        }
+
+
+        //World To Local
+        public static float3 WorldToLocalPoint(in LocalToWorld agentLtw, float3 worldPoint)
+        {
+            return math.transform(math.inverse(agentLtw.Value), worldPoint);
+        }
+
+        public static float3 WorldToLocalDirection(in LocalToWorld agentLtw, float3 worldDirection)
+        {
+            return math.rotate(math.inverse(agentLtw.Value), worldDirection);
+        }
+
+
+        //World To FLock
+        public static float3 WorldToFlockPoint(in LocalToWorld agentLtw, in LocalToParent flockLtp, float3 worldPoint)
+        {
+            return LocalToFlockPoint(flockLtp, WorldToLocalPoint(agentLtw, worldPoint));
+        }
+
+        public static float3 WorldToFlockDirection(in LocalToWorld agentLtw, in LocalToParent flockLtp, float3 worldDirection)
+        {
+            return LocalToFlockDirection(flockLtp, WorldToLocalPoint(agentLtw, worldDirection));
+        }
+
+
 
         public bool FindRayIntersection(float3 rayOrigin, float3 rayDirection, float rayDist, float rayRadius, ref float t)
         {

@@ -5,6 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
@@ -47,7 +48,7 @@ namespace CloudFine.FlockBox.DOTS
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
                 //.WithReadOnly(dirs)
-                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering) =>
+                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp) =>
                 {
                     float lookDist = math.length(agent.Velocity) * avoidance.LookAheadSeconds;
                     float castRadius = agent.Radius + avoidance.Clearance;
@@ -57,10 +58,9 @@ namespace CloudFine.FlockBox.DOTS
                         CollidesWith = (uint)avoidance.LayerMask,
                     };
 
-                    //TODO use LocalToWorld to get world position
-                    float3 worldPosition = agent.Position;
-                    float3 worldForward = agent.Forward;
-
+                    float3 worldPosition = agent.GetWorldPosition(ltw, ltp);
+                    float3 worldForward = agent.GetWorldForward(ltw, ltp);
+                    
                     RaycastInput input = new RaycastInput()
                     {
                         Start = worldPosition,
@@ -84,18 +84,19 @@ namespace CloudFine.FlockBox.DOTS
                         float3 clearWorldDirection = avoidance.LastClearWorldDirection;
 
                         float3 up = new float3(0, 1, 0);
-                        quaternion rot = quaternion.LookRotation(worldForward, up);
+                        quaternion rot = quaternion.LookRotation(clearWorldDirection, up);
 
                         for (int i = 0; i < Directions.Length; i++)
                         {
+                            //TODO validate directions in local space, no 3D casting in 2D box
                             float3 dir = math.mul(rot, Directions[i]);
                             input.End = worldPosition + dir * lookDist;
                             UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
 
+                            //TODO Sphere cast
                             if (!physicsWorld.CastRay(input, out hit))
                             {
                                 UnityEngine.Debug.DrawLine(input.Start, input.End, Color.cyan);
-
                                 clearWorldDirection = dir;
                                 break;
                             }
@@ -105,15 +106,14 @@ namespace CloudFine.FlockBox.DOTS
                         avoidance.LastClearWorldDirection = clearWorldDirection;
                         float smooth = (1f - (hitDist / lookDist));
 
-                        //TODO world to local
-                        float3 clearLocalDirection = clearWorldDirection;
-                        //acceleration.Value += steering.GetSteerVector(clearLocalDirection, agent.Velocity) * avoidance.Weight * smooth;
+                        float3 clearFlockDirection = AgentData.WorldToFlockDirection(ltw, ltp, clearWorldDirection);
+                        acceleration.Value += steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;
                         
                     }
 
                     else
                     {
-
+                        Debug.DrawLine(input.Start, input.End, Color.red);
                         avoidance.LastClearWorldDirection = worldForward;
                     }
 
