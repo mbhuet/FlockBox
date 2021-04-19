@@ -25,7 +25,6 @@ namespace CloudFine.FlockBox.DOTS
             {
                 Directions[i] = (float3)vector3Directions[i];
             }
-            
         }
 
         protected override void OnDestroy()
@@ -42,12 +41,13 @@ namespace CloudFine.FlockBox.DOTS
         {
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
             Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
+            NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
 
             //TODO use burst
-            Entities
+            Dependency = Entities
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
-                //.WithReadOnly(dirs)
+                .WithReadOnly(dirs)
                 .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp, in BoundaryData boundary) =>
                 {
                     float lookDist = math.length(agent.Velocity) * avoidance.LookAheadSeconds;
@@ -86,9 +86,9 @@ namespace CloudFine.FlockBox.DOTS
                         float3 up = new float3(0, 1, 0);
                         quaternion rot = quaternion.LookRotation(clearWorldDirection, up);
 
-                        for (int i = 0; i < Directions.Length; i++)
+                        for (int i = 0; i < dirs.Length; i++)
                         {
-                            float3 dir = math.mul(rot, Directions[i]);
+                            float3 dir = math.mul(rot, dirs[i]);
                             dir = boundary.ValidateDirection(dir);
                             input.End = worldPosition + dir * lookDist;
                             //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
@@ -116,8 +116,8 @@ namespace CloudFine.FlockBox.DOTS
                     }
 
                 }
-                //TODO schedule
-                ).Run();//ScheduleParallel(Dependency);
+                ).ScheduleParallel(Dependency);
+            Dependency = dirs.Dispose(Dependency);
             return Dependency;
         }
     }
