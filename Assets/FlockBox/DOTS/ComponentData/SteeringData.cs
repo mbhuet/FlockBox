@@ -8,11 +8,24 @@ namespace CloudFine.FlockBox.DOTS
         public float MaxSpeed;
         public float MaxForce;
 
-        public float3 GetSeekVector(float3 target, float3 position, float3 velocity)
+        /// <summary>
+        /// Get steering vector to seek desired position
+        /// </summary>
+        /// <param name="desiredPosition"></param>
+        /// <param name="position"></param>
+        /// <param name="velocity"></param>
+        /// <returns></returns>
+        public float3 GetSeekVector(float3 desiredPosition, float3 position, float3 velocity)
         {
-            return GetSteerVector(target - position, velocity);
+            return GetSteerVector(desiredPosition - position, velocity);
         }
 
+        /// <summary>
+        /// Get steering vector for desired forward direction
+        /// </summary>
+        /// <param name="desiredForward"></param>
+        /// <param name="velocity"></param>
+        /// <returns></returns>
         public float3 GetSteerVector(float3 desiredForward, float3 velocity)
         {
             if (math.all(desiredForward == float3.zero)) return float3.zero;

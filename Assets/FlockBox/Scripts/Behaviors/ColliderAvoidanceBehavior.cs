@@ -81,7 +81,7 @@ namespace CloudFine.FlockBox
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            float rayDist = lookAheadSeconds * mine.Velocity.magnitude;      
+            float rayDist = lookAheadSeconds * mine.Velocity.magnitude;
             Ray myRay = new Ray(mine.WorldPosition, mine.WorldForward);
             if (!ObstacleInPath(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask))
             {
@@ -103,8 +103,8 @@ namespace CloudFine.FlockBox
             }
 
             myRay.direction = lastClearWorldDirection;
-
-            steer = ObstacleRays(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask);
+            
+            steer = ObstacleRays(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask, mine);
             mine.SetAgentProperty(lastClearDirectionKey, steer.normalized);
             float smooth = (1f - (hitDist / rayDist));
             steer = mine.WorldToFlockBoxDirection(steer);
@@ -125,7 +125,7 @@ namespace CloudFine.FlockBox
         Vector3 forward;
         Quaternion rot;
 
-        Vector3 ObstacleRays(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit, LayerMask mask)
+        Vector3 ObstacleRays(Ray ray, float rayRadius, float perceptionDistance, ref RaycastHit hit, LayerMask mask, SteeringAgent agent)
         {
             forward = ray.direction;
             rot = Quaternion.LookRotation(forward);
@@ -133,6 +133,7 @@ namespace CloudFine.FlockBox
             for (int i = 0; i < Directions.Length; i++)
             {
                 Vector3 dir = rot * (Directions[i]);
+                dir = agent.ValidateFlockDirection(dir);
                 ray.direction = dir;
                 if (!Physics.SphereCast(ray, rayRadius, out hit, perceptionDistance, mask))
                 {

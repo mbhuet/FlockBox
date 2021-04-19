@@ -19,7 +19,7 @@ namespace CloudFine.FlockBox.DOTS
             var validationJob = Entities.ForEach((ref AgentData agent, ref Translation translation, in BoundaryData boundary) =>
             {
                 agent.Position = boundary.ValidatePosition(agent.Position);
-                agent.Velocity = boundary.ValidateVelocity(agent.Velocity);
+                agent.Velocity = boundary.ValidateDirection(agent.Velocity);
                 translation.Value = agent.Position;
             })
             .ScheduleParallel(Dependency);

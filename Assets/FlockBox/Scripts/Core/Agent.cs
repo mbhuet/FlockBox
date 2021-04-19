@@ -198,8 +198,17 @@ namespace CloudFine.FlockBox
         protected bool ValidateVelocity()
         {
             if (myNeighborhood)
-                return myNeighborhood.ValidateVelocity(ref m_velocity);
+                return myNeighborhood.ValidateDirection(ref m_velocity);
             return true;
+        }
+
+        public Vector3 ValidateFlockDirection(Vector3 direction)
+        {
+            if (myNeighborhood)
+            {
+                myNeighborhood.ValidateDirection(ref direction);
+            }
+            return direction;
         }
 
         protected virtual FlockBox FindNeighborhood()

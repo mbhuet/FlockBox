@@ -60,12 +60,12 @@ namespace CloudFine.FlockBox.DOTS
             }
             return position;
         }
-        public float3 ValidateVelocity(float3 velocity)
+        public float3 ValidateDirection(float3 direction)
         {
-            if (Dimensions.x == 0) velocity.x = 0;
-            if (Dimensions.y == 0) velocity.y = 0;
-            if (Dimensions.z == 0) velocity.z = 0;
-            return velocity;
+            if (Dimensions.x == 0) direction.x = 0;
+            if (Dimensions.y == 0) direction.y = 0;
+            if (Dimensions.z == 0) direction.z = 0;
+            return direction;
         }
 
     }

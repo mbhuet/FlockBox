@@ -91,7 +91,7 @@ namespace CloudFine.FlockBox.DOTS
 
         public static float3 WorldToFlockDirection(in LocalToWorld agentLtw, in LocalToParent flockLtp, float3 worldDirection)
         {
-            return LocalToFlockDirection(flockLtp, WorldToLocalPoint(agentLtw, worldDirection));
+            return LocalToFlockDirection(flockLtp, WorldToLocalDirection(agentLtw, worldDirection));
         }
 
 

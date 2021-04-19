@@ -48,7 +48,7 @@ namespace CloudFine.FlockBox.DOTS
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
                 //.WithReadOnly(dirs)
-                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp) =>
+                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp, in BoundaryData boundary) =>
                 {
                     float lookDist = math.length(agent.Velocity) * avoidance.LookAheadSeconds;
                     float castRadius = agent.Radius + avoidance.Clearance;
@@ -73,7 +73,7 @@ namespace CloudFine.FlockBox.DOTS
                     //TODO sphere cast instead of ray
                     if (physicsWorld.CastRay(input, out hit))
                     {
-                        UnityEngine.Debug.DrawLine(input.Start, input.End, Color.magenta);
+                        //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.magenta);
                         
                         float hitDist = math.length(hit.Position - worldPosition);
                         if (math.all(avoidance.LastClearWorldDirection == float3.zero))
@@ -88,38 +88,36 @@ namespace CloudFine.FlockBox.DOTS
 
                         for (int i = 0; i < Directions.Length; i++)
                         {
-                            //TODO validate directions in local space, no 3D casting in 2D box
                             float3 dir = math.mul(rot, Directions[i]);
+                            dir = boundary.ValidateDirection(dir);
                             input.End = worldPosition + dir * lookDist;
-                            UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
+                            //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
 
                             //TODO Sphere cast
                             if (!physicsWorld.CastRay(input, out hit))
                             {
-                                UnityEngine.Debug.DrawLine(input.Start, input.End, Color.cyan);
+                                //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.cyan);
                                 clearWorldDirection = dir;
                                 break;
                             }
                         }
 
-
                         avoidance.LastClearWorldDirection = clearWorldDirection;
                         float smooth = (1f - (hitDist / lookDist));
 
                         float3 clearFlockDirection = AgentData.WorldToFlockDirection(ltw, ltp, clearWorldDirection);
-                        acceleration.Value += steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;
-                        
+                        acceleration.Value += steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;                      
                     }
 
                     else
                     {
-                        Debug.DrawLine(input.Start, input.End, Color.red);
+                        //Debug.DrawLine(input.Start, input.End, Color.red);
                         avoidance.LastClearWorldDirection = worldForward;
                     }
 
                 }
                 //TODO schedule
-                ).Run();// ScheduleParallel(Dependency);
+                ).Run();//ScheduleParallel(Dependency);
             return Dependency;
         }
     }

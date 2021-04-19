@@ -603,23 +603,23 @@ namespace CloudFine.FlockBox
             return valid;
         }
 
-        public bool ValidateVelocity(ref Vector3 velocity)
+        public bool ValidateDirection(ref Vector3 direction)
         {
             bool valid = true;
             if (dimensions_x <= 0)
             {
-                valid = valid && velocity.x == 0;
-                velocity.x = 0;
+                valid = valid && direction.x == 0;
+                direction.x = 0;
             }
             if (dimensions_y <= 0)
             {
-                valid = valid && velocity.y == 0;
-                velocity.y = 0;
+                valid = valid && direction.y == 0;
+                direction.y = 0;
             }
             if (dimensions_z <= 0)
             {
-                valid = valid && velocity.z == 0;
-                velocity.z = 0;
+                valid = valid && direction.z == 0;
+                direction.z = 0;
             }
             return valid;
         }
