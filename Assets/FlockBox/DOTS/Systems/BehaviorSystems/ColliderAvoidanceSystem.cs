@@ -37,13 +37,11 @@ namespace CloudFine.FlockBox.DOTS
             return Dependency;
         }
 
-        protected override JobHandle DoSteering()
+        protected override unsafe JobHandle DoSteering()
         {
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
-            Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
 
-            //TODO use burst
             Dependency = Entities
                 .WithoutBurst()
                 .WithReadOnly(physicsWorld)
@@ -68,13 +66,12 @@ namespace CloudFine.FlockBox.DOTS
                         Filter = filter
                     };
 
+                    Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
+
 
                     //Something was hit, find best avoidance direction
-                    //TODO sphere cast instead of ray
                     if (physicsWorld.CastRay(input, out hit))
                     {
-                        //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.magenta);
-                        
                         float hitDist = math.length(hit.Position - worldPosition);
                         if (math.all(avoidance.LastClearWorldDirection == float3.zero))
                         {
@@ -91,14 +88,11 @@ namespace CloudFine.FlockBox.DOTS
                             float3 dir = math.mul(rot, dirs[i]);
                             dir = boundary.ValidateDirection(dir);
                             input.End = worldPosition + dir * lookDist;
-                            //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.white * .1f);
 
-                            //TODO Sphere cast
-                            if (!physicsWorld.CastRay(input, out hit))
+                            if (!physicsWorld.CastRay(input))
                             {
-                                //UnityEngine.Debug.DrawLine(input.Start, input.End, Color.cyan);
                                 clearWorldDirection = dir;
-                                break;
+                                break;                               
                             }
                         }
 
@@ -111,7 +105,6 @@ namespace CloudFine.FlockBox.DOTS
 
                     else
                     {
-                        //Debug.DrawLine(input.Start, input.End, Color.red);
                         avoidance.LastClearWorldDirection = worldForward;
                     }
 
