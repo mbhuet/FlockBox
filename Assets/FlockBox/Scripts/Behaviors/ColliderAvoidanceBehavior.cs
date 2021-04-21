@@ -156,6 +156,7 @@ namespace CloudFine.FlockBox
                 LookAheadSeconds = lookAheadSeconds,
                 LayerMask = mask,
                 Clearance = clearance,
+                LastClearWorldDirection = Unity.Mathematics.float3.zero
             };
         }
 
