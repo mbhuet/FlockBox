@@ -33,6 +33,15 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
+    public enum VisionQuality
+    {
+        VERY_HIGH = 1, //360 rays
+        HIGH = 2, //180 rays
+        MEDIUM = 3, //120 rays
+        LOW = 4, //90 rays
+        VERY_LOW = 6, //60 rays
+    }
+
     [DOTSCompatible]
     [System.Serializable]
     public class ColliderAvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ColliderAvoidanceData>
@@ -41,6 +50,8 @@ namespace CloudFine.FlockBox
         public float clearance;
         [Tooltip("Which Physics Layers should be considered obstacles. Used for Raycasting.")]
         public LayerMask mask = -1;
+        [Tooltip("Determines how many raycasts an agent will perform when looking for a clear path.")]
+        public VisionQuality visionRayDensity = VisionQuality.VERY_HIGH;
         [Tooltip("Draw lines representing Raycasts this behavior is using to detect obstacles ahead and clear routes (Will only appear in Play mode).")]
         public bool drawVisionRays = false;
 
@@ -130,7 +141,7 @@ namespace CloudFine.FlockBox
             forward = ray.direction;
             rot = Quaternion.LookRotation(forward);
 
-            for (int i = 0; i < Directions.Length; i++)
+            for (int i = 0; i < Directions.Length; i+=(int)visionRayDensity)
             {
                 Vector3 dir = rot * (Directions[i]);
                 dir = agent.ValidateFlockDirection(dir);
@@ -156,7 +167,9 @@ namespace CloudFine.FlockBox
                 LookAheadSeconds = lookAheadSeconds,
                 LayerMask = mask,
                 Clearance = clearance,
+                VisionQuality = (int)visionRayDensity,
                 LastClearWorldDirection = Unity.Mathematics.float3.zero
+
             };
         }
 

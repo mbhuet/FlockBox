@@ -83,7 +83,7 @@ namespace CloudFine.FlockBox.DOTS
                         float3 up = new float3(0, 1, 0);
                         quaternion rot = quaternion.LookRotation(clearWorldDirection, up);
 
-                        for (int i = 0; i < dirs.Length; i++)
+                        for (int i = 0; i < dirs.Length; i+=avoidance.VisionQuality)
                         {
                             float3 dir = math.mul(rot, dirs[i]);
                             dir = boundary.ValidateDirection(dir);
@@ -122,6 +122,7 @@ namespace CloudFine.FlockBox.DOTS
         public float LookAheadSeconds;
         public float Clearance;
         public Int32 LayerMask;
+        public int VisionQuality;
         public float3 LastClearWorldDirection;
     }
 }
