@@ -1541,14 +1541,14 @@ MonoBehaviour:
   dimensions_z: 10
   cellSize: 10
   wrapEdges: 0
-  boundaryBuffer: 1
+  boundaryBuffer: 10
   sleepChance: 0
   maxCellCapacity: 10
   capCellCapacity: 0
   startingPopulations:
   - prefab: {fileID: 3617397216089966378, guid: a6b4451236571bc4582f399c6e205d2e,
       type: 3}
-    population: 2000
+    population: 1000
   drawBoundary: 1
   drawOccupiedCells: 0
   useDOTS: 1
