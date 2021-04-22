@@ -114,7 +114,10 @@ namespace CloudFine.FlockBox
             }
             EditorGUILayout.Space();
 
-            populationList.DoLayoutList();
+            using (new EditorGUI.DisabledScope(Application.isPlaying))
+            {
+                populationList.DoLayoutList();
+            }
 
             optimizationFoldout = EditorGUILayout.Foldout(optimizationFoldout, "Optimization", true);
             if (optimizationFoldout)
