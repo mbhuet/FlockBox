@@ -44,21 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca30d25de2ecd7488f81da0eaebe811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 0
-  neighborType: 0
   shape:
     type: 0
     radius: 1
-    length: 1
-  drawDebug: 1
+  debugDrawShape: 1
   activeSettings: {fileID: 11400000, guid: 16d70019219fd7c4980d37b2ac4d987e, type: 2}
-  _smoothRotation: 0
-  _smoothPosition: 0
-  _rotationTension: 0.9
-  _positionTension: 1
-  _positionSlackDistance: 0.1
-  _rotationSlackDegrees: 10
-  _drawUnsmoothedGizmo: 0
 --- !u!1 &7765479890752917496
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,10 +103,12 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 7f2fd62def7dc3f43b3edcc6d375c5ed, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -137,3 +129,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

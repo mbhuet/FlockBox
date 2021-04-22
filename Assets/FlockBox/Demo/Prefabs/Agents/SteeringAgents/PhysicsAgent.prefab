@@ -46,21 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741c1628ae9c76f4db0a98180fb65962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_radius: 0
-  neighborType: 0
   shape:
     type: 0
     radius: 1
-    length: 1
-  drawDebug: 1
+  debugDrawShape: 1
   activeSettings: {fileID: 11400000, guid: d749565fa040e6d41a4209f21e978a16, type: 2}
-  _smoothRotation: 0
-  _smoothPosition: 0
-  _rotationTension: 0.9
-  _positionTension: 1
-  _positionSlackDistance: 0.1
-  _rotationSlackDegrees: 10
-  _drawUnsmoothedGizmo: 0
 --- !u!135 &1096042005912204121
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -144,10 +134,12 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 7f2fd62def7dc3f43b3edcc6d375c5ed, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -168,3 +160,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
