@@ -14,7 +14,7 @@ namespace CloudFine.FlockBox
 
         void Relocate(Agent other)
         {
-            Position = myNeighborhood.RandomPosition();
+            Position = FlockBox.RandomPosition();
             ForceUpdatePosition();
         }
 
