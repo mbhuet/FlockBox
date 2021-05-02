@@ -1,12 +1,10 @@
-﻿using System;
+﻿using CloudFine.FlockBox.DOTS;
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
-using CloudFine.FlockBox.DOTS;
 using Unity.Transforms;
-using UnityEngine.Jobs;
-using System.ComponentModel.Design.Serialization;
+using UnityEngine;
 
 namespace CloudFine.FlockBox
 {
@@ -14,8 +12,8 @@ namespace CloudFine.FlockBox
     {
         public static Action<FlockBox> OnValuesModified;
 
-        private Dictionary<int, HashSet<Agent>> bucketToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a bucket
-        private Dictionary<Agent, HashSet<int>> agentToBuckets = new Dictionary<Agent, HashSet<int>>(); //get all buckets an agent is in
+        private Dictionary<int, HashSet<Agent>> cellToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a cell
+        private Dictionary<Agent, HashSet<int>> agentToCells = new Dictionary<Agent, HashSet<int>>(); //get all cells an agent is in
 
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
@@ -234,7 +232,7 @@ namespace CloudFine.FlockBox
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
-            bucketsToDebugDraw.Clear();
+            cellsToDebugDraw.Clear();
 #endif
         }
 
@@ -251,101 +249,99 @@ namespace CloudFine.FlockBox
 
 
 
-        public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> buckets, SurroundingsContainer surroundings)
+        public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> cells, SurroundingsContainer surroundings)
         {
 
-            if (buckets==null)
+            if (cells==null)
             {
-                buckets = new HashSet<int>();
+                cells = new HashSet<int>();
             }
-            else buckets.Clear();
+            else cells.Clear();
 
 
             if (surroundings.perceptionRadius > 0)
             {
-                GetBucketsOverlappingSphere(position, surroundings.perceptionRadius, buckets);
+                GetCellsOverlappingSphere(position, surroundings.perceptionRadius, cells);
             }
             if (surroundings.lookAheadSeconds > 0)
             {
-                GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
+                GetCellsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, cells);
             }
             if (surroundings.perceptionSpheres.Count > 0)
             {
                 foreach (System.Tuple<float, Vector3> s in surroundings.perceptionSpheres)
                 {
-                    GetBucketsOverlappingSphere(s.Item2, s.Item1, buckets);
+                    GetCellsOverlappingSphere(s.Item2, s.Item1, cells);
                 }
             }
 
-            foreach (int bucket in buckets)
+            foreach (int cell in cells)
             { 
-                if(bucketToAgents.TryGetValue(bucket, out _bucketContentsCache))
+                if(cellToAgents.TryGetValue(cell, out _cellContentsCache))
                 {
-                    surroundings.AddAgents(_bucketContentsCache);
+                    surroundings.AddAgents(_cellContentsCache);
                 }
             }
 
             if (surroundings.globalSearchTags.Count > 0)
             {
                 foreach (string agentTag in surroundings.globalSearchTags) {
-                    if (tagToAgents.TryGetValue(agentTag, out _bucketContentsCache))
+                    if (tagToAgents.TryGetValue(agentTag, out _cellContentsCache))
                     {
-                        surroundings.AddAgents(_bucketContentsCache);
+                        surroundings.AddAgents(_cellContentsCache);
                     }
                 }
-            }
-
-            
+            }   
         }
 
         /// <summary>
         /// Remove from 
         /// </summary>
         /// <param name="agent"></param>
-        /// <param name="buckets"></param>
+        /// <param name="cells"></param>
         /// <param name="isStatic">Will this agent be updating its position every frame</param>
-        public void UpdateAgentCells(Agent agent, HashSet<int> buckets, bool isStatic)
+        public void UpdateAgentCells(Agent agent, HashSet<int> cells, bool isStatic)
         {
-            RemoveAgentFromCells(agent, buckets);
-            AddAgentToBuckets(agent, buckets, isStatic);
+            RemoveAgentFromCells(agent, cells);
+            AddAgentToCells(agent, cells, isStatic);
         }
 
-        public void RemoveAgentFromCells(Agent agent, HashSet<int> buckets)
+        public void RemoveAgentFromCells(Agent agent, HashSet<int> cells)
         {
-            if (agentToBuckets.TryGetValue(agent, out buckets))
+            if (agentToCells.TryGetValue(agent, out cells))
             {
-                foreach(int bucket in buckets)
+                foreach(int cell in cells)
                 {
-                    if (bucketToAgents.TryGetValue(bucket, out _bucketContentsCache))
+                    if (cellToAgents.TryGetValue(cell, out _cellContentsCache))
                     {
-                        _bucketContentsCache.Remove(agent);
+                        _cellContentsCache.Remove(agent);
                     }
                 }
-                agentToBuckets[agent].Clear();
+                agentToCells[agent].Clear();
             }
         }
 
-        private HashSet<Agent> _bucketContentsCache;
-        private HashSet<int> _bucketListCache;
+        private HashSet<Agent> _cellContentsCache;
+        private HashSet<int> _cellListCache;
         private string _tagCache;
 
-        private void AddAgentToBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
+        private void AddAgentToCells(Agent agent, HashSet<int> cells, bool isStatic)
         {
             if(lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
             {
                 //check for changes
                 if (!agent.CompareTag(_tagCache))
                 {
-                    if (tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //remove from old tag list
+                    if (tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //remove from old tag list
                     {
-                        _bucketContentsCache.Remove(agent);
+                        _cellContentsCache.Remove(agent);
                     }
                     _tagCache = agent.tag;
                     lastKnownTag[agent] = _tagCache; //update last known                 
 
-                    if(tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //add to new tag list
+                    if(tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //add to new tag list
                     {
-                        _bucketContentsCache.Add(agent);
+                        _cellContentsCache.Add(agent);
                     }
                     else
                     {
@@ -357,9 +353,9 @@ namespace CloudFine.FlockBox
             {
                 _tagCache = agent.tag;
                 lastKnownTag.Add(agent, _tagCache); //save last know tag
-                if(tagToAgents.TryGetValue(_tagCache, out _bucketContentsCache)) //add to tag list
+                if(tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //add to tag list
                 {
-                    _bucketContentsCache.Add(agent);
+                    _cellContentsCache.Add(agent);
                 }
                 else
                 {
@@ -369,54 +365,54 @@ namespace CloudFine.FlockBox
             }
 
 
-            if (buckets == null)
+            if (cells == null)
             {
-                buckets = new HashSet<int>();
+                cells = new HashSet<int>();
             }
-            buckets.Clear();
+            cells.Clear();
 
             switch (agent.shape.type)
             {
                 case Shape.ShapeType.SPHERE:
-                    GetBucketsOverlappingSphere(agent.Position, agent.shape.radius, buckets);
+                    GetCellsOverlappingSphere(agent.Position, agent.shape.radius, cells);
                     break;
                 case Shape.ShapeType.POINT:
-                    buckets.Add ( GetBucketOverlappingPoint(agent.Position) );
+                    cells.Add ( GetCellOverlappingPoint(agent.Position) );
                     break;
                 default:
-                    buckets.Add( GetBucketOverlappingPoint(agent.Position) );
+                    cells.Add( GetCellOverlappingPoint(agent.Position) );
                     break;
             }
 
-            if (!agentToBuckets.TryGetValue(agent, out _bucketListCache))
+            if (!agentToCells.TryGetValue(agent, out _cellListCache))
             {
-                agentToBuckets.Add(agent, new HashSet<int>());
+                agentToCells.Add(agent, new HashSet<int>());
             }
 
-            foreach(int bucket in buckets) { 
-                if (bucketToAgents.TryGetValue(bucket, out _bucketContentsCache)) //get bucket if already existing
+            foreach(int cell in cells) { 
+                if (cellToAgents.TryGetValue(cell, out _cellContentsCache)) //get cell if already existing
                 {
-                    if (!capCellCapacity || isStatic || (_bucketContentsCache.Count < maxCellCapacity))
+                    if (!capCellCapacity || isStatic || (_cellContentsCache.Count < maxCellCapacity))
                     {
-                        _bucketContentsCache.Add(agent);
-                        agentToBuckets[agent].Add(bucket);
+                        _cellContentsCache.Add(agent);
+                        agentToCells[agent].Add(cell);
                     }
                 }
 
-                else //create bucket, add agent
+                else //create cell, add agent
                 {
-                    bucketToAgents.Add(bucket, new HashSet<Agent>() { agent});
-                    agentToBuckets[agent].Add(bucket);
+                    cellToAgents.Add(cell, new HashSet<Agent>() { agent});
+                    agentToCells[agent].Add(cell);
                 }
             }
         }
 
-        public int GetBucketOverlappingPoint(Vector3 point)
+        public int GetCellOverlappingPoint(Vector3 point)
         {
             return WorldPositionToHash(point);
         }
 
-        public void GetBucketsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> buckets)
+        public void GetCellsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> cells)
         {
             int x0 = ToCellFloor(start.x);
             int x1 = ToCellFloor(end.x);
@@ -434,7 +430,7 @@ namespace CloudFine.FlockBox
             int i = dm;
             x1 = y1 = z1 = dm / 2; /* error offset */
 
-            buckets.Add(CellPositionToHash(x0, y0, z0));
+            cells.Add(CellPositionToHash(x0, y0, z0));
 
             for (; ; )
             {  /* loop */
@@ -442,7 +438,7 @@ namespace CloudFine.FlockBox
                 if (dimensions_x > 0 && (x0 < 0 || x0 >= dimensions_x)) break;
                 if (dimensions_y > 0 && (y0 < 0 || y0 >= dimensions_y)) break;
                 if (dimensions_z > 0 && (z0 < 0 || z0 >= dimensions_z)) break;
-                buckets.Add(CellPositionToHash(x0, y0, z0));
+                cells.Add(CellPositionToHash(x0, y0, z0));
 
                 if (i-- == 0) break;
 
@@ -452,7 +448,7 @@ namespace CloudFine.FlockBox
             }
         }
   
-        public void GetBucketsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> buckets)
+        public void GetCellsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> cells)
         {
             Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
             Vector3 max = Vector3.Max(a, b) + Vector3.one * r;
@@ -472,16 +468,16 @@ namespace CloudFine.FlockBox
                         {
                             continue;
                         }
-                        buckets.Add(CellPositionToHash(x, y, z));
+                        cells.Add(CellPositionToHash(x, y, z));
                     }
                 }
             }
         }
 
-        public void GetBucketsOverlappingSphere(Vector3 center, float radius, HashSet<int> buckets)
+        public void GetCellsOverlappingSphere(Vector3 center, float radius, HashSet<int> cells)
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
-            if(buckets == null) buckets = new HashSet<int>();
+            if(cells == null) cells = new HashSet<int>();
 
             int center_x = ToCellFloor(center.x);
             int center_y = ToCellFloor(center.y);
@@ -499,7 +495,7 @@ namespace CloudFine.FlockBox
                         {
                             continue;
                         }
-                        buckets.Add(CellPositionToHash(x, y, z));
+                        cells.Add(CellPositionToHash(x, y, z));
                         
                     }
                 }
@@ -669,7 +665,7 @@ namespace CloudFine.FlockBox
 
 #if UNITY_EDITOR
 
-        private List<int> bucketsToDebugDraw = new List<int>(); //useful for debugging
+        private List<int> cellsToDebugDraw = new List<int>(); //useful for debugging
 
         private void OnDrawGizmos()
         {
@@ -698,7 +694,7 @@ namespace CloudFine.FlockBox
 
         void DrawOccupiedCells()
         {
-            if (bucketToAgents == null) return;
+            if (cellToAgents == null) return;
             
             Gizmos.color = Color.grey * .1f;
 
@@ -711,14 +707,14 @@ namespace CloudFine.FlockBox
                     {
 
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
-                        int bucket = WorldPositionToHash(corner);
+                        int cell = WorldPositionToHash(corner);
 
-                        if (bucketsToDebugDraw.Contains(bucket))
+                        if (cellsToDebugDraw.Contains(cell))
                         {
                             Gizmos.color = Color.red * .8f;
                             Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
                         }
-                        else if (bucketToAgents.ContainsKey(bucket) && bucketToAgents[bucket].Count > 0)
+                        else if (cellToAgents.ContainsKey(cell) && cellToAgents[cell].Count > 0)
                         {
                             Gizmos.color = Color.grey * .1f;
                             Gizmos.DrawCube(corner + Vector3.one * (cellSize / 2f), Vector3.one * cellSize);
