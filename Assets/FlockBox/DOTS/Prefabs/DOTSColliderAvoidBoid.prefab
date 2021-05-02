@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4214186027875092558}
   - component: {fileID: 3617397216089966378}
-  - component: {fileID: 7266994078565999572}
-  - component: {fileID: 6549937441928643859}
+  - component: {fileID: 974528055429664672}
+  - component: {fileID: 6014885106603270303}
   m_Layer: 0
-  m_Name: DOTSBoid
+  m_Name: DOTSColliderAvoidBoid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,16 +49,8 @@ MonoBehaviour:
     type: 0
     radius: 1
   debugDrawShape: 0
-  activeSettings: {fileID: 11400000, guid: b82738b8131974144a7b17edd7f4df57, type: 2}
---- !u!33 &7266994078565999572
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3040563576298773591}
-  m_Mesh: {fileID: -8822072527820176081, guid: 63ddab26105536743ae02881479d0291, type: 3}
---- !u!23 &6549937441928643859
+  activeSettings: {fileID: 11400000, guid: 27ebc342c0b31ed44b89b4bb3930e31b, type: 2}
+--- !u!23 &974528055429664672
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,10 +65,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 63ddab26105536743ae02881479d0291, type: 3}
+  - {fileID: 2100000, guid: 7f2fd62def7dc3f43b3edcc6d375c5ed, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,3 +90,12 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &6014885106603270303
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040563576298773591}
+  m_Mesh: {fileID: -8822072527820176081, guid: 63ddab26105536743ae02881479d0291, type: 3}
