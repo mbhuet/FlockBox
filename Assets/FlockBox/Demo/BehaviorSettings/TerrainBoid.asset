@@ -19,7 +19,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 0
+  debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 5
 --- !u!114 &-6742341320620086265
@@ -41,7 +41,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 0.8414739, b: 0, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 0
+  debugDrawProperties: 0
   foldout: 1
   effectiveRadius: 8
   fieldOfView: 360
@@ -64,7 +64,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 0, g: 0.6346965, b: 1, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 1
+  debugDrawProperties: 0
   foldout: 1
   effectiveRadius: 30
   fieldOfView: 360
@@ -109,7 +109,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 0
+  debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 5
   clearance: 0
@@ -132,7 +132,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 0
+  debugDrawProperties: 0
   foldout: 1
   wanderScope: 90
   wanderIntensity: 1
@@ -155,7 +155,7 @@ MonoBehaviour:
   drawDebug: 0
   debugColor: {r: 1, g: 0, b: 0, a: 1}
   debugDrawSteering: 0
-  debugDrawPerception: 0
+  debugDrawProperties: 0
   foldout: 1
   effectiveRadius: 20
   fieldOfView: 360
