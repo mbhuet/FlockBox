@@ -15,24 +15,10 @@ namespace CloudFine.FlockBox
         [Tooltip("The search radius around a point ahead to look for Agents blocking this one.")]
         public float queueRadius = 10;
 
-        private Shape _perception;
-        private Shape Perception
-        {
-            get
-            {
-                if(_perception == null)
-                {
-                    _perception = new Shape();
-                    _perception.type = Shape.ShapeType.SPHERE;
-                }
-                return _perception;
-            }
-        }
         public override void AddPerception(SteeringAgent agent, SurroundingsContainer surroundings)
         {
             base.AddPerception(agent, surroundings);
-            Perception.radius = queueRadius;
-            surroundings.AddPerceptionShape(Perception, (agent.Position + (agent.Forward * queueDistance)));
+            surroundings.AddPerceptionSphere(queueRadius, (agent.Position + (agent.Forward * queueDistance)));
         }
 
         protected bool WithinEffectiveRadius(SteeringAgent mine, Agent other)

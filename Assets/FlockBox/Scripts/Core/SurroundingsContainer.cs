@@ -11,13 +11,13 @@ namespace CloudFine.FlockBox
         public float lookAheadSeconds { get; private set; }
         public HashSet<string> globalSearchTags { get; private set; }
         public HashSet<Agent> allAgents { get; private set; }
-        public List<System.Tuple<Shape, Vector3>> perceptionShapes { get; private set; }
+        public List<System.Tuple<float, Vector3>> perceptionSpheres { get; private set; }
 
         public SurroundingsContainer()
         {
             globalSearchTags = new HashSet<string>();
             allAgents = new HashSet<Agent>();
-            perceptionShapes = new List<System.Tuple<Shape, Vector3>>();
+            perceptionSpheres = new List<System.Tuple<float, Vector3>>();
         }
 
         public void Clear()
@@ -25,7 +25,7 @@ namespace CloudFine.FlockBox
             perceptionRadius = 0;
             lookAheadSeconds = 0;
             allAgents.Clear();
-            perceptionShapes.Clear();
+            perceptionSpheres.Clear();
             globalSearchTags.Clear();
         }
 
@@ -57,9 +57,9 @@ namespace CloudFine.FlockBox
             }
         }
 
-        public void AddPerceptionShape(Shape shape, Vector3 position)
+        public void AddPerceptionSphere(float radius, Vector3 position)
         {
-            perceptionShapes.Add(new System.Tuple<Shape, Vector3>(shape, position));
+            perceptionSpheres.Add(new System.Tuple<float, Vector3>(radius, position));
         }
     }
 }

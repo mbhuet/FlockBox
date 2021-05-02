@@ -269,11 +269,11 @@ namespace CloudFine.FlockBox
             {
                 GetBucketsOverlappingLine(position, position + velocity * surroundings.lookAheadSeconds, buckets);
             }
-            if (surroundings.perceptionShapes.Count > 0)
+            if (surroundings.perceptionSpheres.Count > 0)
             {
-                foreach (System.Tuple<Shape, Vector3> s in surroundings.perceptionShapes)
+                foreach (System.Tuple<float, Vector3> s in surroundings.perceptionSpheres)
                 {
-                    GetBucketsOverlappingSphere(s.Item2, s.Item1.radius, buckets);
+                    GetBucketsOverlappingSphere(s.Item2, s.Item1, buckets);
                 }
             }
 
