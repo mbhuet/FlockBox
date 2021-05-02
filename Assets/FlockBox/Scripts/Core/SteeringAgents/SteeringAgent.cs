@@ -23,11 +23,11 @@ namespace CloudFine.FlockBox
             if (!isAlive) return;
             if (activeSettings == null) return;
             if (freezePosition) return;
-            sleeping = (UnityEngine.Random.value < _flockBox.sleepChance);
+            sleeping = (UnityEngine.Random.value < FlockBox.sleepChance);
             if(!sleeping){
                 Acceleration *= 0;
                 activeSettings.AddPerceptions(this, mySurroundings);
-                _flockBox.GetSurroundings(Position, Velocity, cells, mySurroundings);
+                FlockBox.GetSurroundings(Position, Velocity, cells, mySurroundings);
                 Flock(mySurroundings);
             }
             Contain();
@@ -59,17 +59,17 @@ namespace CloudFine.FlockBox
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
                 steerBuffer *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, _flockBox.transform.TransformDirection(steerBuffer), behavior.debugColor);
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), behavior.debugColor);
                 ApplyForce(steerBuffer);
             }
         }
 
         void Contain()
         {
-            if (!_flockBox.wrapEdges)
+            if (!FlockBox.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, _flockBox.WorldDimensions, _flockBox.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, _flockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, FlockBox.WorldDimensions, FlockBox.boundaryBuffer);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
                 ApplyForce(steerBuffer);
             }
         }

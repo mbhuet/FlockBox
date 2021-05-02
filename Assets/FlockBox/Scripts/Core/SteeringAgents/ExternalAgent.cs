@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CloudFine.FlockBox
 {
     public class ExternalAgent : Agent
     {
-        [SerializeField]
+        [SerializeField, FormerlySerializedAs("neighborhood")]
         private FlockBox _autoJoinFlockBox;
         private Vector3 _lastPosition;
 
@@ -18,6 +17,7 @@ namespace CloudFine.FlockBox
         protected override void JoinFlockBox(FlockBox flockBox)
         {
             FlockBox = flockBox;
+            _autoJoinFlockBox = flockBox;
         }
 
         protected override void LateUpdate()
