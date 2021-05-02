@@ -23,11 +23,11 @@ namespace CloudFine.FlockBox
             if (!isAlive) return;
             if (activeSettings == null) return;
             if (freezePosition) return;
-            sleeping = (UnityEngine.Random.value < myNeighborhood.sleepChance);
+            sleeping = (UnityEngine.Random.value < _flockBox.sleepChance);
             if(!sleeping){
                 Acceleration *= 0;
                 activeSettings.AddPerceptions(this, mySurroundings);
-                myNeighborhood.GetSurroundings(Position, Velocity, buckets, mySurroundings);
+                _flockBox.GetSurroundings(Position, Velocity, cells, mySurroundings);
                 Flock(mySurroundings);
             }
             Contain();
@@ -39,7 +39,7 @@ namespace CloudFine.FlockBox
         {
             if (!isAlive) return;
             if (sleeping) return;
-            FindNeighborhoodBuckets();
+            FindOccupyingCells();
         }
 
 
@@ -59,17 +59,17 @@ namespace CloudFine.FlockBox
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
                 steerBuffer *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), behavior.debugColor);
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, _flockBox.transform.TransformDirection(steerBuffer), behavior.debugColor);
                 ApplyForce(steerBuffer);
             }
         }
 
         void Contain()
         {
-            if (!myNeighborhood.wrapEdges)
+            if (!_flockBox.wrapEdges)
             {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, myNeighborhood.WorldDimensions, myNeighborhood.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, myNeighborhood.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
+                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, _flockBox.WorldDimensions, _flockBox.boundaryBuffer);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, _flockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
                 ApplyForce(steerBuffer);
             }
         }
@@ -100,15 +100,15 @@ namespace CloudFine.FlockBox
             UpdateTransform();
         }
 
-        protected override void FindNeighborhoodBuckets()
+        protected override void FindOccupyingCells()
         {
-            if (myNeighborhood)
-                myNeighborhood.UpdateAgentBuckets(this, buckets, false);
+            if (FlockBox)
+                FlockBox.UpdateAgentCells(this, cells, false);
         }
 
-        public override void Spawn(FlockBox neighborhood, Vector3 position)
+        public override void Spawn(FlockBox flockBox, Vector3 position)
         {
-            base.Spawn(neighborhood, position);
+            base.Spawn(flockBox, position);
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;

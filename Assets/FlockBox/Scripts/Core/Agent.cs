@@ -56,15 +56,22 @@ namespace CloudFine.FlockBox
             get { return FlockBoxToWorldDirection(Forward); }
         }
 
-        protected FlockBox myNeighborhood;
-
+        
+        public FlockBox FlockBox
+        {
+            get { return _flockBox; }
+            protected set { _flockBox = value; }
+        }
+        
+        [SerializeField]
+        private FlockBox _flockBox;
 
         [SerializeField]
         public Shape shape;
         [FormerlySerializedAs("drawDebug")]
         public bool debugDrawShape = false;
 
-        protected HashSet<int> buckets = new HashSet<int>();
+        protected HashSet<int> cells = new HashSet<int>();
         protected HashSet<Agent> neighbors;
 
         protected static Dictionary<int, Agent> agentRegistry;
@@ -137,10 +144,10 @@ namespace CloudFine.FlockBox
         {
             if (!hasSpawned)
             {
-                myNeighborhood = FindNeighborhood();
-                if (myNeighborhood)
+                _flockBox = AutoFindFlockBox();
+                if (_flockBox)
                 {
-                    Spawn(myNeighborhood, myNeighborhood.transform.InverseTransformPoint(transform.position));
+                    Spawn(_flockBox, _flockBox.transform.InverseTransformPoint(transform.position));
                 }
                 else
                 {
@@ -186,8 +193,8 @@ namespace CloudFine.FlockBox
         /// <returns>False if Position was adjusted.</returns>
         protected bool ValidatePosition()
         {
-            if(myNeighborhood)
-                return myNeighborhood.ValidatePosition(ref m_position);
+            if(_flockBox)
+                return _flockBox.ValidatePosition(ref m_position);
             return true;
         }
 
@@ -197,41 +204,41 @@ namespace CloudFine.FlockBox
         /// <returns>False if Velocity was adjusted.</returns>
         protected bool ValidateVelocity()
         {
-            if (myNeighborhood)
-                return myNeighborhood.ValidateDirection(ref m_velocity);
+            if (_flockBox)
+                return _flockBox.ValidateDirection(ref m_velocity);
             return true;
         }
 
         public Vector3 ValidateFlockDirection(Vector3 direction)
         {
-            if (myNeighborhood)
+            if (_flockBox)
             {
-                myNeighborhood.ValidateDirection(ref direction);
+                _flockBox.ValidateDirection(ref direction);
             }
             return direction;
         }
 
-        protected virtual FlockBox FindNeighborhood()
+        protected virtual FlockBox AutoFindFlockBox()
         {
             return GetComponentInParent<FlockBox>();
         }
 
-        protected virtual void JoinNeighborhood(FlockBox neighborhood)
+        protected virtual void JoinFlockBox(FlockBox flockBox)
         {
-            myNeighborhood = neighborhood;
-            transform.SetParent(myNeighborhood.transform);
+            _flockBox = flockBox;
+            transform.SetParent(_flockBox.transform);
         }
 
-        protected virtual void FindNeighborhoodBuckets()
+        protected virtual void FindOccupyingCells()
         {
-            if(myNeighborhood)
-            myNeighborhood.UpdateAgentBuckets(this, buckets, true);
+            if(_flockBox)
+            _flockBox.UpdateAgentCells(this, cells, true);
         }
 
-        protected void RemoveFromAllNeighborhoods()
+        protected void RemoveFromAllCells()
         {
-            if(myNeighborhood)
-            myNeighborhood.RemoveAgentFromBuckets(this, buckets);
+            if(_flockBox)
+            _flockBox.RemoveAgentFromCells(this, cells);
         }
 
         public virtual void Kill()
@@ -239,11 +246,11 @@ namespace CloudFine.FlockBox
             if (OnKill != null) OnKill.Invoke(this);
             isAlive = false;
             hasSpawned = false;
-            RemoveFromAllNeighborhoods();
+            RemoveFromAllCells();
             this.gameObject.SetActive(false);
         }
 
-        public virtual void Spawn(FlockBox neighborhood, Vector3 position)
+        public virtual void Spawn(FlockBox flockBox, Vector3 position)
         {
             if (OnSpawn != null) OnSpawn.Invoke(this);
             gameObject.SetActive(true);
@@ -251,64 +258,61 @@ namespace CloudFine.FlockBox
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            JoinNeighborhood(neighborhood);
+            JoinFlockBox(flockBox);
             this.Position = position;
             ForceUpdatePosition();
         }
 
-        public void Spawn(FlockBox neighborhood)
+        public void Spawn(FlockBox flockBox)
         {
-            Spawn(neighborhood, neighborhood.RandomPosition());
-        }
-
-        protected virtual void Spawn()
-        {
-
+            Spawn(flockBox, flockBox.RandomPosition());
         }
 
         protected virtual void ForceUpdatePosition()
         {
             ValidatePosition();
             UpdateTransform();
-            FindNeighborhoodBuckets();
+            FindOccupyingCells();
         }
 
 
+        #region Space Transformation Utils
         public Vector3 FlockBoxToWorldPosition(Vector3 localPos)
         {
-            if (myNeighborhood)
+            if (_flockBox)
             {
-                return myNeighborhood.transform.TransformPoint(localPos);
+                return _flockBox.transform.TransformPoint(localPos);
             }
             return localPos;
         }
 
         public Vector3 FlockBoxToWorldDirection(Vector3 localDir)
         {
-            if (myNeighborhood)
+            if (_flockBox)
             {
-                return myNeighborhood.transform.TransformDirection(localDir);
+                return _flockBox.transform.TransformDirection(localDir);
             }
             return localDir;
         }
 
         public Vector3 WorldToFlockBoxDirection(Vector3 worldDir)
         {
-            if (myNeighborhood)
+            if (_flockBox)
             {
-                return myNeighborhood.transform.InverseTransformDirection(worldDir);
+                return _flockBox.transform.InverseTransformDirection(worldDir);
             }
             return worldDir;
         }
 
         public Vector3 WorldToFlockBoxPosition(Vector3 worldPos)
         {
-            if (myNeighborhood)
+            if (_flockBox)
             {
-                return myNeighborhood.transform.InverseTransformPoint(worldPos);
+                return _flockBox.transform.InverseTransformPoint(worldPos);
             }
             return worldPos;
         }
+        #endregion
 
 
         /// <summary>
@@ -430,15 +434,7 @@ namespace CloudFine.FlockBox
             GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
             normal = (p1 - Position).normalized;
         }
-
-
-
-
-
         #endregion
-
-
-
 
 
 #if UNITY_EDITOR
@@ -453,7 +449,6 @@ namespace CloudFine.FlockBox
                 shape.DrawGizmo();
             }
         }
-
 #endif
 
 

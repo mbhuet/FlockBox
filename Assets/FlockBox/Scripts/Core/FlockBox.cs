@@ -304,13 +304,13 @@ namespace CloudFine.FlockBox
         /// <param name="agent"></param>
         /// <param name="buckets"></param>
         /// <param name="isStatic">Will this agent be updating its position every frame</param>
-        public void UpdateAgentBuckets(Agent agent, HashSet<int> buckets, bool isStatic)
+        public void UpdateAgentCells(Agent agent, HashSet<int> buckets, bool isStatic)
         {
-            RemoveAgentFromBuckets(agent, buckets);
+            RemoveAgentFromCells(agent, buckets);
             AddAgentToBuckets(agent, buckets, isStatic);
         }
 
-        public void RemoveAgentFromBuckets(Agent agent, HashSet<int> buckets)
+        public void RemoveAgentFromCells(Agent agent, HashSet<int> buckets)
         {
             if (agentToBuckets.TryGetValue(agent, out buckets))
             {

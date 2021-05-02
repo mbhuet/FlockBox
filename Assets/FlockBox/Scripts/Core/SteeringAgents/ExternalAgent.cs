@@ -6,27 +6,28 @@ namespace CloudFine.FlockBox
 {
     public class ExternalAgent : Agent
     {
-        public FlockBox neighborhood;
+        [SerializeField]
+        private FlockBox _autoJoinFlockBox;
         private Vector3 _lastPosition;
 
-        protected override FlockBox FindNeighborhood()
+        protected override FlockBox AutoFindFlockBox()
         {
-            return neighborhood;
+            return _autoJoinFlockBox;
         }
 
-        protected override void JoinNeighborhood(FlockBox neighborhood)
+        protected override void JoinFlockBox(FlockBox flockBox)
         {
-            myNeighborhood = neighborhood;
+            FlockBox = flockBox;
         }
 
         protected override void LateUpdate()
         {
             if (isAlive && transform.hasChanged)
             {
-                if (neighborhood != null)
+                if (_autoJoinFlockBox != null)
                 {
-                    Position = myNeighborhood.transform.InverseTransformPoint(transform.position);
-                    Velocity = myNeighborhood.transform.InverseTransformDirection((transform.position - _lastPosition)/Time.deltaTime);
+                    Position = FlockBox.transform.InverseTransformPoint(transform.position);
+                    Velocity = FlockBox.transform.InverseTransformDirection((transform.position - _lastPosition)/Time.deltaTime);
                     ValidateVelocity();
                     if(Velocity != Vector3.zero)
                     {
@@ -35,11 +36,11 @@ namespace CloudFine.FlockBox
                 }
                 if (ValidatePosition())
                 {
-                    FindNeighborhoodBuckets();
+                    FindOccupyingCells();
                 }
                 else
                 {
-                    RemoveFromAllNeighborhoods();
+                    RemoveFromAllCells();
                 }
                 transform.hasChanged = false;
             }

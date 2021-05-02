@@ -20,9 +20,9 @@ namespace CloudFine.FlockBox
             //do nothing in Update()
         }
 
-        public override void Spawn(FlockBox neighborhood, Vector3 position)
+        public override void Spawn(FlockBox flockBox, Vector3 position)
         {
-            base.Spawn(neighborhood, position);
+            base.Spawn(flockBox, position);
             rigidbody.velocity = Velocity;
         }
 
