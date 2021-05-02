@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/FlockBox/Demo/Scenes/StressTest_Demo.unity
+    path: Assets/FlockBox/Demo/Scenes/StressTest_UI_Demo.unity
     guid: e2927c39cf82ae740aae36373491f8d5
   - enabled: 0
     path: Assets/Promo/VideoStart.unity

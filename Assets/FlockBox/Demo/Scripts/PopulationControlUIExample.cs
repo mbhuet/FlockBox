@@ -156,7 +156,6 @@ namespace CloudFine.FlockBox{
             _spawnedAgents.Add(agent);
             Debug.Log("click spawn " + position, agent);
             RefreshPopulationCount();
-
         }
     }
 }
