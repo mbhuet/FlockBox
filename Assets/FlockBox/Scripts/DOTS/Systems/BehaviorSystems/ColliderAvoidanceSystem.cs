@@ -43,7 +43,7 @@ namespace CloudFine.FlockBox.DOTS
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
 
             Dependency = Entities
-                .WithoutBurst()
+                .WithBurst()
                 .WithReadOnly(physicsWorld)
                 .WithReadOnly(dirs)
                 .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp, in BoundaryData boundary) =>
