@@ -30,6 +30,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             if (math.all(desiredForward == float3.zero)) return float3.zero;
             float3 steer = math.normalize(desiredForward) * MaxSpeed - velocity;
+            if (math.all(steer == float3.zero)) return float3.zero;
             steer = math.normalize(steer) * math.min(math.length(steer), MaxForce);
             return steer;
         }
