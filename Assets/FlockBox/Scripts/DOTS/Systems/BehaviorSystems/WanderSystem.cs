@@ -29,6 +29,7 @@ namespace CloudFine.FlockBox.DOTS
 
     public struct WanderData : IComponentData
     {
+        public bool Active;
         public float Weight;
         public float Scope;
         public float Intensity;
@@ -42,6 +43,8 @@ namespace CloudFine.FlockBox.DOTS
         /// <returns></returns>
         public float3 CalculateSteering(AgentData mine, SteeringData steering, float time)
         {
+            if (!Active) return float3.zero;
+
             float UniqueID = mine.UniqueID *.001f;
             UniqueID *= UniqueID;
 

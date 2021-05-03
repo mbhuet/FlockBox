@@ -33,6 +33,7 @@ namespace CloudFine.FlockBox
         {
             return new WanderData
             {
+                Active = IsActive,
                 Weight = weight,
                 Intensity = wanderIntensity,
                 Scope = wanderScope,

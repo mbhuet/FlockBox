@@ -48,6 +48,8 @@ namespace CloudFine.FlockBox.DOTS
                 .WithReadOnly(dirs)
                 .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp, in BoundaryData boundary) =>
                 {
+                    if (!avoidance.Active) return;
+
                     float lookDist = math.length(agent.Velocity) * avoidance.LookAheadSeconds;
                     float castRadius = agent.Radius + avoidance.Clearance;
                     CollisionFilter filter = new CollisionFilter()
@@ -97,7 +99,7 @@ namespace CloudFine.FlockBox.DOTS
                         }
 
                         avoidance.LastClearWorldDirection = clearWorldDirection;
-                        float smooth = (1f - (hitDist / lookDist));
+                        float smooth = lookDist > 0 ? (1f - (hitDist / lookDist)) : 1f;
 
                         float3 clearFlockDirection = AgentData.WorldToFlockDirection(ltw, ltp, clearWorldDirection);
                         acceleration.Value += steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;                      

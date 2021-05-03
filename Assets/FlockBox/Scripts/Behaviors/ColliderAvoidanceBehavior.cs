@@ -117,7 +117,7 @@ namespace CloudFine.FlockBox
             
             steer = ObstacleRays(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask, mine);
             mine.SetAgentProperty(lastClearDirectionKey, steer.normalized);
-            float smooth = (1f - (hitDist / rayDist));
+            float smooth = rayDist > 0 ? (1f - (hitDist / rayDist)) : 1f;
             steer = mine.WorldToFlockBoxDirection(steer);
             steer = steer.normalized * mine.activeSettings.maxForce - mine.Velocity;
             steer *= smooth;
