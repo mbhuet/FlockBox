@@ -49,7 +49,7 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 4294967295
-  visionRayDensity: 6
+  visionRayDensity: 3
   drawVisionRays: 0
 --- !u!114 &-5769737824000778392
 MonoBehaviour:
@@ -71,7 +71,7 @@ MonoBehaviour:
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   debugDrawSteering: 0
   debugDrawProperties: 0
-  foldout: 0
+  foldout: 1
   lookAheadSeconds: 1
 --- !u!114 &-1352800339391299551
 MonoBehaviour:
