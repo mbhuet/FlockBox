@@ -18,9 +18,9 @@ namespace CloudFine.FlockBox.DOTS
         {
             double time = Time.ElapsedTime;
             return Entities
-                .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering) =>
+                .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering, in BoundaryData boundary) =>
                 {
-                    var steer = behavior.CalculateSteering(agent, steering, (float)time);
+                    var steer = behavior.CalculateSteering(agent, steering, (float)time, boundary);
                     acceleration.Value += steer;
                 }
                 ).ScheduleParallel(Dependency);
@@ -41,7 +41,7 @@ namespace CloudFine.FlockBox.DOTS
         /// <param name="mine"></param>
         /// <param name="steering"></param>
         /// <returns></returns>
-        public float3 CalculateSteering(AgentData mine, SteeringData steering, float time)
+        public float3 CalculateSteering(AgentData mine, SteeringData steering, float time, BoundaryData boundary)
         {
             if (!Active) return float3.zero;
 
@@ -55,7 +55,7 @@ namespace CloudFine.FlockBox.DOTS
                 (noise.cnoise(new float2((time * Intensity) + UniqueID * 2, UniqueID))) * Scope * .5f
                 );
 //            UnityEngine.Debug.Log("id " + UniqueID + " " + dir + "   " + noise.cnoise(new float2((time * Intensity), UniqueID)));
-            return math.mul(quaternion.Euler(math.radians(dir)), mine.Forward)
+            return boundary.ValidateDirection(math.mul(quaternion.Euler(math.radians(dir)), mine.Forward))
                     * steering.MaxForce
                     * Weight;
         }

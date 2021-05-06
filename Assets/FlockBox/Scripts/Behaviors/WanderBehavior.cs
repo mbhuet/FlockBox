@@ -21,12 +21,12 @@ namespace CloudFine.FlockBox
         {
             float uniqueId = mine.gameObject.GetInstanceID() * .001f;
             uniqueId = uniqueId*uniqueId;
-            steer = Quaternion.Euler(
+            Vector3 wanderDirection = new Vector3(
                         (Mathf.PerlinNoise((Time.time * wanderIntensity), uniqueId) - .5f) * wanderScope,
                         (Mathf.PerlinNoise((Time.time * wanderIntensity) + uniqueId, uniqueId) - .5f) * wanderScope,
-                        (Mathf.PerlinNoise((Time.time * wanderIntensity) + uniqueId*2, uniqueId) - .5f) * wanderScope
-                        )
-                    * mine.Forward * mine.activeSettings.maxForce;
+                        (Mathf.PerlinNoise((Time.time * wanderIntensity) + uniqueId * 2, uniqueId) - .5f) * wanderScope
+                );
+            steer = mine.ValidateFlockDirection(Quaternion.Euler(wanderDirection) * mine.Forward).normalized * mine.activeSettings.maxForce;
         }
 
         public WanderData Convert()
