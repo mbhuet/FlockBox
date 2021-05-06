@@ -100,8 +100,15 @@ namespace CloudFine.FlockBox.DOTS
             toUpdate.Clear();
         }
 
-
+        /// <summary>
+        /// Responsible for updating PerceptionData with the perception needs of this behavior
+        /// </summary>
+        /// <returns></returns>
         protected abstract JobHandle DoPerception();
+        /// <summary>
+        /// Responsible for applying steering force to AccelerationData
+        /// </summary>
+        /// <returns></returns>
         protected abstract JobHandle DoSteering();
     }
 }
