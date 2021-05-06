@@ -32,7 +32,6 @@ namespace CloudFine.FlockBox.DOTS
         public float Radius;
         public Int32 TagMask;
 
-
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;

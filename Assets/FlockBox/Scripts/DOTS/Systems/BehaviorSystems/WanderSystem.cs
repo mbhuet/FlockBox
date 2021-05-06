@@ -34,13 +34,6 @@ namespace CloudFine.FlockBox.DOTS
         public float Scope;
         public float Intensity;
 
-
-        /// <summary>
-        /// This overload of GetSteering requires time instead of a DynamicBuffer<NeighborData>
-        /// </summary>
-        /// <param name="mine"></param>
-        /// <param name="steering"></param>
-        /// <returns></returns>
         public float3 CalculateSteering(AgentData mine, SteeringData steering, float time, BoundaryData boundary)
         {
             if (!Active) return float3.zero;

@@ -152,10 +152,6 @@ namespace CloudFine.FlockBox.DOTS
                 Dependency = hashPositionsJobHandle;
 
 
-
-
-
-
                 var findNeighborsTagJobHandle = Entities
                     .WithName("FindNeighborsTag")
                     .WithSharedComponentFilter(settings)
@@ -187,7 +183,6 @@ namespace CloudFine.FlockBox.DOTS
                     }).ScheduleParallel(Dependency);
 
                 Dependency = findNeighborsTagJobHandle;
-
 
 
                 var findNeighborsJobHandle = Entities
@@ -278,6 +273,7 @@ namespace CloudFine.FlockBox.DOTS
                                 {
                                     do
                                     {
+                                        //TODO find a way to avoid duplicates?
                                         if (true)//!neighbors.Contains(neighbor))
                                         {
                                             neighbors.Add(neighbor);
@@ -307,11 +303,6 @@ namespace CloudFine.FlockBox.DOTS
 
                 Dependency = spatialHashMap.Dispose(Dependency);
                 Dependency = tagHashMap.Dispose(Dependency);
-
-                // We pass the job handle and add the dependency so that we keep the proper ordering between the jobs
-                // as the looping iterates. For our purposes of execution, this ordering isn't necessary; however, without
-                // the add dependency call here, the safety system will throw an error, because we're accessing multiple
-                // pieces of boid data and it would think there could possibly be a race condition.
 
                 flockQuery.AddDependency(Dependency);
                 flockQuery.ResetFilter();

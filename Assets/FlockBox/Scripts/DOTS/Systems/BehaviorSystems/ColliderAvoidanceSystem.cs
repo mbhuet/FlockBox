@@ -41,7 +41,8 @@ namespace CloudFine.FlockBox.DOTS
         {
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
-
+            
+            //TODO add sphere casting
             Dependency = Entities
                 .WithReadOnly(physicsWorld)
                 .WithReadOnly(dirs)

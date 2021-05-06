@@ -99,8 +99,5 @@ namespace CloudFine.FlockBox.DOTS {
             }
             toUpdate.Clear();
         }
-
-        
-
     }
 }

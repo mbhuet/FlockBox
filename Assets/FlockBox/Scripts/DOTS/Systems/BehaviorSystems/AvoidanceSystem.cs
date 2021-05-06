@@ -43,7 +43,6 @@ namespace CloudFine.FlockBox.DOTS
         {
             if (!Active) return float3.zero;
 
-
             if (neighbors.Length == 0)
             {
                 return float3.zero;

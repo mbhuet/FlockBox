@@ -43,13 +43,10 @@ namespace CloudFine.FlockBox.DOTS
         public Int32 TagMask;
         public bool GlobalTagSearch;
 
-
-
         //TODO keep track for current target for later retrieval
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
             if (!Active) return float3.zero;
-
 
             if (neighbors.Length == 0)
             {
