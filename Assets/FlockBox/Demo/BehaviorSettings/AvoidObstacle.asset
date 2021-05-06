@@ -17,9 +17,9 @@ MonoBehaviour:
   useTagFilter: 1
   filterTags:
   - Obstacle
-  drawDebug: 1
+  drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  debugDrawSteering: 1
+  debugDrawSteering: 0
   debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  weight: 1
+  weight: 1.34
   useTagFilter: 0
   filterTags: []
   drawDebug: 0
@@ -47,6 +47,29 @@ MonoBehaviour:
   foldout: 1
   effectiveRadius: 8
   fieldOfView: 360
+--- !u!114 &-6379093122618060958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fceebd7e1c2fb746a50879f9f88dfb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  wanderScope: 90
+  wanderIntensity: 1
 --- !u!114 &-5769737824000778392
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -112,6 +135,7 @@ MonoBehaviour:
   - {fileID: -1352800339391299551}
   - {fileID: -6742341320620086265}
   - {fileID: -8429455985200993309}
+  - {fileID: -6379093122618060958}
 --- !u!114 &3267645291290633549
 MonoBehaviour:
   m_ObjectHideFlags: 1
