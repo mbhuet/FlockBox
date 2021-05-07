@@ -31,26 +31,6 @@ namespace CloudFine.FlockBox{
             AddAgent(_initialPopulation);
         }
 
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                //check to see if the click was over UI
-                if ((!EventSystem.current.IsPointerOverGameObject()) )
-                {
-                    ClickAddAgent(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                }
-            }
-            if (Input.GetMouseButtonDown(1))
-            {
-                //check to see if the click was over UI
-                if ((!EventSystem.current.IsPointerOverGameObject()))
-                {
-                    RemoveAgent(1);
-                }
-            }
-        }
-
         private void OnEnable()
         {
             EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
