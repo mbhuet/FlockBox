@@ -37,7 +37,7 @@ namespace CloudFine.FlockBox.DOTS
             return Dependency;
         }
 
-        protected override unsafe JobHandle DoSteering()
+        protected override JobHandle DoSteering()
         {
             PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
@@ -112,6 +112,7 @@ namespace CloudFine.FlockBox.DOTS
 
                 }
                 ).ScheduleParallel(Dependency);
+            Dependency.Complete();
             Dependency = dirs.Dispose(Dependency);
             return Dependency;
         }
