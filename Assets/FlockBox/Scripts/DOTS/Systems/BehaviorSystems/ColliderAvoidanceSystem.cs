@@ -112,7 +112,7 @@ namespace CloudFine.FlockBox.DOTS
 
                 }
                 ).ScheduleParallel(Dependency);
-            Dependency.Complete();
+            Dependency.Complete(); //Not sure why this is necessary, but ECS gets unhappy without it. Definitely not helping performance.
             Dependency = dirs.Dispose(Dependency);
             return Dependency;
         }
