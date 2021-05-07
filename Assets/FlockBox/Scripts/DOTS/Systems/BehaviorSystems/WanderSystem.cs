@@ -1,6 +1,4 @@
-﻿using Drawing;
-using System.Xml.Schema;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
