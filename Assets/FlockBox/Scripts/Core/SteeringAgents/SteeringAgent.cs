@@ -106,9 +106,9 @@ namespace CloudFine.FlockBox
                 FlockBox.UpdateAgentCells(this, cells, false);
         }
 
-        public override void Spawn(FlockBox flockBox, Vector3 position)
+        public override void Spawn(FlockBox flockBox, Vector3 position, bool useWorldSpace = true)
         {
-            base.Spawn(flockBox, position);
+            base.Spawn(flockBox, position, useWorldSpace);
             LockPosition(false);
             speedThrottle = 1;
             Acceleration = Vector3.zero;

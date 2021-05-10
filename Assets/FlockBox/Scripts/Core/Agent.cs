@@ -250,7 +250,7 @@ namespace CloudFine.FlockBox
             this.gameObject.SetActive(false);
         }
 
-        public virtual void Spawn(FlockBox flockBox, Vector3 position)
+        public virtual void Spawn(FlockBox flockBox, Vector3 position, bool useWorldSpace = false)
         {
             if (OnSpawn != null) OnSpawn.Invoke(this);
             gameObject.SetActive(true);
@@ -259,13 +259,13 @@ namespace CloudFine.FlockBox
             hasSpawned = true;
             isCaught = false;
             JoinFlockBox(flockBox);
-            this.Position = position;
+            this.Position = useWorldSpace ? WorldToFlockBoxPosition(position) : position;
             ForceUpdatePosition();
         }
 
         public void Spawn(FlockBox flockBox)
         {
-            Spawn(flockBox, flockBox.RandomPosition());
+            Spawn(flockBox, transform.position, true);
         }
 
         protected virtual void ForceUpdatePosition()
