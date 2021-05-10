@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CloudFine.FlockBox.DOTS;
+using System;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -67,5 +68,28 @@ namespace CloudFine.FlockBox.DOTS
             return float3.zero;
         }
 
+    }
+}
+
+namespace CloudFine.FlockBox
+{
+    [DOTSCompatible]
+    public partial class SeparationBehavior : IConvertToSteeringBehaviorComponentData<SeparationData>
+    {
+        public SeparationData Convert()
+        {
+            return new SeparationData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Radius = effectiveRadius,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
     }
 }
