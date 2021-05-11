@@ -22,13 +22,14 @@ public class DOTSToggle : Editor
 
     public static bool IsEnabled
     {
-        get { return EditorPrefs.GetBool(prefsKey,
+        get
+        {
 #if UNITY_2020_1_OR_NEWER
-        true
+        return EditorPrefs.GetBool(prefsKey,true);
 #else
-        false
+            return false;
 #endif
-            ); }
+        }
         set { EditorPrefs.SetBool(prefsKey, value); }
     }
 
