@@ -104,8 +104,8 @@ namespace CloudFine.FlockBox
                 behaviors[i].AddPerception(agent, surroundings);
             }
         }
-
-        #region DOTS
+#if FLOCKBOX_DOTS
+#region DOTS
 
         /// <summary>
         /// Used to apply necessary behavior ComponentData to an Entity
@@ -150,7 +150,8 @@ namespace CloudFine.FlockBox
                 Containment.AddEntityData(entity, dstManager);
             }
         }
-        #endregion
+#endregion
+#endif
 
 #if UNITY_EDITOR
         public void DrawPropertyGizmos(SteeringAgent agent)

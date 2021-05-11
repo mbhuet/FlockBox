@@ -8,7 +8,7 @@ using CloudFine.FlockBox.DOTS;
 namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class Agent : MonoBehaviour, IConvertGameObjectToEntity
+    public partial class Agent : MonoBehaviour
     {
         private Vector3 m_position = Vector3.zero;
         /// <summary>
@@ -452,6 +452,12 @@ namespace CloudFine.FlockBox
 #endif
 
 
+        
+    }
+
+#if FLOCKBOX_DOTS
+    public partial class Agent : IConvertGameObjectToEntity
+    {
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponentData(entity, new AgentData
@@ -465,4 +471,5 @@ namespace CloudFine.FlockBox
             });
         }
     }
+#endif
 }

@@ -6,7 +6,7 @@ using CloudFine.FlockBox.DOTS;
 namespace CloudFine.FlockBox
 {
     [System.Serializable]
-    public class SteeringAgent : Agent, IConvertGameObjectToEntity
+    public partial class SteeringAgent : Agent
     {
 
         public Vector3 Acceleration { get; private set; }
@@ -148,34 +148,7 @@ namespace CloudFine.FlockBox
             }
         }
 
-        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        {
-            //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
-
-            dstManager.AddComponent<SteeringData>(entity);
-            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = null });
-
-            if (activeSettings)
-            {
-                activeSettings.ApplyToEntity(entity, dstManager);
-            }
-
-            //AgentData holds everything a behavior needs to react to another Agent
-            dstManager.AddComponentData(entity, new AgentData
-            {
-                Position = Position,
-                Velocity = Velocity,
-                Forward = Forward,
-                Tag = TagMaskUtility.TagToInt(tag),
-                Radius = shape.radius,
-                Fill = shape.type == Shape.ShapeType.SPHERE,
-            }) ;
-            dstManager.AddComponentData(entity, new AccelerationData { Value  = float3.zero});
-            dstManager.AddComponentData(entity, new PerceptionData());
-
-            //give entity a buffer to hold info about surroundings
-            dstManager.AddBuffer<NeighborData>(entity);
-        }
+       
 
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
@@ -206,4 +179,39 @@ namespace CloudFine.FlockBox
 #endif
 
     }
+
+#if FLOCKBOX_DOTS
+
+    public partial class SteeringAgent : IConvertGameObjectToEntity
+    {
+        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
+
+            dstManager.AddComponent<SteeringData>(entity);
+            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = null });
+
+            if (activeSettings)
+            {
+                activeSettings.ApplyToEntity(entity, dstManager);
+            }
+
+            //AgentData holds everything a behavior needs to react to another Agent
+            dstManager.AddComponentData(entity, new AgentData
+            {
+                Position = Position,
+                Velocity = Velocity,
+                Forward = Forward,
+                Tag = TagMaskUtility.TagToInt(tag),
+                Radius = shape.radius,
+                Fill = shape.type == Shape.ShapeType.SPHERE,
+            });
+            dstManager.AddComponentData(entity, new AccelerationData { Value = float3.zero });
+            dstManager.AddComponentData(entity, new PerceptionData());
+
+            //give entity a buffer to hold info about surroundings
+            dstManager.AddBuffer<NeighborData>(entity);
+        }
+    }
+#endif
 }

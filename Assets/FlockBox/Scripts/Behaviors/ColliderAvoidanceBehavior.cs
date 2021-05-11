@@ -42,9 +42,8 @@ namespace CloudFine.FlockBox
         VERY_LOW = 6, //60 rays
     }
 
-    [DOTSCompatible]
     [System.Serializable]
-    public class ColliderAvoidanceBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ColliderAvoidanceData>
+    public partial class ColliderAvoidanceBehavior : ForecastSteeringBehavior
     {
         [Tooltip("Extra clearance space to strive for when avoiding obstacles.")]
         public float clearance;
@@ -158,25 +157,6 @@ namespace CloudFine.FlockBox
             return forward;
         }
 
-        public ColliderAvoidanceData Convert()
-        {
-            return new ColliderAvoidanceData
-            {
-                Active = IsActive,
-                Weight = weight,
-                LookAheadSeconds = lookAheadSeconds,
-                LayerMask = mask,
-                Clearance = clearance,
-                VisionQuality = (int)visionRayDensity,
-                LastClearWorldDirection = Unity.Mathematics.float3.zero
-
-            };
-        }
-
-        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
-        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
-        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
-        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
 
 #if UNITY_EDITOR
         protected override void DrawForecastPerceptionGizmo(SteeringAgent agent, float distance)

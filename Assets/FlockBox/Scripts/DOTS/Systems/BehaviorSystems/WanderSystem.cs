@@ -1,6 +1,9 @@
-﻿using Unity.Entities;
+﻿#if FLOCKBOX_DOTS
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using CloudFine.FlockBox.DOTS;
+
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -50,3 +53,27 @@ namespace CloudFine.FlockBox.DOTS
         }
     }
 }
+
+namespace CloudFine.FlockBox
+{
+    [DOTSCompatible]
+    public partial class WanderBehavior: IConvertToSteeringBehaviorComponentData<WanderData>
+    {
+        public WanderData Convert()
+        {
+            return new WanderData
+            {
+                Active = IsActive,
+                Weight = weight,
+                Intensity = wanderIntensity,
+                Scope = wanderScope,
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+    }
+}
+#endif

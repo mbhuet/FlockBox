@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FLOCKBOX_DOTS
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -7,6 +8,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
+using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -129,3 +131,31 @@ namespace CloudFine.FlockBox.DOTS
         public float3 LastClearWorldDirection;
     }
 }
+
+namespace CloudFine.FlockBox
+{
+    [DOTSCompatible]
+    public partial class ColliderAvoidanceBehavior : IConvertToSteeringBehaviorComponentData<ColliderAvoidanceData>
+    {
+        public ColliderAvoidanceData Convert()
+        {
+            return new ColliderAvoidanceData
+            {
+                Active = IsActive,
+                Weight = weight,
+                LookAheadSeconds = lookAheadSeconds,
+                LayerMask = mask,
+                Clearance = clearance,
+                VisionQuality = (int)visionRayDensity,
+                LastClearWorldDirection = Unity.Mathematics.float3.zero
+
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+    }
+}
+#endif

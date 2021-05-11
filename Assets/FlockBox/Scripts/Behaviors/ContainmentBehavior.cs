@@ -4,8 +4,7 @@ using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox
 {
-    [DOTSCompatible]
-    public class ContainmentBehavior : ForecastSteeringBehavior, IConvertToSteeringBehaviorComponentData<ContainmentData>
+    public partial class ContainmentBehavior : ForecastSteeringBehavior
     {
         public override bool CanUseTagFilter { get { return false; } }
         public override bool CanToggleActive { get { return false; } }
@@ -67,14 +66,6 @@ namespace CloudFine.FlockBox
         }
 
 
-        public ContainmentData Convert()
-        {
-            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds};
-        }
 
-        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
-        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
-        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
-        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
     }
 }

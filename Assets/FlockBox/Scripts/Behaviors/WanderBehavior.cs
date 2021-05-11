@@ -1,15 +1,12 @@
 ﻿using UnityEngine;
-using CloudFine.FlockBox.DOTS;
-using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace CloudFine.FlockBox
 {
-    [DOTSCompatible]
     [System.Serializable]
-    public class WanderBehavior : SteeringBehavior, IConvertToSteeringBehaviorComponentData<WanderData>
+    public partial class WanderBehavior : SteeringBehavior
     {
         [Range(0,360f), Tooltip("The maximum deviation from the current direction of travel that a wander force can be.")]
         public float wanderScope = 90;
@@ -29,21 +26,7 @@ namespace CloudFine.FlockBox
             steer = mine.ValidateFlockDirection(Quaternion.Euler(wanderDirection) * mine.Forward).normalized * mine.activeSettings.maxForce;
         }
 
-        public WanderData Convert()
-        {
-            return new WanderData
-            {
-                Active = IsActive,
-                Weight = weight,
-                Intensity = wanderIntensity,
-                Scope = wanderScope,
-            };
-        }
 
-        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
-        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
-        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
-        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
 
 #if UNITY_EDITOR
         public override void DrawPropertyGizmos(SteeringAgent agent, bool drawLabels)
