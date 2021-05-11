@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FLOCKBOX_DOTS
+using CloudFine.FlockBox.DOTS;
+using System;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -88,3 +90,29 @@ namespace CloudFine.FlockBox.DOTS
         }
     }
 }
+
+namespace CloudFine.FlockBox
+{
+    [DOTSCompatible]
+    public partial class AvoidanceBehavior : IConvertToSteeringBehaviorComponentData<AvoidanceData>
+    {
+
+        public AvoidanceData Convert()
+        {
+            return new AvoidanceData
+            {
+                Active = IsActive,
+                Weight = weight,
+                LookAheadSeconds = lookAheadSeconds,
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue),
+                Clearance = clearance,
+            };
+        }
+
+        public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
+        public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
+        public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
+        public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+    }
+}
+#endif

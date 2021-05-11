@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FLOCKBOX_DOTS
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Collections;
@@ -101,3 +102,4 @@ namespace CloudFine.FlockBox.DOTS {
         }
     }
 }
+#endif

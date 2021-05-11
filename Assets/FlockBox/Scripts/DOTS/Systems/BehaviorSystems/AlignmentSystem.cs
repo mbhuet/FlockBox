@@ -1,4 +1,5 @@
-﻿using CloudFine.FlockBox.DOTS;
+﻿#if FLOCKBOX_DOTS
+using CloudFine.FlockBox.DOTS;
 using System;
 using Unity.Entities;
 using Unity.Jobs;
@@ -93,3 +94,4 @@ namespace CloudFine.FlockBox
         public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
     }
 }
+#endif

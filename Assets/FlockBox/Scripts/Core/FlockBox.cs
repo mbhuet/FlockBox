@@ -1,10 +1,13 @@
-﻿using CloudFine.FlockBox.DOTS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEngine;
+
+#if FLOCKBOX_DOTS
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
+using CloudFine.FlockBox.DOTS;
+#endif
 
 namespace CloudFine.FlockBox
 {
@@ -55,10 +58,7 @@ namespace CloudFine.FlockBox
             get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
         }
 
-        public bool DOTSEnabled
-        {
-            get { return useDOTS; }
-        }
+
 
         public int CellCapacity
         {
@@ -87,8 +87,13 @@ namespace CloudFine.FlockBox
         [SerializeField]
         private bool drawOccupiedCells = false;
 
+#if FLOCKBOX_DOTS
         [SerializeField]
         private bool useDOTS = false;
+        public bool DOTSEnabled
+        {
+            get { return useDOTS; }
+        }
 
         private Entity agentEntityPrefab;
         private Entity syncedEntityTransform
@@ -189,6 +194,7 @@ namespace CloudFine.FlockBox
 
 
         #endregion
+#endif
 
         private void Awake()
         {
@@ -203,12 +209,14 @@ namespace CloudFine.FlockBox
             {
                 if (pop.prefab == null) continue;
 
+#if FLOCKBOX_DOTS
                 if (useDOTS)
                 {
                     InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
                     ConvertGameObjectsToEntities(GetComponentsInChildren<Agent>());
                 }
                 else
+#endif
                 {
                     for(int i =0; i<pop.population; i++)
                     {

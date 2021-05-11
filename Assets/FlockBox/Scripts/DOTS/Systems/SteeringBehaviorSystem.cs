@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FLOCKBOX_DOTS
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Burst;
@@ -112,3 +113,4 @@ namespace CloudFine.FlockBox.DOTS
         protected abstract JobHandle DoSteering();
     }
 }
+#endif

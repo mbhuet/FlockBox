@@ -54,11 +54,13 @@ namespace CloudFine.FlockBox{
         {
             if (_populationText)
             {
+#if FLOCKBOX_DOTS
                 if (_flockBox.DOTSEnabled)
                 {
                     _populationText.text = _spawnedEntities.Count.ToString();
                 }
                 else
+#endif
                 {
                     _populationText.text = _spawnedAgents.Count.ToString();
                 }
@@ -67,11 +69,13 @@ namespace CloudFine.FlockBox{
 
         public void AddAgent(int toAdd)
         {
+#if FLOCKBOX_DOTS
             if (_flockBox.DOTSEnabled)
             {
                 _spawnedEntities.AddRange(_flockBox.InstantiateAgentEntitiesFromPrefab(_agent, toAdd));
             }
             else
+#endif
             {
                 for (int i = 0; i < toAdd; i++)
                 {
@@ -97,6 +101,7 @@ namespace CloudFine.FlockBox{
 
         public void RemoveAgent(int toRemove)
         {
+#if FLOCKBOX_DOTS
             if (_flockBox.DOTSEnabled)
             {
                 EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -112,6 +117,7 @@ namespace CloudFine.FlockBox{
                 }
             }
             else
+#endif
             {
                 for (int i = 0; i < toRemove; i++)
                 {
@@ -127,15 +133,6 @@ namespace CloudFine.FlockBox{
             }
             RefreshPopulationCount();
 
-        }
-
-        private void ClickAddAgent(Vector3 position)
-        {
-            Agent agent = GameObject.Instantiate<Agent>(_agent);
-            agent.Spawn(_flockBox, position);
-            _spawnedAgents.Add(agent);
-            Debug.Log("click spawn " + position, agent);
-            RefreshPopulationCount();
         }
     }
 }

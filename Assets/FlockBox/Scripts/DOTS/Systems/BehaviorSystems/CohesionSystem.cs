@@ -1,8 +1,9 @@
-﻿using CloudFine.FlockBox.DOTS;
+﻿#if FLOCKBOX_DOTS
 using System;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -93,4 +94,5 @@ namespace CloudFine.FlockBox
 
     }
 }
+#endif
 
