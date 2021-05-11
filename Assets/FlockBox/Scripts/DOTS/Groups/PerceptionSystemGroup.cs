@@ -1,4 +1,4 @@
-﻿
+﻿#if FLOCKBOX_DOTS
 namespace Unity.Entities
 {
     [UpdateBefore(typeof(SteeringSystemGroup))]
@@ -7,3 +7,4 @@ namespace Unity.Entities
        
     }
 }
+#endif

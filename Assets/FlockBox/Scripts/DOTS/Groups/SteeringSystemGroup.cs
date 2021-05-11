@@ -1,4 +1,5 @@
-﻿using Unity.Transforms;
+﻿#if FLOCKBOX_DOTS
+using Unity.Transforms;
 
 namespace Unity.Entities
 {
@@ -8,3 +9,4 @@ namespace Unity.Entities
        
     }
 }
+#endif

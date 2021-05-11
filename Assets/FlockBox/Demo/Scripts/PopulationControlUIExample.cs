@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Entities;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if FLOCKBOX_DOTS
+using Unity.Entities;
+#endif
 
 namespace CloudFine.FlockBox{
     /// <summary>
@@ -23,9 +23,10 @@ namespace CloudFine.FlockBox{
 
         private List<Agent> _spawnedAgents = new List<Agent>();
         private List<Agent> _cachedAgents = new List<Agent>();
+#if FLOCKBOX_DOTS
 
         private List<Entity> _spawnedEntities = new List<Entity>();
-
+#endif
         private void Start()
         {
             AddAgent(_initialPopulation);
@@ -33,21 +34,27 @@ namespace CloudFine.FlockBox{
 
         private void OnEnable()
         {
+#if FLOCKBOX_DOTS
+
             EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             foreach (Entity e in _spawnedEntities)
             {
                 manager.SetEnabled(e, true);
             }
+#endif
         }
         private void OnDisable()
         {
+#if FLOCKBOX_DOTS
+
             EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             foreach (Entity e in _spawnedEntities)
             {
                 manager.SetEnabled(e, false);
             }
+#endif
         }
 
         private void RefreshPopulationCount()
