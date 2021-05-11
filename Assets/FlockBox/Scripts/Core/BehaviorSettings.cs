@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using System;
+#if FLOCKBOX_DOTS
 using Unity.Entities;
 using CloudFine.FlockBox.DOTS;
-using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace CloudFine.FlockBox

@@ -1,7 +1,10 @@
-﻿using Unity.Entities;
+﻿using UnityEngine;
+
+#if FLOCKBOX_DOTS
+using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 using CloudFine.FlockBox.DOTS;
+#endif
 
 namespace CloudFine.FlockBox
 {

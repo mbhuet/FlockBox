@@ -1,9 +1,12 @@
 ﻿#pragma warning disable 0649
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Entities;
 using UnityEngine.Serialization;
+
+#if FLOCKBOX_DOTS
+using Unity.Entities;
 using CloudFine.FlockBox.DOTS;
+#endif
 
 namespace CloudFine.FlockBox
 {
@@ -86,7 +89,7 @@ namespace CloudFine.FlockBox
         protected float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
 
-        #region AgentProperties
+#region AgentProperties
         [SerializeField]
         protected Dictionary<string, object> agentProperties = new Dictionary<string, object>();
         public T GetAgentProperty<T>(string name)
@@ -114,7 +117,7 @@ namespace CloudFine.FlockBox
             return agentProperties.ContainsKey(name);
         }
     
-    #endregion
+#endregion
 
 
     public delegate void AgentEvent(Agent agent);
@@ -276,7 +279,7 @@ namespace CloudFine.FlockBox
         }
 
 
-        #region Space Transformation Utils
+#region Space Transformation Utils
         public Vector3 FlockBoxToWorldPosition(Vector3 localPos)
         {
             if (_flockBox)
@@ -312,7 +315,7 @@ namespace CloudFine.FlockBox
             }
             return worldPos;
         }
-        #endregion
+#endregion
 
 
         /// <summary>
@@ -353,7 +356,7 @@ namespace CloudFine.FlockBox
 
 
 
-        #region ShapeUtils
+#region ShapeUtils
         public bool Overlaps(Agent other)
         {
             return other.OverlapsSphere(Position, shape.radius);
@@ -434,7 +437,7 @@ namespace CloudFine.FlockBox
             GeometryUtility.SphereLineOverlap(Position, shape.radius, ray.origin, ray.origin + ray.direction, ref p1);
             normal = (p1 - Position).normalized;
         }
-        #endregion
+#endregion
 
 
 #if UNITY_EDITOR

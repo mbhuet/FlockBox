@@ -22,11 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using CloudFine.FlockBox.DOTS;
-using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

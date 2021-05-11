@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using CloudFine.FlockBox.DOTS;
-using System.Runtime.CompilerServices;
-using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;

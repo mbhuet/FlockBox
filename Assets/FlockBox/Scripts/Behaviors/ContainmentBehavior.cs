@@ -1,6 +1,4 @@
-﻿using Unity.Entities;
-using UnityEngine;
-using CloudFine.FlockBox.DOTS;
+﻿using UnityEngine;
 
 namespace CloudFine.FlockBox
 {

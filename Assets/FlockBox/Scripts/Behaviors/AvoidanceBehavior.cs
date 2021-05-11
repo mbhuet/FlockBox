@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using CloudFine.FlockBox.DOTS;
-using Unity.Entities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

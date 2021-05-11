@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FLOCKBOX_DOTS
+using System;
 using Unity.Entities;
 
 namespace CloudFine.FlockBox.DOTS {
@@ -23,3 +24,4 @@ namespace CloudFine.FlockBox.DOTS {
         }
     }
 }
+#endif

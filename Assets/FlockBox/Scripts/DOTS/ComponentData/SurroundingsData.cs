@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿#if FLOCKBOX_DOTS
+using Unity.Entities;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -17,3 +18,4 @@ namespace CloudFine.FlockBox.DOTS
         public AgentData Value;
     }
 }
+#endif
