@@ -66,6 +66,7 @@ namespace CloudFine.FlockBox
             EditorGUILayout.PropertyField(prop, true, new GUILayoutOption[0]);
             GUI.enabled = true;
 
+#if FLOCKBOX_DOTS
             EditorGUILayout.BeginHorizontal();
             BehaviorSettingsEditor.DOTSBadge();
 
@@ -82,6 +83,7 @@ namespace CloudFine.FlockBox
             {
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
+#endif
 
             Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));
             dimensions.x = Math.Max(dimensions.x, 0);
