@@ -21,33 +21,41 @@ namespace CloudFine.FlockBox
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
 
-
+        
         [SerializeField]
         private int dimensions_x = 10;
         [SerializeField]
         private int dimensions_y = 10;
         [SerializeField]
         private int dimensions_z = 10;
+        
         [SerializeField]
         private float cellSize = 10;
 
+        public Vector3Int Dimensions
+        {
+            get { return new Vector3Int(DimensionX, DimensionY, DimensionZ); }
+            set { DimensionX = value.x; DimensionY = value.y; DimensionZ = value.z; }
+        }
 
-        private Vector3 _worldDimensions = Vector3.zero;
         public Vector3 WorldDimensions
         {
-            get { return _worldDimensions; } private set { _worldDimensions = value; }
+            get { return (Vector3)Dimensions * cellSize; }
         }
         public int DimensionX
         {
             get { return dimensions_x; }
+            set { dimensions_x = value; }
         }
         public int DimensionY
         {
             get { return dimensions_y; }
+            set { dimensions_y = value; }
         }
         public int DimensionZ
         {
             get { return dimensions_z; }
+            set { dimensions_z = value; }
         }
         public float CellSize
         {
@@ -55,7 +63,7 @@ namespace CloudFine.FlockBox
         }
         public int TotalCells
         {
-            get { return (Mathf.Max(dimensions_x, 1) * Mathf.Max(dimensions_y, 1) * Mathf.Max(dimensions_z, 1)); }
+            get { return (Mathf.Max(DimensionX, 1) * Mathf.Max(DimensionY, 1) * Mathf.Max(DimensionZ, 1)); }
         }
 
 
@@ -196,13 +204,6 @@ namespace CloudFine.FlockBox
         #endregion
 #endif
 
-        private void Awake()
-        {
-            _worldDimensions.x = dimensions_x * cellSize;
-            _worldDimensions.y = dimensions_y * cellSize;
-            _worldDimensions.z = dimensions_z * cellSize;
-        }
-
         void Start()
         {
             foreach (AgentPopulation pop in startingPopulations)
@@ -234,9 +235,6 @@ namespace CloudFine.FlockBox
                 MarkAsChanged();
                 transform.hasChanged = false;
             }
-            _worldDimensions.x = dimensions_x * cellSize;
-            _worldDimensions.y = dimensions_y * cellSize;
-            _worldDimensions.z = dimensions_z * cellSize;
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
@@ -681,16 +679,15 @@ namespace CloudFine.FlockBox
             {
                 Gizmos.color = Color.grey;
                 Gizmos.matrix = this.transform.localToWorldMatrix;
-                Vector3 dimensions = new Vector3(dimensions_x, dimensions_y, dimensions_z);
-                Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f), (Vector3)dimensions * cellSize);
+                Gizmos.DrawWireCube(WorldDimensions/2f, WorldDimensions);
                 if (!wrapEdges)
                 {
                     Gizmos.color = Color.yellow * .75f;
-                    Gizmos.DrawWireCube((Vector3)dimensions * (cellSize / 2f),
+                    Gizmos.DrawWireCube(WorldDimensions/2f,
                         new Vector3(
-                            Mathf.Max(0, dimensions_x * cellSize - boundaryBuffer * 2f),
-                            Mathf.Max(0, dimensions_y * cellSize - boundaryBuffer * 2f),
-                            Mathf.Max(0, dimensions_z * cellSize - boundaryBuffer * 2f)));
+                            Mathf.Max(0, WorldDimensions.x - boundaryBuffer * 2f),
+                            Mathf.Max(0, WorldDimensions.y - boundaryBuffer * 2f),
+                            Mathf.Max(0, WorldDimensions.z - boundaryBuffer * 2f)));
                 }
             }
             if (drawOccupiedCells)
