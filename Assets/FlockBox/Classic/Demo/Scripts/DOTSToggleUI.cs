@@ -14,7 +14,7 @@ public class DOTSToggleUI : MonoBehaviour
 #else
         SetDOTSEnabled(false);
         dotsToggle.interactable = false;
-        dotsToggle.SetIsOnWithoutNotify(false);
+        dotsToggle.isOn = (false);
 #endif
 
     }
