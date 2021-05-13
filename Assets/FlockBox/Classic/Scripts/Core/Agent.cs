@@ -159,6 +159,12 @@ namespace CloudFine.FlockBox
             }
         }
 
+
+        protected void OnDisable()
+        {
+            RemoveFromAllCells();
+        }
+
         protected virtual void OnDestroy()
         {
             if (hasSpawned || isAlive) Kill();
