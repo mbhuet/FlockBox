@@ -1,16 +1,22 @@
-﻿using CloudFine.FlockBox;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class DOTSToggleUI : MonoBehaviour
 {
     public GameObject DOTSBundle;
     public GameObject BasicBundle;
+    public Toggle dotsToggle;
 
     private void Awake()
     {
+#if FLOCKBOX_DOTS
         SetDOTSEnabled(true);
+#else
+        SetDOTSEnabled(false);
+        dotsToggle.interactable = false;
+        dotsToggle.SetIsOnWithoutNotify(false);
+#endif
+
     }
 
     public void SetDOTSEnabled(bool dots)

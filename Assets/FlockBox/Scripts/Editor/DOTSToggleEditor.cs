@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public class DOTSToggle : Editor
+public class DOTSToggleEditor : Editor
 {
 #if UNITY_2020_1_OR_NEWER
     private const string menuPath = "FlockBox/Enable DOTS";
@@ -15,7 +15,7 @@ public class DOTSToggle : Editor
     private const string prefsKey = "FLOCKBOX_DOTS_TOGGLE";
     private const string dotsDefine = "FLOCKBOX_DOTS";
 
-    static DOTSToggle()
+    static DOTSToggleEditor()
     {
         UpdateScriptingDefines(IsEnabled);
     }
