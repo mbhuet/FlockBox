@@ -3,7 +3,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
-
+using UnityEngine;
+using Unity.Transforms;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -19,9 +20,16 @@ namespace CloudFine.FlockBox.DOTS
         {
             double time = Time.ElapsedTime;
             return Entities
-                .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData behavior, in SteeringData steering, in BoundaryData boundary) =>
+                .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData wander, in SteeringData steering, in BoundaryData boundary
+#if UNITY_EDITOR
+                , in LocalToWorld ltw, in LocalToParent ltp
+#endif
+                ) =>
                 {
-                    var steer = behavior.CalculateSteering(agent, steering, (float)time, boundary);
+                    var steer = wander.CalculateSteering(agent, steering, (float)time, boundary);
+#if UNITY_EDITOR
+                    if (wander.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), wander.DebugColor, 0, true);
+#endif
                     acceleration.Value += steer;
                 }
                 ).ScheduleParallel(Dependency);
@@ -34,6 +42,11 @@ namespace CloudFine.FlockBox.DOTS
         public float Weight;
         public float Scope;
         public float Intensity;
+#if UNITY_EDITOR
+        public bool DebugSteering;
+        public bool DebugProperties;
+        public Color32 DebugColor;
+#endif
 
         public float3 CalculateSteering(AgentData mine, SteeringData steering, float time, BoundaryData boundary)
         {
@@ -47,6 +60,7 @@ namespace CloudFine.FlockBox.DOTS
                 (noise.cnoise(new float2((time * Intensity) + UniqueID, UniqueID))) * Scope * .5f,
                 (noise.cnoise(new float2((time * Intensity) + UniqueID * 2, UniqueID))) * Scope * .5f
                 );
+
             return boundary.ValidateDirection(math.mul(quaternion.Euler(math.radians(dir)), mine.Forward))
                     * steering.MaxForce
                     * Weight;
@@ -67,6 +81,11 @@ namespace CloudFine.FlockBox
                 Weight = weight,
                 Intensity = wanderIntensity,
                 Scope = wanderScope,
+#if UNITY_EDITOR
+                DebugSteering = DrawSteering,
+                DebugProperties = DrawProperties,
+                DebugColor = debugColor
+#endif
             };
         }
 
