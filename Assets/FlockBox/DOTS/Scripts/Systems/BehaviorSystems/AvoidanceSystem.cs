@@ -4,6 +4,8 @@ using System;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Transforms;
+using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -22,9 +24,17 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             return Entities
-                .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in AvoidanceData avoidance) =>
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in AvoidanceData avoidance
+#if UNITY_EDITOR
+                , in LocalToWorld ltw, in LocalToParent ltp
+#endif
+                ) =>
                 {
-                    acceleration.Value += avoidance.CalculateSteering(agent, steering, neighbors);
+                    float3 steer = avoidance.CalculateSteering(agent, steering, neighbors);
+#if UNITY_EDITOR
+                    if (avoidance.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
+#endif
+                    acceleration.Value += steer;
                 }
                 ).ScheduleParallel(Dependency);
         }
@@ -37,8 +47,11 @@ namespace CloudFine.FlockBox.DOTS
         public float LookAheadSeconds;
         public float Clearance;
         public Int32 TagMask;
-
-
+#if UNITY_EDITOR
+        public bool DebugSteering;
+        public bool DebugProperties;
+        public Color32 DebugColor;
+#endif
 
         //TODO keep track for current target for later retrieval
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
@@ -106,6 +119,11 @@ namespace CloudFine.FlockBox
                 LookAheadSeconds = lookAheadSeconds,
                 TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue),
                 Clearance = clearance,
+#if UNITY_EDITOR
+                DebugSteering = DrawSteering,
+                DebugProperties = DrawProperties,
+                DebugColor = debugColor
+#endif
             };
         }
 
