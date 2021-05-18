@@ -25,11 +25,23 @@ namespace CloudFine.FlockBox.DOTS
             return ((1 << Tag & mask) != 0);
         }
 
+        /// <summary>
+        /// This transposes the agent's Position into world space, which is not necessarily the same as its transform.position. They are deliberately decoupled to allow for smoothing.
+        /// </summary>
+        /// <param name="ltw"></param>
+        /// <param name="ltp"></param>
+        /// <returns></returns>
         public float3 GetWorldPosition(in LocalToWorld ltw, in LocalToParent ltp)
         {
             return FlockToWorldPoint(ltw, ltp, Position);
         }
 
+        /// <summary>
+        /// This transposes the agent's Forward into world space, which is not necessarily the same as its transform.forward. They are deliberately decoupled to allow for smoothing.
+        /// </summary>
+        /// <param name="ltw"></param>
+        /// <param name="ltp"></param>
+        /// <returns></returns>
         public float3 GetWorldForward(in LocalToWorld ltw, in LocalToParent ltp)
         {
             return FlockToWorldDirection(ltw, ltp, Forward);
