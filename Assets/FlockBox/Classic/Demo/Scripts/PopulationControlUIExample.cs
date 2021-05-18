@@ -97,7 +97,7 @@ namespace CloudFine.FlockBox{
                         agent = GameObject.Instantiate<Agent>(_agent);
                     }
                     _spawnedAgents.Add(agent);
-                    agent.Spawn(_flockBox);
+                    agent.Spawn(_flockBox, _flockBox.RandomPosition());
                 }
             }
             RefreshPopulationCount();
