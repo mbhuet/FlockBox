@@ -118,7 +118,7 @@ namespace CloudFine.FlockBox.DOTS
 #if UNITY_EDITOR
                         if (avoidance.DebugSteering)
                         {
-                            Debug.DrawRay(worldPosition, AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor);
+                            Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor);
                         }
 #endif
                         acceleration.Value += steer;

@@ -4,6 +4,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
+using UnityEngine;
+using Unity.Transforms;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -22,9 +24,17 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             return Entities
-                .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in CohesionData cohesion) =>
+                .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in CohesionData cohesion
+#if UNITY_EDITOR
+                , in LocalToWorld ltw, in LocalToParent ltp
+#endif
+                ) =>
                 {
-                    acceleration.Value += cohesion.CalculateSteering(agent, steering, neighbors);
+                    float3 steer = cohesion.CalculateSteering(agent, steering, neighbors);
+#if UNITY_EDITOR
+                    if (cohesion.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), cohesion.DebugColor);
+#endif
+                    acceleration.Value += steer;
                 }
                 ).ScheduleParallel(Dependency);
         }
@@ -36,7 +46,11 @@ namespace CloudFine.FlockBox.DOTS
         public float Weight;
         public float Radius;
         public Int32 TagMask;
-
+#if UNITY_EDITOR
+        public bool DebugSteering;
+        public bool DebugProperties;
+        public Color32 DebugColor;
+#endif
 
         public float3 CalculateSteering(AgentData mine, SteeringData steering, DynamicBuffer<NeighborData> neighbors)
         {
@@ -84,7 +98,12 @@ namespace CloudFine.FlockBox
                 Active = IsActive,
                 Weight = weight,
                 Radius = effectiveRadius,
-                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue)
+                TagMask = (useTagFilter ? TagMaskUtility.GetTagMask(filterTags) : int.MaxValue),
+#if UNITY_EDITOR
+                DebugSteering = DrawSteering,
+                DebugProperties = DrawProperties,
+                DebugColor = debugColor
+#endif
             };
         }
         public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
