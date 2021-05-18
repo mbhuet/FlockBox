@@ -93,10 +93,19 @@ namespace CloudFine.FlockBox.DOTS
                             dir = boundary.ValidateDirection(dir);
                             input.End = worldPosition + dir * lookDist;
 
-                            if (!physicsWorld.CastRay(input))
+                            if (!physicsWorld.CastRay(input, out hit))
                             {
+#if UNITY_EDITOR
+                                if (avoidance.DebugVision) Debug.DrawLine(input.Start, input.End, Color.yellow);
+#endif
                                 clearWorldDirection = dir;
                                 break;                               
+                            }
+                            else
+                            {
+#if UNITY_EDITOR
+                                if (avoidance.DebugVision) Debug.DrawLine(input.Start, hit.Position, new Color(1, 1, 1, .3f));
+#endif
                             }
                         }
 
@@ -104,7 +113,15 @@ namespace CloudFine.FlockBox.DOTS
                         float smooth = lookDist > 0 ? (1f - (hitDist / lookDist)) : 1f;
 
                         float3 clearFlockDirection = AgentData.WorldToFlockDirection(ltw, ltp, clearWorldDirection);
-                        acceleration.Value += steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;                      
+
+                        float3 steer = steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;
+#if UNITY_EDITOR
+                        if (avoidance.DebugSteering)
+                        {
+                            Debug.DrawRay(worldPosition, AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor);
+                        }
+#endif
+                        acceleration.Value += steer;
                     }
 
                     else
@@ -129,6 +146,12 @@ namespace CloudFine.FlockBox.DOTS
         public Int32 LayerMask;
         public int VisionQuality;
         public float3 LastClearWorldDirection;
+#if UNITY_EDITOR
+        public bool DebugSteering;
+        public bool DebugProperties;
+        public bool DebugVision;
+        public Color32 DebugColor;
+#endif
     }
 }
 
@@ -147,8 +170,13 @@ namespace CloudFine.FlockBox
                 LayerMask = mask,
                 Clearance = clearance,
                 VisionQuality = (int)visionRayDensity,
-                LastClearWorldDirection = Unity.Mathematics.float3.zero
-
+                LastClearWorldDirection = Unity.Mathematics.float3.zero,
+#if UNITY_EDITOR
+                DebugColor = debugColor,
+                DebugSteering = DrawSteering,
+                DebugProperties = DrawProperties,
+                DebugVision = drawVisionRays,
+#endif
             };
         }
 
