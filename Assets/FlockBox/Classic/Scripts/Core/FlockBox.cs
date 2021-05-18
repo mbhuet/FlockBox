@@ -149,16 +149,14 @@ namespace CloudFine.FlockBox
 
         public void ConvertGameObjectsToEntities(Agent[] agents)
         {
-            GameObjectConversionSettings settings = new GameObjectConversionSettings()
-            {
-                DestinationWorld = World.DefaultGameObjectInjectionWorld
-            };
+            var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             for(int i =0; i<agents.Length; i++)
             {
                 Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(agents[i].gameObject, settings);
                 SetupEntity(e);
                 GameObject.Destroy(agents[i].gameObject);
             }
+            settings.BlobAssetStore.Dispose();
         }
 
         private void SetupEntity(Entity entity)
