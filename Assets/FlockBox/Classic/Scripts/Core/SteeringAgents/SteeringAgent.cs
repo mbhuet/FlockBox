@@ -62,7 +62,7 @@ namespace CloudFine.FlockBox
                 if (!behavior.IsActive) continue;
                 behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
                 steerBuffer *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), behavior.debugColor);
+                if (behavior.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), behavior.debugColor, 0, true);
                 ApplyForce(steerBuffer);
             }
         }
@@ -72,7 +72,7 @@ namespace CloudFine.FlockBox
             if (!FlockBox.wrapEdges)
             {
                 activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, FlockBox.WorldDimensions, FlockBox.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor);
+                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor, 0, true);
                 ApplyForce(steerBuffer);
             }
         }
