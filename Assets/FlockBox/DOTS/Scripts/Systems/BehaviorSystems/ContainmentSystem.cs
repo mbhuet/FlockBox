@@ -3,6 +3,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
+using Unity.Transforms;
+using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -17,9 +19,17 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             return Entities
-                .ForEach((ref AccelerationData acceleration, in AgentData agent, in ContainmentData behavior, in SteeringData steering, in BoundaryData boundary) =>
+                .ForEach((ref AccelerationData acceleration, in AgentData agent, in ContainmentData containment, in SteeringData steering, in BoundaryData boundary
+#if UNITY_EDITOR
+                , in LocalToWorld ltw, in LocalToParent ltp
+#endif
+                ) =>
                 {
-                    acceleration.Value += behavior.CalculateSteering(agent, steering, boundary);
+                    float3 steer = containment.CalculateSteering(agent, steering, boundary);
+#if UNITY_EDITOR
+                    if (containment.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), containment.DebugColor);
+#endif
+                    acceleration.Value += steer;
 
                 }
                 ).ScheduleParallel(Dependency);
@@ -31,7 +41,11 @@ namespace CloudFine.FlockBox.DOTS
     {
         public float Weight;
         public float LookAheadSeconds;
-
+#if UNITY_EDITOR
+        public bool DebugSteering;
+        public bool DebugProperties;
+        public Color32 DebugColor;
+#endif
         public float3 CalculateSteering(AgentData mine, SteeringData steering, BoundaryData boundary)
         {
             if (boundary.Wrap) return float3.zero;
@@ -91,7 +105,15 @@ namespace CloudFine.FlockBox
     {
         public ContainmentData Convert()
         {
-            return new ContainmentData { Weight = weight, LookAheadSeconds = lookAheadSeconds };
+            return new ContainmentData { 
+                Weight = weight, 
+                LookAheadSeconds = lookAheadSeconds,
+#if UNITY_EDITOR
+                DebugSteering = DrawSteering,
+                DebugProperties = DrawProperties,
+                DebugColor = debugColor
+#endif
+            };
         }
 
         public bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
