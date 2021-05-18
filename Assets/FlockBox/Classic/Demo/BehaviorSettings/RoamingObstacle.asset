@@ -16,13 +16,13 @@ MonoBehaviour:
   weight: 4.11
   useTagFilter: 0
   filterTags: []
-  drawDebug: 1
+  drawDebug: 0
   debugColor: {r: 1, g: 1, b: 1, a: 1}
-  debugDrawSteering: 1
+  debugDrawSteering: 0
   debugDrawProperties: 0
   foldout: 1
   wanderScope: 90
-  wanderIntensity: 0.2
+  wanderIntensity: 1
 --- !u!114 &-2707566252198832472
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -39,9 +39,9 @@ MonoBehaviour:
   weight: 8.73
   useTagFilter: 0
   filterTags: []
-  drawDebug: 1
+  drawDebug: 0
   debugColor: {r: 1, g: 0, b: 0, a: 1}
-  debugDrawSteering: 1
+  debugDrawSteering: 0
   debugDrawProperties: 0
   foldout: 1
   lookAheadSeconds: 1
