@@ -147,7 +147,10 @@ namespace CloudFine.FlockBox
         {
             if (!hasSpawned)
             {
-                _flockBox = AutoFindFlockBox();
+                if (!_flockBox)
+                {
+                    _flockBox = AutoFindFlockBox();
+                }
                 if (_flockBox)
                 {
                     Spawn(_flockBox, _flockBox.transform.InverseTransformPoint(transform.position));
