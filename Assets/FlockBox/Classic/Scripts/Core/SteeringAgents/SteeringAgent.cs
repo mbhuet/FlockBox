@@ -208,6 +208,7 @@ namespace CloudFine.FlockBox
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
+                UniqueID = (int)(UnityEngine.Random.value * 100000),
             });
             dstManager.AddComponentData(entity, new AccelerationData { Value = float3.zero });
             dstManager.AddComponentData(entity, new PerceptionData());

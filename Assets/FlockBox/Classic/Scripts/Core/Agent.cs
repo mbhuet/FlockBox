@@ -477,7 +477,8 @@ namespace CloudFine.FlockBox
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
-            });
+                UniqueID = (int)(UnityEngine.Random.value * 100000),
+        });
         }
     }
 #endif
