@@ -9,6 +9,7 @@ TagManager:
   - Path
   - Leader
   - Forager
+  - Target
   layers:
   - Default
   - TransparentFX
