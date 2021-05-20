@@ -152,6 +152,7 @@ namespace CloudFine.FlockBox
             var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             for(int i =0; i<agents.Length; i++)
             {
+                agents[i].Spawn(this); //Spawn will set Position
                 Entity e = GameObjectConversionUtility.ConvertGameObjectHierarchy(agents[i].gameObject, settings);
                 SetupEntity(e);
                 GameObject.Destroy(agents[i].gameObject);
