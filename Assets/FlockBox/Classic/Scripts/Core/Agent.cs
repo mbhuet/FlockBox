@@ -264,6 +264,10 @@ namespace CloudFine.FlockBox
 
         public virtual void Spawn(FlockBox flockBox, Vector3 position, bool useWorldSpace = false)
         {
+            if(_flockBox != null && _flockBox != flockBox)
+            {
+                RemoveFromAllCells();
+            }
             if (OnSpawn != null) OnSpawn.Invoke(this);
             gameObject.SetActive(true);
             spawnTime = Time.time;
