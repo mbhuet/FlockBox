@@ -63,7 +63,7 @@ namespace CloudFine.FlockBox
         public FlockBox FlockBox
         {
             get { return _flockBox; }
-            protected set { _flockBox = value; }
+            private set { _flockBox = value; }
         }
         
         [SerializeField]
@@ -126,18 +126,6 @@ namespace CloudFine.FlockBox
         public AgentEvent OnKill;
         public AgentEvent OnSpawn;
 
-
-
-        protected virtual void LateUpdate()
-        {
-            if (isAlive && transform.hasChanged)
-            {
-                Position = transform.localPosition;
-                ForceUpdatePosition();
-                transform.hasChanged = false;
-            }
-        }
-
         protected virtual void Awake()
         {
             if (!isRegistered) RegisterNewAgent();
@@ -162,19 +150,37 @@ namespace CloudFine.FlockBox
             }
         }
 
+        public virtual void FlockingUpdate()
+        {
 
-        protected void OnDisable()
+        }
+
+        public virtual void FlockingLateUpdate()
+        {
+            if (isAlive && transform.hasChanged)
+            {
+                Position = WorldToFlockBoxPosition(transform.position);
+                ForceUpdatePosition();
+                transform.hasChanged = false;
+            }
+        }
+
+       
+
+
+        private void OnDisable()
         {
             RemoveFromAllCells();
         }
 
-        protected virtual void OnDestroy()
+        private void OnDestroy()
         {
             if (hasSpawned || isAlive) Kill();
+            UnregisterAgent();
         }
 
 
-        protected void RegisterNewAgent()
+        private void RegisterNewAgent()
         {
             agentCount_static++;
             agentID = agentCount_static;
@@ -186,8 +192,17 @@ namespace CloudFine.FlockBox
             if (underscoreIndex > -1) name = name.Remove(underscoreIndex);
             name += "_" + agentID;
             this.name = name;
-
         }
+
+        private void UnregisterAgent()
+        {
+            if (agentRegistry.ContainsKey(agentID))
+            {
+                agentRegistry.Remove(agentID);
+            }
+        }
+
+
 
         public static Agent GetAgentById(int id)
         {
@@ -235,10 +250,31 @@ namespace CloudFine.FlockBox
             return GetComponentInParent<FlockBox>();
         }
 
-        protected virtual void JoinFlockBox(FlockBox flockBox)
+        private void JoinFlockBox(FlockBox flockBox)
         {
-            _flockBox = flockBox;
+            if(flockBox == null)
+            {
+                Debug.LogWarning("cannot join null flockbox");
+                return;
+            }
+            FlockBox = flockBox;
+            FlockBox.RegisterAgentUpdates(this);
+            OnJoinFlockBox(flockBox);
+        }
+
+        protected virtual void OnJoinFlockBox(FlockBox flockBox)
+        {
             transform.SetParent(_flockBox.transform);
+        }
+
+        private void LeaveFlockBox()
+        {
+            if (FlockBox)
+            {
+                FlockBox.UnregisterAgentUpdates(this);
+                RemoveFromAllCells();
+                FlockBox = null;
+            }
         }
 
         protected virtual void FindOccupyingCells()
@@ -258,17 +294,13 @@ namespace CloudFine.FlockBox
             if (OnKill != null) OnKill.Invoke(this);
             isAlive = false;
             hasSpawned = false;
-            RemoveFromAllCells();
+            LeaveFlockBox();
             this.gameObject.SetActive(false);
         }
 
         public virtual void Spawn(FlockBox flockBox, Vector3 position, bool useWorldSpace = false)
         {
-            if(_flockBox != null && _flockBox != flockBox)
-            {
-                RemoveFromAllCells();
-            }
-            if (OnSpawn != null) OnSpawn.Invoke(this);
+            LeaveFlockBox();
             gameObject.SetActive(true);
             spawnTime = Time.time;
             isAlive = true;
@@ -277,6 +309,7 @@ namespace CloudFine.FlockBox
             JoinFlockBox(flockBox);
             this.Position = useWorldSpace ? WorldToFlockBoxPosition(position) : position;
             ForceUpdatePosition();
+            if (OnSpawn != null) OnSpawn.Invoke(this);
         }
 
         public void Spawn(FlockBox flockBox)
@@ -336,7 +369,7 @@ namespace CloudFine.FlockBox
         /// </summary>
         protected virtual void UpdateTransform()
         {
-            this.transform.localPosition = Position;
+            this.transform.position = FlockBoxToWorldPosition(Position);
             if (Velocity.magnitude > 0)
             {
                 transform.localRotation = Quaternion.LookRotation(Velocity.normalized, Vector3.up);

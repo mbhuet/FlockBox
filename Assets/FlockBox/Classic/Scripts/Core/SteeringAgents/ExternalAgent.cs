@@ -14,13 +14,13 @@ namespace CloudFine.FlockBox
             return _autoJoinFlockBox;
         }
 
-        protected override void JoinFlockBox(FlockBox flockBox)
+        protected override void OnJoinFlockBox(FlockBox flockBox)
         {
-            FlockBox = flockBox;
             _autoJoinFlockBox = flockBox;
+            _lastPosition = transform.position;
         }
 
-        protected override void LateUpdate()
+        public override void FlockingLateUpdate()
         {
             if (isAlive && transform.hasChanged)
             {

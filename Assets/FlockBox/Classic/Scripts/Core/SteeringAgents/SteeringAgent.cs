@@ -21,7 +21,7 @@ namespace CloudFine.FlockBox
         private bool sleeping = false;
         private SurroundingsContainer mySurroundings = new SurroundingsContainer();
 
-        protected virtual void Update()
+        public override void FlockingUpdate()
         {
             if (!isAlive) return;
             if (activeSettings == null) return;
@@ -38,7 +38,7 @@ namespace CloudFine.FlockBox
         }
 
 
-        protected override void LateUpdate()
+        public override void FlockingLateUpdate()
         {
             if (!isAlive) return;
             if (sleeping) return;

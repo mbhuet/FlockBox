@@ -18,6 +18,8 @@ namespace CloudFine.FlockBox
         private Dictionary<int, HashSet<Agent>> cellToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a cell
         private Dictionary<Agent, HashSet<int>> agentToCells = new Dictionary<Agent, HashSet<int>>(); //get all cells an agent is in
 
+        private List<Agent> allAgents = new List<Agent>();
+
         private Dictionary<Agent, string> lastKnownTag = new Dictionary<Agent, string>();
         private Dictionary<string, HashSet<Agent>> tagToAgents = new Dictionary<string, HashSet<Agent>>();
 
@@ -234,10 +236,23 @@ namespace CloudFine.FlockBox
                 transform.hasChanged = false;
             }
 
+            foreach(Agent agent in allAgents)
+            {
+                agent.FlockingUpdate();
+            }
+
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
             cellsToDebugDraw.Clear();
 #endif
+        }
+
+        private void LateUpdate()
+        {
+            foreach (Agent agent in allAgents)
+            {
+                agent.FlockingLateUpdate();
+            }
         }
 
 
@@ -296,6 +311,19 @@ namespace CloudFine.FlockBox
                     }
                 }
             }   
+        }
+
+        public void RegisterAgentUpdates(Agent agent)
+        {
+            if (!allAgents.Contains(agent))
+            {
+                allAgents.Add(agent);
+            }
+        }
+
+        public void UnregisterAgentUpdates(Agent agent)
+        {
+            allAgents.Remove(agent);
         }
 
         /// <summary>
