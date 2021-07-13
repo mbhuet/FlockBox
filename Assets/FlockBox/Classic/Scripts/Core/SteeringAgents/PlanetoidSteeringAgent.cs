@@ -19,7 +19,7 @@ namespace CloudFine.FlockBox
             Vector3 clampedPosition = planetoidCenter + planetoidUp * planetoidRadius;
 
             Position = clampedPosition;
-            transform.localPosition = Position;
+            transform.position = FlockBoxToWorldPosition(Position);
 
 
             //project velocity onto plane tangent to planetoid surface
@@ -28,13 +28,13 @@ namespace CloudFine.FlockBox
 
             if (Velocity.magnitude > 0)
             {
-                transform.localRotation = Quaternion.LookRotation(Velocity, planetoidUp);
+                transform.rotation = Quaternion.LookRotation(FlockBoxToWorldDirection(Velocity), FlockBoxToWorldDirection(planetoidUp));
                 Forward = Velocity;
             }
 
             else
             {
-                Forward = transform.localRotation * Vector3.forward;
+                Forward = WorldToFlockBoxDirection(transform.rotation * Vector3.forward);
             }
         }
 

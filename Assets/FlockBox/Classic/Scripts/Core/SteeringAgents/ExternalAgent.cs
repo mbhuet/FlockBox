@@ -26,8 +26,8 @@ namespace CloudFine.FlockBox
             {
                 if (_autoJoinFlockBox != null)
                 {
-                    Position = FlockBox.transform.InverseTransformPoint(transform.position);
-                    Velocity = FlockBox.transform.InverseTransformDirection((transform.position - _lastPosition)/Time.deltaTime);
+                    Position = WorldToFlockBoxPosition(transform.position);
+                    Velocity = WorldToFlockBoxDirection((transform.position - _lastPosition)/Time.deltaTime);
                     ValidateVelocity();
                     if(Velocity != Vector3.zero)
                     {

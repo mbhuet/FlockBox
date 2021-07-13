@@ -31,22 +31,22 @@ namespace CloudFine.FlockBox
                 _worldPosDelta = _terrainHit.point - FlockBoxToWorldPosition(_lastPosition);
                 Position = WorldToFlockBoxPosition(_terrainHit.point);
             }
-            transform.localPosition = (Position);
+            transform.position = FlockBoxToWorldPosition(Position);
 
             if (_worldPosDelta.magnitude > 0)
             {
                 Vector3 terrainForward = WorldToFlockBoxDirection(_worldPosDelta);
-                transform.localRotation = LookRotation(terrainForward);
+                transform.rotation = LookRotation(FlockBoxToWorldDirection(terrainForward));
                 Forward = terrainForward;
             }
             else if (Velocity.magnitude > 0)
             {
-                transform.localRotation = LookRotation(Velocity);
+                transform.rotation = LookRotation(FlockBoxToWorldDirection(Velocity));
                 Forward = Velocity;
             }
             else
             {
-                Forward = transform.localRotation * Vector3.forward;
+                Forward = WorldToFlockBoxDirection(transform.rotation * Vector3.forward);
             }
         }
 

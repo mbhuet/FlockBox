@@ -142,7 +142,7 @@ namespace CloudFine.FlockBox
 
         protected override void UpdateTransform()
         {
-            transform.localPosition = (Position);
+            this.transform.position = FlockBoxToWorldPosition(Position);
 
             if (Velocity.magnitude > 0)
             {

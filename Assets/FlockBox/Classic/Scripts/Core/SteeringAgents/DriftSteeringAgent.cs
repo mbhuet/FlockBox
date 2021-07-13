@@ -12,17 +12,17 @@ namespace CloudFine.FlockBox
     {
         protected override void UpdateTransform()
         {
-            transform.localPosition = (Position);
+            transform.position = FlockBoxToWorldPosition(Position);
 
             if (Velocity.magnitude > 0)
             {
-                transform.localRotation = LookRotation(Acceleration.normalized);
+                transform.rotation = LookRotation(FlockBoxToWorldDirection(Acceleration).normalized);
                 Forward = Velocity;
             }
 
             else
             {
-                Forward = transform.localRotation * Vector3.forward;
+                Forward = WorldToFlockBoxDirection(transform.rotation * Vector3.forward);
             }
         }
 

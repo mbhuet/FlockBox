@@ -38,10 +38,10 @@ namespace CloudFine.FlockBox
                 rigidbody.MoveRotation(Quaternion.LookRotation(Velocity, Vector3.up));
             }
 
-            Position = transform.localPosition;
+            Position = WorldToFlockBoxPosition(transform.position);
             if (!ValidatePosition())
             {
-                transform.localPosition = Position;
+                transform.position = FlockBoxToWorldPosition(Position);
             }
 
             
