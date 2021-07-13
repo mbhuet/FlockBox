@@ -129,7 +129,12 @@ namespace CloudFine.FlockBox
         {
             freezePosition = isLocked;
         }
-       
+
+        public void ThrottleSpeed(float speedPercent)
+        {
+            speedThrottle = speedPercent;
+        }
+
         protected Quaternion LookRotation(Vector3 desiredForward)
         {
             return Quaternion.LookRotation(desiredForward);
