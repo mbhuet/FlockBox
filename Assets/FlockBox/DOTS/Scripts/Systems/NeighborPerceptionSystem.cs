@@ -31,9 +31,6 @@ namespace CloudFine.FlockBox.DOTS
         {
             EntityManager.GetAllUniqueSharedComponentData(flocks);
 
-            // Each variant of the Boid represents a different value of the SharedComponentData and is self-contained,
-            // meaning Boids of the same variant only interact with one another. Thus, this loop processes each
-            // variant type individually.
             for (int flockIndex = 0; flockIndex < flocks.Count; flockIndex++)
             {
                 var settings = flocks[flockIndex];
