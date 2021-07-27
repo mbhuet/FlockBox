@@ -89,38 +89,116 @@ namespace CloudFine.FlockBox
         protected float spawnTime;
         protected float age { get { return Time.time - spawnTime; } }
 
-#region AgentProperties
-        [SerializeField]
-        protected Dictionary<string, object> agentProperties = new Dictionary<string, object>();
-        public T GetAgentProperty<T>(string name)
+        #region AgentProperties
+        protected Dictionary<string, float> agentFloatProperties;
+        protected Dictionary<string, int> agentIntProperties;
+        protected Dictionary<string, bool> agentBoolProperties;
+        protected Dictionary<string, Vector3> agentVector3Properties;
+
+        //FLOAT
+        public float GetAgentFloatProperty(string name)
         {
-            object val;
-            if (!agentProperties.TryGetValue(name, out val))
-                return default;
-            return (T)val;
+            if (agentFloatProperties == null) return 0;
+            float val;
+            if (!agentFloatProperties.TryGetValue(name, out val))
+                return 0;
+            return val;
         }
-        public void SetAgentProperty<T>(string name, T value)
+        public void SetAgentFloatProperty(string name, float value)
         {
-            if (agentProperties.ContainsKey(name))
-                agentProperties[name] = value;
-            else
-            {
-                agentProperties.Add(name, value);
-            }
+            if (agentFloatProperties == null) agentFloatProperties = new Dictionary<string, float>();
+            if (agentFloatProperties.ContainsKey(name)) agentFloatProperties[name] = value;
+            else agentFloatProperties.Add(name, value);           
         }
-        public void RemoveAgentProperty(string name)
+        public void RemoveAgentFloatProperty(string name)
         {
-            agentProperties.Remove(name);
+            if(agentFloatProperties != null) agentFloatProperties.Remove(name);
         }
-        public bool HasAgentProperty(string name)
+        public bool HasAgentFloatProperty(string name)
         {
-            return agentProperties.ContainsKey(name);
+            if (agentFloatProperties == null) return false;
+            return agentFloatProperties.ContainsKey(name);
         }
-    
-#endregion
+
+        //BOOL
+        public bool GetAgentBoolProperty(string name)
+        {
+            if (agentBoolProperties == null) return false;
+            bool val;
+            if (!agentBoolProperties.TryGetValue(name, out val))
+                return false;
+            return val;
+        }
+        public void SetAgentBoolProperty(string name, bool value)
+        {
+            if (agentBoolProperties == null) agentBoolProperties = new Dictionary<string, bool>();
+            if (agentBoolProperties.ContainsKey(name)) agentBoolProperties[name] = value;
+            else agentBoolProperties.Add(name, value);
+        }
+        public void RemoveAgentBoolProperty(string name)
+        {
+            if (agentBoolProperties != null) agentBoolProperties.Remove(name);
+        }
+        public bool HasAgentBoolProperty(string name)
+        {
+            if (agentBoolProperties == null) return false;
+            return agentBoolProperties.ContainsKey(name);
+        }
+
+        //INT
+        public int GetAgentIntProperty(string name)
+        {
+            if (agentIntProperties == null) return 0;
+            int val;
+            if (!agentIntProperties.TryGetValue(name, out val))
+                return 0;
+            return val;
+        }
+        public void SetAgentIntProperty(string name, int value)
+        {
+            if (agentIntProperties == null) agentIntProperties = new Dictionary<string, int>();
+            if (agentIntProperties.ContainsKey(name)) agentIntProperties[name] = value;
+            else agentIntProperties.Add(name, value);
+        }
+        public void RemoveAgentIntProperty(string name)
+        {
+            if (agentIntProperties != null) agentIntProperties.Remove(name);
+        }
+        public bool HasAgentIntProperty(string name)
+        {
+            if (agentIntProperties == null) return false;
+            return agentIntProperties.ContainsKey(name);
+        }
+
+        //VECTOR3
+        public Vector3 GetAgentVector3Property(string name)
+        {
+            if (agentVector3Properties == null) return Vector3.zero;
+            Vector3 val;
+            if (!agentVector3Properties.TryGetValue(name, out val))
+                return Vector3.zero;
+            return val;
+        }
+        public void SetAgentVector3Property(string name, Vector3 value)
+        {
+            if (agentVector3Properties == null) agentVector3Properties = new Dictionary<string, Vector3>();
+            if (agentVector3Properties.ContainsKey(name)) agentVector3Properties[name] = value;
+            else agentVector3Properties.Add(name, value);
+        }
+        public void RemoveAgentVector3Property(string name)
+        {
+            if (agentVector3Properties != null) agentVector3Properties.Remove(name);
+        }
+        public bool HasAgentVector3Property(string name)
+        {
+            if (agentVector3Properties == null) return false;
+            return agentVector3Properties.ContainsKey(name);
+        }
+
+        #endregion
 
 
-    public delegate void AgentEvent(Agent agent);
+        public delegate void AgentEvent(Agent agent);
         public AgentEvent OnCaught;
         public AgentEvent OnCatch;
         public AgentEvent OnKill;

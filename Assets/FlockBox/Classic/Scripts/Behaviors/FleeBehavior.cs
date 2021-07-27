@@ -25,11 +25,11 @@ namespace CloudFine.FlockBox
             {
                 fleeMidpoint /= (count);
                 mine.GetSteerVector(out steer, (mine.Position - fleeMidpoint));
-                mine.SetAgentProperty(fleeAttributeName, true);
+                mine.SetAgentBoolProperty(fleeAttributeName, true);
             }
             else
             {
-                mine.SetAgentProperty(fleeAttributeName, false);
+                mine.SetAgentBoolProperty(fleeAttributeName, false);
                 steer = Vector3.zero;
             }
         }
@@ -39,7 +39,7 @@ namespace CloudFine.FlockBox
     {
         public static bool IsFleeing(this SteeringAgent agent)
         {
-            return agent.GetAgentProperty<bool>(FleeBehavior.fleeAttributeName);
+            return agent.GetAgentBoolProperty(FleeBehavior.fleeAttributeName);
         }
     }
 }

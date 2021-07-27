@@ -10,8 +10,8 @@ namespace CloudFine.FlockBox
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
-            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
+            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentIntProperty(targetIDAttributeName);
 
             HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 
@@ -52,12 +52,12 @@ namespace CloudFine.FlockBox
 
         protected static void EngagePursuit(SteeringAgent mine, Agent target)
         {
-            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, target.agentID);
+            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, target.agentID);
         }
 
         protected static void DisengagePursuit(SteeringAgent mine, int targetID)
         {
-            mine.SetAgentProperty(SeekBehavior.targetIDAttributeName, -1);
+            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
         public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
@@ -82,8 +82,8 @@ namespace CloudFine.FlockBox
     {
         public static bool HasPursuitTarget(this SteeringAgent mine)
         {
-            if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName)) return false;
-            return mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName) >= 0;
+            if (!mine.HasAgentIntProperty(SeekBehavior.targetIDAttributeName)) return false;
+            return mine.GetAgentIntProperty(SeekBehavior.targetIDAttributeName) >= 0;
         }
 
         public static void AttemptCatch(this SteeringAgent mine, Agent target)
@@ -96,11 +96,11 @@ namespace CloudFine.FlockBox
 
         public static Agent GetTarget(this SteeringAgent mine)
         {
-            if (!mine.HasAgentProperty(SeekBehavior.targetIDAttributeName))
+            if (!mine.HasAgentIntProperty(SeekBehavior.targetIDAttributeName))
             {
                 return null;
             }
-            int chosenTargetID = mine.GetAgentProperty<int>(SeekBehavior.targetIDAttributeName);
+            int chosenTargetID = mine.GetAgentIntProperty(SeekBehavior.targetIDAttributeName);
             if (chosenTargetID != -1)
             {
                 return Agent.GetAgentById(chosenTargetID);

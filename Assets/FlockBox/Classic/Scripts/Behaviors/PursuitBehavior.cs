@@ -8,8 +8,8 @@ namespace CloudFine.FlockBox
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAgentProperty(targetIDAttributeName)) mine.SetAgentProperty(targetIDAttributeName, -1);
-            int chosenTargetID = mine.GetAgentProperty<int>(targetIDAttributeName);
+            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(targetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentIntProperty(targetIDAttributeName);
 
             HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
 

@@ -12,7 +12,7 @@ namespace CloudFine.FlockBox
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if(!mine.HasAgentProperty(seekPositionPropName))
+            if(!mine.HasAgentVector3Property(seekPositionPropName))
             {
                 steer = Vector3.zero;
                 return;
@@ -26,12 +26,12 @@ namespace CloudFine.FlockBox
     {
         public static void SetSeekPosition(this SteeringAgent agent, Vector3 position)
         {
-            agent.SetAgentProperty<Vector3>(SeekPositionBehavior.seekPositionPropName, position);
+            agent.SetAgentVector3Property(SeekPositionBehavior.seekPositionPropName, position);
         }
 
         public static Vector3 GetSeekPosition(this SteeringAgent agent)
         {
-            return agent.GetAgentProperty<Vector3>(SeekPositionBehavior.seekPositionPropName);
+            return agent.GetAgentVector3Property(SeekPositionBehavior.seekPositionPropName);
         }
 
 

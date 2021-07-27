@@ -92,16 +92,16 @@ namespace CloudFine.FlockBox
             if (!ObstacleInPath(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask))
             {
                 steer = Vector3.zero;
-                mine.SetAgentProperty(lastClearDirectionKey, steer);
+                mine.SetAgentVector3Property(lastClearDirectionKey, steer);
 
                 return;
             }
             float hitDist = hit.distance;
 
             Vector3 lastClearWorldDirection = Vector3.zero;
-            if (mine.HasAgentProperty(lastClearDirectionKey))
+            if (mine.HasAgentVector3Property(lastClearDirectionKey))
             {
-                lastClearWorldDirection = mine.GetAgentProperty<Vector3>(lastClearDirectionKey);
+                lastClearWorldDirection = mine.GetAgentVector3Property(lastClearDirectionKey);
             }
             if (lastClearWorldDirection == Vector3.zero)
             {
@@ -111,7 +111,7 @@ namespace CloudFine.FlockBox
             myRay.direction = lastClearWorldDirection;
             
             steer = ObstacleRays(myRay, mine.shape.radius + clearance, rayDist, ref hit, mask, mine);
-            mine.SetAgentProperty(lastClearDirectionKey, steer.normalized);
+            mine.SetAgentVector3Property(lastClearDirectionKey, steer.normalized);
             float smooth = rayDist > 0 ? (1f - (hitDist / rayDist)) : 1f;
             steer = mine.WorldToFlockBoxDirection(steer);
             steer = steer.normalized * mine.activeSettings.maxForce - mine.Velocity;

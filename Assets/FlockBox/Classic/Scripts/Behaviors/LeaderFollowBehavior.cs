@@ -26,13 +26,13 @@ namespace CloudFine.FlockBox
 
             if (leaders.Count == 0)
             {
-                mine.RemoveAgentProperty(leaderIDAttributeName);
+                mine.RemoveAgentIntProperty(leaderIDAttributeName);
                 steer = Vector3.zero;
                 return;
             }
 
             Agent closestLeader = SeekBehavior.ClosestPursuableTarget(leaders, mine);
-            mine.SetAgentProperty(leaderIDAttributeName, closestLeader.agentID);
+            mine.SetAgentIntProperty(leaderIDAttributeName, closestLeader.agentID);
 
             //check to see if we should clear the way in front of the leader
             float scalar = Vector3.Dot(mine.Position - closestLeader.Position, closestLeader.Forward);
@@ -60,9 +60,9 @@ namespace CloudFine.FlockBox
 
             Color areaFill = debugColor;
             areaFill.a *= .1f;
-            if (agent.HasAgentProperty(leaderIDAttributeName))
+            if (agent.HasAgentIntProperty(leaderIDAttributeName))
             {
-                int leaderId = agent.GetAgentProperty<int>(leaderIDAttributeName);
+                int leaderId = agent.GetAgentIntProperty(leaderIDAttributeName);
                 Agent leader = Agent.GetAgentById(leaderId);
                 if(leader != null)
                 {
