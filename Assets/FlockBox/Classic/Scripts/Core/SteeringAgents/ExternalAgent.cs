@@ -14,5 +14,15 @@ namespace CloudFine.FlockBox
             if (FlockBox == null && _autoJoinFlockBox != null) FlockBox = _autoJoinFlockBox;
         }
 
+        protected override void OnJoinFlockBox(FlockBox flockBox)
+        {
+#if FLOCKBOX_DOTS
+            if (flockBox.DOTSEnabled)
+            {
+                //Create Agent Entity,
+                //have it follow this transform
+            }
+#endif
+        }
     }
 }
