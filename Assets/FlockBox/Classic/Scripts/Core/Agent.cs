@@ -63,11 +63,13 @@ namespace CloudFine.FlockBox
         public FlockBox FlockBox
         {
             get { return _flockBox; }
-            private set { _flockBox = value; }
+            protected set { _flockBox = value; }
         }
         
         [SerializeField]
         private FlockBox _flockBox;
+
+        private Vector3 _lastWorldPosition;
 
         [SerializeField]
         public Shape shape;
@@ -237,11 +239,30 @@ namespace CloudFine.FlockBox
         {
             if (isAlive && transform.hasChanged)
             {
-                Position = WorldToFlockBoxPosition(transform.position);
-                ForceUpdatePosition();
+                if (FlockBox != null)
+                {
+                    Position = WorldToFlockBoxPosition(transform.position);
+                    Velocity = WorldToFlockBoxDirection((transform.position - _lastWorldPosition) / Time.deltaTime);
+                    ValidateVelocity();
+                    if (Velocity != Vector3.zero)
+                    {
+                        Forward = Velocity.normalized;
+                    }
+                }
+                if (ValidatePosition())
+                {
+                    FindOccupyingCells();
+                }
+                else
+                {
+                    RemoveFromAllCells();
+                }
                 transform.hasChanged = false;
             }
+            _lastWorldPosition = transform.position;
+
         }
+    
 
        
 
@@ -337,6 +358,7 @@ namespace CloudFine.FlockBox
             }
             FlockBox = flockBox;
             FlockBox.RegisterAgentUpdates(this);
+            _lastWorldPosition = transform.position;
             OnJoinFlockBox(flockBox);
         }
 
