@@ -32,7 +32,7 @@ namespace CloudFine.FlockBox.DOTS
                 {
                     float3 steer = avoidance.CalculateSteering(agent, steering, neighbors);
 #if UNITY_EDITOR
-                    if (avoidance.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
+                    if (avoidance.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
 #endif
                     acceleration.Value += steer;
                 }

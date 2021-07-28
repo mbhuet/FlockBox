@@ -60,8 +60,8 @@ namespace CloudFine.FlockBox.DOTS
                         CollidesWith = (uint)avoidance.LayerMask,
                     };
 
-                    float3 worldPosition = agent.GetWorldPosition(ltw, ltp);
-                    float3 worldForward = agent.GetWorldForward(ltw, ltp);
+                    float3 worldPosition = agent.GetWorldPosition(ltw);
+                    float3 worldForward = agent.GetWorldForward(ltw);
                     
                     RaycastInput input = new RaycastInput()
                     {
@@ -118,7 +118,7 @@ namespace CloudFine.FlockBox.DOTS
 #if UNITY_EDITOR
                         if (avoidance.DebugSteering)
                         {
-                            Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
+                            Debug.DrawRay(agent.GetWorldPosition(in ltw), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
                         }
 #endif
                         acceleration.Value += steer;

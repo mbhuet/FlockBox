@@ -28,7 +28,7 @@ namespace CloudFine.FlockBox.DOTS
                 {
                     var steer = wander.CalculateSteering(agent, steering, (float)time, boundary);
 #if UNITY_EDITOR
-                    if (wander.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), wander.DebugColor, 0, true);
+                    if (wander.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), wander.DebugColor, 0, true);
 #endif
                     acceleration.Value += steer;
                 }

@@ -31,9 +31,9 @@ namespace CloudFine.FlockBox.DOTS
         /// <param name="ltw"></param>
         /// <param name="ltp"></param>
         /// <returns></returns>
-        public float3 GetWorldPosition(in LocalToWorld ltw, in LocalToParent ltp)
+        public float3 GetWorldPosition(in LocalToWorld ltw)
         {
-            return FlockToWorldPoint(ltw, ltp, Position);
+            return ltw.Position;
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace CloudFine.FlockBox.DOTS
         /// <param name="ltw"></param>
         /// <param name="ltp"></param>
         /// <returns></returns>
-        public float3 GetWorldForward(in LocalToWorld ltw, in LocalToParent ltp)
+        public float3 GetWorldForward(in LocalToWorld ltw)
         {
-            return FlockToWorldDirection(ltw, ltp, Forward);
+            return ltw.Forward;
         }
 
 

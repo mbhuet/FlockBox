@@ -27,7 +27,7 @@ namespace CloudFine.FlockBox.DOTS
                 {
                     float3 steer = containment.CalculateSteering(agent, steering, boundary);
 #if UNITY_EDITOR
-                    if (containment.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), containment.DebugColor, 0, true);
+                    if (containment.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), containment.DebugColor, 0, true);
 #endif
                     acceleration.Value += steer;
 
