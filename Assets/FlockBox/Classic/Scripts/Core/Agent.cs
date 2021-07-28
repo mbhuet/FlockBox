@@ -364,7 +364,7 @@ namespace CloudFine.FlockBox
 
         protected virtual void OnJoinFlockBox(FlockBox flockBox)
         {
-            transform.SetParent(_flockBox.transform);
+
         }
 
         private void LeaveFlockBox()

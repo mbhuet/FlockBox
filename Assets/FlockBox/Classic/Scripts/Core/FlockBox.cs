@@ -222,7 +222,8 @@ namespace CloudFine.FlockBox
                     for(int i =0; i<pop.population; i++)
                     {
                         Agent agent = GameObject.Instantiate(pop.prefab);
-                        agent.Spawn(this, RandomPosition());
+                        agent.transform.SetParent(this.transform);
+                        agent.Spawn(this, RandomPosition());                     
                     }
                 }
             }
