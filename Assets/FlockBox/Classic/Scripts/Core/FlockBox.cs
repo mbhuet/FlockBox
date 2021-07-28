@@ -342,7 +342,7 @@ namespace CloudFine.FlockBox
         {
             if (agentToCells.TryGetValue(agent, out cells))
             {
-                foreach(int cell in cells)
+                foreach (int cell in cells)
                 {
                     if (cellToAgents.TryGetValue(cell, out _cellContentsCache))
                     {
@@ -350,6 +350,15 @@ namespace CloudFine.FlockBox
                     }
                 }
                 agentToCells[agent].Clear();
+            }
+
+            if (lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
+            {
+                if (tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //remove from old tag list
+                {
+                    _cellContentsCache.Remove(agent);
+                }
+                lastKnownTag.Remove(agent);
             }
         }
 
