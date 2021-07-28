@@ -609,7 +609,12 @@ namespace CloudFine.FlockBox
     {
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new AgentData
+            dstManager.AddComponentData(entity, ConvertToAgentData());
+        }
+
+        protected AgentData ConvertToAgentData()
+        {
+            return new AgentData
             {
                 Position = Position,
                 Velocity = Velocity,
@@ -618,7 +623,7 @@ namespace CloudFine.FlockBox
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
                 UniqueID = (int)(UnityEngine.Random.value * 100000),
-        });
+            };
         }
     }
 #endif

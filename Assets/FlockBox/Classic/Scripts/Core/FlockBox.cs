@@ -106,7 +106,7 @@ namespace CloudFine.FlockBox
         }
 
         private Entity agentEntityPrefab;
-        private Entity syncedEntityTransform
+        public Entity syncedEntityTransform
         {
             get
             {
