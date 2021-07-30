@@ -164,9 +164,7 @@ namespace CloudFine.FlockBox
 
         private void SetupEntity(Entity entity)
         {
-            entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
-            entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
-
+            entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
             entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData {WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });

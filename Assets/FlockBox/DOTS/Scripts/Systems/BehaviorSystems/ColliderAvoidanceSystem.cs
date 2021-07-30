@@ -48,7 +48,7 @@ namespace CloudFine.FlockBox.DOTS
             Dependency = Entities
                 .WithReadOnly(physicsWorld)
                 .WithReadOnly(dirs)
-                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in LocalToParent ltp, in BoundaryData boundary) =>
+                .ForEach((ref AccelerationData acceleration, ref ColliderAvoidanceData avoidance, in AgentData agent, in SteeringData steering, in LocalToWorld ltw, in FlockMatrixData wtf, in BoundaryData boundary) =>
                 {
                     if (!avoidance.Active) return;
 
@@ -60,8 +60,8 @@ namespace CloudFine.FlockBox.DOTS
                         CollidesWith = (uint)avoidance.LayerMask,
                     };
 
-                    float3 worldPosition = agent.GetWorldPosition(ltw);
-                    float3 worldForward = agent.GetWorldForward(ltw);
+                    float3 worldPosition = ltw.Position;
+                    float3 worldForward = ltw.Forward;
                     
                     RaycastInput input = new RaycastInput()
                     {
@@ -112,13 +112,13 @@ namespace CloudFine.FlockBox.DOTS
                         avoidance.LastClearWorldDirection = clearWorldDirection;
                         float smooth = lookDist > 0 ? (1f - (hitDist / lookDist)) : 1f;
 
-                        float3 clearFlockDirection = AgentData.WorldToFlockDirection(ltw, ltp, clearWorldDirection);
+                        float3 clearFlockDirection = wtf.WorldToFlockDirection(clearWorldDirection);
 
                         float3 steer = steering.GetSteerVector(clearFlockDirection, agent.Velocity) * avoidance.Weight * smooth;
 #if UNITY_EDITOR
                         if (avoidance.DebugSteering)
                         {
-                            Debug.DrawRay(agent.GetWorldPosition(in ltw), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), avoidance.DebugColor, 0, true);
+                            Debug.DrawRay(ltw.Position, wtf.FlockToWorldDirection(steer), avoidance.DebugColor, 0, true);
                         }
 #endif
                         acceleration.Value += steer;
