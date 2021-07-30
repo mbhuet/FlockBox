@@ -8,7 +8,7 @@ using Unity.Transforms;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
-    [UpdateAfter(typeof(AccelerationSystem))]
+    [UpdateAfter(typeof(SteeringAccelerationSystem))]
     public class RotationSystem : SystemBase
     {
         protected override void OnUpdate()

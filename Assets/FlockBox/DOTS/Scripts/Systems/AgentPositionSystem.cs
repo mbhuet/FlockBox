@@ -12,16 +12,15 @@ using UnityEngine;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
-    [UpdateAfter(typeof(VelocitySystem))]
-    public class ValidatePositionSystem : SystemBase
+    public class AgentPositionSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            var validationJob = Entities.ForEach((ref AgentData agent, ref Translation translation, in BoundaryData boundary) =>
+            var validationJob = Entities.WithNone<SteeringData>().ForEach((ref AgentData agent, in LocalToWorld ltw, in FlockMatrixData flock) =>
             {
-                agent.Position = boundary.ValidatePosition(agent.Position);
-                agent.Velocity = boundary.ValidateDirection(agent.Velocity);
-                translation.Value = agent.Position;
+                agent.Position = math.transform(flock.WorldToFlockMatrix, ltw.Position);
+                agent.Forward = math.transform(flock.WorldToFlockMatrix, ltw.Forward);
+                //agent.Position = translation.Value;
             })
             .ScheduleParallel(Dependency);
 

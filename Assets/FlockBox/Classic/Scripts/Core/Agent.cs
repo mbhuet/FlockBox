@@ -406,8 +406,8 @@ namespace CloudFine.FlockBox
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            JoinFlockBox(flockBox);
             this.Position = useWorldSpace ? WorldToFlockBoxPosition(position) : position;
+            JoinFlockBox(flockBox);
             ForceUpdatePosition();
             if (OnSpawn != null) OnSpawn.Invoke(this);
         }
