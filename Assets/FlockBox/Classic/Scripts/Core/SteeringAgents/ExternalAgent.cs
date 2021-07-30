@@ -20,11 +20,23 @@ namespace CloudFine.FlockBox
         protected void OnValidate()
         {
             if (FlockBox == null && _autoJoinFlockBox != null) FlockBox = _autoJoinFlockBox;
+#if FLOCKBOX_DOTS
+            RefreshSyncedEntityData();
+#endif
+        }
+
+#if FLOCKBOX_DOTS
+
+        public void RefreshSyncedEntityData()
+        {
+            if (_synchedEntity != Entity.Null)
+            {
+                World.DefaultGameObjectInjectionWorld.EntityManager.SetComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
+            }
         }
 
         protected override void OnJoinFlockBox(FlockBox flockBox)
         {
-#if FLOCKBOX_DOTS
             if (flockBox.DOTSEnabled)
             {
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -38,7 +50,6 @@ namespace CloudFine.FlockBox
 
                     entityManager.AddSharedComponentData<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
                     entityManager.AddComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
-
                     entityManager.AddComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }
                 else
@@ -48,7 +59,8 @@ namespace CloudFine.FlockBox
                     entityManager.SetComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }
             }
-#endif
         }
+#endif
+
     }
 }

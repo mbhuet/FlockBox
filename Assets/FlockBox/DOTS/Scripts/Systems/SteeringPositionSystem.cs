@@ -17,13 +17,8 @@ namespace CloudFine.FlockBox.DOTS
     {
         protected override void OnUpdate()
         {
-            var validationJob = Entities.WithAll<SteeringData>().ForEach((ref LocalToWorld ltw, ref AgentData agent, in FlockMatrixData wtf) =>
+            var validationJob = Entities.WithAll<SteeringData>().ForEach((ref LocalToWorld ltw, in AgentData agent, in FlockMatrixData wtf) =>
             {
-                if (!math.all(agent.Velocity == float3.zero))
-                {
-                    agent.Forward = math.normalize(agent.Velocity);
-                }
-
                 ltw.Value = float4x4.TRS(
                     wtf.FlockToWorldPoint(agent.Position),
                     quaternion.LookRotationSafe(wtf.FlockToWorldDirection(agent.Forward), new float3(0, 1, 0)),
