@@ -20,7 +20,7 @@ namespace CloudFine.FlockBox.DOTS
             {
                 agent.Position = math.transform(flock.WorldToFlockMatrix, ltw.Position);
                 agent.Forward = math.transform(flock.WorldToFlockMatrix, ltw.Forward);
-                //agent.Position = translation.Value;
+                //TODO Agent.Velocity based on position delta
             })
             .ScheduleParallel(Dependency);
 
