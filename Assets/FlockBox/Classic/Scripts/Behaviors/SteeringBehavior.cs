@@ -1,5 +1,4 @@
-﻿#pragma warning disable 0649
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -23,6 +22,7 @@ namespace CloudFine.FlockBox
         [HideInInspector]
         public string[] filterTags = new string[0];
 
+#pragma warning disable 0649
         [SerializeField, HideInInspector, Tooltip("[Debug] Enable debug visualizations for this behavior.")]
         private bool drawDebug;
         [SerializeField, HideInInspector]
@@ -31,6 +31,7 @@ namespace CloudFine.FlockBox
         private bool debugDrawSteering;
         [SerializeField, HideInInspector, Tooltip("[Debug] Draw visualizations representing this behavior's awareness of the environment.")]
         private bool debugDrawProperties;
+#pragma warning restore 0649
 
         public Action<SteeringBehavior> OnValueChanged;
 

@@ -14,7 +14,7 @@ namespace CloudFine.FlockBox
 #pragma warning disable 0649
         [SerializeField, FormerlySerializedAs("neighborhood"), HideInInspector, System.Obsolete("use Agent.FlockBox")]
         private FlockBox _autoJoinFlockBox;
-#pragma warning restore
+#pragma warning restore 0649
 #if FLOCKBOX_DOTS
         private Entity _synchedEntity;
 #endif
@@ -23,7 +23,7 @@ namespace CloudFine.FlockBox
         {
 #pragma warning disable 0618 
             if (FlockBox == null && _autoJoinFlockBox != null) FlockBox = _autoJoinFlockBox;
-#pragma warning restore
+#pragma warning restore 0618
 #if FLOCKBOX_DOTS
             RefreshSyncedEntityData();
 #endif
