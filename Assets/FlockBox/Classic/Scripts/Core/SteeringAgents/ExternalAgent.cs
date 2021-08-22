@@ -9,6 +9,9 @@ using Unity.Entities;
 
 namespace CloudFine.FlockBox
 {
+    /// <summary>
+    /// As of v2.2, this component behaves identically to Agent unless using DOTS mode.
+    /// </summary>
     public class ExternalAgent : Agent
     {
 #pragma warning disable 0649
@@ -31,6 +34,9 @@ namespace CloudFine.FlockBox
 
 #if FLOCKBOX_DOTS
 
+        /// <summary>
+        /// Must be called when any of this Agent's properties have changed. Will update data on the synched Entity.
+        /// </summary>
         public void RefreshSyncedEntityData()
         {
             if (_synchedEntity != Entity.Null)
