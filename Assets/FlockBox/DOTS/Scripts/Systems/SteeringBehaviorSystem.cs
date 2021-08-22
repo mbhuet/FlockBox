@@ -1,9 +1,7 @@
 ﻿#if FLOCKBOX_DOTS
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
