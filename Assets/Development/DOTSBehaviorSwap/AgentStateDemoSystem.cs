@@ -12,7 +12,7 @@ namespace CloudFine.FlockBox.DOTS
     /// 
     /// </summary>
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public class AgentStateDemoSystem : SystemBase
+    public class AgentStateDemoSystem// : SystemBase
     {
         private BehaviorSettings stateASettings;
         private BehaviorSettings stateBSettings;
@@ -34,6 +34,7 @@ namespace CloudFine.FlockBox.DOTS
         }
         */
 
+        /*
         protected override void OnUpdate()
         {
             Dependency = Entities
@@ -71,6 +72,7 @@ namespace CloudFine.FlockBox.DOTS
                 })
                 .Run();     
         }
+        */
     }
 }
 #endif
