@@ -13,6 +13,7 @@ namespace CloudFine.FlockBox
     {
 
         public Vector3 Acceleration { get; private set; }
+        public SurroundingsContainer Surroundings => mySurroundings;
 
         protected float speedThrottle = 1;
 
