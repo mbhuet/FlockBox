@@ -236,9 +236,12 @@ namespace CloudFine.FlockBox
                 transform.hasChanged = false;
             }
 
-            foreach(Agent agent in allAgents)
+            foreach (Agent agent in allAgents)
             {
-                agent.FlockingUpdate();
+                if (agent.isActiveAndEnabled)
+                {
+                    agent.FlockingUpdate();
+                }
             }
 
 #if UNITY_EDITOR
@@ -251,7 +254,10 @@ namespace CloudFine.FlockBox
         {
             foreach (Agent agent in allAgents)
             {
-                agent.FlockingLateUpdate();
+                if (agent.isActiveAndEnabled)
+                {
+                    agent.FlockingLateUpdate();
+                }
             }
         }
 
