@@ -11,11 +11,13 @@ namespace CloudFine.FlockBox.DOTS
     {
         protected override void OnUpdate()
         {
+            float dt = Time.DeltaTime;
             var validationJob = Entities.WithNone<SteeringData>().ForEach((ref AgentData agent, in LocalToWorld ltw, in FlockMatrixData flock) =>
             {
-                agent.Position = math.transform(flock.WorldToFlockMatrix, ltw.Position);
+                float3 newPos = math.transform(flock.WorldToFlockMatrix, ltw.Position);
+                agent.Velocity = (newPos - agent.Position) / dt;
+                agent.Position = newPos;
                 agent.Forward = math.transform(flock.WorldToFlockMatrix, ltw.Forward);
-                //TODO Agent.Velocity based on position delta
             })
             .ScheduleParallel(Dependency);
 
