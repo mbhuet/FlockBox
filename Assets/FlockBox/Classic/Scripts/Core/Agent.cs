@@ -261,10 +261,7 @@ namespace CloudFine.FlockBox
             }
             _lastWorldPosition = transform.position;
 
-        }
-    
-
-       
+        }  
 
 
         private void OnDisable()
@@ -356,6 +353,7 @@ namespace CloudFine.FlockBox
                 Debug.LogWarning("cannot join null flockbox");
                 return;
             }
+            LeaveFlockBox();
             FlockBox = flockBox;
             FlockBox.RegisterAgentUpdates(this);
             _lastWorldPosition = transform.position;
