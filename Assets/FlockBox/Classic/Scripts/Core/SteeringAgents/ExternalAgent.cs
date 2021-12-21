@@ -1,51 +1,76 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
+#if FLOCKBOX_DOTS
+using Unity.Transforms;
+using CloudFine.FlockBox.DOTS;
+using Unity.Entities;
+#endif
+
 namespace CloudFine.FlockBox
 {
+    /// <summary>
+    /// As of v2.2, this component behaves identically to Agent unless using DOTS mode.
+    /// </summary>
     public class ExternalAgent : Agent
     {
-        [SerializeField, FormerlySerializedAs("neighborhood")]
+#pragma warning disable 0649
+        [SerializeField, FormerlySerializedAs("neighborhood"), HideInInspector, System.Obsolete("use Agent.FlockBox")]
         private FlockBox _autoJoinFlockBox;
-        private Vector3 _lastPosition;
+#pragma warning restore 0649
+#if FLOCKBOX_DOTS
+        private Entity _synchedEntity;
+#endif
 
-        protected override FlockBox AutoFindFlockBox()
+        protected void OnValidate()
         {
-            return _autoJoinFlockBox;
+#pragma warning disable 0618 
+            if (FlockBox == null && _autoJoinFlockBox != null) FlockBox = _autoJoinFlockBox;
+#pragma warning restore 0618
+#if FLOCKBOX_DOTS
+            RefreshSyncedEntityData();
+#endif
+        }
+
+#if FLOCKBOX_DOTS
+
+        /// <summary>
+        /// Must be called when any of this Agent's properties have changed. Will update data on the synched Entity.
+        /// </summary>
+        public void RefreshSyncedEntityData()
+        {
+            if (_synchedEntity != Entity.Null)
+            {
+                World.DefaultGameObjectInjectionWorld.EntityManager.SetComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
+            }
         }
 
         protected override void OnJoinFlockBox(FlockBox flockBox)
         {
-            _autoJoinFlockBox = flockBox;
-            _lastPosition = transform.position;
-        }
-
-        public override void FlockingLateUpdate()
-        {
-            if (isAlive && transform.hasChanged)
+            if (flockBox.DOTSEnabled)
             {
-                if (_autoJoinFlockBox != null)
+                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                if (_synchedEntity == Entity.Null)
                 {
-                    Position = WorldToFlockBoxPosition(transform.position);
-                    Velocity = WorldToFlockBoxDirection((transform.position - _lastPosition)/Time.deltaTime);
-                    ValidateVelocity();
-                    if(Velocity != Vector3.zero)
-                    {
-                        Forward = Velocity.normalized;
-                    }
-                }
-                if (ValidatePosition())
-                {
-                    FindOccupyingCells();
+                    _synchedEntity = entityManager.CreateEntity();
+
+                    entityManager.AddComponentData<LocalToWorld>(_synchedEntity, new LocalToWorld());
+                    entityManager.AddComponentObject(_synchedEntity, this.transform);
+                    entityManager.AddComponentData<CopyTransformFromGameObject>(_synchedEntity, new CopyTransformFromGameObject { });
+
+                    entityManager.AddSharedComponentData<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
+                    entityManager.AddComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
+                    entityManager.AddComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }
                 else
                 {
-                    RemoveFromAllCells();
+                    entityManager.SetSharedComponentData<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
+                    entityManager.SetComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
+                    entityManager.SetComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }
-                transform.hasChanged = false;
             }
-            _lastPosition = transform.position;
-
         }
+#endif
+
     }
 }

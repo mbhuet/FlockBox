@@ -63,11 +63,13 @@ namespace CloudFine.FlockBox
         public FlockBox FlockBox
         {
             get { return _flockBox; }
-            private set { _flockBox = value; }
+            protected set { _flockBox = value; }
         }
         
         [SerializeField]
         private FlockBox _flockBox;
+
+        private Vector3 _lastWorldPosition;
 
         [SerializeField]
         public Shape shape;
@@ -237,11 +239,30 @@ namespace CloudFine.FlockBox
         {
             if (isAlive && transform.hasChanged)
             {
-                Position = WorldToFlockBoxPosition(transform.position);
-                ForceUpdatePosition();
+                if (FlockBox != null)
+                {
+                    Position = WorldToFlockBoxPosition(transform.position);
+                    Velocity = WorldToFlockBoxDirection((transform.position - _lastWorldPosition) / Time.deltaTime);
+                    ValidateVelocity();
+                    if (Velocity != Vector3.zero)
+                    {
+                        Forward = Velocity.normalized;
+                    }
+                }
+                if (ValidatePosition())
+                {
+                    FindOccupyingCells();
+                }
+                else
+                {
+                    RemoveFromAllCells();
+                }
                 transform.hasChanged = false;
             }
+            _lastWorldPosition = transform.position;
+
         }
+    
 
        
 
@@ -337,12 +358,13 @@ namespace CloudFine.FlockBox
             }
             FlockBox = flockBox;
             FlockBox.RegisterAgentUpdates(this);
+            _lastWorldPosition = transform.position;
             OnJoinFlockBox(flockBox);
         }
 
         protected virtual void OnJoinFlockBox(FlockBox flockBox)
         {
-            transform.SetParent(_flockBox.transform);
+
         }
 
         private void LeaveFlockBox()
@@ -384,8 +406,8 @@ namespace CloudFine.FlockBox
             isAlive = true;
             hasSpawned = true;
             isCaught = false;
-            JoinFlockBox(flockBox);
             this.Position = useWorldSpace ? WorldToFlockBoxPosition(position) : position;
+            JoinFlockBox(flockBox);
             ForceUpdatePosition();
             if (OnSpawn != null) OnSpawn.Invoke(this);
         }
@@ -587,7 +609,12 @@ namespace CloudFine.FlockBox
     {
         void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new AgentData
+            dstManager.AddComponentData(entity, ConvertToAgentData());
+        }
+
+        protected AgentData ConvertToAgentData()
+        {
+            return new AgentData
             {
                 Position = Position,
                 Velocity = Velocity,
@@ -596,7 +623,7 @@ namespace CloudFine.FlockBox
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
                 UniqueID = (int)(UnityEngine.Random.value * 100000),
-        });
+            };
         }
     }
 #endif

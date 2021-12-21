@@ -26,13 +26,13 @@ namespace CloudFine.FlockBox.DOTS
             return Entities
                 .ForEach((DynamicBuffer<NeighborData> neighbors, ref AccelerationData acceleration, in AgentData agent, in SteeringData steering, in CohesionData cohesion
 #if UNITY_EDITOR
-                , in LocalToWorld ltw, in LocalToParent ltp
+                , in LocalToWorld ltw, in FlockMatrixData wtf
 #endif
                 ) =>
                 {
                     float3 steer = cohesion.CalculateSteering(agent, steering, neighbors);
 #if UNITY_EDITOR
-                    if (cohesion.DebugSteering) Debug.DrawRay(agent.GetWorldPosition(in ltw, in ltp), AgentData.FlockToWorldDirection(in ltw, in ltp, steer), cohesion.DebugColor, 0, true);
+                    if (cohesion.DebugSteering) Debug.DrawRay(ltw.Position, wtf.FlockToWorldDirection(steer), cohesion.DebugColor, 0, true);
 #endif
                     acceleration.Value += steer;
                 }

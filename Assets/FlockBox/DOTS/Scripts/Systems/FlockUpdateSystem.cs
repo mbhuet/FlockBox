@@ -31,14 +31,23 @@ namespace CloudFine.FlockBox.DOTS
                 float3 dimensions = changed.WorldDimensions;
                 float margin = changed.boundaryBuffer;
                 bool wrap = changed.wrapEdges;
+                float4x4 wtf = changed.transform.worldToLocalMatrix;
 
-                Dependency = Entities
+                var boundaryUpdateJob = Entities
                     .WithSharedComponentFilter(data)
                     .ForEach((ref BoundaryData boundary) => {
                         boundary.Dimensions = dimensions;
                         boundary.Margin = margin;
                         boundary.Wrap = wrap;
                     }).ScheduleParallel(Dependency);
+
+                var flockMatrixUpdateJob = Entities
+                    .WithSharedComponentFilter(data)
+                    .ForEach((ref FlockMatrixData flock) => {
+                        flock.WorldToFlockMatrix = wtf;
+                    }).ScheduleParallel(Dependency);
+
+                Dependency = JobHandle.CombineDependencies(boundaryUpdateJob, flockMatrixUpdateJob);
             }
             toUpdate.Clear();
         }

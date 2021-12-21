@@ -13,6 +13,7 @@ namespace CloudFine.FlockBox
     {
 
         public Vector3 Acceleration { get; private set; }
+        public SurroundingsContainer Surroundings => mySurroundings;
 
         protected float speedThrottle = 1;
 
@@ -205,16 +206,7 @@ namespace CloudFine.FlockBox
             }
 
             //AgentData holds everything a behavior needs to react to another Agent
-            dstManager.AddComponentData(entity, new AgentData
-            {
-                Position = Position,
-                Velocity = Velocity,
-                Forward = Forward,
-                Tag = TagMaskUtility.TagToInt(tag),
-                Radius = shape.radius,
-                Fill = shape.type == Shape.ShapeType.SPHERE,
-                UniqueID = (int)(UnityEngine.Random.value * 100000),
-            });
+            dstManager.AddComponentData(entity, ConvertToAgentData());
             dstManager.AddComponentData(entity, new AccelerationData { Value = float3.zero });
             dstManager.AddComponentData(entity, new PerceptionData());
 

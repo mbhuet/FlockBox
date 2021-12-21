@@ -91,4 +91,27 @@ namespace CloudFine.FlockBox
         }
 #endif
     }
+
+    public static class LeaderFollowExtensions
+    {
+        public static bool HasLeader(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentIntProperty(LeaderFollowBehavior.leaderIDAttributeName)) return false;
+            return mine.GetAgentIntProperty(LeaderFollowBehavior.leaderIDAttributeName) >= 0;
+        }
+
+        public static Agent GetLeader(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentIntProperty(LeaderFollowBehavior.leaderIDAttributeName))
+            {
+                return null;
+            }
+            int chosenTargetID = mine.GetAgentIntProperty(LeaderFollowBehavior.leaderIDAttributeName);
+            if (chosenTargetID != -1)
+            {
+                return Agent.GetAgentById(chosenTargetID);
+            }
+            return null;
+        }
+    }
 }

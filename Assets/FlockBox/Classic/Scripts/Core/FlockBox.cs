@@ -106,7 +106,7 @@ namespace CloudFine.FlockBox
         }
 
         private Entity agentEntityPrefab;
-        private Entity syncedEntityTransform
+        public Entity syncedEntityTransform
         {
             get
             {
@@ -164,10 +164,9 @@ namespace CloudFine.FlockBox
 
         private void SetupEntity(Entity entity)
         {
-            entityManager.AddComponentData<Parent>(entity, new Parent { Value = syncedEntityTransform });
-            entityManager.AddComponentData<LocalToParent>(entity, new LocalToParent());
-
+            entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddSharedComponentData<FlockData>(entity, new FlockData { Flock = this });
+            entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData {WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
         }
 
@@ -222,7 +221,8 @@ namespace CloudFine.FlockBox
                     for(int i =0; i<pop.population; i++)
                     {
                         Agent agent = GameObject.Instantiate(pop.prefab);
-                        agent.Spawn(this, RandomPosition());
+                        agent.transform.SetParent(this.transform);
+                        agent.Spawn(this, RandomPosition());                     
                     }
                 }
             }
@@ -236,9 +236,12 @@ namespace CloudFine.FlockBox
                 transform.hasChanged = false;
             }
 
-            foreach(Agent agent in allAgents)
+            foreach (Agent agent in allAgents)
             {
-                agent.FlockingUpdate();
+                if (agent.isActiveAndEnabled)
+                {
+                    agent.FlockingUpdate();
+                }
             }
 
 #if UNITY_EDITOR
@@ -251,7 +254,10 @@ namespace CloudFine.FlockBox
         {
             foreach (Agent agent in allAgents)
             {
-                agent.FlockingLateUpdate();
+                if (agent.isActiveAndEnabled)
+                {
+                    agent.FlockingLateUpdate();
+                }
             }
         }
 
@@ -342,7 +348,7 @@ namespace CloudFine.FlockBox
         {
             if (agentToCells.TryGetValue(agent, out cells))
             {
-                foreach(int cell in cells)
+                foreach (int cell in cells)
                 {
                     if (cellToAgents.TryGetValue(cell, out _cellContentsCache))
                     {
@@ -350,6 +356,15 @@ namespace CloudFine.FlockBox
                     }
                 }
                 agentToCells[agent].Clear();
+            }
+
+            if (lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
+            {
+                if (tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //remove from old tag list
+                {
+                    _cellContentsCache.Remove(agent);
+                }
+                lastKnownTag.Remove(agent);
             }
         }
 
