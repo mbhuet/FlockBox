@@ -16,6 +16,7 @@ namespace CloudFine.FlockBox.DOTS
     public class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
         private float3[] Directions;
+        private BuildPhysicsWorld buildPhysicsWorld;
 
         protected override void OnCreate()
         {
@@ -27,6 +28,7 @@ namespace CloudFine.FlockBox.DOTS
             {
                 Directions[i] = (float3)vector3Directions[i];
             }
+            buildPhysicsWorld = World.GetExistingSystem<BuildPhysicsWorld>();
         }
 
         protected override void OnDestroy()
@@ -41,9 +43,11 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override JobHandle DoSteering()
         {
-            PhysicsWorld physicsWorld = World.GetExistingSystem<BuildPhysicsWorld>().PhysicsWorld;
+            PhysicsWorld physicsWorld = buildPhysicsWorld.PhysicsWorld;
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
-            
+
+            Dependency = JobHandle.CombineDependencies(Dependency, buildPhysicsWorld.GetOutputDependency());
+
             //TODO add sphere casting
             Dependency = Entities
                 .WithReadOnly(physicsWorld)
@@ -131,7 +135,7 @@ namespace CloudFine.FlockBox.DOTS
 
                 }
                 ).ScheduleParallel(Dependency);
-            Dependency.Complete(); //TODO Not sure why this is necessary, but ECS gets unhappy without it. Definitely not helping performance.
+            buildPhysicsWorld.AddInputDependencyToComplete(Dependency);
             Dependency = dirs.Dispose(Dependency);
             return Dependency;
         }
