@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace CloudFine.FlockBox
 {
-    public class LeaderFollowBehavior : GlobalBehavior
+    public partial class LeaderFollowBehavior : GlobalBehavior
     {
         [Tooltip("Distance behind the leader for followers to seek. Prevents followers from crowding the leader.")]
         public float followDistance = 10;
