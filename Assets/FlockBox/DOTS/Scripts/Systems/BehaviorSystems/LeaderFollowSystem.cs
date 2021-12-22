@@ -67,13 +67,14 @@ namespace CloudFine.FlockBox.DOTS
             float closeSqrDist = float.MaxValue;
             bool foundTarget = false;
             float3 closeTargetPosition = float3.zero;
+            float3 closeTargetForward = float3.zero;
 
             for (int i =0; i<neighbors.Length; i++)
             {
                 AgentData other = neighbors[i];
 
-                    if (other.TagInMask(TagMask))
-                    {
+                if (other.TagInMask(TagMask))
+                {
                     if (!mine.Equals(other))
                     {
                         float sqrDist = math.lengthsq(other.Position - mine.Position);
@@ -81,6 +82,7 @@ namespace CloudFine.FlockBox.DOTS
                         {
                             closeSqrDist = sqrDist;
                             closeTargetPosition = other.Position;
+                            closeTargetForward = other.Forward;
                             foundTarget = true;
                         }
                     }
@@ -92,7 +94,20 @@ namespace CloudFine.FlockBox.DOTS
                 return float3.zero;
             }
 
-            return steering.GetSteerVector((closeTargetPosition - mine.Position), mine.Velocity) * Weight;
+            //check to see if we should clear the way in front of the leader
+            float scalar = Vector3.Dot(mine.Position - closeTargetPosition, closeTargetForward);
+            if (scalar > 0 && scalar < ClearAheadDistance)//we are somewhere in front of the leader, potentially in the clear zone ahead of it.
+            {
+                float3 pointOnLeaderPath = closeTargetPosition + closeTargetForward * scalar;
+                float insideClearZone = math.lengthsq(pointOnLeaderPath - mine.Position) / (ClearAheadRadius * ClearAheadRadius); //0-1 is inside zone, <1 is outside
+                if (insideClearZone <= 1)
+                {
+                    return float3.zero;
+                }
+            }
+
+            float3 steer = steering.DesiredVelocityForArrival(mine.Position, closeTargetPosition - closeTargetForward * FollowDistance, StoppingRadius, steering.MaxSpeed) - mine.Velocity;
+            return math.normalize(steer) * Mathf.Min(math.length(steer), steering.MaxForce);
         }
     }
 }

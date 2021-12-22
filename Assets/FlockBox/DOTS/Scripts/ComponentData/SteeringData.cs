@@ -35,6 +35,12 @@ namespace CloudFine.FlockBox.DOTS
             steer = math.normalize(steer) * math.min(math.length(steer), MaxForce);
             return steer;
         }
+
+        public float3 DesiredVelocityForArrival(float3 currentPosition, float3 arrivePosition, float stopRadius, float maxSpeed)
+        {
+            return math.normalize(arrivePosition - currentPosition)
+                * math.lerp(0, maxSpeed, math.lengthsq(arrivePosition - currentPosition) / (stopRadius * stopRadius));
+        }
     }
 }
 #endif
