@@ -19,6 +19,7 @@ namespace CloudFine.FlockBox
             }
 
             mine.GetSeekVector(out steer, mine.GetSeekPosition());
+
         }
     }
 
