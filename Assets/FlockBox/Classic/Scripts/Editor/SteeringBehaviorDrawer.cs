@@ -94,7 +94,6 @@ namespace CloudFine.FlockBox
                     EditorGUILayout.PropertyField(drawVectorProp);
                     EditorGUILayout.PropertyField(drawPerceptionProp);
                     EditorGUI.indentLevel--;
-                    //EditorGUILayout.EndHorizontal();
                 }
                                 
                 GUILayout.Space(5);
@@ -141,7 +140,6 @@ namespace CloudFine.FlockBox
 
         private void DrawDefaultInspectorWithoutScriptField()
         {
-            serializedObject.Update();
             Iterator.Reset();
             Iterator.NextVisible(true);
 
