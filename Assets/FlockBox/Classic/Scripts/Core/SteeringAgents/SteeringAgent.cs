@@ -34,7 +34,7 @@ namespace CloudFine.FlockBox
                 FlockBox.GetSurroundings(Position, Velocity, cells, mySurroundings);
                 Flock(mySurroundings);
             }
-            Contain();
+            Contain(mySurroundings);
             ApplySteeringAcceleration();
         }
 
@@ -68,14 +68,11 @@ namespace CloudFine.FlockBox
             }
         }
 
-        void Contain()
+        void Contain(SurroundingsContainer surroundings)
         {
-            if (!FlockBox.wrapEdges)
-            {
-                activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, FlockBox.WorldDimensions, FlockBox.boundaryBuffer);
-                if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor, 0, true);
-                ApplyForce(steerBuffer);
-            }
+            activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
+            if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor, 0, true);
+            ApplyForce(steerBuffer);
         }
 
         public void GetSeekVector(out Vector3 steer, Vector3 target)

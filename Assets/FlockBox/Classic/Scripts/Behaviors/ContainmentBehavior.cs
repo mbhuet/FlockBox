@@ -9,9 +9,21 @@ namespace CloudFine.FlockBox
 
         private Vector3 containedPosition;
         private Vector3 unclampedPosition;
+        private Vector3 worldDimensions;
+        private float containmentMargin;
 
-        public void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, Vector3 worldDimensions, float containmentMargin)
+
+        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
+            if (mine.FlockBox.wrapEdges)
+            {
+                steer = Vector3.zero;
+                return;
+            }
+
+            worldDimensions = mine.FlockBox.WorldDimensions;
+            containmentMargin = mine.FlockBox.boundaryBuffer;
+
             unclampedPosition = mine.Position + mine.Velocity * lookAheadSeconds;
             containedPosition = unclampedPosition;
 
@@ -57,13 +69,5 @@ namespace CloudFine.FlockBox
             mine.GetSeekVector(out steer, containedPosition);
             steer *= containmentMargin / distanceToBorder;
         }
-
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
-        {
-            steer = Vector3.zero;
-        }
-
-
-
     }
 }
