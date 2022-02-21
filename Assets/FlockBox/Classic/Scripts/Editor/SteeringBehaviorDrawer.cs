@@ -57,8 +57,6 @@ namespace CloudFine.FlockBox
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!init) Initialize(property);
-            bool changed = false;
-            
 
             if (property.objectReferenceValue == null)
                 return;
