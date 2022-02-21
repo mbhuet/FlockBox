@@ -9,22 +9,61 @@ namespace CloudFine.FlockBox
     [CustomPropertyDrawer(typeof(SteeringBehavior), true)]
     public class SteeringBehaviorDrawer : PropertyDrawer
     {
+        private bool init;
+        SteeringBehavior behavior;
+        Type concreteType;
+        UnityEngine.Object wrapped;
+        SerializedObject serializedObject;
+        SerializedProperty isActiveProp;
+
+        SerializedProperty drawDebugProp;
+        SerializedProperty drawVectorProp;
+        SerializedProperty drawPerceptionProp;
+        SerializedProperty weight;
+        SerializedProperty useTag;
+        SerializedProperty tags;
+
+        SerializedProperty color;
+        SerializedProperty Iterator;
+
+
+        private void Initialize(SerializedProperty property)
+        {
+            if (property.objectReferenceValue == null)
+                return;
+
+            behavior = property.objectReferenceValue as SteeringBehavior;
+            concreteType = property.objectReferenceValue.GetType();
+            wrapped = property.objectReferenceValue;
+            wrapped = (UnityEngine.Object)Convert.ChangeType(wrapped, concreteType);
+
+            serializedObject = new SerializedObject(wrapped);
+            isActiveProp = serializedObject.FindProperty("isActive");
+
+            drawDebugProp = serializedObject.FindProperty("drawDebug");
+            drawVectorProp = serializedObject.FindProperty("debugDrawSteering");
+            drawPerceptionProp = serializedObject.FindProperty("debugDrawProperties");
+            weight = serializedObject.FindProperty("weight");
+            useTag = serializedObject.FindProperty("useTagFilter");
+            tags = serializedObject.FindProperty("filterTags");
+
+            color = serializedObject.FindProperty("debugColor");
+            Iterator = serializedObject.GetIterator();
+
+
+            init = true;
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            SteeringBehavior behavior = property.objectReferenceValue as SteeringBehavior;
-
+            if (!init) Initialize(property);
+            bool changed = false;
             
 
             if (property.objectReferenceValue == null)
                 return;
-            Type concreteType = property.objectReferenceValue.GetType();
-            UnityEngine.Object wrapped = property.objectReferenceValue;
-            wrapped = (UnityEngine.Object)Convert.ChangeType(wrapped, concreteType);
 
-            SerializedObject serializedObject = new SerializedObject(wrapped);
-
-            SerializedProperty isActiveProp = serializedObject.FindProperty("isActive");
-
+            
             if (behavior.CanToggleActive)
             {
                 EditorGUILayout.PropertyField(isActiveProp);
@@ -36,26 +75,20 @@ namespace CloudFine.FlockBox
                 GUILayout.Space(20);
                 EditorGUILayout.BeginVertical("BOX");
 
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("weight"));
+                EditorGUILayout.PropertyField(weight);
 
                 if (behavior.CanUseTagFilter)
                 {
-                    DrawTagFilters(serializedObject);
+                    DrawTagFilters();
                 }
 
-                var editor = Editor.CreateEditor(behavior);
-                editor.DrawDefaultInspectorWithoutScriptField();
-
-
-                SerializedProperty drawDebugProp = serializedObject.FindProperty("drawDebug");
-                SerializedProperty drawVectorProp = serializedObject.FindProperty("debugDrawSteering");
-                SerializedProperty drawPerceptionProp = serializedObject.FindProperty("debugDrawProperties");
+                DrawDefaultInspectorWithoutScriptField();
+               
 
                 EditorGUILayout.PropertyField(drawDebugProp);
                 if (drawDebugProp.boolValue)
                 {
                     EditorGUI.indentLevel++;
-                    SerializedProperty color = serializedObject.FindProperty("debugColor");
                     color.colorValue = EditorGUILayout.ColorField(color.colorValue);
 
                     EditorGUILayout.PropertyField(drawVectorProp);
@@ -74,13 +107,11 @@ namespace CloudFine.FlockBox
         }
 
 
-        protected void DrawTagFilters(SerializedObject serializedObject)
+        protected void DrawTagFilters()
         {
-            SerializedProperty useTag = serializedObject.FindProperty("useTagFilter");
             EditorGUILayout.PropertyField(useTag);
             if (useTag.boolValue)
             {
-                SerializedProperty tags = serializedObject.FindProperty("filterTags");
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(20);
                 GUILayout.BeginVertical("BOX", GUILayout.ExpandWidth(true));
@@ -106,6 +137,18 @@ namespace CloudFine.FlockBox
                 GUILayout.EndHorizontal();
             }
 
+        }
+
+        private void DrawDefaultInspectorWithoutScriptField()
+        {
+            serializedObject.Update();
+            Iterator.Reset();
+            Iterator.NextVisible(true);
+
+            while (Iterator.NextVisible(false))
+            {
+                EditorGUILayout.PropertyField(Iterator, true);
+            }
         }
 
     }
