@@ -52,7 +52,7 @@ public class DOTSToggleEditor : Editor
     {
         IsEnabled = !IsEnabled;
 
-        if (IsEnabled && !GetPackagesAlreadyInstalled())
+        if (IsEnabled && !AllPackagesAlreadyImported())
         {
             DisplayPackageInstallPrompt();
         }
@@ -63,7 +63,7 @@ public class DOTSToggleEditor : Editor
     [MenuItem(dotsPackageMenuPath)]
     private static void ImportPackages()
     {
-        if (GetPackagesAlreadyInstalled())
+        if (AllPackagesAlreadyImported())
         {
             DisplayPackagesAlreadyInstalledDialog();
         }
@@ -122,9 +122,7 @@ public class DOTSToggleEditor : Editor
         {
             str += packageName + "\n";
         }
-
         return str;
-
     }
 
 
@@ -143,10 +141,10 @@ public class DOTSToggleEditor : Editor
     }
 
 
-    private static bool GetPackagesAlreadyInstalled()
+    private static bool AllPackagesAlreadyImported()
     {
         List<string> packagesToImport = packages.ToList();
-        var request = Client.List(offlineMode: true);
+        var request = Client.List();
         while (!request.IsCompleted)
         {
 
