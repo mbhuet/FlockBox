@@ -171,7 +171,7 @@ public class DOTSToggleEditor : Editor
             {
                 EditorUtility.DisplayProgressBar("FlockBox", "Fetching " + package, (float)i / packages.Length);
             }
-            Debug.Log(request.Status + " " + request.Error + " " + request.Result);
+            EditorUtility.ClearProgressBar();
         }
     }
 }
