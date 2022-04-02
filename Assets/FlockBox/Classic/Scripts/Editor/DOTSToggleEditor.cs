@@ -26,7 +26,6 @@ public class DOTSToggleEditor : Editor
         "com.unity.mathematics@1.2.1",
         "com.unity.physics@0.6.0-preview.3",
         "com.unity.rendering.hybrid@0.11.0-preview.42",
-        "com.unity.dots.editor@0.12.0-preview.6",
     };
 
     static DOTSToggleEditor()
