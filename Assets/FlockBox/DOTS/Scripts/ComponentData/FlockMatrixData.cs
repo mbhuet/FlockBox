@@ -27,7 +27,6 @@ namespace CloudFine.FlockBox.DOTS
         public float3 FlockToWorldDirection(float3 flockDir)
         {
             return math.rotate(FlockToWorldMatrix, flockDir);
-
         }
     }
 }
