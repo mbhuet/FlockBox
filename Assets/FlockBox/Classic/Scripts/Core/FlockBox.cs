@@ -79,6 +79,7 @@ namespace CloudFine.FlockBox
             }
         }
         public bool wrapEdges = false;
+        public bool useWorldSpace = false;
         public float boundaryBuffer = 10;
         public float sleepChance;
         [SerializeField] private int maxCellCapacity = 10;
@@ -255,7 +256,10 @@ namespace CloudFine.FlockBox
             {
                 if (agent.isActiveAndEnabled)
                 {
-                    agent.CompensateForMovement(_ltwDelta, _savedLTW, transform.localToWorldMatrix);
+                    if (useWorldSpace)
+                    {
+                        agent.CompensateForMovement(_ltwDelta, _savedLTW, transform.localToWorldMatrix);
+                    }
                     agent.FlockingUpdate();
                 }
             }

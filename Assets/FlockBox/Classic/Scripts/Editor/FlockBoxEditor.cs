@@ -21,6 +21,7 @@ namespace CloudFine.FlockBox
         private SerializedProperty _buffer;
         private SerializedProperty _wrap;
         private SerializedProperty _sleep;
+        private SerializedProperty _worldSpace;
 
         private SerializedProperty _populations;
         private SerializedProperty _drawBoundary;
@@ -52,6 +53,7 @@ namespace CloudFine.FlockBox
             _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
             _useDOTS = serializedObject.FindProperty("useDOTS");
+            _worldSpace = serializedObject.FindProperty("useWorldSpace");
 
             populationList = new ReorderableList(serializedObject, _populations, true, true, true, true);
 
@@ -94,6 +96,7 @@ namespace CloudFine.FlockBox
             _dimensionZ.intValue = dimensions.z;
 
             EditorGUILayout.PropertyField(_size);
+            EditorGUILayout.PropertyField(_worldSpace, new GUIContent("World Space Flocking"));
             EditorGUILayout.PropertyField(_wrap);
 
 
@@ -111,8 +114,7 @@ namespace CloudFine.FlockBox
                             )
                             * _size.floatValue / 2f
                     );
-                }
-                
+                }                
             }
             EditorGUILayout.Space();
 
