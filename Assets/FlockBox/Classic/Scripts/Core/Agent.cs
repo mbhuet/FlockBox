@@ -263,14 +263,11 @@ namespace CloudFine.FlockBox
 
         }  
 
-        public void CompensateForMovement(Matrix4x4 delta, Matrix4x4 prev, Matrix4x4 current)
+        public void CompensateForFlockBoxMovement(Matrix4x4 prevFlockBoxLTW)
         {
-            Vector3 prevPos = prev.MultiplyPoint(Position);
-            //Vector3 curPos = current.MultiplyPoint(Position);
-
-            //Vector3 worldPosDelta = curPos - prevPos;
-            Position = WorldToFlockBoxPosition(prevPos);
-            //Position = delta.MultiplyVector(Position);
+            Position = WorldToFlockBoxPosition(prevFlockBoxLTW.MultiplyPoint(Position));
+            Velocity = WorldToFlockBoxVector(prevFlockBoxLTW.MultiplyVector(Velocity));
+            Forward = WorldToFlockBoxVector(prevFlockBoxLTW.MultiplyVector(Forward));
         }
 
 
@@ -452,6 +449,15 @@ namespace CloudFine.FlockBox
             return localDir;
         }
 
+        public Vector3 FlockBoxToWorldVector(Vector3 localVector)
+        {
+            if (_flockBox)
+            {
+                return _flockBox.transform.TransformVector(localVector);
+            }
+            return localVector;
+        }
+
         public Vector3 WorldToFlockBoxDirection(Vector3 worldDir)
         {
             if (_flockBox)
@@ -468,6 +474,15 @@ namespace CloudFine.FlockBox
                 return _flockBox.transform.InverseTransformPoint(worldPos);
             }
             return worldPos;
+        }
+
+        public Vector3 WorldToFlockBoxVector(Vector3 worldVector)
+        {
+            if (_flockBox)
+            {
+                return _flockBox.transform.InverseTransformVector(worldVector);
+            }
+            return worldVector;
         }
 #endregion
 

@@ -235,20 +235,12 @@ namespace CloudFine.FlockBox
 
         private void Update()
         {
-            Matrix4x4 _ltwDelta = Matrix4x4.identity;
+            bool transformChanged = false;
 
-            Matrix4x4 _savedLTW = _lastLTW;
             if (transform.hasChanged)
             {
                 MarkAsChanged();
-                _ltwDelta = _lastLTW * transform.localToWorldMatrix.inverse;// * Matrix4x4.Inverse(_lastLTW);
-                Vector3 test = Vector3.zero;
-                Vector3 worldPosLast = _lastLTW.MultiplyPoint(test);
-                Vector3 worldPosCur = transform.localToWorldMatrix.MultiplyPoint(test);
-
-
-                Debug.Log("delta " + _ltwDelta.MultiplyPoint(Vector3.zero) + " rot " + _ltwDelta.rotation.eulerAngles + " test " + worldPosLast + " " + worldPosCur + " " +  (worldPosCur - worldPosLast));
-                _lastLTW = transform.localToWorldMatrix;
+                transformChanged = true;
                 transform.hasChanged = false;
             }
 
@@ -256,13 +248,15 @@ namespace CloudFine.FlockBox
             {
                 if (agent.isActiveAndEnabled)
                 {
-                    if (useWorldSpace)
+                    if (useWorldSpace && transformChanged)
                     {
-                        agent.CompensateForMovement(_ltwDelta, _savedLTW, transform.localToWorldMatrix);
+                        agent.CompensateForFlockBoxMovement(_lastLTW);
                     }
                     agent.FlockingUpdate();
                 }
             }
+
+            _lastLTW = transform.localToWorldMatrix;
 
 #if UNITY_EDITOR
             //clear here instead of in OnDrawGizmos so that they persist when the editor is paused
