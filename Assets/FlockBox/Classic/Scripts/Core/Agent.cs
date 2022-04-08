@@ -263,6 +263,16 @@ namespace CloudFine.FlockBox
 
         }  
 
+        public void CompensateForMovement(Matrix4x4 delta, Matrix4x4 prev, Matrix4x4 current)
+        {
+            Vector3 prevPos = prev.MultiplyPoint(Position);
+            //Vector3 curPos = current.MultiplyPoint(Position);
+
+            //Vector3 worldPosDelta = curPos - prevPos;
+            Position = WorldToFlockBoxPosition(prevPos);
+            //Position = delta.MultiplyVector(Position);
+        }
+
 
         private void OnDisable()
         {

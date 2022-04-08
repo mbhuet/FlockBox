@@ -97,6 +97,8 @@ namespace CloudFine.FlockBox
         [SerializeField]
         private bool drawOccupiedCells = false;
 
+        private Matrix4x4 _lastLTW = Matrix4x4.identity;
+
 #if FLOCKBOX_DOTS
         [SerializeField]
         private bool useDOTS = false;
@@ -205,6 +207,8 @@ namespace CloudFine.FlockBox
 
         void Start()
         {
+            _lastLTW = transform.localToWorldMatrix;
+
             foreach (AgentPopulation pop in startingPopulations)
             {
                 if (pop.prefab == null) continue;
@@ -230,9 +234,20 @@ namespace CloudFine.FlockBox
 
         private void Update()
         {
+            Matrix4x4 _ltwDelta = Matrix4x4.identity;
+
+            Matrix4x4 _savedLTW = _lastLTW;
             if (transform.hasChanged)
             {
                 MarkAsChanged();
+                _ltwDelta = _lastLTW * transform.localToWorldMatrix.inverse;// * Matrix4x4.Inverse(_lastLTW);
+                Vector3 test = Vector3.zero;
+                Vector3 worldPosLast = _lastLTW.MultiplyPoint(test);
+                Vector3 worldPosCur = transform.localToWorldMatrix.MultiplyPoint(test);
+
+
+                Debug.Log("delta " + _ltwDelta.MultiplyPoint(Vector3.zero) + " rot " + _ltwDelta.rotation.eulerAngles + " test " + worldPosLast + " " + worldPosCur + " " +  (worldPosCur - worldPosLast));
+                _lastLTW = transform.localToWorldMatrix;
                 transform.hasChanged = false;
             }
 
@@ -240,6 +255,7 @@ namespace CloudFine.FlockBox
             {
                 if (agent.isActiveAndEnabled)
                 {
+                    agent.CompensateForMovement(_ltwDelta, _savedLTW, transform.localToWorldMatrix);
                     agent.FlockingUpdate();
                 }
             }
