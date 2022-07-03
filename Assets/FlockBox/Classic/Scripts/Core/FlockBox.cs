@@ -358,6 +358,18 @@ namespace CloudFine.FlockBox
             AddAgentToCells(agent, cells, isStatic);
         }
 
+        public void ForgetTag(Agent agent)
+        {
+            if (lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
+            {
+                if (tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //remove from old tag list
+                {
+                    _cellContentsCache.Remove(agent);
+                }
+                lastKnownTag.Remove(agent);
+            }
+        }
+
         public void RemoveAgentFromCells(Agent agent, HashSet<int> cells)
         {
             if (agentToCells.TryGetValue(agent, out cells))
@@ -370,15 +382,6 @@ namespace CloudFine.FlockBox
                     }
                 }
                 agentToCells[agent].Clear();
-            }
-
-            if (lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
-            {
-                if (tagToAgents.TryGetValue(_tagCache, out _cellContentsCache)) //remove from old tag list
-                {
-                    _cellContentsCache.Remove(agent);
-                }
-                lastKnownTag.Remove(agent);
             }
         }
 

@@ -378,6 +378,7 @@ namespace CloudFine.FlockBox
             {
                 FlockBox.UnregisterAgentUpdates(this);
                 RemoveFromAllCells();
+                FlockBox.ForgetTag(this);
                 FlockBox = null;
             }
         }
