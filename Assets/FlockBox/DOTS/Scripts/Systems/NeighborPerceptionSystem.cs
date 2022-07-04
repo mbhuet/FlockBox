@@ -77,8 +77,8 @@ namespace CloudFine.FlockBox.DOTS
                         }
                     }).Run();
 
-                var spatialHashMap = new NativeMultiHashMap<int, AgentData>(mapCapacity, Allocator.TempJob);
-                var tagHashMap = new NativeMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
+                var spatialHashMap = new NativeParallelMultiHashMap<int, AgentData>(mapCapacity, Allocator.TempJob);
+                var tagHashMap = new NativeParallelMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
                 var rnd = new Unity.Mathematics.Random((uint)(Time.ElapsedTime * 1000 +1));
 
