@@ -152,8 +152,17 @@ namespace CloudFine.FlockBox
             return root;
         }
 
+        private void CheckForURP()
+        {
+            if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name != "UniversalRenderPipelineAsset")
+            {
+                Debug.LogWarning("FlockBox DOTS Warning: The Hybrid Render used to convert Prefabs to Entities no longer supports the built-in render pipeline. If you are not able to see the Steering Agents, you may need to upgrade to the Universal Render Pipeline.");
+            }
+        }
+
         public void ConvertGameObjectsToEntities(Agent[] agents)
         {
+            CheckForURP();
             var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             for(int i =0; i<agents.Length; i++)
             {
@@ -175,6 +184,7 @@ namespace CloudFine.FlockBox
 
         public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
         {
+            CheckForURP();
             var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             agentEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab.gameObject, settings);
             NativeArray<Entity> agents = new NativeArray<Entity>(population, Allocator.Temp);
