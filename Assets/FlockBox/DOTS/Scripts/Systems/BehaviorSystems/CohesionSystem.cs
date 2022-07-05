@@ -6,10 +6,11 @@ using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
 using UnityEngine;
 using Unity.Transforms;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<CohesionData>.UpdateDataJob))]
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class CohesionSystem : SteeringBehaviorSystem<CohesionData>
+    public partial class CohesionSystem : SteeringBehaviorSystem<CohesionData>
     {
         protected override JobHandle DoPerception()
         {

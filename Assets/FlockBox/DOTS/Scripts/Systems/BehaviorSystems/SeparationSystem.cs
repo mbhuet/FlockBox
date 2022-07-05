@@ -6,10 +6,12 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<SeparationData>.UpdateDataJob))]
+
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class SeparationSystem : SteeringBehaviorSystem<SeparationData>
+    public partial class SeparationSystem : SteeringBehaviorSystem<SeparationData>
     {
         protected override JobHandle DoPerception()
         {

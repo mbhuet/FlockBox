@@ -5,10 +5,11 @@ using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
 using UnityEngine;
 using Unity.Transforms;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<WanderData>.UpdateDataJob))]
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class WanderSystem : SteeringBehaviorSystem<WanderData>
+    public partial class WanderSystem : SteeringBehaviorSystem<WanderData>
     {
 
         protected override JobHandle DoPerception()

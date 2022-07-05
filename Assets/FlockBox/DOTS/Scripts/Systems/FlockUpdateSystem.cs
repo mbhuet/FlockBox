@@ -7,7 +7,7 @@ using Unity.Mathematics;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(PerceptionSystemGroup))]
-    public class FlockUpdateSystem : SystemBase
+    public partial class FlockUpdateSystem : SystemBase
     {
         protected EntityQuery m_Query;
         private List<FlockBox> toUpdate = new List<FlockBox>();

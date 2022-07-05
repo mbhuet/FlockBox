@@ -6,10 +6,11 @@ using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
 using UnityEngine;
 using Unity.Transforms;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<LeaderFollowData>.UpdateDataJob))]
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class LeaderFollowSystem : SteeringBehaviorSystem<LeaderFollowData>
+    public partial class LeaderFollowSystem : SteeringBehaviorSystem<LeaderFollowData>
     {
         protected override JobHandle DoPerception()
         {

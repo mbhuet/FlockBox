@@ -1,10 +1,10 @@
 ﻿#if FLOCKBOX_DOTS
+using CloudFine.FlockBox.DOTS;
 using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
-
 
 namespace CloudFine.FlockBox.DOTS
 {
@@ -14,7 +14,7 @@ namespace CloudFine.FlockBox.DOTS
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData
+    public abstract partial class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData
     {
         private EntityQuery updateQuery;
         private List<Tuple<BehaviorSettings, SteeringBehavior>> toUpdate = new List<Tuple<BehaviorSettings, SteeringBehavior>>();
@@ -47,7 +47,7 @@ namespace CloudFine.FlockBox.DOTS
 
 
         [BurstCompile]
-        protected struct UpdateDataJob : IJobChunk
+        public struct UpdateDataJob : IJobChunk
         {          
             public ComponentTypeHandle<T> BehaviorDataType;
             public T template;
@@ -76,9 +76,9 @@ namespace CloudFine.FlockBox.DOTS
 
         protected void DoBehaviorDataUpdate()
         {
-            //this helps behaviors respond to changes made in the Inspector
-            foreach (Tuple<BehaviorSettings, SteeringBehavior> tuple in toUpdate)
+            for(int i = 0; i<toUpdate.Count; i++)
             {
+                var tuple = toUpdate[i];
                 //make sure the SteeringBehavior can be converted to component data that corresponds to this behavior
                 IConvertToSteeringBehaviorComponentData<T> convert = tuple.Item2 as IConvertToSteeringBehaviorComponentData<T>;
                 if (convert == null) continue;

@@ -6,10 +6,12 @@ using Unity.Mathematics;
 using CloudFine.FlockBox.DOTS;
 using UnityEngine;
 using Unity.Transforms;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<SeekData>.UpdateDataJob))]
+
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class SeekSystem : SteeringBehaviorSystem<SeekData>
+    public partial class SeekSystem : SteeringBehaviorSystem<SeekData>
     {
         protected override JobHandle DoPerception()
         {

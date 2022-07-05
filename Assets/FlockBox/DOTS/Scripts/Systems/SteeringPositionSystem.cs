@@ -9,7 +9,7 @@ namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
     [UpdateAfter(typeof(SteeringVelocitySystem))]
-    public class SteeringPositionSystem : SystemBase
+    public partial class SteeringPositionSystem : SystemBase
     {
         protected override void OnUpdate()
         {

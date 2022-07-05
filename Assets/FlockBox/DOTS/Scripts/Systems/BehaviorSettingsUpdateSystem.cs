@@ -9,7 +9,7 @@ using Unity.Jobs;
 namespace CloudFine.FlockBox.DOTS {
 
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public class BehaviorSettingsUpdateSystem : SystemBase
+    public partial class BehaviorSettingsUpdateSystem : SystemBase
     {
         private List<BehaviorSettings> toUpdate = new List<BehaviorSettings>();
         private List<Tuple<BehaviorSettings, IConvertToComponentData>> toAdd = new List<Tuple<BehaviorSettings, IConvertToComponentData>>();
@@ -49,9 +49,10 @@ namespace CloudFine.FlockBox.DOTS {
         }
 
         protected override void OnUpdate()
-        {           
-            foreach (Tuple<BehaviorSettings, IConvertToComponentData> changed in toAdd)
+        {
+            for (int i = 0; i < toAdd.Count; i++)
             {
+                var changed = toAdd[i];
                 BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed.Item1 };
                 Entities
                     .WithSharedComponentFilter(filterData)
@@ -66,8 +67,9 @@ namespace CloudFine.FlockBox.DOTS {
 
 
 
-            foreach (Tuple<BehaviorSettings, IConvertToComponentData> changed in toRemove)
+            for(int i=0; i<toRemove.Count; i++)
             {
+                var changed = toRemove[i];
                 BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed.Item1 };
                 Entities
                     .WithSharedComponentFilter(filterData)

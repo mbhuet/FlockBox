@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
-    public class SteeringAccelerationSystem : SystemBase
+    public partial class SteeringAccelerationSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -6,10 +6,11 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<AvoidanceData>.UpdateDataJob))]
 
 namespace CloudFine.FlockBox.DOTS
 {
-    public class AvoidanceSystem : SteeringBehaviorSystem<AvoidanceData>
+    public partial class AvoidanceSystem : SteeringBehaviorSystem<AvoidanceData>
     {
         protected override JobHandle DoPerception()
         {

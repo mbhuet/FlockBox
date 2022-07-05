@@ -9,11 +9,12 @@ using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 using CloudFine.FlockBox.DOTS;
+[assembly: RegisterGenericJobType(typeof(SteeringBehaviorSystem<ColliderAvoidanceData>.UpdateDataJob))]
 
 namespace CloudFine.FlockBox.DOTS
 {
 
-    public class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
+    public partial class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
         private float3[] Directions;
         private BuildPhysicsWorld buildPhysicsWorld;
@@ -29,6 +30,7 @@ namespace CloudFine.FlockBox.DOTS
                 Directions[i] = (float3)vector3Directions[i];
             }
             buildPhysicsWorld = World.GetExistingSystem<BuildPhysicsWorld>();
+            buildPhysicsWorld.RegisterPhysicsRuntimeSystemReadOnly();
         }
 
         protected override void OnDestroy()
@@ -45,8 +47,6 @@ namespace CloudFine.FlockBox.DOTS
         {
             PhysicsWorld physicsWorld = buildPhysicsWorld.PhysicsWorld;
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
-
-            Dependency = JobHandle.CombineDependencies(Dependency, buildPhysicsWorld.GetOutputDependency());
 
             //TODO add sphere casting
             Dependency = Entities

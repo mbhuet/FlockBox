@@ -7,7 +7,7 @@ using Unity.Transforms;
 namespace CloudFine.FlockBox.DOTS
 {
     [UpdateInGroup(typeof(MovementSystemGroup))]
-    public class AgentPositionSystem : SystemBase
+    public partial class AgentPositionSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -7,6 +7,7 @@
     "com.unity.ide.vscode": "1.2.5",
     "com.unity.mathematics": "1.2.5",
     "com.unity.physics": "0.51.0-preview.32",
+    "com.unity.render-pipelines.universal": "10.8.1",
     "com.unity.rendering.hybrid": "0.51.0-preview.32",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
