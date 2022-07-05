@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
-using UnityEngine;
+
 
 [InitializeOnLoad]
 public class DOTSToggleEditor : Editor
@@ -22,11 +20,12 @@ public class DOTSToggleEditor : Editor
     private static readonly string[] packages =
     {
         "com.unity.burst@1.4.4",
-        "com.unity.entities@0.17.0-preview.41",
-        "com.unity.mathematics@1.2.1",
-        "com.unity.physics@0.6.0-preview.3",
-        "com.unity.rendering.hybrid@0.11.0-preview.42",
-        "com.unity.dots.editor@0.12.0-preview.6",
+        "com.unity.collections@0.7.0-preview.2",
+        "com.unity.entities@0.51.0-preview.32",
+        "com.unity.mathematics@1.2.5",
+        "com.unity.physics@0.51.0-preview.32",
+        "com.unity.render-pipelines.universal@10.8.1",
+        "com.unity.rendering.hybrid@0.51.0-preview.32",
     };
 
     static DOTSToggleEditor()

@@ -47,12 +47,15 @@ namespace CloudFine.FlockBox{
         private void OnDisable()
         {
 #if FLOCKBOX_DOTS
-
-            EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            foreach (Entity e in _spawnedEntities)
+            World world = World.DefaultGameObjectInjectionWorld;
+            if (world!= null && world.EntityManager != null)
             {
-                manager.SetEnabled(e, false);
+                EntityManager manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+                foreach (Entity e in _spawnedEntities)
+                {
+                    manager.SetEnabled(e, false);
+                }
             }
 #endif
         }
