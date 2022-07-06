@@ -154,7 +154,7 @@ namespace CloudFine.FlockBox
 
         private void CheckForURP()
         {
-            if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name != "UniversalRenderPipelineAsset")
+            if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset?.GetType()?.Name != "UniversalRenderPipelineAsset")
             {
                 Debug.LogWarning("FlockBox DOTS Warning: The Hybrid Render used to convert Prefabs to Entities no longer supports the built-in render pipeline. If you are not able to see the Steering Agents, you may need to upgrade to the Universal Render Pipeline.");
             }
