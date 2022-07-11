@@ -61,9 +61,6 @@ namespace CloudFine.FlockBox
             {
                 if(BehaviorSettings.OnBehaviorRemoved != null) BehaviorSettings.OnBehaviorRemoved.Invoke(targetSettings, targetSettings.GetBehavior(toRemove));
                 AssetDatabase.RemoveObjectFromAsset(_behaviors.GetArrayElementAtIndex(toRemove).objectReferenceValue);
-                AssetDatabase.Refresh();
-                AssetDatabase.SaveAssets();
-
                 _behaviors.DeleteArrayElementAtIndex(toRemove);
                 toRemove = -1;
             }
@@ -164,11 +161,6 @@ namespace CloudFine.FlockBox
             newBehavior.hideFlags = HideFlags.HideInHierarchy;
 
             AssetDatabase.AddObjectToAsset(newBehavior, AssetDatabase.GetAssetPath(target));
-#if!UNITY_2020_1_OR_NEWER
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(newBehavior));
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-#endif
             return newBehavior;
         }
 
