@@ -65,7 +65,6 @@ namespace CloudFine.FlockBox
                 AssetDatabase.SaveAssets();
 
                 _behaviors.DeleteArrayElementAtIndex(toRemove);
-                _behaviors.DeleteArrayElementAtIndex(toRemove);
                 toRemove = -1;
             }
 
