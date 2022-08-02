@@ -69,6 +69,7 @@ namespace CloudFine.FlockBox.DOTS
 
         public static int GetUniqueID()
         {
+            //TODO better duplicate prevention?
            return (int)(UnityEngine.Random.value * 100000);
         }
     }
