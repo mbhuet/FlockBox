@@ -271,13 +271,16 @@ namespace CloudFine.FlockBox.DOTS
                                 {
                                     do
                                     {
-                                        //TODO find a way to avoid duplicates?
-                                        if (true)//!neighbors.Contains(neighbor))
+                                        if (neighbor.UniqueID != agent.UniqueID)
                                         {
-                                            neighbors.Add(neighbor);
-                                            if (!neighbor.Fill)
+                                            //TODO find a way to avoid duplicates?
+                                            if (true)//!neighbors.Contains(neighbor))
                                             {
-                                                capBreak++;
+                                                neighbors.Add(neighbor);
+                                                if (!neighbor.Fill)
+                                                {
+                                                    capBreak++;
+                                                }
                                             }
                                         }
                                     } while (spatialHashMap.TryGetNextValue(out neighbor, ref iterator) && capBreak < cellCap);
