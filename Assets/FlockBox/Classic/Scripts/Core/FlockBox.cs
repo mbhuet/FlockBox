@@ -200,7 +200,7 @@ namespace CloudFine.FlockBox
                     agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
                 }
                 agent.Position = RandomPosition();
-                agent.UniqueID = (int)(UnityEngine.Random.value * 100000);
+                agent.UniqueID = AgentData.GetUniqueID();
                 entityManager.SetComponentData(entity, agent);
 
                 SetupEntity(entity);

@@ -64,7 +64,12 @@ namespace CloudFine.FlockBox.DOTS
 
         public bool Equals(AgentData other)
         {
-            return math.all(Position == other.Position);
+            return (UniqueID == other.UniqueID);
+        }
+
+        public static int GetUniqueID()
+        {
+           return (int)(UnityEngine.Random.value * 100000);
         }
     }
 }
