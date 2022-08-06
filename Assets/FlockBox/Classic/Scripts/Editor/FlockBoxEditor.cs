@@ -34,8 +34,6 @@ namespace CloudFine.FlockBox
         private bool optimizationFoldout = false;
         private bool debugFoldout = false;
 
-        ReorderableList populationList;
-
         private void OnEnable()
         {
             _dimensionX = serializedObject.FindProperty("dimensions_x");
@@ -54,11 +52,6 @@ namespace CloudFine.FlockBox
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
             _useDOTS = serializedObject.FindProperty("useDOTS");
             _worldSpace = serializedObject.FindProperty("useWorldSpace");
-
-            populationList = new ReorderableList(serializedObject, _populations, true, true, true, true);
-
-            populationList.drawElementCallback = DrawPopulationListItems; // Delegate to draw the elements on the list
-            populationList.drawHeaderCallback = DrawPopulationListHeader; // Skip this line if you set displayHeader to 'false' in your ReorderableList constructor.
         }
 
         public override void OnInspectorGUI()
@@ -86,7 +79,6 @@ namespace CloudFine.FlockBox
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
 #endif
-
             Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));
             dimensions.x = Math.Max(dimensions.x, 0);
             dimensions.y = Math.Max(dimensions.y, 0);
@@ -120,7 +112,7 @@ namespace CloudFine.FlockBox
 
             using (new EditorGUI.DisabledScope(Application.isPlaying))
             {
-                populationList.DoLayoutList();
+                EditorGUILayout.PropertyField(_populations);
             }
 
             optimizationFoldout = EditorGUILayout.Foldout(optimizationFoldout, "Optimization", true);
@@ -154,38 +146,5 @@ namespace CloudFine.FlockBox
 
             serializedObject.ApplyModifiedProperties();
         }
-
-
-        void DrawPopulationListItems(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            SerializedProperty element = populationList.serializedProperty.GetArrayElementAtIndex(index); //The element in the list
-
-
-            EditorGUI.PropertyField(
-                new Rect(rect.x, rect.y, rect.width*(2f/3f), EditorGUIUtility.singleLineHeight),
-                element.FindPropertyRelative("prefab"),
-                GUIContent.none
-            );
-
-            // The 'level' property
-            // The label field for level (width 100, height of a single line)
-            //EditorGUI.LabelField(new Rect(rect.x + 120, rect.y, 100, EditorGUIUtility.singleLineHeight), "Population");
-
-            //The property field for level. Since we do not need so much space in an int, width is set to 20, height of a single line.
-
-            EditorGUI.PropertyField(
-                new Rect(rect.x + rect.width*(2f/3f), rect.y, rect.width*(1f/3f), EditorGUIUtility.singleLineHeight),
-                element.FindPropertyRelative("population"),
-                GUIContent.none
-            );
-        }
-
-        void DrawPopulationListHeader(Rect rect)
-        {
-            string name = "Starting Populations";
-            EditorGUI.LabelField(rect, name);
-        }
-
-
     }
 }

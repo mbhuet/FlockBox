@@ -66,14 +66,11 @@ namespace CloudFine.FlockBox.DOTS
 
                 if (other.TagInMask(TagMask))
                 {
-                    if (!mine.Equals(other))
+                    if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
                     {
-                        if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
-                        {
-                            sum += (other.Velocity);
-                            count++;
-                        }
-                    }
+                        sum += (other.Velocity);
+                        count++;
+                    }                   
                 }
             }
 

@@ -63,17 +63,14 @@ namespace CloudFine.FlockBox.DOTS
             {
                 AgentData other = neighbors[i].Value;
 
-                    if (other.TagInMask(TagMask))
+                if (other.TagInMask(TagMask))
+                {
+                    if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
                     {
-                    if (!mine.Equals(other))
-                    {
-                        if (math.lengthsq(mine.Position - other.Position) < Radius * Radius)
-                        {
-                            sum += (other.Position);
-                            count++;
-                        }
+                        sum += (other.Position);
+                        count++;
                     }
-                }
+                }               
             }
 
             if (count > 0)

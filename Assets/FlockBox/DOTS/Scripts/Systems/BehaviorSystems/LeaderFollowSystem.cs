@@ -76,17 +76,14 @@ namespace CloudFine.FlockBox.DOTS
 
                 if (other.TagInMask(TagMask))
                 {
-                    if (!mine.Equals(other))
+                    float sqrDist = math.lengthsq(other.Position - mine.Position);
+                    if (sqrDist < closeSqrDist)
                     {
-                        float sqrDist = math.lengthsq(other.Position - mine.Position);
-                        if (sqrDist < closeSqrDist)
-                        {
-                            closeSqrDist = sqrDist;
-                            closeTargetPosition = other.Position;
-                            closeTargetForward = other.Forward;
-                            foundTarget = true;
-                        }
-                    }
+                        closeSqrDist = sqrDist;
+                        closeTargetPosition = other.Position;
+                        closeTargetForward = other.Forward;
+                        foundTarget = true;
+                    }                   
                 }
             }
 
