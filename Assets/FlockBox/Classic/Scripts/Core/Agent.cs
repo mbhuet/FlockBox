@@ -66,15 +66,17 @@ namespace CloudFine.FlockBox
             protected set { _flockBox = value; }
         }
         
-        [SerializeField]
+        [SerializeField, Tooltip("(Optional) Specify a FlockBox that this Agent will occupy by default.")]
         private FlockBox _flockBox;
 
         private Vector3 _lastWorldPosition;
 
-        [SerializeField]
+        [SerializeField, Tooltip("[Optimization] POINT is more performant and preferred for SteeringAgents, but SPHERE may be needed for Agents that occupy a large space.")]
         public Shape shape;
-        [FormerlySerializedAs("drawDebug")]
+        [FormerlySerializedAs("drawDebug"), Tooltip("Draw a gizmo showing this Agent's radius.")]
         public bool debugDrawShape = false;
+        [Tooltip("Determines if behaviors using GlobalTagSearch will still be able to percieve this Agent when it's outside the bounds of the FlockBox.")]
+        public bool tagSearchableOutsideBounds;
 
         protected HashSet<int> cells = new HashSet<int>();
         protected HashSet<Agent> neighbors;
@@ -255,7 +257,10 @@ namespace CloudFine.FlockBox
                 }
                 else
                 {
-                    FlockBox.ForgetTag(this);
+                    if (!tagSearchableOutsideBounds)
+                    {
+                        FlockBox.ForgetTag(this);
+                    }
                     RemoveFromAllCells();
                 }
                 transform.hasChanged = false;
