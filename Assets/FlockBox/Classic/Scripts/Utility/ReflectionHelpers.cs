@@ -2,21 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class ReflectionHelpers
+namespace CloudFine
 {
-    public static System.Type[] GetAllDerivedTypes(this System.AppDomain aAppDomain, System.Type aType)
+    public static class ReflectionHelpers
     {
-        var result = new List<System.Type>();
-        var assemblies = aAppDomain.GetAssemblies();
-        foreach (var assembly in assemblies)
+        public static System.Type[] GetAllDerivedTypes(this System.AppDomain aAppDomain, System.Type aType)
         {
-            var types = assembly.GetTypes();
-            foreach (var type in types)
+            var result = new List<System.Type>();
+            var assemblies = aAppDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
             {
-                if (type.IsSubclassOf(aType))
-                    result.Add(type);
+                var types = assembly.GetTypes();
+                foreach (var type in types)
+                {
+                    if (type.IsSubclassOf(aType))
+                        result.Add(type);
+                }
             }
+            return result.ToArray();
         }
-        return result.ToArray();
     }
 }
