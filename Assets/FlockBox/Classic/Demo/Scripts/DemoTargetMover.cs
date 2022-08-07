@@ -1,44 +1,45 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class DemoTargetMover : MonoBehaviour
+namespace CloudFine.FlockBox
 {
-    public Transform[] positions;
-    public float moveTime = 5f;
-
-    private float time;
-    private int positionIndex;
-
-    private void Start()
+    public class DemoTargetMover : MonoBehaviour
     {
-        if (positions.Length == 0)
+        public Transform[] positions;
+        public float moveTime = 5f;
+
+        private float time;
+        private int positionIndex;
+
+        private void Start()
         {
-            enabled = false;
-            return;
+            if (positions.Length == 0)
+            {
+                enabled = false;
+                return;
+            }
+            MoveToPosition(0);
         }
-        MoveToPosition(0);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        time += Time.deltaTime;
-        if (time >= moveTime)
+        // Update is called once per frame
+        void Update()
         {
-            MoveToPosition(positionIndex + 1);
-            time = 0;
+            time += Time.deltaTime;
+            if (time >= moveTime)
+            {
+                MoveToPosition(positionIndex + 1);
+                time = 0;
+            }
         }
-    }
 
-    void MoveToPosition(int posIndex)
-    {
-        if (posIndex >= positions.Length) posIndex = 0;
-        if (posIndex < 0) posIndex = positions.Length - 1;
-        positionIndex = posIndex;
-        if (positions[posIndex] != null)
+        void MoveToPosition(int posIndex)
         {
-            transform.position = positions[posIndex].position;
+            if (posIndex >= positions.Length) posIndex = 0;
+            if (posIndex < 0) posIndex = positions.Length - 1;
+            positionIndex = posIndex;
+            if (positions[posIndex] != null)
+            {
+                transform.position = positions[posIndex].position;
+            }
         }
     }
 }

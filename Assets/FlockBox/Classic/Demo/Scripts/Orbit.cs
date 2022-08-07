@@ -1,22 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Orbit : MonoBehaviour
+namespace CloudFine
 {
-    public Transform _orbitTarget;
-    public float _distance =10;
-    public float _speed = 1;
-    public float _verticalAngle = 45;
-
-    // Update is called once per frame[aaa
-    void Update()
+    public class Orbit : MonoBehaviour
     {
-        Vector3 target = _orbitTarget ? _orbitTarget.position : Vector3.zero;
-        float x = Mathf.Cos(Time.time * _speed);
-        float z = Mathf.Sin(Time.time * _speed);
-        transform.position = target + new Vector3(x, 0, z).normalized * _distance;
-        transform.LookAt(target);
-        transform.RotateAround(target, transform.right, _verticalAngle);
+        public Transform _orbitTarget;
+        public float _distance = 10;
+        public float _speed = 1;
+        public float _verticalAngle = 45;
+
+        // Update is called once per frame[aaa
+        void Update()
+        {
+            Vector3 target = _orbitTarget ? _orbitTarget.position : Vector3.zero;
+            float x = Mathf.Cos(Time.time * _speed);
+            float z = Mathf.Sin(Time.time * _speed);
+            transform.position = target + new Vector3(x, 0, z).normalized * _distance;
+            transform.LookAt(target);
+            transform.RotateAround(target, transform.right, _verticalAngle);
+        }
     }
 }

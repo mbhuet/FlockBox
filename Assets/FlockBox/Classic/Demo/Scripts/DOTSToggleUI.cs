@@ -1,27 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DOTSToggleUI : MonoBehaviour
+namespace CloudFine.FlockBox
 {
-    public GameObject DOTSBundle;
-    public GameObject BasicBundle;
-    public Toggle dotsToggle;
-
-    private void Awake()
+    public class DOTSToggleUI : MonoBehaviour
     {
+        public GameObject DOTSBundle;
+        public GameObject BasicBundle;
+        public Toggle dotsToggle;
+
+        private void Awake()
+        {
 #if FLOCKBOX_DOTS
-        SetDOTSEnabled(true);
+            SetDOTSEnabled(true);
 #else
         SetDOTSEnabled(false);
         dotsToggle.interactable = false;
         dotsToggle.isOn = (false);
 #endif
 
-    }
+        }
 
-    public void SetDOTSEnabled(bool dots)
-    {
-        DOTSBundle.SetActive(dots);
-        BasicBundle.SetActive(!dots);
+        public void SetDOTSEnabled(bool dots)
+        {
+            DOTSBundle.SetActive(dots);
+            BasicBundle.SetActive(!dots);
+        }
     }
 }

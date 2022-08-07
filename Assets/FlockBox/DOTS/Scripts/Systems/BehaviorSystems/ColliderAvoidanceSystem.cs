@@ -13,7 +13,6 @@ using CloudFine.FlockBox.DOTS;
 
 namespace CloudFine.FlockBox.DOTS
 {
-
     public partial class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
         private float3[] Directions;
