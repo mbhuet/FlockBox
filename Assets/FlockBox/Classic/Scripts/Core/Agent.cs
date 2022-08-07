@@ -255,6 +255,7 @@ namespace CloudFine.FlockBox
                 }
                 else
                 {
+                    FlockBox.ForgetTag(this);
                     RemoveFromAllCells();
                 }
                 transform.hasChanged = false;
