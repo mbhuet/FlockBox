@@ -91,13 +91,13 @@ namespace CloudFine.FlockBox
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
 #endif
-            Vector3Int dimensions = EditorGUILayout.Vector3IntField("Dimensions", new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue));
+            Vector3 dimensions = EditorGUILayout.Vector3Field("Dimensions", new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue));
             dimensions.x = Math.Max(dimensions.x, 0);
             dimensions.y = Math.Max(dimensions.y, 0);
             dimensions.z = Math.Max(dimensions.z, 0);
-            _dimensionX.intValue = dimensions.x;
-            _dimensionY.intValue = dimensions.y;
-            _dimensionZ.intValue = dimensions.z;
+            _dimensionX.floatValue = dimensions.x;
+            _dimensionY.floatValue = dimensions.y;
+            _dimensionZ.floatValue = dimensions.z;
 
             EditorGUILayout.PropertyField(_size);
             EditorGUILayout.PropertyField(_worldSpace, new GUIContent("World Space Flocking"));
@@ -161,7 +161,7 @@ namespace CloudFine.FlockBox
 
         public void OnSceneGUI()
         {
-            Vector3Int dimensions = new Vector3Int(_dimensionX.intValue, _dimensionY.intValue, _dimensionZ.intValue);
+            Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue);
             float size = _size.floatValue;
 
             Handles.matrix = (target as FlockBox).transform.localToWorldMatrix;
@@ -178,19 +178,20 @@ namespace CloudFine.FlockBox
                 Vector3 faceCenter = Vector3.Scale((Vector3.one + faceNormal) * .5f, (Vector3)dimensions * size);
                 Vector3 faceToCam = camPos - faceCenter;
                 bool facingCamera = isOrtho? Vector3.Dot(camForward, faceNormal) < 0 : Vector3.Dot(faceNormal, faceToCam) > 0;
+
                 if (facingCamera)
                 {
                     if (faceNormal.x != 0)
                     {
-                        int x = faceNormal.x < 0 ? 0 : dimensions.x;
-                        for(int y = 0; y<dimensions.y+1; y++)
+                        float x = faceNormal.x < 0 ? 0 : dimensions.x;
+                        for(int y = 0; y < dimensions.y; y++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(x, y, 0) * size,
                                 new Vector3(x, y, dimensions.z) * size
                                 );                            
                         }
-                        for (int z = 0; z < dimensions.z + 1; z++)
+                        for (int z = 0; z < dimensions.z; z++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(x, 0, z) * size,
@@ -201,14 +202,14 @@ namespace CloudFine.FlockBox
                     if (faceNormal.y != 0)
                     {
                         float y = faceNormal.y < 0 ? 0 : dimensions.y;
-                        for (int x = 0; x < dimensions.x + 1; x++)
+                        for (int x = 0; x < dimensions.x; x++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(x, y, 0) * size,
                                 new Vector3(x, y, dimensions.z) * size
                                 );                  
                         }
-                        for (int z = 0; z < dimensions.z + 1; z++)
+                        for (int z = 0; z < dimensions.z; z++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(0, y, z) * size,
@@ -218,16 +219,15 @@ namespace CloudFine.FlockBox
                     }                   
                     if(faceNormal.z != 0)
                     {
-                        float z = faceNormal.z < 0 ? 0 : dimensions.z;
-                      
-                        for (int x = 0; x < dimensions.x + 1; x++)
+                        float z = faceNormal.z < 0 ? 0 : dimensions.z;                      
+                        for (int x = 0; x < dimensions.x; x++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(x, 0, z) * size,
                                 new Vector3(x, dimensions.y, z) * size
                                 );                       
                         }                      
-                        for (int y = 0; y < dimensions.y + 1; y++)
+                        for (int y = 0; y < dimensions.y; y++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(0, y, z) * size,
@@ -238,6 +238,8 @@ namespace CloudFine.FlockBox
 
                 }
             }
+
+            Vector3 handlePos = (Vector3)dimensions * size;
 
             /*
             for (int x = 0; x < _dimensionX.intValue +1; x++) 

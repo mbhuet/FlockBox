@@ -25,18 +25,18 @@ namespace CloudFine.FlockBox
 
         
         [SerializeField]
-        private int dimensions_x = 10;
+        private float dimensions_x = 10;
         [SerializeField]
-        private int dimensions_y = 10;
+        private float dimensions_y = 10;
         [SerializeField]
-        private int dimensions_z = 10;
+        private float dimensions_z = 10;
         
         [SerializeField]
         private float cellSize = 10;
 
-        public Vector3Int Dimensions
+        public Vector3 Dimensions
         {
-            get { return new Vector3Int(DimensionX, DimensionY, DimensionZ); }
+            get { return new Vector3(DimensionX, DimensionY, DimensionZ); }
             set { DimensionX = value.x; DimensionY = value.y; DimensionZ = value.z; }
         }
 
@@ -44,17 +44,17 @@ namespace CloudFine.FlockBox
         {
             get { return (Vector3)Dimensions * cellSize; }
         }
-        public int DimensionX
+        public float DimensionX
         {
             get { return dimensions_x; }
             set { dimensions_x = value; }
         }
-        public int DimensionY
+        public float DimensionY
         {
             get { return dimensions_y; }
             set { dimensions_y = value; }
         }
-        public int DimensionZ
+        public float DimensionZ
         {
             get { return dimensions_z; }
             set { dimensions_z = value; }
@@ -62,10 +62,6 @@ namespace CloudFine.FlockBox
         public float CellSize
         {
             get { return cellSize; }
-        }
-        public int TotalCells
-        {
-            get { return (Mathf.Max(DimensionX, 1) * Mathf.Max(DimensionY, 1) * Mathf.Max(DimensionZ, 1)); }
         }
 
 
@@ -724,8 +720,8 @@ namespace CloudFine.FlockBox
 
             return (
                  x
-               + y * (dimensions_x + 1) // +1 in case dimension is 0, will still produce unique hash
-               + z * (dimensions_x + 1) * (dimensions_y + 1));
+               + y * (Mathf.CeilToInt(dimensions_x) + 1) // +1 in case dimension is 0, will still produce unique hash
+               + z * (Mathf.CeilToInt(dimensions_x) + 1) * (Mathf.CeilToInt(dimensions_y) + 1));
         }
 
         private int WorldPositionToHash(float x, float y, float z)

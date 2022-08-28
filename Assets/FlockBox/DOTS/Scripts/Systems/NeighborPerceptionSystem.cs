@@ -49,9 +49,9 @@ namespace CloudFine.FlockBox.DOTS
 
                 FlockBox flockBox = settings.Flock;
                 float cellSize = flockBox.CellSize;
-                int dimensions_x = flockBox.DimensionX;
-                int dimensions_y = flockBox.DimensionY;
-                int dimensions_z = flockBox.DimensionZ;
+                float dimensions_x = flockBox.DimensionX;
+                float dimensions_y = flockBox.DimensionY;
+                float dimensions_z = flockBox.DimensionZ;
                 int cellCap = flockBox.CellCapacity;
                 float sleepChance = flockBox.sleepChance;
 
