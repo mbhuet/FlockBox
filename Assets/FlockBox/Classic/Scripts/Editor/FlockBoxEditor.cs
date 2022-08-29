@@ -91,15 +91,23 @@ namespace CloudFine.FlockBox
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
 #endif
-            Vector3 dimensions = EditorGUILayout.Vector3Field("Dimensions", new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue));
+            Vector3 dimensions = EditorGUILayout.Vector3Field("Dimensions", new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue) * _size.floatValue);
+            float size = EditorGUILayout.FloatField("Cell Size", _size.floatValue);
+
+            float maxDimension = Mathf.Max(dimensions.x, dimensions.y, dimensions.z);
+            size = Mathf.Max(maxDimension * .01f, size);
+
+            dimensions /= size;
+
             dimensions.x = Math.Max(dimensions.x, 0);
             dimensions.y = Math.Max(dimensions.y, 0);
             dimensions.z = Math.Max(dimensions.z, 0);
+
             _dimensionX.floatValue = dimensions.x;
             _dimensionY.floatValue = dimensions.y;
             _dimensionZ.floatValue = dimensions.z;
+            _size.floatValue = size;
 
-            EditorGUILayout.PropertyField(_size);
             EditorGUILayout.PropertyField(_worldSpace, new GUIContent("World Space Flocking"));
             EditorGUILayout.PropertyField(_wrap);
 
@@ -236,10 +244,39 @@ namespace CloudFine.FlockBox
                         }
                     }
 
+                    //TODO make corner drag handles if this face is facing camera
+
                 }
             }
 
+            Handles.color = Color.white;
+
             Vector3 handlePos = (Vector3)dimensions * size;
+            float handleSize = HandleUtility.GetHandleSize(handlePos) * .1f;
+
+            Vector3 dir1 = Vector3.left;
+            Vector3 dir2 = Vector3.down;
+
+            Vector3 handleOffset = dir1 * handleSize + dir2 * handleSize;
+
+            Quaternion quat = Quaternion.identity;
+            Handles.PositionHandle(handlePos, quat);
+
+            Vector3 drag = Handles.Slider2D(handlePos + handleOffset, Vector3.forward, dir1, dir2, handleSize, Handles.RectangleHandleCap,Vector2.zero) - handleOffset;
+
+            Vector3 dimensionsDelta = (drag - handlePos);
+            dimensions += dimensionsDelta;
+
+
+            dimensions.x = Math.Max(dimensions.x, 0);
+            dimensions.y = Math.Max(dimensions.y, 0);
+            dimensions.z = Math.Max(dimensions.z, 0);
+
+            _dimensionX.floatValue = dimensions.x;
+            _dimensionY.floatValue = dimensions.y;
+            _dimensionZ.floatValue = dimensions.z;
+
+
 
             /*
             for (int x = 0; x < _dimensionX.intValue +1; x++) 
@@ -278,6 +315,9 @@ namespace CloudFine.FlockBox
                 }
             }
             */
+
+            serializedObject.ApplyModifiedProperties();
+
         }
     }
 }
