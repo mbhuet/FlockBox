@@ -256,28 +256,32 @@ namespace CloudFine.FlockBox
                         dir2 = Vector3.up;
                     }
 
-                    /*
-                    Handles.color = Color.white;
-
-                    Vector3 worldDimesions = (Vector3)dimensions * size;
-
-                    Vector3 handlePos = faceCenter + Vector3.Scale(worldDimesions,dir1) * .5f + Vector3.Scale(worldDimesions,dir2) * .5f;
-                    float handleSize = HandleUtility.GetHandleSize(handlePos) * .1f;
-
-                    Vector3 tempDir1 = dir1;
-                    Vector3 tempDir2 = dir2;
-
-                    Vector3 handleOffset = -(tempDir1 * handleSize + tempDir2 * handleSize);
-
-                    Vector3 drag = Handles.Slider2D(handlePos + handleOffset, faceNormal, tempDir1, tempDir2, handleSize, Handles.RectangleHandleCap, Vector2.zero) - handleOffset;
-
-
-                    dimensionsDelta += (drag - handlePos);
-                    */
+                    
+                    
+                    
                 }
+
+                if (facingCamera)
+                {
+                    Handles.color = Color.white;
+                }
+                else
+                {
+                    Handles.color = Color.grey;
+                }
+
+                Vector3 worldDimesions = (Vector3)dimensions * size;
+
+                Vector3 handlePos = faceCenter;// + Vector3.Scale(worldDimesions,dir1) * .5f + Vector3.Scale(worldDimesions,dir2) * .5f;
+                float handleSize = HandleUtility.GetHandleSize(handlePos) * .05f;
+
+                Vector3 drag = Handles.Slider(faceCenter, faceNormal, handleSize, Handles.DotHandleCap, 0);
+
+
+                dimensionsDelta += (drag - handlePos);
             }
 
-            
+            /*
             Handles.color = Color.white;
 
             Vector3 handlePos = (Vector3)dimensions * size;
@@ -290,9 +294,10 @@ namespace CloudFine.FlockBox
 
             //Vector3 drag = Handles.Slider2D(handlePos + handleOffset, Vector3.forward, tempDir1, tempDir2, handleSize, Handles.RectangleHandleCap,Vector2.zero) - handleOffset;
             Vector3 drag = Handles.FreeMoveHandle(handlePos, Quaternion.identity, handleSize, Vector3.zero, Handles.SphereHandleCap);// - handleOffset;
-
+            
 
             dimensionsDelta = (drag - handlePos);
+            */
             
             dimensions += dimensionsDelta;
 
