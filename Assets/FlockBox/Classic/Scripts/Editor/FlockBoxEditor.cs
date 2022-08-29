@@ -180,7 +180,9 @@ namespace CloudFine.FlockBox
             Vector3 camPos = Handles.matrix.inverse.MultiplyPoint(sceneCam.transform.position);
             bool isOrtho = sceneCam.orthographic;
 
-            for(int f = 0; f<faces.Length; f++)
+            Vector3 dimensionsDelta = Vector3.zero;
+
+            for (int f = 0; f<faces.Length; f++)
             {
                 Vector3 faceNormal = faces[f];
                 Vector3 faceCenter = Vector3.Scale((Vector3.one + faceNormal) * .5f, (Vector3)dimensions * size);
@@ -189,6 +191,10 @@ namespace CloudFine.FlockBox
 
                 if (facingCamera)
                 {
+                    Handles.color = Color.grey * .5f;
+
+                    Vector3 dir1 = Vector3.zero;
+                    Vector3 dir2 = Vector3.zero;
                     if (faceNormal.x != 0)
                     {
                         float x = faceNormal.x < 0 ? 0 : dimensions.x;
@@ -206,6 +212,8 @@ namespace CloudFine.FlockBox
                                 new Vector3(x, dimensions.y, z) * size
                                 );
                         }
+                        dir1 = Vector3.up;
+                        dir2 = Vector3.forward;
                     }
                     if (faceNormal.y != 0)
                     {
@@ -224,6 +232,8 @@ namespace CloudFine.FlockBox
                                 new Vector3(dimensions.x, y, z) * size
                                 );
                         }
+                        dir1 = Vector3.right;
+                        dir2 = Vector3.forward;
                     }                   
                     if(faceNormal.z != 0)
                     {
@@ -242,29 +252,48 @@ namespace CloudFine.FlockBox
                                 new Vector3(dimensions.x, y, z) * size
                                 );
                         }
+                        dir1 = Vector3.right;
+                        dir2 = Vector3.up;
                     }
 
-                    //TODO make corner drag handles if this face is facing camera
+                    /*
+                    Handles.color = Color.white;
 
+                    Vector3 worldDimesions = (Vector3)dimensions * size;
+
+                    Vector3 handlePos = faceCenter + Vector3.Scale(worldDimesions,dir1) * .5f + Vector3.Scale(worldDimesions,dir2) * .5f;
+                    float handleSize = HandleUtility.GetHandleSize(handlePos) * .1f;
+
+                    Vector3 tempDir1 = dir1;
+                    Vector3 tempDir2 = dir2;
+
+                    Vector3 handleOffset = -(tempDir1 * handleSize + tempDir2 * handleSize);
+
+                    Vector3 drag = Handles.Slider2D(handlePos + handleOffset, faceNormal, tempDir1, tempDir2, handleSize, Handles.RectangleHandleCap, Vector2.zero) - handleOffset;
+
+
+                    dimensionsDelta += (drag - handlePos);
+                    */
                 }
             }
 
+            
             Handles.color = Color.white;
 
             Vector3 handlePos = (Vector3)dimensions * size;
-            float handleSize = HandleUtility.GetHandleSize(handlePos) * .1f;
+            float handleSize = HandleUtility.GetHandleSize(handlePos) * .15f;
 
-            Vector3 dir1 = Vector3.left;
-            Vector3 dir2 = Vector3.down;
+            Vector3 tempDir1 = Vector3.left;
+            Vector3 tempDir2 = Vector3.down;
 
-            Vector3 handleOffset = dir1 * handleSize + dir2 * handleSize;
+            Vector3 handleOffset = tempDir1 * handleSize + tempDir2 * handleSize;
 
-            Quaternion quat = Quaternion.identity;
-            Handles.PositionHandle(handlePos, quat);
+            //Vector3 drag = Handles.Slider2D(handlePos + handleOffset, Vector3.forward, tempDir1, tempDir2, handleSize, Handles.RectangleHandleCap,Vector2.zero) - handleOffset;
+            Vector3 drag = Handles.FreeMoveHandle(handlePos, Quaternion.identity, handleSize, Vector3.zero, Handles.SphereHandleCap);// - handleOffset;
 
-            Vector3 drag = Handles.Slider2D(handlePos + handleOffset, Vector3.forward, dir1, dir2, handleSize, Handles.RectangleHandleCap,Vector2.zero) - handleOffset;
 
-            Vector3 dimensionsDelta = (drag - handlePos);
+            dimensionsDelta = (drag - handlePos);
+            
             dimensions += dimensionsDelta;
 
 
