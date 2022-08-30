@@ -173,7 +173,7 @@ namespace CloudFine.FlockBox
             Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue);
             float size = _size.floatValue;
 
-            Handles.matrix = (target as FlockBox).transform.localToWorldMatrix;
+            Handles.matrix = transform.localToWorldMatrix;
             Handles.color = Color.grey * .5f;
 
             Camera sceneCam = SceneView.lastActiveSceneView.camera;
@@ -278,10 +278,11 @@ namespace CloudFine.FlockBox
                 Vector3 drag = Handles.Slider(faceCenter, faceNormal, handleSize, Handles.DotHandleCap, 0);
 
                 Vector3 delta = (drag - handlePos);
+                Vector3 localSpaceDelta = Handles.matrix.MultiplyVector(delta);
 
                 if(faceNormal.x < 0 || faceNormal.y <0 || faceNormal.z < 0)
                 {
-                    posDelta += delta;
+                    posDelta += localSpaceDelta;
                     delta = -delta;
                 }
                 dimensionsDelta += delta;
