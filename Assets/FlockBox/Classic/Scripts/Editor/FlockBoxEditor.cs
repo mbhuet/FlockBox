@@ -163,9 +163,9 @@ namespace CloudFine.FlockBox
 
             }
 
-
             serializedObject.ApplyModifiedProperties();
         }
+
 
         public void OnSceneGUI()
         {
@@ -189,14 +189,16 @@ namespace CloudFine.FlockBox
                 Vector3 faceNormal = faces[f];
                 Vector3 faceCenter = Vector3.Scale((Vector3.one + faceNormal) * .5f, (Vector3)dimensions * size);
                 Vector3 faceToCam = camPos - faceCenter;
-                bool facingCamera = isOrtho? Vector3.Dot(camForward, faceNormal) < 0 : Vector3.Dot(faceNormal, faceToCam) > 0;
+
+                bool facingCamera = isOrtho? Vector3.Dot(camForward, faceNormal) <= .000001f : Vector3.Dot(faceNormal, faceToCam) > 0;
 
                 if (facingCamera)
                 {
-                    Handles.color = Color.grey * .5f;
+                    Handles.color = Color.grey * .75f;
 
                     Vector3 dir1 = Vector3.zero;
                     Vector3 dir2 = Vector3.zero;
+
                     if (faceNormal.x != 0)
                     {
                         float x = faceNormal.x < 0 ? 0 : dimensions.x;
@@ -217,6 +219,7 @@ namespace CloudFine.FlockBox
                         dir1 = Vector3.up;
                         dir2 = Vector3.forward;
                     }
+
                     if (faceNormal.y != 0)
                     {
                         float y = faceNormal.y < 0 ? 0 : dimensions.y;
@@ -236,7 +239,8 @@ namespace CloudFine.FlockBox
                         }
                         dir1 = Vector3.right;
                         dir2 = Vector3.forward;
-                    }                   
+                    } 
+                    
                     if(faceNormal.z != 0)
                     {
                         float z = faceNormal.z < 0 ? 0 : dimensions.z;                      
@@ -256,9 +260,7 @@ namespace CloudFine.FlockBox
                         }
                         dir1 = Vector3.right;
                         dir2 = Vector3.up;
-                    }
-
-                                   
+                    }                                
                 }
 
                 if (facingCamera)

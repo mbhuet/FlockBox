@@ -240,6 +240,7 @@ namespace CloudFine.FlockBox
             }
         }
 
+
         private void Update()
         {
             bool transformChanged = false;
@@ -271,6 +272,7 @@ namespace CloudFine.FlockBox
 #endif
         }
 
+
         private void LateUpdate()
         {
             foreach (Agent agent in allAgents)
@@ -288,11 +290,11 @@ namespace CloudFine.FlockBox
             MarkAsChanged();
         }
 
+
         public void MarkAsChanged()
         {
             if (OnValuesModified != null) OnValuesModified.Invoke(this);
         }
-
 
 
         public void GetSurroundings(Vector3 position, Vector3 velocity, HashSet<int> cells, SurroundingsContainer surroundings)
@@ -340,6 +342,7 @@ namespace CloudFine.FlockBox
             }   
         }
 
+
         public void RegisterAgentUpdates(Agent agent)
         {
             if (!allAgents.Contains(agent))
@@ -348,10 +351,12 @@ namespace CloudFine.FlockBox
             }
         }
 
+
         public void UnregisterAgentUpdates(Agent agent)
         {
             allAgents.Remove(agent);
         }
+
 
         /// <summary>
         /// Remove from 
@@ -365,6 +370,7 @@ namespace CloudFine.FlockBox
             AddAgentToCells(agent, cells, isStatic);
         }
 
+
         public void ForgetTag(Agent agent)
         {
             if (lastKnownTag.TryGetValue(agent, out _tagCache)) //tag recorded
@@ -376,6 +382,7 @@ namespace CloudFine.FlockBox
                 lastKnownTag.Remove(agent);
             }
         }
+
 
         public void RemoveAgentFromCells(Agent agent, HashSet<int> cells)
         {
@@ -392,9 +399,11 @@ namespace CloudFine.FlockBox
             }
         }
 
+
         private HashSet<Agent> _cellContentsCache;
         private HashSet<int> _cellListCache;
         private string _tagCache;
+
 
         private void AddAgentToCells(Agent agent, HashSet<int> cells, bool isStatic)
         {
@@ -478,10 +487,12 @@ namespace CloudFine.FlockBox
             }
         }
 
+
         public int GetCellOverlappingPoint(Vector3 point)
         {
             return WorldPositionToHash(point);
         }
+
 
         public void GetCellsOverlappingLine(Vector3 start, Vector3 end, HashSet<int> cells)
         {
@@ -519,6 +530,7 @@ namespace CloudFine.FlockBox
             }
         }
   
+
         public void GetCellsOverlappingCylinder(Vector3 a, Vector3 b, float r, HashSet<int> cells)
         {
             Vector3 min = Vector3.Min(a, b) - Vector3.one * r;
@@ -545,6 +557,7 @@ namespace CloudFine.FlockBox
             }
         }
 
+
         public void GetCellsOverlappingSphere(Vector3 center, float radius, HashSet<int> cells)
         {
             int neighborhoodRadius = 1 + (int)((radius - .01f) / cellSize);
@@ -560,14 +573,13 @@ namespace CloudFine.FlockBox
                 {
                     for (int z = center_z - neighborhoodRadius; z <= center_z + neighborhoodRadius; z++)
                     {
-                        if (x < 0 || x > dimensions_x
-                                || y < 0 || y > dimensions_y
-                                || z < 0 || z > dimensions_z)
+                        if (   x < 0 || x > dimensions_x
+                            || y < 0 || y > dimensions_y
+                            || z < 0 || z > dimensions_z)
                         {
                             continue;
                         }
-                        cells.Add(CellPositionToHash(x, y, z));
-                        
+                        cells.Add(CellPositionToHash(x, y, z));                      
                     }
                 }
             }
@@ -603,8 +615,10 @@ namespace CloudFine.FlockBox
             {
                 position.z = position.z - dimensions_z * cellSize;
             }
+
             return position;
         }
+
 
         public bool ValidatePosition(ref Vector3 position)
         {
@@ -670,6 +684,7 @@ namespace CloudFine.FlockBox
             return valid;
         }
 
+
         public bool ValidateDirection(ref Vector3 direction)
         {
             bool valid = true;
@@ -702,16 +717,17 @@ namespace CloudFine.FlockBox
              );
         }
 
+
         private int ToCellFloor(float p)
         {
             return (int)(p / cellSize);
         }
 
+
         private Vector3Int ToCellFloor(Vector3 position)
         {
             return new Vector3Int(ToCellFloor(position.x), ToCellFloor(position.y), ToCellFloor(position.z));
         }
-
 
 
         private int CellPositionToHash(int x, int y, int z)
@@ -724,15 +740,18 @@ namespace CloudFine.FlockBox
                + z * (Mathf.CeilToInt(dimensions_x) + 1) * (Mathf.CeilToInt(dimensions_y) + 1));
         }
 
+
         private int WorldPositionToHash(float x, float y, float z)
         {
             return CellPositionToHash((int)(x / cellSize), (int)(y / cellSize), (int)(z / cellSize));
         }
 
+
         private int WorldPositionToHash(Vector3 position)
         {
             return WorldPositionToHash(position.x, position.y, position.z);
         }
+
 
 #if UNITY_EDITOR
 
@@ -759,8 +778,8 @@ namespace CloudFine.FlockBox
             {
                 DrawOccupiedCells();
             }
-
         }
+
 
         void DrawOccupiedCells()
         {
@@ -768,14 +787,12 @@ namespace CloudFine.FlockBox
             
             Gizmos.color = Color.grey * .1f;
 
-
             for (int x = 0; x < (dimensions_x > 0 ? dimensions_x : 1); x++)
             {
                 for (int y = 0; y < (dimensions_y > 0 ? dimensions_y : 1); y++)
                 {
                     for (int z = 0; z < (dimensions_z > 0 ? dimensions_z : 1); z++)
                     {
-
                         Vector3 corner = new Vector3(x, y, z) * cellSize;
                         int cell = WorldPositionToHash(corner);
 
@@ -793,7 +810,6 @@ namespace CloudFine.FlockBox
                 }
             }
         }
-
 #endif
     }
 }
