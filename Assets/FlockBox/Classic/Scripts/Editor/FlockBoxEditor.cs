@@ -169,6 +169,7 @@ namespace CloudFine.FlockBox
 
         public void OnSceneGUI()
         {
+            Transform transform = (target as FlockBox).transform;
             Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue);
             float size = _size.floatValue;
 
@@ -181,6 +182,7 @@ namespace CloudFine.FlockBox
             bool isOrtho = sceneCam.orthographic;
 
             Vector3 dimensionsDelta = Vector3.zero;
+            Vector3 posDelta = Vector3.zero;
 
             for (int f = 0; f<faces.Length; f++)
             {
@@ -256,9 +258,7 @@ namespace CloudFine.FlockBox
                         dir2 = Vector3.up;
                     }
 
-                    
-                    
-                    
+                                   
                 }
 
                 if (facingCamera)
@@ -277,30 +277,17 @@ namespace CloudFine.FlockBox
 
                 Vector3 drag = Handles.Slider(faceCenter, faceNormal, handleSize, Handles.DotHandleCap, 0);
 
+                Vector3 delta = (drag - handlePos);
 
-                dimensionsDelta += (drag - handlePos);
+                if(faceNormal.x < 0 || faceNormal.y <0 || faceNormal.z < 0)
+                {
+                    posDelta += delta;
+                    delta = -delta;
+                }
+                dimensionsDelta += delta;
             }
 
-            /*
-            Handles.color = Color.white;
-
-            Vector3 handlePos = (Vector3)dimensions * size;
-            float handleSize = HandleUtility.GetHandleSize(handlePos) * .15f;
-
-            Vector3 tempDir1 = Vector3.left;
-            Vector3 tempDir2 = Vector3.down;
-
-            Vector3 handleOffset = tempDir1 * handleSize + tempDir2 * handleSize;
-
-            //Vector3 drag = Handles.Slider2D(handlePos + handleOffset, Vector3.forward, tempDir1, tempDir2, handleSize, Handles.RectangleHandleCap,Vector2.zero) - handleOffset;
-            Vector3 drag = Handles.FreeMoveHandle(handlePos, Quaternion.identity, handleSize, Vector3.zero, Handles.SphereHandleCap);// - handleOffset;
-            
-
-            dimensionsDelta = (drag - handlePos);
-            */
-            
             dimensions += dimensionsDelta;
-
 
             dimensions.x = Math.Max(dimensions.x, 0);
             dimensions.y = Math.Max(dimensions.y, 0);
@@ -310,48 +297,10 @@ namespace CloudFine.FlockBox
             _dimensionY.floatValue = dimensions.y;
             _dimensionZ.floatValue = dimensions.z;
 
-
-
-            /*
-            for (int x = 0; x < _dimensionX.intValue +1; x++) 
-            {
-                for (int y = 0; y < _dimensionY.intValue +1; y++)
-                {
-                    for (int z = 0; z < _dimensionZ.intValue + 1; z++)
-                    {
-                        Handles.DrawAAPolyLine(new Vector3[]
-                        {
-                        new Vector3(x * size,   0,                      0),
-                        new Vector3(x * size,   dimensions.y * size,    0),
-                        new Vector3(x * size,   dimensions.y * size,    dimensions.z * size),
-                        new Vector3(x * size,   0,                      dimensions.z * size),
-                        new Vector3(x * size,   0,                      0),
-                        });
-
-                        Handles.DrawAAPolyLine(new Vector3[]
-                        {
-                        new Vector3(0,                      y * size,   0),
-                        new Vector3(dimensions.x * size,    y * size,   0),
-                        new Vector3(dimensions.x * size,    y * size,   dimensions.z * size),
-                        new Vector3(0,                      y * size,   dimensions.z * size),
-                        new Vector3(0,                      y * size,   0),
-                        }); ;
-
-                        Handles.DrawAAPolyLine(new Vector3[]
-                        {
-                        new Vector3(0,                      0,                      z * size),
-                        new Vector3(dimensions.x * size,    0,                      z * size),
-                        new Vector3(dimensions.x * size,    dimensions.y * size,    z * size),
-                        new Vector3(0,                      dimensions.y * size,    z * size),
-                        new Vector3(0,                      0,                      z * size),
-                        });
-                    }
-                }
-            }
-            */
+            Undo.RecordObject(transform, "Move Transform");
+            transform.position += posDelta;
 
             serializedObject.ApplyModifiedProperties();
-
         }
     }
 }
