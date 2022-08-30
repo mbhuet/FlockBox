@@ -91,7 +91,14 @@ namespace CloudFine.FlockBox
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
 #endif
-            Vector3 dimensions = EditorGUILayout.Vector3Field("Dimensions", new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue) * _size.floatValue);
+
+            Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue) * _size.floatValue;
+
+            dimensions.x = Mathf.Round(dimensions.x * 1000) / 1000f;
+            dimensions.y = Mathf.Round(dimensions.y * 1000) / 1000f;
+            dimensions.z = Mathf.Round(dimensions.z * 1000) / 1000f;
+
+            dimensions = EditorGUILayout.Vector3Field("Dimensions", dimensions);
             float size = EditorGUILayout.FloatField("Cell Size", _size.floatValue);
 
             float maxDimension = Mathf.Max(dimensions.x, dimensions.y, dimensions.z);
