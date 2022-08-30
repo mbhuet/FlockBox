@@ -285,7 +285,7 @@ namespace CloudFine.FlockBox
                     posDelta += localSpaceDelta;
                     delta = -delta;
                 }
-                dimensionsDelta += delta;
+                dimensionsDelta += delta/size;
             }
 
             dimensions += dimensionsDelta;
