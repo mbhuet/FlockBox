@@ -780,6 +780,13 @@ namespace CloudFine.FlockBox
             }
         }
 
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.white;
+            Gizmos.matrix = this.transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(WorldDimensions / 2f, WorldDimensions);
+        }
+
 
         void DrawOccupiedCells()
         {
