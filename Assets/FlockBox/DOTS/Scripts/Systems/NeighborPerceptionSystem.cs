@@ -29,7 +29,7 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override void OnUpdate()
         {
-            EntityManager.GetAllUniqueSharedComponentData(flocks);
+            EntityManager.GetAllUniqueSharedComponentsManaged(flocks);
 
             for (int flockIndex = 0; flockIndex < flocks.Count; flockIndex++)
             {
@@ -80,7 +80,7 @@ namespace CloudFine.FlockBox.DOTS
                 var spatialHashMap = new NativeParallelMultiHashMap<int, AgentData>(mapCapacity, Allocator.TempJob);
                 var tagHashMap = new NativeParallelMultiHashMap<byte, AgentData>(agentCount, Allocator.TempJob);
 
-                var rnd = new Unity.Mathematics.Random((uint)(Time.ElapsedTime * 1000 +1));
+                var rnd = new Unity.Mathematics.Random((uint)(World.Time.ElapsedTime * 1000 +1));
 
                 //Randomly distribute sleeping
                 var sleepJobHandle = Entities
