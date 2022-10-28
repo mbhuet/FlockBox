@@ -11,7 +11,7 @@ namespace CloudFine.FlockBox.DOTS
     {
         protected override void OnUpdate()
         {
-            float dt = Time.DeltaTime;
+            float dt = World.Time.DeltaTime;
             var velocityJob = Entities.WithAll<SteeringData>().ForEach((ref AgentData agent) =>
             {
                 agent.Position += agent.Velocity * dt;

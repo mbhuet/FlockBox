@@ -19,7 +19,7 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override JobHandle DoSteering()
         {
-            double time = Time.ElapsedTime;
+            double time = World.Time.ElapsedTime;
             return Entities
                 .ForEach((ref AccelerationData acceleration, in AgentData agent, in WanderData wander, in SteeringData steering, in BoundaryData boundary
 #if UNITY_EDITOR

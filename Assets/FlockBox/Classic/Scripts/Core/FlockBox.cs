@@ -144,7 +144,7 @@ namespace CloudFine.FlockBox
                     });
 
             entityManager.AddComponentObject(root, this.transform);
-            entityManager.AddComponentData<CopyTransformFromGameObject>(root, new CopyTransformFromGameObject { });
+            entityManager.AddComponentData<CompanionLink>(root, new CompanionLink { });
             return root;
         }
 

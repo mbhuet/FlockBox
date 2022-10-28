@@ -42,7 +42,7 @@ namespace CloudFine.FlockBox
 
                     entityManager.AddComponentData<LocalToWorld>(_synchedEntity, new LocalToWorld());
                     entityManager.AddComponentObject(_synchedEntity, this.transform);
-                    entityManager.AddComponentData<CopyTransformFromGameObject>(_synchedEntity, new CopyTransformFromGameObject { });
+                    entityManager.AddComponentData<CompanionLink>(_synchedEntity, new CompanionLink { });
 
                     entityManager.AddSharedComponentManaged<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
                     entityManager.AddComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
