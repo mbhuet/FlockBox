@@ -5,6 +5,7 @@ using Unity.Entities;
 namespace CloudFine.FlockBox.DOTS {
     public struct FlockData : ISharedComponentData, IEquatable<FlockData>
     {
+        //TODO use an Id instead of object reference
         public FlockBox Flock;
 
         public bool Equals(FlockData other)
