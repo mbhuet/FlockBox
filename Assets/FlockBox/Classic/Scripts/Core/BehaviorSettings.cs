@@ -114,7 +114,7 @@ namespace CloudFine.FlockBox
         public void ApplyToEntity(Entity entity, EntityManager dstManager)
         {
             //there could be existing componentdata that needs to be removed from this entity first
-            BehaviorSettingsData toClean = dstManager.GetSharedComponentData<BehaviorSettingsData>(entity);
+            BehaviorSettingsData toClean = dstManager.GetSharedComponentManaged<BehaviorSettingsData>(entity);
             if(toClean.Settings != null)
             {
                 foreach (SteeringBehavior behavior in toClean.Settings.behaviors)
@@ -127,7 +127,7 @@ namespace CloudFine.FlockBox
                 }
             }
 
-            dstManager.SetSharedComponentData(entity, new BehaviorSettingsData { Settings = this });
+            dstManager.SetSharedComponentManaged(entity, new BehaviorSettingsData { Settings = this });
             dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
          
             foreach (SteeringBehavior behavior in Behaviors)

@@ -3,6 +3,7 @@ using CloudFine.FlockBox.DOTS;
 using System;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
 using Unity.Entities;
 using Unity.Jobs;
 
@@ -52,7 +53,7 @@ namespace CloudFine.FlockBox.DOTS
             public ComponentTypeHandle<T> BehaviorDataType;
             public T template;
 
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
                 var behaviors = chunk.GetNativeArray(BehaviorDataType);
 

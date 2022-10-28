@@ -11,7 +11,7 @@ namespace CloudFine.FlockBox.DOTS
     {
         protected override void OnUpdate()
         {
-            float dt = Time.DeltaTime;
+            float dt = World.Time.DeltaTime;
             var validationJob = Entities.WithNone<SteeringData>().ForEach((ref AgentData agent, in LocalToWorld ltw, in FlockMatrixData flock) =>
             {
                 float3 newPos = math.transform(flock.WorldToFlockMatrix, ltw.Position);

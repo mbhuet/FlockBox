@@ -44,13 +44,13 @@ namespace CloudFine.FlockBox
                     entityManager.AddComponentObject(_synchedEntity, this.transform);
                     entityManager.AddComponentData<CopyTransformFromGameObject>(_synchedEntity, new CopyTransformFromGameObject { });
 
-                    entityManager.AddSharedComponentData<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
+                    entityManager.AddSharedComponentManaged<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
                     entityManager.AddComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
                     entityManager.AddComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }
                 else
                 {
-                    entityManager.SetSharedComponentData<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
+                    entityManager.SetSharedComponentManaged<FlockData>(_synchedEntity, new FlockData { Flock = flockBox });
                     entityManager.SetComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
                     entityManager.SetComponentData<AgentData>(_synchedEntity, ConvertToAgentData());
                 }

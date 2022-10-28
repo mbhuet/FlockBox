@@ -195,7 +195,7 @@ namespace CloudFine.FlockBox
             //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
 
             dstManager.AddComponent<SteeringData>(entity);
-            dstManager.AddSharedComponentData(entity, new BehaviorSettingsData { Settings = null });
+            dstManager.AddSharedComponentManaged(entity, new BehaviorSettingsData { Settings = null });
 
             if (activeSettings)
             {
