@@ -20,6 +20,12 @@ namespace CloudFine.FlockBox
 
         private static readonly string[] packages =
         {
+#if UNITY_2022_2_OR_NEWER
+        "com.unity.entities@1.0.0",
+        "com.unity.entities.graphics@1.0.0",
+        "com.unity.physics@1.0.0",
+        "com.unity.render-pipelines.universal",
+#else
         "com.unity.burst@1.4.4",
         "com.unity.collections@0.7.0-preview.2",
         "com.unity.entities@0.51.0-preview.32",
@@ -27,6 +33,7 @@ namespace CloudFine.FlockBox
         "com.unity.physics@0.51.0-preview.32",
         "com.unity.render-pipelines.universal",
         "com.unity.rendering.hybrid@0.51.0-preview.32",
+#endif
     };
 
         static DOTSToggleEditor()
