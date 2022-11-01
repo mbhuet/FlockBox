@@ -16,7 +16,6 @@ namespace CloudFine.FlockBox.DOTS
     public partial class ColliderAvoidanceSystem : SteeringBehaviorSystem<ColliderAvoidanceData>
     {
         private float3[] Directions;
-        private BuildPhysicsWorld buildPhysicsWorld;
 
         protected override void OnCreate()
         {
@@ -28,8 +27,6 @@ namespace CloudFine.FlockBox.DOTS
             {
                 Directions[i] = (float3)vector3Directions[i];
             }
-            buildPhysicsWorld = World.GetExistingSystem<BuildPhysicsWorld>();
-            buildPhysicsWorld.RegisterPhysicsRuntimeSystemReadOnly();
         }
 
         protected override void OnDestroy()
@@ -44,8 +41,8 @@ namespace CloudFine.FlockBox.DOTS
 
         protected override JobHandle DoSteering()
         {
-            PhysicsWorld physicsWorld = buildPhysicsWorld.PhysicsWorld;
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
+            PhysicsWorld physicsWorld = GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
 
             //TODO add sphere casting
             Dependency = Entities
@@ -134,7 +131,6 @@ namespace CloudFine.FlockBox.DOTS
 
                 }
                 ).ScheduleParallel(Dependency);
-            buildPhysicsWorld.AddInputDependencyToComplete(Dependency);
             Dependency = dirs.Dispose(Dependency);
             return Dependency;
         }
