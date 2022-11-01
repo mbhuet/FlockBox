@@ -15,7 +15,7 @@ namespace CloudFine.FlockBox.DOTS
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [UpdateInGroup(typeof(SteeringSystemGroup))]
-    public abstract partial class SteeringBehaviorSystem<T> : SystemBase where T : struct, IComponentData
+    public abstract partial class SteeringBehaviorSystem<T> : SystemBase where T : unmanaged, IComponentData
     {
         private EntityQuery updateQuery;
         private List<Tuple<BehaviorSettings, SteeringBehavior>> toUpdate = new List<Tuple<BehaviorSettings, SteeringBehavior>>();
@@ -85,7 +85,7 @@ namespace CloudFine.FlockBox.DOTS
                 if (convert == null) continue;
 
                 //query for all entities that use the changed BehaviorSettings
-                BehaviorSettingsData data = new BehaviorSettingsData { Settings = tuple.Item1 };
+                BehaviorSettingsData data = new BehaviorSettingsData { SettingsInstanceID = tuple.Item1.GetInstanceID() };
                 updateQuery.SetSharedComponentFilter(data);
 
                 T temp = convert.Convert();
