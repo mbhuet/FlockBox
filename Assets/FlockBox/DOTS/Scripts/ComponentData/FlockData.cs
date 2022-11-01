@@ -5,23 +5,16 @@ using Unity.Entities;
 namespace CloudFine.FlockBox.DOTS {
     public struct FlockData : ISharedComponentData, IEquatable<FlockData>
     {
-        //TODO use an Id instead of object reference
-        public FlockBox Flock;
+        public int FlockInstanceID;
 
         public bool Equals(FlockData other)
         {
-            return other.Flock == Flock;
+            return other.FlockInstanceID == FlockInstanceID;
         }
-
 
         public override int GetHashCode()
         {
-            int hash = 0;
-
-            if (!ReferenceEquals(Flock, null))
-                hash ^= Flock.GetHashCode();
-
-            return hash;
+            return FlockInstanceID;
         }
     }
 }

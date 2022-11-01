@@ -131,6 +131,11 @@ namespace CloudFine.FlockBox
         }
         private EntityManager _entityManager;
 
+        public static FlockBox FromInstanceID(int id)
+        {
+            //TODO
+            return null;
+        }
 
         #region DOTS
 
@@ -173,7 +178,7 @@ namespace CloudFine.FlockBox
         private void SetupEntity(Entity entity)
         {
             entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
-            entityManager.AddSharedComponentManaged<FlockData>(entity, new FlockData { Flock = this });
+            entityManager.AddSharedComponentManaged<FlockData>(entity, new FlockData { FlockInstanceID = this.GetInstanceID() });
             entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData {WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
         }
