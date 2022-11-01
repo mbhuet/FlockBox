@@ -5,22 +5,17 @@ using Unity.Entities;
 namespace CloudFine.FlockBox.DOTS {
     public struct BehaviorSettingsData : ISharedComponentData, IEquatable<BehaviorSettingsData>
     {
-        public BehaviorSettings Settings;
+        public int SettingsInstanceID;
 
         public bool Equals(BehaviorSettingsData other)
         {
-            return other.Settings == Settings;
+            return other.SettingsInstanceID == SettingsInstanceID;
         }
 
 
         public override int GetHashCode()
         {
-            int hash = 0;
-
-            if (!ReferenceEquals(Settings, null))
-                hash ^= Settings.GetHashCode();
-
-            return hash;
+            return SettingsInstanceID;
         }
     }
 }

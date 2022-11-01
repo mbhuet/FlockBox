@@ -30,6 +30,12 @@ namespace CloudFine.FlockBox
             get { return behaviors.Length; }
         }
 
+        public static BehaviorSettings FromInstanceID(int id)
+        {
+            //TODO
+            return null;
+        }
+
         private void OnEnable()
         {
             OnBehaviorAdded += BehaviorAddDetected;
@@ -115,9 +121,10 @@ namespace CloudFine.FlockBox
         {
             //there could be existing componentdata that needs to be removed from this entity first
             BehaviorSettingsData toClean = dstManager.GetSharedComponentManaged<BehaviorSettingsData>(entity);
-            if(toClean.Settings != null)
+            BehaviorSettings settings = BehaviorSettings.FromInstanceID(toClean.SettingsInstanceID);
+            if(settings != null)
             {
-                foreach (SteeringBehavior behavior in toClean.Settings.behaviors)
+                foreach (SteeringBehavior behavior in settings.behaviors)
                 {
                     IConvertToComponentData convert = (behavior as IConvertToComponentData);
                     if (convert != null)
@@ -127,7 +134,7 @@ namespace CloudFine.FlockBox
                 }
             }
 
-            dstManager.SetSharedComponentManaged(entity, new BehaviorSettingsData { Settings = this });
+            dstManager.SetSharedComponentManaged(entity, new BehaviorSettingsData { SettingsInstanceID = this.GetInstanceID() });
             dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
          
             foreach (SteeringBehavior behavior in Behaviors)

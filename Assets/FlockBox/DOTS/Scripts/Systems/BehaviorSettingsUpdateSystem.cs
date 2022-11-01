@@ -53,7 +53,7 @@ namespace CloudFine.FlockBox.DOTS {
             for (int i = 0; i < toAdd.Count; i++)
             {
                 var changed = toAdd[i];
-                BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed.Item1 };
+                BehaviorSettingsData filterData = new BehaviorSettingsData { SettingsInstanceID = changed.Item1.GetInstanceID() };
                 Entities
                     .WithSharedComponentFilter(filterData)
                     .WithStructuralChanges()
@@ -70,7 +70,7 @@ namespace CloudFine.FlockBox.DOTS {
             for(int i=0; i<toRemove.Count; i++)
             {
                 var changed = toRemove[i];
-                BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed.Item1 };
+                BehaviorSettingsData filterData = new BehaviorSettingsData { SettingsInstanceID = changed.Item1.GetInstanceID() };
                 Entities
                     .WithSharedComponentFilter(filterData)
                     .WithStructuralChanges()
@@ -90,7 +90,7 @@ namespace CloudFine.FlockBox.DOTS {
                 float maxSpeed = changed.maxSpeed;
                 float maxForce = changed.maxForce;
 
-                BehaviorSettingsData filterData = new BehaviorSettingsData { Settings = changed };
+                BehaviorSettingsData filterData = new BehaviorSettingsData { SettingsInstanceID = changed.GetInstanceID() };
                 Dependency = Entities
                     .WithSharedComponentFilter(filterData)
                     .ForEach((ref SteeringData data) =>
