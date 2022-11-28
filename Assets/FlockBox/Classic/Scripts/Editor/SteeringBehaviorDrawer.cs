@@ -119,7 +119,6 @@ namespace CloudFine.FlockBox
             if (property.objectReferenceValue == null)
                 return;
 
-            float heightOffset = position.y;
             EditorGUI.BeginProperty(position, label, property);
 
             EditorGUI.indentLevel++;
@@ -127,7 +126,7 @@ namespace CloudFine.FlockBox
 
             if (behavior.CanToggleActive)
             {
-                DoProp(isActiveProp, ref position);
+                DrawPropertyField(isActiveProp, ref position);
             }
 
 
@@ -137,7 +136,7 @@ namespace CloudFine.FlockBox
                 position.y += EditorGUIUtility.singleLineHeight; ;
                 EditorGUI.indentLevel++;
 
-                DoProp(weight, ref position);
+                DrawPropertyField(weight, ref position);
 
                
                 if (behavior.CanUseTagFilter)
@@ -147,15 +146,15 @@ namespace CloudFine.FlockBox
 
                 DrawDefaultInspectorWithoutScriptField(ref position);
 
-                DoProp(drawDebugProp, ref position);
+                DrawPropertyField(drawDebugProp, ref position);
            
 
                 if (drawDebugProp.boolValue)
                 {
                     EditorGUI.indentLevel++;
-                    DoProp(color, ref position);
-                    DoProp(drawVectorProp, ref position);
-                    DoProp(drawPerceptionProp, ref position);
+                    DrawPropertyField(color, ref position);
+                    DrawPropertyField(drawVectorProp, ref position);
+                    DrawPropertyField(drawPerceptionProp, ref position);
                     EditorGUI.indentLevel--;
                 }
 
@@ -169,7 +168,7 @@ namespace CloudFine.FlockBox
 
         }
 
-        private void DoProp(SerializedProperty prop, ref Rect position)
+        private void DrawPropertyField(SerializedProperty prop, ref Rect position)
         {
             Rect rect = new Rect(position);
             float height = EditorGUI.GetPropertyHeight(prop);
@@ -181,7 +180,7 @@ namespace CloudFine.FlockBox
 
         protected void DrawTagFilters(ref Rect position)
         {
-            DoProp(useTag, ref position);
+            DrawPropertyField(useTag, ref position);
 
             if (useTag.boolValue)
             {
@@ -207,10 +206,8 @@ namespace CloudFine.FlockBox
                     }
                 }
 
-
-                Rect addRect = new Rect(position);
+                Rect addRect = EditorGUI.IndentedRect(position);
                 addRect.width = AddTagButtonWidth;
-                addRect.x = position.width - AddTagButtonWidth;
                 addRect.height = EditorGUIUtility.singleLineHeight;
 
                 if (GUI.Button(addRect, "+ Add Tag"))
@@ -232,7 +229,7 @@ namespace CloudFine.FlockBox
 
             while (Iterator.NextVisible(false))
             {
-                DoProp(Iterator, ref position);
+                DrawPropertyField(Iterator, ref position);
             }
         }
     }
