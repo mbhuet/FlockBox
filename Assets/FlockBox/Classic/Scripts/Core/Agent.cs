@@ -279,7 +279,20 @@ namespace CloudFine.FlockBox
 
         private void OnDisable()
         {
-            RemoveFromAllCells();
+            if (FlockBox)
+            {
+                FlockBox.UnregisterAgentUpdates(this);
+                RemoveFromAllCells();
+                FlockBox.ForgetTag(this);
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (FlockBox)
+            {
+                FlockBox.RegisterAgentUpdates(this);
+            }
         }
 
         private void OnDestroy()
