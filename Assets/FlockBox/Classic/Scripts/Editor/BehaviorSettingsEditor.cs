@@ -142,8 +142,6 @@ namespace CloudFine.FlockBox
 
             if (foldout)
             {
-                GUILayout.Space(-20);
-
                 EditorGUILayout.PropertyField(property);
             }
 

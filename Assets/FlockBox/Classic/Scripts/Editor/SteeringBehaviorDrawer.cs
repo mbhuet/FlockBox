@@ -26,6 +26,9 @@ namespace CloudFine.FlockBox
         SerializedProperty color;
         SerializedProperty Iterator;
 
+        private const float RemoveTagButtonWidth = 20;
+        private const float AddTagButtonWidth = 80;
+
 
         private void Initialize(SerializedProperty property)
         {
@@ -54,6 +57,61 @@ namespace CloudFine.FlockBox
             init = true;
         }
 
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            if (!init) Initialize(property);
+
+            float height = 0;
+
+            if (behavior.CanToggleActive)
+            {
+                height += EditorGUI.GetPropertyHeight(isActiveProp);
+            }
+
+
+            if (isActiveProp.boolValue)
+            {
+                height += EditorGUIUtility.singleLineHeight; ;
+
+                height += EditorGUI.GetPropertyHeight(weight);
+                if (behavior.CanUseTagFilter)
+                {
+                    height += EditorGUI.GetPropertyHeight(useTag);
+                    if (useTag.boolValue)
+                    {
+                        height += EditorGUIUtility.singleLineHeight;
+
+                        for (int i = 0; i < tags.arraySize; i++)
+                        {
+                            height += EditorGUIUtility.singleLineHeight;
+                        }
+                        height += EditorGUIUtility.singleLineHeight; //add button
+                    }
+
+                }
+
+                Iterator.Reset();
+                Iterator.NextVisible(true);
+
+                while (Iterator.NextVisible(false))
+                {
+                    height+=EditorGUI.GetPropertyHeight(Iterator);
+                }
+                height += EditorGUI.GetPropertyHeight(drawDebugProp);
+
+                if (drawDebugProp.boolValue)
+                {
+                    height += EditorGUI.GetPropertyHeight(color);
+                    height += EditorGUI.GetPropertyHeight(drawVectorProp);
+                    height += EditorGUI.GetPropertyHeight(drawPerceptionProp);
+
+                }
+            }
+            height += 5;
+            return height;
+
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!init) Initialize(property);
@@ -61,91 +119,121 @@ namespace CloudFine.FlockBox
             if (property.objectReferenceValue == null)
                 return;
 
-            
+            float heightOffset = position.y;
+            EditorGUI.BeginProperty(position, label, property);
+
+            EditorGUI.indentLevel++;
+
+
             if (behavior.CanToggleActive)
             {
-                EditorGUILayout.PropertyField(isActiveProp);
+                DoProp(isActiveProp, ref position);
             }
+
+
 
             if (isActiveProp.boolValue)
             {
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Space(20);
-                EditorGUILayout.BeginVertical("BOX");
+                position.y += EditorGUIUtility.singleLineHeight; ;
+                EditorGUI.indentLevel++;
 
-                EditorGUILayout.PropertyField(weight);
+                DoProp(weight, ref position);
 
+               
                 if (behavior.CanUseTagFilter)
                 {
-                    DrawTagFilters();
+                    DrawTagFilters(ref position);
                 }
 
-                DrawDefaultInspectorWithoutScriptField();
-               
+                DrawDefaultInspectorWithoutScriptField(ref position);
 
-                EditorGUILayout.PropertyField(drawDebugProp);
+                DoProp(drawDebugProp, ref position);
+           
+
                 if (drawDebugProp.boolValue)
                 {
                     EditorGUI.indentLevel++;
-                    color.colorValue = EditorGUILayout.ColorField(color.colorValue);
-
-                    EditorGUILayout.PropertyField(drawVectorProp);
-                    EditorGUILayout.PropertyField(drawPerceptionProp);
+                    DoProp(color, ref position);
+                    DoProp(drawVectorProp, ref position);
+                    DoProp(drawPerceptionProp, ref position);
                     EditorGUI.indentLevel--;
                 }
-                                
-                GUILayout.Space(5);
 
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndHorizontal();
+
+                EditorGUI.indentLevel--;
 
             }
             serializedObject.ApplyModifiedProperties();
+            EditorGUI.indentLevel--;
+            EditorGUI.EndProperty();
+
+        }
+
+        private void DoProp(SerializedProperty prop, ref Rect position)
+        {
+            Rect rect = new Rect(position);
+            float height = EditorGUI.GetPropertyHeight(prop);
+            rect.height = height;
+            EditorGUI.PropertyField(rect, prop);
+            position.y += height;
         }
 
 
-        protected void DrawTagFilters()
+        protected void DrawTagFilters(ref Rect position)
         {
-            EditorGUILayout.PropertyField(useTag);
+            DoProp(useTag, ref position);
+
             if (useTag.boolValue)
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(20);
-                GUILayout.BeginVertical("BOX", GUILayout.ExpandWidth(true));
-
+                EditorGUI.indentLevel++;
                 for (int i = 0; i < tags.arraySize; i++)
                 {
-                    GUILayout.BeginHorizontal();
+                    Rect tagRect = new Rect(position);
+                    float height = EditorGUIUtility.singleLineHeight;
+                    tagRect.height = height;
+                    tagRect.width = position.width - RemoveTagButtonWidth;
 
-                    tags.GetArrayElementAtIndex(i).stringValue = EditorGUILayout.TagField(tags.GetArrayElementAtIndex(i).stringValue);
-                    if (GUILayout.Button("X", GUILayout.Width(20), GUILayout.Height(14)))
+                    tags.GetArrayElementAtIndex(i).stringValue = EditorGUI.TagField(tagRect, tags.GetArrayElementAtIndex(i).stringValue);
+
+                    Rect removeRect = new Rect(position);
+                    removeRect.x = position.width;
+                    removeRect.height = height;
+                    removeRect.width = RemoveTagButtonWidth;
+                    position.y += height;
+
+                    if (GUI.Button(removeRect, "X"))
                     {
                         tags.DeleteArrayElementAtIndex(i);
                     }
-                    GUILayout.EndHorizontal();
-
                 }
-                if (GUILayout.Button("+ Add Tag", GUILayout.Width(80)))
+
+
+                Rect addRect = new Rect(position);
+                addRect.width = AddTagButtonWidth;
+                addRect.x = position.width - AddTagButtonWidth;
+                addRect.height = EditorGUIUtility.singleLineHeight;
+
+                if (GUI.Button(addRect, "+ Add Tag"))
                 {
                     tags.arraySize = tags.arraySize + 1;
                 }
+                position.y += addRect.height;
+                position.y += EditorGUIUtility.singleLineHeight;
 
-                GUILayout.EndVertical();
-                GUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
 
         }
 
-        private void DrawDefaultInspectorWithoutScriptField()
+        private void DrawDefaultInspectorWithoutScriptField(ref Rect position)
         {
             Iterator.Reset();
             Iterator.NextVisible(true);
 
             while (Iterator.NextVisible(false))
             {
-                EditorGUILayout.PropertyField(Iterator, true);
+                DoProp(Iterator, ref position);
             }
         }
-
     }
 }
