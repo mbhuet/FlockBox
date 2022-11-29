@@ -391,7 +391,7 @@ namespace CloudFine.FlockBox
 
         }
 
-        private void LeaveFlockBox()
+        public void LeaveFlockBox()
         {
             if (FlockBox)
             {
