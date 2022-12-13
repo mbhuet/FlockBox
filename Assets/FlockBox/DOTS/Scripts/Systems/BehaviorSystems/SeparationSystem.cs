@@ -112,6 +112,8 @@ namespace CloudFine.FlockBox
         public void AddEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.AddEntityData(this, entity, entityManager);
         public void SetEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.SetEntityData(this, entity, entityManager);
         public void RemoveEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.RemoveEntityData(this, entity, entityManager);
+        public void AddEntityData(IBaker baker) => IConvertToComponentDataExtension.AddEntityData(this, baker);
+
     }
 }
 #endif

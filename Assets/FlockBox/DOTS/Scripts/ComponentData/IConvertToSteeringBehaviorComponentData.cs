@@ -9,14 +9,14 @@ namespace CloudFine.FlockBox.DOTS
         void AddEntityData(Entity entity, EntityManager entityManager);
         void SetEntityData(Entity entity, EntityManager entityManager);
         void RemoveEntityData(Entity entity, EntityManager entityManager);
+
+        void AddEntityData(IBaker baker);
+
     }
 
     public interface IConvertToSteeringBehaviorComponentData<T> : IConvertToComponentData where T : unmanaged, IComponentData
     {
         T Convert();
-
-        bool HasEntityData(Entity entity, EntityManager entityManager) => IConvertToComponentDataExtension.HasEntityData(this, entity, entityManager);
-
     }
 }
 #endif
