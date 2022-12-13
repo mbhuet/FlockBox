@@ -24,7 +24,6 @@ namespace CloudFine.FlockBox
         "com.unity.entities@1.0.0",
         "com.unity.entities.graphics@1.0.0",
         "com.unity.physics@1.0.0",
-        "com.unity.render-pipelines.universal",
 #else
         "com.unity.burst@1.4.4",
         "com.unity.collections@0.7.0-preview.2",

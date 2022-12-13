@@ -17,6 +17,15 @@ EditorUserSettings:
     Entity Inspector Settings:
       value: 183b144645154b790c0d07271e271d4a564654406c6866706f0d1420f2ec3521c1e83bf9e8343a322d36f62c017c5b7ff40b0518f36117
       flags: 0
+    RecentlyUsedSceneGuid-0:
+      value: 5001065356075e020f5a5e2741255e444e4e1d2e782c77347e791866e6e6353d
+      flags: 0
+    RecentlyUsedSceneGuid-1:
+      value: 0008560055060b0f5a5e5b7447755e444f4e49297f7a7332782c1963bab03161
+      flags: 0
+    RecentlyUsedSceneGuid-2:
+      value: 53555157060d0f0c5b0d5c75457608444f151b2b7f7d71337a7c4431b2e4606c
+      flags: 0
     RecentlyUsedScenePath-0:
       value: 224247031146467d01010f29322c475f351b19393f21257f092c103cadd3373dece225a6d42e2d392a11db39172a3e0adb352d0efb04441e1f07e917
       flags: 0
@@ -37,9 +46,13 @@ EditorUserSettings:
   m_VCDebugCmd: 0
   m_VCDebugOut: 0
   m_SemanticMergeMode: 2
+  m_DesiredImportWorkerCount: 2
+  m_StandbyImportWorkerCount: 2
+  m_IdleImportWorkerShutdownDelay: 60000
   m_VCShowFailedCheckout: 1
   m_VCOverwriteFailedCheckoutAssets: 1
   m_VCProjectOverlayIcons: 1
   m_VCHierarchyOverlayIcons: 1
   m_VCOtherOverlayIcons: 1
   m_VCAllowAsyncUpdate: 0
+  m_ArtifactGarbageCollection: 1
