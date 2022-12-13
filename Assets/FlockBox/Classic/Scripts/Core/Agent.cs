@@ -635,14 +635,9 @@ namespace CloudFine.FlockBox
     }
 
 #if FLOCKBOX_DOTS
-    public partial class Agent : IConvertGameObjectToEntity
+    public partial class Agent
     {
-        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        {
-            dstManager.AddComponentData(entity, ConvertToAgentData());
-        }
-
-        protected AgentData ConvertToAgentData()
+        public AgentData ConvertToAgentData()
         {
             return new AgentData
             {
@@ -655,6 +650,15 @@ namespace CloudFine.FlockBox
                 UniqueID = AgentData.GetUniqueID()
             };
         }
+    }
+
+    public class AgentBaker : Baker<Agent>
+    {
+        public override void Bake(Agent authoring)
+        {
+            AddComponent(authoring.ConvertToAgentData());
+        }
+        
     }
 #endif
 }

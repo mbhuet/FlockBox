@@ -5,11 +5,16 @@ using Unity.Entities;
 using UnityEngine;
 
 namespace CloudFine.FlockBox.DOTS {
-    public class DOTSAgentStateDemo : MonoBehaviour, IConvertGameObjectToEntity
+    public class DOTSAgentStateDemo : MonoBehaviour
     {
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+
+    }
+
+    public class DOTSAgentStateDemoBaker : Baker<DOTSAgentStateDemo>
+    {
+        public override void Bake(DOTSAgentStateDemo authoring)
         {
-            dstManager.AddComponentData(entity, new AgentStateData{ State = 0});
+            AddComponent(new AgentStateData { State = 0 });
         }
     }
 }

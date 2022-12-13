@@ -187,29 +187,48 @@ namespace CloudFine.FlockBox
     }
 
 #if FLOCKBOX_DOTS
-
-    public partial class SteeringAgent : IConvertGameObjectToEntity
+    public class SteeringAgentBaker : Baker<SteeringAgent>
     {
-        void IConvertGameObjectToEntity.Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public override void Bake(SteeringAgent authoring)
         {
-            //BehaviorSettingsUpdateSystem will fill in the rest of the neccessary componentData when the change is detected
-
-            dstManager.AddComponent<SteeringData>(entity);
-            dstManager.AddSharedComponentManaged(entity, new BehaviorSettingsData { SettingsInstanceID = default });
-
-            if (activeSettings)
+            if (authoring.activeSettings)
             {
-                activeSettings.ApplyToEntity(entity, dstManager);
+               ApplyToEntity(authoring.activeSettings);
             }
 
             //AgentData holds everything a behavior needs to react to another Agent
-            dstManager.AddComponentData(entity, ConvertToAgentData());
-            dstManager.AddComponentData(entity, new AccelerationData { Value = float3.zero });
-            dstManager.AddComponentData(entity, new PerceptionData());
+            AddComponent(authoring.ConvertToAgentData());
+            AddComponent(new AccelerationData { Value = float3.zero });
+            AddComponent(new PerceptionData());
 
             //give entity a buffer to hold info about surroundings
-            dstManager.AddBuffer<NeighborData>(entity);
+            AddBuffer<NeighborData>();
         }
-    }
+
+        /// <summary>
+        /// Used to apply necessary behavior ComponentData to an Entity
+        /// Will reference current BehaviorSettingsData to clean up ComponentData that is no longer needed.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="dstManager"></param>
+        public void ApplyToEntity(BehaviorSettings settings)
+        {
+            //TODO GetInstanceID won't work, this isn't happening at runtime
+            AddSharedComponentManaged(new BehaviorSettingsData { SettingsInstanceID = settings.GetInstanceID() });
+            AddComponent(new SteeringData { MaxForce = settings.maxForce, MaxSpeed = settings.maxSpeed });
+
+            foreach (SteeringBehavior behavior in settings.Behaviors)
+            {
+                IConvertToComponentData convert = (behavior as IConvertToComponentData);
+                if (convert != null)
+                {
+                    convert.AddEntityData(this);
+                }
+            }
+
+            AddComponent(settings.Containment.Convert());
+
+        }
+    }    
 #endif
 }
