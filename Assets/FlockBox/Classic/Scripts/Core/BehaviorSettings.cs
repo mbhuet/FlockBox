@@ -36,6 +36,12 @@ namespace CloudFine.FlockBox
             return null;
         }
 
+        public int GetBehaviorSettingsID()
+        {
+            //TODO
+            return 0;
+        }
+
         private void OnEnable()
         {
             OnBehaviorAdded += BehaviorAddDetected;
@@ -134,7 +140,7 @@ namespace CloudFine.FlockBox
                 }
             }
 
-            dstManager.SetSharedComponentManaged(entity, new BehaviorSettingsData { SettingsInstanceID = this.GetInstanceID() });
+            dstManager.SetSharedComponentManaged(entity, new BehaviorSettingsData { SettingsInstanceID = this.GetBehaviorSettingsID() });
             dstManager.SetComponentData(entity, new SteeringData { MaxForce = maxForce, MaxSpeed = maxSpeed });
          
             foreach (SteeringBehavior behavior in Behaviors)

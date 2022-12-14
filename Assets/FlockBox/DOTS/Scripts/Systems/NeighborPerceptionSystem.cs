@@ -47,7 +47,7 @@ namespace CloudFine.FlockBox.DOTS
                     continue;
                 }
 
-                FlockBox flockBox = FlockBox.FromInstanceID(settings.FlockInstanceID);
+                FlockBox flockBox = FlockBox.FromFlockBoxID(settings.FlockInstanceID);
                 float cellSize = flockBox.CellSize;
                 float dimensions_x = flockBox.DimensionX;
                 float dimensions_y = flockBox.DimensionY;

@@ -85,7 +85,7 @@ namespace CloudFine.FlockBox.DOTS
                 if (convert == null) continue;
 
                 //query for all entities that use the changed BehaviorSettings
-                BehaviorSettingsData data = new BehaviorSettingsData { SettingsInstanceID = tuple.Item1.GetInstanceID() };
+                BehaviorSettingsData data = new BehaviorSettingsData { SettingsInstanceID = tuple.Item1.GetBehaviorSettingsID() };
                 updateQuery.SetSharedComponentFilter(data);
 
                 T temp = convert.Convert();
