@@ -159,6 +159,7 @@ namespace CloudFine.FlockBox
             return root;
         }
 
+        /*
         private void CheckForURP()
         {
             if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset?.GetType()?.Name != "UniversalRenderPipelineAsset")
@@ -166,7 +167,9 @@ namespace CloudFine.FlockBox
                 Debug.LogWarning("FlockBox DOTS Warning: The Hybrid Render used to convert Prefabs to Entities no longer supports the built-in render pipeline. If you are not able to see the Steering Agents, you may need to upgrade to the Universal Render Pipeline.");
             }
         }
+        */
 
+        /*
         public void ConvertGameObjectsToEntities(Agent[] agents)
         {
             CheckForURP();
@@ -180,6 +183,7 @@ namespace CloudFine.FlockBox
             }
             settings.BlobAssetStore.Dispose();
         }
+        */
 
         private void SetupEntity(Entity entity)
         {
@@ -189,6 +193,7 @@ namespace CloudFine.FlockBox
             entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
         }
 
+        /*
         public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
         {
             CheckForURP();
@@ -219,7 +224,7 @@ namespace CloudFine.FlockBox
             settings.BlobAssetStore.Dispose();
             return output;
         }
-
+        */
 
         #endregion
 #endif
@@ -235,8 +240,11 @@ namespace CloudFine.FlockBox
 #if FLOCKBOX_DOTS
                 if (useDOTS)
                 {
+                    //TODO
+                    /*
                     InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
                     ConvertGameObjectsToEntities(GetComponentsInChildren<Agent>());
+                    */
                 }
                 else
 #endif

@@ -213,8 +213,7 @@ namespace CloudFine.FlockBox
         /// <param name="dstManager"></param>
         public void ApplyToEntity(BehaviorSettings settings)
         {
-            //TODO GetInstanceID won't work, this isn't happening at runtime
-            AddSharedComponentManaged(new BehaviorSettingsData { SettingsInstanceID = settings.GetInstanceID() });
+            AddSharedComponentManaged(new BehaviorSettingsData { SettingsInstanceID = settings.GetBehaviorSettingsID() });
             AddComponent(new SteeringData { MaxForce = settings.maxForce, MaxSpeed = settings.maxSpeed });
 
             foreach (SteeringBehavior behavior in settings.Behaviors)

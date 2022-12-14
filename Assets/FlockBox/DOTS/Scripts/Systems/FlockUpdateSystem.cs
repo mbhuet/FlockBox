@@ -27,7 +27,7 @@ namespace CloudFine.FlockBox.DOTS
         {
             foreach (FlockBox changed in toUpdate)
             {
-                FlockData data = new FlockData { FlockInstanceID = changed.GetInstanceID() };
+                FlockData data = new FlockData { FlockInstanceID = changed.GetFlockBoxID() };
                 float3 dimensions = changed.WorldDimensions;
                 float margin = changed.boundaryBuffer;
                 bool wrap = changed.wrapEdges;

@@ -82,7 +82,10 @@ namespace CloudFine.FlockBox{
 #if FLOCKBOX_DOTS
             if (_flockBox.DOTSEnabled)
             {
+                //TODO
+                /*
                 _spawnedEntities.AddRange(_flockBox.InstantiateAgentEntitiesFromPrefab(_agent, toAdd));
+                */
             }
             else
 #endif
