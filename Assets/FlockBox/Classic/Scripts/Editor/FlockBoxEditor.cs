@@ -180,24 +180,25 @@ namespace CloudFine.FlockBox
             Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue);
             float size = _size.floatValue;
 
-            Handles.matrix = transform.localToWorldMatrix;
             Handles.color = Color.grey * .5f;
 
             Camera sceneCam = SceneView.lastActiveSceneView.camera;
-            Vector3 camForward = Handles.matrix.inverse.MultiplyVector(sceneCam.transform.forward);
-            Vector3 camPos = Handles.matrix.inverse.MultiplyPoint(sceneCam.transform.position);
+            Vector3 camForward = transform.localToWorldMatrix.inverse.MultiplyVector(sceneCam.transform.forward);
+            Vector3 camPos = transform.localToWorldMatrix.inverse.MultiplyPoint(sceneCam.transform.position);
             bool isOrtho = sceneCam.orthographic;
 
             Vector3 dimensionsDelta = Vector3.zero;
-            Vector3 posDelta = Vector3.zero;
+            Vector3 positionAdjustment = Vector3.zero;
 
-            for (int f = 0; f<faces.Length; f++)
+            for (int f = 0; f < faces.Length; f++)
             {
+                Handles.matrix = transform.localToWorldMatrix;
+
                 Vector3 faceNormal = faces[f];
                 Vector3 faceCenter = Vector3.Scale((Vector3.one + faceNormal) * .5f, (Vector3)dimensions * size);
                 Vector3 faceToCam = camPos - faceCenter;
 
-                bool facingCamera = isOrtho? Vector3.Dot(camForward, faceNormal) <= .000001f : Vector3.Dot(faceNormal, faceToCam) > 0;
+                bool facingCamera = isOrtho ? Vector3.Dot(camForward, faceNormal) <= .000001f : Vector3.Dot(faceNormal, faceToCam) > 0;
 
                 if (facingCamera)
                 {
@@ -209,7 +210,7 @@ namespace CloudFine.FlockBox
                     if (faceNormal.x != 0)
                     {
                         float x = faceNormal.x < 0 ? 0 : dimensions.x;
-                        for(int y = 0; y < dimensions.y; y++)
+                        for (int y = 0; y < dimensions.y; y++)
                         {
                             Handles.DrawAAPolyLine(
                                 new Vector3(x, y, 0) * size,
@@ -281,20 +282,25 @@ namespace CloudFine.FlockBox
 
                 Vector3 worldDimesions = (Vector3)dimensions * size;
 
-                Vector3 handlePos = faceCenter;// + Vector3.Scale(worldDimesions,dir1) * .5f + Vector3.Scale(worldDimesions,dir2) * .5f;
-                float handleSize = HandleUtility.GetHandleSize(handlePos) * .05f;
+                Handles.matrix = Matrix4x4.identity;
 
-                Vector3 drag = Handles.Slider(faceCenter, faceNormal, handleSize, Handles.DotHandleCap, 0);
+                Vector3 handlePosWorld = transform.TransformPoint(faceCenter);
+                Vector3 faceNormalWorld = transform.TransformDirection(faceNormal);
+                float handleSize = HandleUtility.GetHandleSize(handlePosWorld) * .05f;
 
-                Vector3 delta = (drag - handlePos);
-                Vector3 localSpaceDelta = Handles.matrix.MultiplyVector(delta);
+                int controlID = 100000 + f;
+                Vector3 dragEndWorld = Handles.Slider(controlID, handlePosWorld, faceNormalWorld, handleSize, Handles.DotHandleCap, 0);
 
-                if(faceNormal.x < 0 || faceNormal.y <0 || faceNormal.z < 0)
+                Vector3 handleDeltaWorld = (dragEndWorld - handlePosWorld);
+                Vector3 handleDeltaLocal = transform.InverseTransformVector(handleDeltaWorld);
+
+                if (faceNormal.x < 0 || faceNormal.y < 0 || faceNormal.z < 0)
                 {
-                    posDelta += localSpaceDelta;
-                    delta = -delta;
+                    positionAdjustment += (handleDeltaWorld);
+                    handleDeltaLocal = -handleDeltaLocal;
                 }
-                dimensionsDelta += delta/size;
+
+                dimensionsDelta += handleDeltaLocal / size;
             }
 
             dimensions += dimensionsDelta;
@@ -308,7 +314,7 @@ namespace CloudFine.FlockBox
             _dimensionZ.floatValue = dimensions.z;
 
             Undo.RecordObject(transform, "Move Transform");
-            transform.position += posDelta;
+            transform.position += positionAdjustment;
 
             serializedObject.ApplyModifiedProperties();
         }
