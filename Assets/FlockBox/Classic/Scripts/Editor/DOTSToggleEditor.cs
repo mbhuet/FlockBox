@@ -15,7 +15,6 @@ namespace CloudFine.FlockBox
     private const string dotsToggleMenuPath = "FlockBox/Enable DOTS (2020.1+)";
     private const string dotsPackageMenuPath = "FlockBox/Import DOTS Packages (2020.1+)";
 #endif
-        private const string prefsKey = "FLOCKBOX_DOTS_TOGGLE";
         private const string dotsDefine = "FLOCKBOX_DOTS";
 
         private static readonly string[] packages =
@@ -29,35 +28,41 @@ namespace CloudFine.FlockBox
         "com.unity.rendering.hybrid@0.51.0-preview.32",
     };
 
+        private static bool waitingForRecompile = false;
+
         static DOTSToggleEditor()
         {
-            UpdateScriptingDefines(IsEnabled);
+            UnityEditor.Compilation.CompilationPipeline.compilationFinished += CompilationPipeline_compilationFinished;
+
+        }
+
+        private static void CompilationPipeline_compilationFinished(object obj)
+        {
+            waitingForRecompile = false;
+            UpdateToggleCheckmark();
         }
 
         public static bool IsEnabled
         {
             get
             {
-#if UNITY_2020_1_OR_NEWER
-                return EditorPrefs.GetBool(prefsKey, false);
+#if FLOCKBOX_DOTS
+                return true;
 #else
-            return false;
+                return false;
 #endif
             }
-            set { EditorPrefs.SetBool(prefsKey, value); }
         }
 
         [MenuItem(dotsToggleMenuPath)]
         private static void ToggleAction()
         {
-            IsEnabled = !IsEnabled;
-
-            if (IsEnabled && !AllPackagesAlreadyImported())
+            if (!IsEnabled && !AllPackagesAlreadyImported())
             {
                 DisplayPackageInstallPrompt();
             }
 
-            UpdateScriptingDefines(IsEnabled);
+            UpdateScriptingDefines(!IsEnabled);
         }
 
         [MenuItem(dotsPackageMenuPath)]
@@ -92,14 +97,21 @@ namespace CloudFine.FlockBox
                 allDefines.Remove(dotsDefine);
             }
             PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", allDefines.ToArray()));
+            UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
+            waitingForRecompile = true;
+        }
+
+        private static void UpdateToggleCheckmark()
+        {
+            Menu.SetChecked(dotsToggleMenuPath, IsEnabled);
         }
 
         [MenuItem(dotsToggleMenuPath, true)]
         private static bool ToggleActionValidate()
         {
-            Menu.SetChecked(dotsToggleMenuPath, IsEnabled);
+            UpdateToggleCheckmark();
 #if UNITY_2020_1_OR_NEWER
-            return true;
+            return !waitingForRecompile;
 #else
         return false;
 #endif
@@ -133,7 +145,6 @@ namespace CloudFine.FlockBox
 
         private static void DisplayPackageInstallPrompt()
         {
-
             if (EditorUtility.DisplayDialog("FlockBox", "Import the following packages? \n\n" + GetPackageList(), "OK", "Cancel"))
             {
                 InstallDOTSPackages();
