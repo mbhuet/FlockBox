@@ -798,6 +798,15 @@ namespace CloudFine.FlockBox
                         Population = pop.population
                     };
                 }
+
+                FlockBoxData data = new FlockBoxData
+                {
+                    wrapEdges = authoring.wrapEdges,
+                    WorldDimensions = authoring.WorldDimensions,
+                    boundaryBuffer = authoring.boundaryBuffer
+                };
+
+                AddComponent(data);
             }
         }
 #endif

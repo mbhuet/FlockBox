@@ -7,7 +7,9 @@ namespace CloudFine.FlockBox.DOTS
 {
     public struct FlockBoxData : IComponentData
     {
-        
+        public float3 WorldDimensions;
+        public float boundaryBuffer;
+        public bool wrapEdges;
     }
 }
 #endif

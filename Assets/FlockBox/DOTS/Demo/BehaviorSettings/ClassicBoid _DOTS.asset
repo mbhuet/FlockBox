@@ -117,6 +117,32 @@ MonoBehaviour:
   - {fileID: 5392076397341597360}
   - {fileID: -4251610591213533351}
   - {fileID: -8063877085944005324}
+  - {fileID: 5177512490423370800}
+--- !u!114 &5177512490423370800
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794497d99f491984b8cd9ec21a11766f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+  weight: 1
+  useTagFilter: 0
+  filterTags: []
+  drawDebug: 0
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  debugDrawSteering: 0
+  debugDrawProperties: 0
+  foldout: 1
+  effectiveRadius: 10
+  fieldOfView: 270
+  globalTagSearch: 0
+  stoppingDistance: 10
 --- !u!114 &5392076397341597360
 MonoBehaviour:
   m_ObjectHideFlags: 1
