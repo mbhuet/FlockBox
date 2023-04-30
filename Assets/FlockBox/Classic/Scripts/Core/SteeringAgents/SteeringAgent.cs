@@ -193,7 +193,8 @@ namespace CloudFine.FlockBox
         {
             if (authoring.activeSettings)
             {
-               ApplyToEntity(authoring.activeSettings);
+                DependsOn(authoring.activeSettings);
+                ApplyToEntity(authoring.activeSettings);
             }
 
             //AgentData holds everything a behavior needs to react to another Agent

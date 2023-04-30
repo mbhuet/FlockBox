@@ -771,6 +771,36 @@ namespace CloudFine.FlockBox
             return WorldPositionToHash(position.x, position.y, position.z);
         }
 
+#if FLOCKBOX_DOTS
+        public class FlockBoxBaker : Baker<FlockBox>
+        {
+            public override void Bake(FlockBox authoring)
+            {
+                DynamicBuffer<FlockBoxSpawnPopulationData> dynamicBuffer = AddBuffer<FlockBoxSpawnPopulationData>();
+                dynamicBuffer.ResizeUninitialized(authoring.startingPopulations.Count);
+                for (int i = 0; i < dynamicBuffer.Length; i++)
+                {
+                    AgentPopulation pop = authoring.startingPopulations[i];
+
+                    DependsOn(pop.prefab);
+
+                    if (pop.prefab is SteeringAgent steeringAgent)
+                    {
+                        if (steeringAgent.activeSettings)
+                        {
+                            //we want to rebake whenever changes are made to prefabs in the starting populations
+                            DependsOn(steeringAgent.activeSettings);
+                        }
+                    }
+                    dynamicBuffer[i] = new FlockBoxSpawnPopulationData
+                    {
+                        Prefab = GetEntity(pop.prefab),
+                        Population = pop.population
+                    };
+                }
+            }
+        }
+#endif
 
 #if UNITY_EDITOR
 
