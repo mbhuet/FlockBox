@@ -28,8 +28,7 @@ namespace CloudFine.FlockBox.DOTS
             foreach (var (data, spawnPopulations) in SystemAPI.Query<FlockBoxData, DynamicBuffer<FlockBoxSpawnPopulationData>>())
             {
                 for(int i =0; i<spawnPopulations.Length; i++)
-                {
-                    
+                {                    
                     var pop = spawnPopulations[i];
                     NativeArray<Entity> entities = new NativeArray<Entity>(pop.Population, Allocator.Temp);
                     ecb.Instantiate(pop.Prefab, entities);
@@ -37,7 +36,6 @@ namespace CloudFine.FlockBox.DOTS
                     var random = new Unity.Mathematics.Random((uint)Time.realtimeSinceStartup);
                     float buffer = data.wrapEdges ? 0 : data.boundaryBuffer;
                     float3 dimensions = data.WorldDimensions;
-
 
                     for (int j = 0; j<entities.Length; j++)
                     {
@@ -49,31 +47,21 @@ namespace CloudFine.FlockBox.DOTS
                                 random.NextFloat(buffer, dimensions.y - buffer),
                                 random.NextFloat(buffer, dimensions.z - buffer)
                                 ),
+                            //TODO scale to maxSpeed
                             Velocity = new float3 (
                                 random.NextFloat(),
                                 random.NextFloat(),
                                 random.NextFloat()
-                                )
+                                ),
+                            UniqueID = AgentData.TakeNextId()
                         };
+
+                        //TODO this overwrites tag, fill, radius, etc
                         ecb.SetComponent(e, agent);
 
                         ecb.AddComponent(e, new FlockMatrixData { WorldToFlockMatrix = data.WorldToLocalMatrix });
                         ecb.AddComponent(e, new BoundaryData { Dimensions = data.WorldDimensions, Margin = data.boundaryBuffer, Wrap = data.wrapEdges });
                         ecb.AddSharedComponentManaged(e, new FlockData { FlockInstanceID = data.FlockBoxID });
-                        /*
-                        
-                        Entity entity = agents[i];
-                        AgentData agent = entityManager.GetComponentData<AgentData>(entity);
-                        if (entityManager.HasComponent<SteeringData>(entity))
-                        {
-                            SteeringData steering = entityManager.GetComponentData<SteeringData>(entity);
-                            agent.Velocity = UnityEngine.Random.insideUnitSphere * steering.MaxSpeed;
-                        }
-                        agent.Position = RandomPosition();
-                        agent.UniqueID = AgentData.GetUniqueID();
-                        entityManager.SetComponentData(entity, agent);
-
-                        */
                     }
                 }
             }

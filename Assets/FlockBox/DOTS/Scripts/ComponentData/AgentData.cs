@@ -19,6 +19,8 @@ namespace CloudFine.FlockBox.DOTS
         public bool Sleeping;
         public int UniqueID;
 
+        private static int NEXT_ID;
+
         public bool TagInMask(int mask)
         {
             return ((1 << Tag & mask) != 0);
@@ -67,10 +69,10 @@ namespace CloudFine.FlockBox.DOTS
             return (UniqueID == other.UniqueID);
         }
 
-        public static int GetUniqueID()
+        public static int TakeNextId()
         {
-            //TODO better duplicate prevention?
-           return (int)(UnityEngine.Random.value * 100000);
+            NEXT_ID++;
+            return NEXT_ID;
         }
     }
 }

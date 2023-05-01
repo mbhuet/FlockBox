@@ -660,7 +660,7 @@ namespace CloudFine.FlockBox
                 Tag = TagMaskUtility.TagToInt(tag),
                 Radius = shape.radius,
                 Fill = shape.type == Shape.ShapeType.SPHERE,
-                UniqueID = AgentData.GetUniqueID()
+                UniqueID = AgentData.TakeNextId()
             };
         }
     }
