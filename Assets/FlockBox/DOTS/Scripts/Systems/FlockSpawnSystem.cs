@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 
@@ -33,21 +34,31 @@ namespace CloudFine.FlockBox.DOTS
                     NativeArray<Entity> entities = new NativeArray<Entity>(pop.Population, Allocator.Temp);
                     ecb.Instantiate(pop.Prefab, entities);
 
-                    for(int j = 0; j<entities.Length; j++)
+                    var random = new Unity.Mathematics.Random((uint)Time.realtimeSinceStartup);
+                    float buffer = data.wrapEdges ? 0 : data.boundaryBuffer;
+                    float3 dimensions = data.WorldDimensions;
+
+
+                    for (int j = 0; j<entities.Length; j++)
                     {
                         Entity e = entities[j];
                         AgentData agent = new AgentData
                         {
-                            Position = Vector3.zero,
-                            Velocity = Vector3.forward,
-                            Forward = Vector3.forward,
+                            Position = new float3(
+                                random.NextFloat(buffer, dimensions.x - buffer),
+                                random.NextFloat(buffer, dimensions.y - buffer),
+                                random.NextFloat(buffer, dimensions.z - buffer)
+                                ),
+                            Velocity = new float3 (
+                                random.NextFloat(),
+                                random.NextFloat(),
+                                random.NextFloat()
+                                )
                         };
                         ecb.SetComponent(e, agent);
 
                         ecb.AddComponent(e, new FlockMatrixData { WorldToFlockMatrix = data.WorldToLocalMatrix });
                         ecb.AddComponent(e, new BoundaryData { Dimensions = data.WorldDimensions, Margin = data.boundaryBuffer, Wrap = data.wrapEdges });
-                        ecb.AddComponent(e, new DummyData { });
-
                         ecb.AddSharedComponentManaged(e, new FlockData { FlockInstanceID = data.FlockBoxID });
                         /*
                         
@@ -62,11 +73,6 @@ namespace CloudFine.FlockBox.DOTS
                         agent.UniqueID = AgentData.GetUniqueID();
                         entityManager.SetComponentData(entity, agent);
 
-                        entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
-                        entityManager.AddSharedComponentManaged<FlockData>(entity, new FlockData { FlockInstanceID = this.GetFlockBoxID() });
-                        entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData {WorldToFlockMatrix = transform.worldToLocalMatrix });
-                        entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
-                        
                         */
                     }
                 }
