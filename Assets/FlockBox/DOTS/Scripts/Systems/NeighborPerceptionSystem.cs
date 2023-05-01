@@ -40,9 +40,7 @@ namespace CloudFine.FlockBox.DOTS
 
                 if (agentCount == 0)
                 {
-                    // Early out. If the given variant includes no Boids, move on to the next loop.
-                    // For example, variant 0 will always exit early bc it's it represents a default, uninitialized
-                    // Boid struct, which does not appear in this sample.
+                    // Early out
                     flockQuery.ResetFilter();
                     continue;
                 }

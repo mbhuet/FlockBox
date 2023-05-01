@@ -10,6 +10,8 @@ namespace CloudFine.FlockBox.DOTS
         public float3 WorldDimensions;
         public float boundaryBuffer;
         public bool wrapEdges;
+        public int FlockBoxID;
+        public float4x4 WorldToLocalMatrix;
     }
 }
 #endif

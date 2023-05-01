@@ -131,17 +131,24 @@ namespace CloudFine.FlockBox
         }
         private EntityManager _entityManager;
 
+        private static List<FlockBox> IdToFlockBox = new List<FlockBox>();
         public static FlockBox FromFlockBoxID(int id)
         {
-            //TODO
-            return null;
+            if (id >= IdToFlockBox.Count) return null;
+            return IdToFlockBox[id];
         }
 
         public int GetFlockBoxID()
         {
-            //TODO
-            return 0;
+            if(Id < 0)
+            {
+                IdToFlockBox.Add(this);
+                Id = IdToFlockBox.Count-1;
+            }
+            return Id;
         }
+
+        private int Id = -1;
 
         #region DOTS
 
@@ -185,6 +192,7 @@ namespace CloudFine.FlockBox
         }
         */
 
+        /*
         private void SetupEntity(Entity entity)
         {
             entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
@@ -192,6 +200,7 @@ namespace CloudFine.FlockBox
             entityManager.AddComponentData<FlockMatrixData>(entity, new FlockMatrixData {WorldToFlockMatrix = transform.worldToLocalMatrix });
             entityManager.AddComponentData<BoundaryData>(entity, new BoundaryData { Dimensions = WorldDimensions, Margin = boundaryBuffer, Wrap = wrapEdges });
         }
+        */
 
         /*
         public Entity[] InstantiateAgentEntitiesFromPrefab(Agent prefab, int population)
@@ -803,7 +812,9 @@ namespace CloudFine.FlockBox
                 {
                     wrapEdges = authoring.wrapEdges,
                     WorldDimensions = authoring.WorldDimensions,
-                    boundaryBuffer = authoring.boundaryBuffer
+                    boundaryBuffer = authoring.boundaryBuffer,
+                    FlockBoxID = authoring.GetFlockBoxID(),
+                    WorldToLocalMatrix = authoring.transform.worldToLocalMatrix
                 };
 
                 AddComponent(data);

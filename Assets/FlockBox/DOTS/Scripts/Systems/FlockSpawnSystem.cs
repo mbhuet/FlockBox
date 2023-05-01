@@ -44,11 +44,11 @@ namespace CloudFine.FlockBox.DOTS
                         };
                         ecb.SetComponent(e, agent);
 
-                        ecb.AddComponent(e, new FlockMatrixData { });
+                        ecb.AddComponent(e, new FlockMatrixData { WorldToFlockMatrix = data.WorldToLocalMatrix });
                         ecb.AddComponent(e, new BoundaryData { Dimensions = data.WorldDimensions, Margin = data.boundaryBuffer, Wrap = data.wrapEdges });
                         ecb.AddComponent(e, new DummyData { });
 
-                        ecb.AddSharedComponentManaged(e, new FlockData { });
+                        ecb.AddSharedComponentManaged(e, new FlockData { FlockInstanceID = data.FlockBoxID });
                         /*
                         
                         Entity entity = agents[i];
