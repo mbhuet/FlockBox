@@ -12,51 +12,18 @@ namespace CloudFine.FlockBox
         [Tooltip("Distance at which brake force will be applied to bring the agent to a stop.")]
         public float stoppingDistance = 10;
 
-        public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
-        {
-            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(targetIDAttributeName, -1);
-            int chosenTargetID = mine.GetAgentIntProperty(targetIDAttributeName);
-
-            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
-
-            if (allTargets.Count == 0)
-            {
-                if (chosenTargetID != -1)
-                {
-                    DisengagePursuit(mine, chosenTargetID);
-                }
-                steer = Vector3.zero;
-                return;
-            }
-
-            Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
-
-            if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
-            {
-                if (chosenTargetID != -1)
-                {
-                    DisengagePursuit(mine, chosenTargetID);
-                }
-                steer = Vector3.zero;
-                return;
-            }
-
-            if (closestTarget.agentID != chosenTargetID)
-            {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
-            }
-
-            mine.AttemptCatch(closestTarget);
-            Vector3 desired_velocity = DesiredVelocityForArrival(mine, closestTarget.Position, stoppingDistance);
-            steer = desired_velocity - mine.Velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-        }
 
         public static Vector3 DesiredVelocityForArrival(SteeringAgent mine, Vector3 arrivePosition, float stopRadius)
         {
             return (arrivePosition - mine.Position).normalized
                 * Mathf.Lerp(0, mine.activeSettings.maxSpeed, (arrivePosition - mine.Position).sqrMagnitude / (stopRadius * stopRadius));
+        }
+
+        protected override Vector3 GetSteeringVectorForTarget(SteeringAgent mine, Agent target)
+        {
+            Vector3 desired_velocity = DesiredVelocityForArrival(mine, target.Position, stoppingDistance);
+            Vector3 steer = desired_velocity - mine.Velocity;
+            return steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
 
 #if UNITY_EDITOR

@@ -6,61 +6,25 @@ namespace CloudFine.FlockBox
     [System.Serializable]
     public partial class SeekBehavior : GlobalRadialSteeringBehavior
     {
-        public const string targetIDAttributeName = "seekTargetID";
+        public const string TargetIDAttributeName = "SeekTargetID";
+        public const string ManualTargettingAttributeName = "ManualSeekTargetting";
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(targetIDAttributeName, -1);
-            int chosenTargetID = mine.GetAgentIntProperty(targetIDAttributeName);
+            if (!mine.HasAgentIntProperty(TargetIDAttributeName)) mine.SetAgentIntProperty(TargetIDAttributeName, -1);
+            int chosenTargetID = mine.GetAgentIntProperty(TargetIDAttributeName);
 
-            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
-
-            if (allTargets.Count == 0)
+            if (mine.GetAgentBoolProperty(ManualTargettingAttributeName))
             {
-                if (chosenTargetID != -1)
-                {
-                    DisengagePursuit(mine, chosenTargetID);
-                }
-                steer = Vector3.zero;
-                return;
+                ManualTarget(mine, chosenTargetID, out steer);
             }
-
-            Agent closestTarget = ClosestPursuableTarget(allTargets, mine);
-
-            if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
+            else
             {
-                if (chosenTargetID != -1)
-                {
-                    DisengagePursuit(mine, chosenTargetID);
-                }
-                steer = Vector3.zero;
-                return;
+                AutoTarget(mine, surroundings, chosenTargetID, out steer);
             }
-
-
-            if (closestTarget.agentID != chosenTargetID)
-            {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
-            }
-
-            mine.AttemptCatch(closestTarget);
-            Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
-            steer = desired_velocity - mine.Velocity;
-            steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
         }
 
-        protected static void EngagePursuit(SteeringAgent mine, Agent target)
-        {
-            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, target.agentID);
-        }
-
-        protected static void DisengagePursuit(SteeringAgent mine, int targetID)
-        {
-            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, -1);
-        }
-
-        public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
+        public static Agent FindClosestTarget(HashSet<Agent> nearbyTargets, Agent agent)
         {
             if (nearbyTargets.Count == 0) return null;
             float closeDist = float.MaxValue;
@@ -76,36 +40,109 @@ namespace CloudFine.FlockBox
             }
             return closeTarget;
         }
+
+        protected void AutoTarget(SteeringAgent mine, SurroundingsContainer surroundings, int chosenTargetID, out Vector3 steer)
+        {
+            HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
+
+            if (allTargets.Count == 0)
+            {
+                if (chosenTargetID != -1)
+                {
+                    mine.ClearTargetAgent();
+                }
+                steer = Vector3.zero;
+                return;
+            }
+
+            Agent closestTarget = FindClosestTarget(allTargets, mine);
+
+            if (!closestTarget || !closestTarget.CanBeCaughtBy(mine))
+            {
+                if (chosenTargetID != -1)
+                {
+                    mine.ClearTargetAgent();
+                }
+                steer = Vector3.zero;
+                return;
+            }
+
+
+            if (closestTarget.agentID != chosenTargetID)
+            {
+                mine.SetAgentIntProperty(TargetIDAttributeName, closestTarget.agentID);
+            }
+
+            mine.AttemptCatch(closestTarget);
+            steer = GetSteeringVectorForTarget(mine, closestTarget);
+        }
+
+        protected void ManualTarget(SteeringAgent mine, int chosenTargetID, out Vector3 steer)
+        {
+            if (chosenTargetID < 0)
+            {
+                steer = Vector3.zero;
+            }
+            else
+            {
+                Agent target = Agent.GetAgentById(chosenTargetID);
+                if (target != null)
+                {
+                    steer = GetSteeringVectorForTarget(mine, target);
+                    mine.AttemptCatch(target);
+                }
+                else
+                {
+                    mine.ClearTargetAgent();
+                    steer = Vector3.zero;
+                }
+            }
+        }
+
+        protected virtual Vector3 GetSteeringVectorForTarget(SteeringAgent mine, Agent target)
+        {
+            Vector3 desired_velocity = (target.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
+            Vector3 steer = desired_velocity - mine.Velocity;
+            return steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
+        }
     }
 
     public static class SeekExtensions
     {
-        public static bool HasPursuitTarget(this SteeringAgent mine)
+        public static void SetTargetAgent(this SteeringAgent mine, Agent target)
         {
-            if (!mine.HasAgentIntProperty(SeekBehavior.targetIDAttributeName)) return false;
-            return mine.GetAgentIntProperty(SeekBehavior.targetIDAttributeName) >= 0;
+            mine.SetManualAgentTargetting(true);
+            mine.SetAgentIntProperty(SeekBehavior.TargetIDAttributeName, target.agentID);
         }
 
-        public static void AttemptCatch(this SteeringAgent mine, Agent target)
+        public static void ClearTargetAgent(this SteeringAgent mine)
         {
-            if (mine.Overlaps(target))
-            {
-                mine.CatchAgent(target);
-            }
+            mine.SetAgentIntProperty(SeekBehavior.TargetIDAttributeName, -1);
         }
 
-        public static Agent GetTarget(this SteeringAgent mine)
+        public static bool HasTargetAgent(this SteeringAgent mine)
         {
-            if (!mine.HasAgentIntProperty(SeekBehavior.targetIDAttributeName))
+            if (!mine.HasAgentIntProperty(SeekBehavior.TargetIDAttributeName)) return false;
+            return mine.GetAgentIntProperty(SeekBehavior.TargetIDAttributeName) >= 0;
+        }
+
+        public static Agent GetTargetAgent(this SteeringAgent mine)
+        {
+            if (!mine.HasAgentIntProperty(SeekBehavior.TargetIDAttributeName))
             {
                 return null;
             }
-            int chosenTargetID = mine.GetAgentIntProperty(SeekBehavior.targetIDAttributeName);
+            int chosenTargetID = mine.GetAgentIntProperty(SeekBehavior.TargetIDAttributeName);
             if (chosenTargetID != -1)
             {
                 return Agent.GetAgentById(chosenTargetID);
             }
             return null;
+        }
+
+        public static void SetManualAgentTargetting(this SteeringAgent mine, bool isManual)
+        {
+            mine.SetAgentBoolProperty(SeekBehavior.ManualTargettingAttributeName, isManual);
         }
     }
 }
