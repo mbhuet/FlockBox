@@ -4,8 +4,8 @@ namespace CloudFine.FlockBox
 {
     public partial class ContainmentBehavior : ForecastSteeringBehavior
     {
-        public override bool CanUseTagFilter { get { return false; } }
-        public override bool CanToggleActive { get { return false; } }
+        public override bool CanUseTagFilter => false;
+        public override bool CanToggleActive => false;
 
         private Vector3 containedPosition;
         private Vector3 unclampedPosition;
