@@ -19,7 +19,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -31,7 +31,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -40,24 +40,13 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
+                mine.SetPusuitTarget(closestTarget);
             }
 
             mine.AttemptCatch(closestTarget);
             Vector3 desired_velocity = (closestTarget.Position - mine.Position).normalized * mine.activeSettings.maxSpeed;
             steer = desired_velocity - mine.Velocity;
             steer = steer.normalized * Mathf.Min(steer.magnitude, mine.activeSettings.maxForce);
-        }
-
-        protected static void EngagePursuit(SteeringAgent mine, Agent target)
-        {
-            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, target.agentID);
-        }
-
-        protected static void DisengagePursuit(SteeringAgent mine, int targetID)
-        {
-            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, -1);
         }
 
         public static Agent ClosestPursuableTarget(HashSet<Agent> nearbyTargets, Agent agent)
@@ -80,18 +69,20 @@ namespace CloudFine.FlockBox
 
     public static class SeekExtensions
     {
+        public static void SetPusuitTarget(this SteeringAgent mine, Agent target)
+        {
+            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, target.agentID);
+        }
+
+        public static void ClearPursuitTarget(this SteeringAgent mine)
+        {
+            mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, -1);
+        }
+
         public static bool HasPursuitTarget(this SteeringAgent mine)
         {
             if (!mine.HasAgentIntProperty(SeekBehavior.targetIDAttributeName)) return false;
             return mine.GetAgentIntProperty(SeekBehavior.targetIDAttributeName) >= 0;
-        }
-
-        public static void AttemptCatch(this SteeringAgent mine, Agent target)
-        {
-            if (mine.Overlaps(target))
-            {
-                mine.CatchAgent(target);
-            }
         }
 
         public static Agent GetTarget(this SteeringAgent mine)

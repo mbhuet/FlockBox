@@ -23,7 +23,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -35,7 +35,7 @@ namespace CloudFine.FlockBox
             {
                 if (chosenTargetID != -1)
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -43,8 +43,7 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
+                mine.SetPusuitTarget(closestTarget);
             }
 
             mine.AttemptCatch(closestTarget);

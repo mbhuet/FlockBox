@@ -8,7 +8,7 @@ namespace CloudFine.FlockBox
     {
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
-            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(targetIDAttributeName, -1);
+            if (!mine.HasAgentIntProperty(targetIDAttributeName)) mine.SetAgentIntProperty(SeekBehavior.targetIDAttributeName, -1);
             int chosenTargetID = mine.GetAgentIntProperty(targetIDAttributeName);
 
             HashSet<Agent> allTargets = GetFilteredAgents(surroundings, this);
@@ -17,7 +17,7 @@ namespace CloudFine.FlockBox
             {
                 if (mine.HasPursuitTarget())
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -29,7 +29,7 @@ namespace CloudFine.FlockBox
             {
                 if (mine.HasPursuitTarget())
                 {
-                    DisengagePursuit(mine, chosenTargetID);
+                    mine.ClearPursuitTarget();
                 }
                 steer = Vector3.zero;
                 return;
@@ -37,8 +37,7 @@ namespace CloudFine.FlockBox
 
             if (closestTarget.agentID != chosenTargetID)
             {
-                DisengagePursuit(mine, chosenTargetID);
-                EngagePursuit(mine, closestTarget);
+                mine.SetPusuitTarget(closestTarget);
             }
 
             Vector3 distance = closestTarget.Position - mine.Position;
