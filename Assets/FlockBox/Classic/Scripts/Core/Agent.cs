@@ -524,6 +524,14 @@ namespace CloudFine.FlockBox
             }
         }
 
+        public void AttemptCatch(Agent other)
+        {
+            if (this.Overlaps(other))
+            {
+                CatchAgent(other);
+            }
+        }
+
         public virtual void CatchAgent(Agent other)
         {
             if (OnCatch != null) OnCatch.Invoke(this);

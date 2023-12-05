@@ -14,6 +14,7 @@ namespace CloudFine.FlockBox
     public class FlockBox : MonoBehaviour
     {
         public static Action<FlockBox> OnValuesModified;
+        public List<Agent> AllAgents => allAgents;
 
         private Dictionary<int, HashSet<Agent>> cellToAgents = new Dictionary<int, HashSet<Agent>>(); //get all agents in a cell
         private Dictionary<Agent, HashSet<int>> agentToCells = new Dictionary<Agent, HashSet<int>>(); //get all cells an agent is in

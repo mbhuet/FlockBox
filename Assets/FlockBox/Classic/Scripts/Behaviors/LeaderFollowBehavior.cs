@@ -31,7 +31,7 @@ namespace CloudFine.FlockBox
                 return;
             }
 
-            Agent closestLeader = SeekBehavior.ClosestPursuableTarget(leaders, mine);
+            Agent closestLeader = SeekBehavior.FindClosestTarget(leaders, mine);
             mine.SetAgentIntProperty(leaderIDAttributeName, closestLeader.agentID);
 
             //check to see if we should clear the way in front of the leader

@@ -52,7 +52,7 @@ namespace CloudFine.FlockBox
 
         RaycastHit hit;
 
-        public override bool CanUseTagFilter { get { return false; } }
+        public override bool CanUseTagFilter => false;
 
         const int numViewDirections = 360;
         public static Vector3[] Directions

@@ -12,7 +12,7 @@ namespace CloudFine.FlockBox
         public float wanderScope = 90;
         [Tooltip("How quickly the wander force can change direction.")]
         public float wanderIntensity = 1;
-        public override bool CanUseTagFilter { get { return false; } }
+        public override bool CanUseTagFilter => false;
 
         public override void GetSteeringBehaviorVector(out Vector3 steer, SteeringAgent mine, SurroundingsContainer surroundings)
         {
