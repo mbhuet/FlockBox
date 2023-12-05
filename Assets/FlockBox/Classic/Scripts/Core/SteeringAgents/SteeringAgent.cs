@@ -28,7 +28,8 @@ namespace CloudFine.FlockBox
             if (activeSettings == null) return;
             if (freezePosition) return;
             sleeping = (UnityEngine.Random.value < FlockBox.sleepChance);
-            if(!sleeping){
+            if (!sleeping)
+            {
                 Acceleration *= 0;
                 activeSettings.AddPerceptions(this, mySurroundings);
                 FlockBox.GetSurroundings(Position, Velocity, cells, mySurroundings);
@@ -60,18 +61,21 @@ namespace CloudFine.FlockBox
         {
             foreach (SteeringBehavior behavior in activeSettings.Behaviors)
             {
-                if (!behavior.IsActive) continue;
-                behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
-                steerBuffer *= behavior.weight;
-                if (behavior.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), behavior.debugColor, 0, true);
-                ApplyForce(steerBuffer);
+                ApplyBehavior(behavior, surroundings);
             }
         }
 
         void Contain(SurroundingsContainer surroundings)
         {
-            activeSettings.Containment.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
-            if (activeSettings.Containment.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), activeSettings.Containment.debugColor, 0, true);
+            ApplyBehavior(activeSettings.Containment, surroundings);
+        }
+
+        private void ApplyBehavior(SteeringBehavior behavior, SurroundingsContainer surroundings)
+        {
+            if (!behavior.IsActive) return;
+            behavior.GetSteeringBehaviorVector(out steerBuffer, this, surroundings);
+            steerBuffer *= behavior.weight;
+            if (behavior.DrawSteering) Debug.DrawRay(transform.position, FlockBox.transform.TransformDirection(steerBuffer), behavior.debugColor, 0, true);
             ApplyForce(steerBuffer);
         }
 
