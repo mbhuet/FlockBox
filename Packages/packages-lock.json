@@ -23,7 +23,7 @@
     },
     "com.unity.entities": {
       "version": "1.0.0-pre.15",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.burst": "1.7.4",
@@ -148,7 +148,7 @@
     },
     "com.unity.serialization": {
       "version": "3.0.0-pre.1",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.collections": "2.1.0-pre.2",
