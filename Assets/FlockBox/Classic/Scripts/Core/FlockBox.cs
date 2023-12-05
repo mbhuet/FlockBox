@@ -242,30 +242,16 @@ namespace CloudFine.FlockBox
         void Start()
         {
             _lastLTW = transform.localToWorldMatrix;
-
             foreach (AgentPopulation pop in startingPopulations)
             {
                 if (pop.prefab == null) continue;
-
-#if FLOCKBOX_DOTS
-                if (useDOTS)
+               
+                for(int i =0; i<pop.population; i++)
                 {
-                    //TODO
-                    /*
-                    InstantiateAgentEntitiesFromPrefab(pop.prefab, pop.population);
-                    ConvertGameObjectsToEntities(GetComponentsInChildren<Agent>());
-                    */
-                }
-                else
-#endif
-                {
-                    for(int i =0; i<pop.population; i++)
-                    {
-                        Agent agent = GameObject.Instantiate(pop.prefab);
-                        agent.transform.SetParent(this.transform);
-                        agent.Spawn(this, RandomPosition());                     
-                    }
-                }
+                    Agent agent = GameObject.Instantiate(pop.prefab);
+                    agent.transform.SetParent(this.transform);
+                    agent.Spawn(this, RandomPosition());
+                }             
             }
         }
 
