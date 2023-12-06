@@ -42,7 +42,7 @@ namespace CloudFine.FlockBox.DOTS
         protected override JobHandle DoSteering()
         {
             NativeArray<float3> dirs = new NativeArray<float3>(Directions, Allocator.TempJob);
-            PhysicsWorld physicsWorld = GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+            PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
 
             //TODO add sphere casting
             Dependency = Entities
