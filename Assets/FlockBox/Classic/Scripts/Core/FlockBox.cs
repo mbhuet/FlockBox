@@ -767,8 +767,7 @@ namespace CloudFine.FlockBox
             {
                 Entity e = GetEntity(TransformUsageFlags.Dynamic);
                 DynamicBuffer<FlockBoxSpawnPopulationData> dynamicBuffer = AddBuffer<FlockBoxSpawnPopulationData>(e);
-                dynamicBuffer.ResizeUninitialized(authoring.startingPopulations.Count);
-                for (int i = 0; i < dynamicBuffer.Length; i++)
+                for (int i = 0; i < authoring.startingPopulations.Count; i++)
                 {
                     AgentPopulation pop = authoring.startingPopulations[i];
 
@@ -783,11 +782,11 @@ namespace CloudFine.FlockBox
                             DependsOn(steeringAgent.activeSettings);
                         }
                     }
-                    dynamicBuffer[i] = new FlockBoxSpawnPopulationData
+                    dynamicBuffer.Add(new FlockBoxSpawnPopulationData
                     {
                         Prefab = GetEntity(pop.prefab, TransformUsageFlags.Dynamic),
                         Population = pop.population
-                    };
+                    });
                 }
 
                 FlockBoxData data = new FlockBoxData
