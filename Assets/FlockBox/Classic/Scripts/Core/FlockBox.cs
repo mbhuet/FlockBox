@@ -772,7 +772,8 @@ namespace CloudFine.FlockBox
         {
             public override void Bake(FlockBox authoring)
             {
-                DynamicBuffer<FlockBoxSpawnPopulationData> dynamicBuffer = AddBuffer<FlockBoxSpawnPopulationData>();
+                Entity e = GetEntity(TransformUsageFlags.Dynamic);
+                DynamicBuffer<FlockBoxSpawnPopulationData> dynamicBuffer = AddBuffer<FlockBoxSpawnPopulationData>(e);
                 dynamicBuffer.ResizeUninitialized(authoring.startingPopulations.Count);
                 for (int i = 0; i < dynamicBuffer.Length; i++)
                 {
@@ -790,7 +791,7 @@ namespace CloudFine.FlockBox
                     }
                     dynamicBuffer[i] = new FlockBoxSpawnPopulationData
                     {
-                        Prefab = GetEntity(pop.prefab),
+                        Prefab = GetEntity(pop.prefab, TransformUsageFlags.Dynamic),
                         Population = pop.population
                     };
                 }
@@ -804,7 +805,7 @@ namespace CloudFine.FlockBox
                     WorldToLocalMatrix = authoring.transform.worldToLocalMatrix
                 };
 
-                AddComponent(data);
+                AddComponent(e, data);
             }
         }
 #endif

@@ -10,7 +10,7 @@ namespace CloudFine.FlockBox.DOTS
         void SetEntityData(Entity entity, EntityManager entityManager);
         void RemoveEntityData(Entity entity, EntityManager entityManager);
 
-        void AddEntityData(IBaker baker);
+        void AddEntityData(Entity entity, IBaker baker);
 
     }
 

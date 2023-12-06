@@ -677,9 +677,9 @@ namespace CloudFine.FlockBox
     {
         public override void Bake(Agent authoring)
         {
-            AddComponent(authoring.ConvertToAgentData());
+            Entity e = GetEntity(TransformUsageFlags.Dynamic | TransformUsageFlags.Renderable);
+            AddComponent(e, authoring.ConvertToAgentData());
         }
-        
     }
 #endif
 }

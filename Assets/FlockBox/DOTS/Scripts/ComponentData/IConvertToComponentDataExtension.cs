@@ -38,9 +38,9 @@ namespace CloudFine.FlockBox.DOTS
             buf.SetComponent<T>(entity, value.Convert());
         }
 
-        public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, IBaker baker) where T : unmanaged, IComponentData
+        public static void AddEntityData<T>(this IConvertToSteeringBehaviorComponentData<T> value, Entity entity, IBaker baker) where T : unmanaged, IComponentData
         {
-            baker.AddComponent(value.Convert());
+            baker.AddComponent(entity, value.Convert());
         }
     }
 }

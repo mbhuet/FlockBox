@@ -14,7 +14,8 @@ namespace CloudFine.FlockBox.DOTS {
     {
         public override void Bake(DOTSAgentStateDemo authoring)
         {
-            AddComponent(new AgentStateData { State = 0 });
+            Entity e = GetEntity(TransformUsageFlags.None);
+            AddComponent(e, new AgentStateData { State = 0 });
         }
     }
 }

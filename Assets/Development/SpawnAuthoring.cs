@@ -6,8 +6,6 @@ using UnityEngine;
 public class SpawnAuthoring : MonoBehaviour
 {
     public GameObject Prefab;
-
-    
 }
 
 public struct SpawnerData : IComponentData
@@ -19,9 +17,10 @@ public class SpawnerBaker : Baker<SpawnAuthoring>
 {
     public override void Bake(SpawnAuthoring authoring)
     {
-        AddComponent( new SpawnerData
+        Entity e = GetEntity(TransformUsageFlags.None);
+        AddComponent(e, new SpawnerData
         {
-            Prefab = GetEntity(authoring.Prefab)
+            Prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic)
         });
     }
 }

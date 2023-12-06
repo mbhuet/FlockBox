@@ -195,19 +195,21 @@ namespace CloudFine.FlockBox
     {
         public override void Bake(SteeringAgent authoring)
         {
+            Entity e = GetEntity(TransformUsageFlags.Dynamic | TransformUsageFlags.Renderable);
+
             if (authoring.activeSettings)
             {
                 DependsOn(authoring.activeSettings);
-                ApplyToEntity(authoring.activeSettings);
+                ApplyToEntity(e, authoring.activeSettings);
             }
 
             //AgentData holds everything a behavior needs to react to another Agent
-            AddComponent(authoring.ConvertToAgentData());
-            AddComponent(new AccelerationData { Value = float3.zero });
-            AddComponent(new PerceptionData());
+            AddComponent(e, authoring.ConvertToAgentData());
+            AddComponent(e, new AccelerationData { Value = float3.zero });
+            AddComponent(e, new PerceptionData());
 
             //give entity a buffer to hold info about surroundings
-            AddBuffer<NeighborData>();
+            AddBuffer<NeighborData>(e);
         }
 
         /// <summary>
@@ -216,21 +218,21 @@ namespace CloudFine.FlockBox
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="dstManager"></param>
-        public void ApplyToEntity(BehaviorSettings settings)
+        public void ApplyToEntity(Entity entity, BehaviorSettings settings)
         {
-            AddSharedComponentManaged(new BehaviorSettingsData { SettingsInstanceID = settings.GetBehaviorSettingsID() });
-            AddComponent(new SteeringData { MaxForce = settings.maxForce, MaxSpeed = settings.maxSpeed });
+            AddSharedComponentManaged(entity, new BehaviorSettingsData { SettingsInstanceID = settings.GetBehaviorSettingsID() });
+            AddComponent(entity, new SteeringData { MaxForce = settings.maxForce, MaxSpeed = settings.maxSpeed });
 
             foreach (SteeringBehavior behavior in settings.Behaviors)
             {
                 IConvertToComponentData convert = (behavior as IConvertToComponentData);
                 if (convert != null)
                 {
-                    convert.AddEntityData(this);
+                    convert.AddEntityData(entity, this);
                 }
             }
 
-            AddComponent(settings.Containment.Convert());
+            AddComponent(entity, settings.Containment.Convert());
 
         }
     }    
