@@ -98,14 +98,6 @@ namespace CloudFine.FlockBox
         private Matrix4x4 _lastLTW = Matrix4x4.identity;
 
 #if FLOCKBOX_DOTS
-        [SerializeField]
-        private bool useDOTS = false;
-        public bool DOTSEnabled
-        {
-            get { return useDOTS; }
-        }
-
-        private Entity agentEntityPrefab;
         public Entity syncedEntityTransform
         {
             get
@@ -155,6 +147,7 @@ namespace CloudFine.FlockBox
 
         private Entity CreateSyncedRoot()
         {
+            //TODO write new system for this syncing
             //
             // Set up root entity that will follow FlockBox GameObject
             //
@@ -779,13 +772,14 @@ namespace CloudFine.FlockBox
                 {
                     AgentPopulation pop = authoring.startingPopulations[i];
 
+                    //rebake whenver starting population prefabs change
                     DependsOn(pop.prefab);
 
                     if (pop.prefab is SteeringAgent steeringAgent)
                     {
                         if (steeringAgent.activeSettings)
                         {
-                            //we want to rebake whenever changes are made to prefabs in the starting populations
+                            //rebake whenever changes are made to behavior settings in the starting populations
                             DependsOn(steeringAgent.activeSettings);
                         }
                     }

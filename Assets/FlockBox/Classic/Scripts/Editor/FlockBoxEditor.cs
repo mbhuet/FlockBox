@@ -29,7 +29,7 @@ namespace CloudFine.FlockBox
 
         private SerializedProperty _cellCapacity;
         private SerializedProperty _useCellCapacity;
-        private SerializedProperty _useDOTS;
+        //private SerializedProperty _useDOTS;
 
         private bool optimizationFoldout = false;
         private bool debugFoldout = false;
@@ -52,7 +52,7 @@ namespace CloudFine.FlockBox
 
             _cellCapacity = serializedObject.FindProperty("maxCellCapacity");
             _useCellCapacity = serializedObject.FindProperty("capCellCapacity");
-            _useDOTS = serializedObject.FindProperty("useDOTS");
+            //_useDOTS = serializedObject.FindProperty("useDOTS");
             _worldSpace = serializedObject.FindProperty("useWorldSpace");
 
             faces = new Vector3[]
@@ -77,6 +77,7 @@ namespace CloudFine.FlockBox
             EditorGUILayout.BeginHorizontal();
             BehaviorSettingsEditor.DOTSBadge();
 
+            /*
             if (Application.isPlaying)
             {
                 GUI.enabled = false;
@@ -90,6 +91,7 @@ namespace CloudFine.FlockBox
             {
                 EditorGUILayout.HelpBox(new GUIContent("Note: Some features may not be available in DOTS mode. See manual for more information."));
             }
+            */
 #endif
 
             Vector3 dimensions = new Vector3(_dimensionX.floatValue, _dimensionY.floatValue, _dimensionZ.floatValue) * _size.floatValue;

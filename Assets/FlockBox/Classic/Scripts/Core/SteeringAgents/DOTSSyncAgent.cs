@@ -33,7 +33,7 @@ namespace CloudFine.FlockBox
 
         protected override void OnJoinFlockBox(FlockBox flockBox)
         {
-            if (flockBox.DOTSEnabled)
+            //if (flockBox.DOTSEnabled)
             {
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
                 if (_synchedEntity == Entity.Null)
@@ -41,8 +41,9 @@ namespace CloudFine.FlockBox
                     _synchedEntity = entityManager.CreateEntity();
 
                     entityManager.AddComponentData<LocalToWorld>(_synchedEntity, new LocalToWorld());
-                    entityManager.AddComponentObject(_synchedEntity, this.transform);
-                    entityManager.AddComponentData<CompanionLink>(_synchedEntity, new CompanionLink { });
+                    //TODO replace with new system to update from a gameobject
+                    //entityManager.AddComponentObject(_synchedEntity, this.transform);
+                    //entityManager.AddComponentData<CompanionLink>(_synchedEntity, new CompanionLink { });
 
                     entityManager.AddSharedComponentManaged<FlockData>(_synchedEntity, new FlockData { FlockInstanceID = flockBox.GetFlockBoxID() });
                     entityManager.AddComponentData<FlockMatrixData>(_synchedEntity, new FlockMatrixData { WorldToFlockMatrix = transform.worldToLocalMatrix });
