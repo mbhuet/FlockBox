@@ -5,6 +5,9 @@ using Unity.Mathematics;
 
 namespace CloudFine.FlockBox.DOTS
 {
+    /// <summary>
+    /// Holds information about a starting population in ECS environment.
+    /// </summary>
     public struct FlockBoxSpawnPopulationData : IBufferElementData
     {
         public Entity Prefab;
