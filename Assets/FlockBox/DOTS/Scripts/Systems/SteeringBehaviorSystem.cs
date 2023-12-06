@@ -55,6 +55,7 @@ namespace CloudFine.FlockBox.DOTS
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
+                //TODO Deprecated code here
                 var behaviors = chunk.GetNativeArray(BehaviorDataType);
 
                 for (var i = 0; i < chunk.Count; i++)
