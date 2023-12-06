@@ -74,10 +74,12 @@ namespace CloudFine.FlockBox
             GUI.enabled = true;
 
 #if FLOCKBOX_DOTS
+
+            /*
             EditorGUILayout.BeginHorizontal();
             BehaviorSettingsEditor.DOTSBadge();
 
-            /*
+
             if (Application.isPlaying)
             {
                 GUI.enabled = false;
