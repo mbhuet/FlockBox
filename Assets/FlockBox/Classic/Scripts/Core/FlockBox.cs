@@ -155,8 +155,8 @@ namespace CloudFine.FlockBox
                         typeof(LocalToWorld),
                     });
 
-            entityManager.AddComponentObject(root, this.transform);
-            entityManager.AddComponentData<CompanionLink>(root, new CompanionLink { });
+            //entityManager.AddComponentObject(root, this.transform);
+            //entityManager.AddComponentData<CompanionLink>(root, new CompanionLink { });
             return root;
         }
 
