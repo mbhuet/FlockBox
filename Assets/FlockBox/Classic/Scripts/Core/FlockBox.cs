@@ -773,6 +773,7 @@ namespace CloudFine.FlockBox
 
                     //rebake whenver starting population prefabs change
                     DependsOn(pop.prefab);
+                    float maxSpeed = 0;
 
                     if (pop.prefab is SteeringAgent steeringAgent)
                     {
@@ -780,12 +781,14 @@ namespace CloudFine.FlockBox
                         {
                             //rebake whenever changes are made to behavior settings in the starting populations
                             DependsOn(steeringAgent.activeSettings);
+                            maxSpeed = steeringAgent.activeSettings.maxSpeed;
                         }
                     }
                     dynamicBuffer.Add(new FlockBoxSpawnPopulationData
                     {
                         Prefab = GetEntity(pop.prefab, TransformUsageFlags.Dynamic),
-                        Population = pop.population
+                        Population = pop.population,
+                        MaxSpeed = maxSpeed,
                     });
                 }
 

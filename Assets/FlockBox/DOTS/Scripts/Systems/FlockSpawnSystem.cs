@@ -47,12 +47,11 @@ namespace CloudFine.FlockBox.DOTS
                                 random.NextFloat(buffer, dimensions.y - buffer),
                                 random.NextFloat(buffer, dimensions.z - buffer)
                                 ),
-                            //TODO scale to maxSpeed
                             Velocity = new float3 (
-                                random.NextFloat(),
-                                random.NextFloat(),
-                                random.NextFloat()
-                                ),
+                                (random.NextFloat() - .5f) * 2f,
+                                (random.NextFloat() - .5f) * 2f,
+                                (random.NextFloat() - .5f) * 2f
+                                ) * pop.MaxSpeed,
                             UniqueID = AgentData.TakeNextId()
                         };
 

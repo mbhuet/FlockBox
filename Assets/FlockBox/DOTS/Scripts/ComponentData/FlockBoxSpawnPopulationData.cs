@@ -12,6 +12,7 @@ namespace CloudFine.FlockBox.DOTS
     {
         public Entity Prefab;
         public int Population;
+        public float MaxSpeed;
     }
 }
 #endif
